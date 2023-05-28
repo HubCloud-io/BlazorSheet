@@ -1,0 +1,74 @@
+﻿@using BBComponents.Components
+@using HubCloud.BlazorSheet.Core.Enums
+
+<div style="line-height: 15px; font-size: 12px;">
+    
+    <span class="glyphicon glyphicon-font text-primary" style="margin-left: 3px;"></span>
+    <BbNumberInput TValue="int"
+                   @bind-Value="@StyleModel.FontSize"
+                   Changed="OnSettingsChanged"
+                   HtmlStyle="width:30px;margin-left:5px; text-align:right;">
+    </BbNumberInput>
+
+    <span class="glyphicon glyphicon-align-left text-primary" style="margin-left: 3px;"></span>
+    <BbSelect TValue="string"
+              ItemsSource="@_textAlignSource"
+              TextName="Item1"
+              ValueName="Item2"
+              @bind-Value="@StyleModel.TextAlign"
+              HtmlStyle="width:70px;margin-left:5px;height:25px;"
+              Changed="OnSettingsChanged">
+    </BbSelect>
+
+    <button class="@ToggleButtonStyle(StyleModel.IsBold)" 
+            @onclick="OnBoldClick" 
+            style="padding-top:2px; padding-bottom: 2px; margin-top: -5px;">
+        <span>B</span>
+    </button>
+
+    <button class="@ToggleButtonStyle(StyleModel.IsItalic)" 
+            @onclick="OnItalicClick" 
+            style="padding-top: 2px; padding-bottom: 2px; margin-top: -5px;">
+        <span style="font-style: italic;">I</span>
+    </button>
+
+    <span class="glyphicon glyphicon-font text-primary" style="margin-left: 3px;"></span>
+    @* <BbTextInput @bind-Value="@StyleModel.Color" Changed="OnSettingsChanged" HtmlStyle="width:70px;"></BbTextInput> *@
+    <input type="color"
+           @onchange="(e => OnColorChange(e))"
+           value="@StyleModel.Color"
+           style="width:30px; height: 25px;"/>
+
+    <span class="glyphicon glyphicon-tint text-primary" style="margin-left: 3px;"></span>
+    @* <BbTextInput @bind-Value="@StyleModel.BackgroundColor" Changed="OnSettingsChanged" HtmlStyle="width:70px;"></BbTextInput> *@
+    <input type="color"
+           @onchange="(e => OnBackgroundColorChange(e))"
+           value="@StyleModel.BackgroundColor"
+           style="width:30px; height: 25px;"/>
+    
+    <span class="glyphicon glyphicon-border text-primary" style="margin-left: 3px;"></span>
+    <BbSelect TValue="CellBorderTypes" 
+              ItemsSource="@_borderTypesSource" 
+              ValueName="Item1" 
+              TextName="Item2" 
+              HtmlStyle="height:25px;"
+              @bind-Value="@StyleModel.BorderType" 
+              Changed="OnSettingsChanged"></BbSelect>
+    
+    <BbNumberInput TValue="int"
+                   @bind-Value="@StyleModel.BorderWidth"
+                   Changed="OnSettingsChanged"
+                   HtmlStyle="width:30px;margin-left:5px; text-align:right;"></BbNumberInput>
+    
+     <input type="color"
+               @onchange="(e => OnBorderColorChange(e))"
+               value="@StyleModel.BorderColor"
+               style="width:30px; height: 25px;"/>
+
+    <button class="btn btn-outline-success ml-1" style="padding-top:2px; padding-bottom: 2px; margin-top: -5px;" @onclick="OnExport">
+        <span class="fa fa-file-export"></span>
+    </button>
+    <button class="btn btn-outline-success mr-1" style="padding-top:2px; padding-bottom: 2px; margin-top: -5px;" @onclick="OnImport">
+        <span class="fa fa-file-import"></span>
+    </button>
+</div>
