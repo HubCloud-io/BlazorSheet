@@ -1,0 +1,28 @@
+﻿@page "/sheetedit"
+@using HubCloud.BlazorSheet.Core.Enums
+@using HubCloud.BlazorSheet.Components
+
+<h3>Sheet Edit</h3>
+
+<hr/>
+
+<SheetCommandPanel StyleModel="@_selectedCellStyle" 
+                           Changed="OnStyleChanged"></SheetCommandPanel>
+
+<hr/>
+
+<div class="row">
+
+    <div class="col-sm-12">
+
+        <SheetComponent Sheet="@_sheet"
+                                Regime="@SheetRegimes.Edit"
+                                CellSelected="OnCellSelected"
+                                CellsSelected="OnCellsSelected"
+                                RowSelected="OnRowSelected"
+                                ColumnSelected="OnColumnSelected">
+        </SheetComponent>
+
+    </div>
+
+</div>
