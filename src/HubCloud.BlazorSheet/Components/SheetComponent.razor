@@ -1,4 +1,7 @@
 ﻿@using HubCloud.BlazorSheet.Core.Enums
+@using HubCloud.BlazorSheet.Components
+@using BBComponents.Components
+
 <div style="overflow-y: auto; overflow-x: auto; max-height: @MaxHeight;">
 
     <table class="hc-sheet"
@@ -80,12 +83,12 @@
 
 @if (_isColumnWidthModalOpen)
 {
-    <HcSimpleSheetValueInputModal ClientX="@_clientX" 
+    <ValueInputModal ClientX="@_clientX" 
                                   ClientY="@_clientY"
                                   Width="150"
                                   Value="@_currentColumn.WidthValue"
                                   Closed="OnColumnWidthValueModalClosed"
-                                  Title="Column width"></HcSimpleSheetValueInputModal>
+                                  Title="Column width"></ValueInputModal>
 }
 
 @if (_isRowContextMenuOpen)
@@ -99,10 +102,10 @@
 
 @if (_isRowHeightModalOpen)
 {
-    <HcSimpleSheetValueInputModal ClientX="@_clientX" 
+    <ValueInputModal ClientX="@_clientX" 
                                   ClientY="@_clientY"
                                   Width="150"
                                   Value="@_currentRow.HeightValue"
                                   Closed="OnRowHeightValueModalClosed"
-                                  Title="Row height"></HcSimpleSheetValueInputModal>
+                                  Title="Row height"></ValueInputModal>
 }
