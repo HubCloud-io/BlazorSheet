@@ -80,14 +80,14 @@ namespace HubCloud.BlazorSheet.Core.Models
                 case CellFormatTypes.None:
                     this.Format = CellFormatConsts.None;
                     break;
-                case CellFormatTypes.F0:
-                    this.Format = CellFormatConsts.F0;
+                case CellFormatTypes.Integer:
+                    this.Format = CellFormatConsts.Integer;
                     break;
-                case CellFormatTypes.F:
-                    this.Format = CellFormatConsts.F;
+                case CellFormatTypes.IntegerTwoDecimalPlaces:
+                    this.Format = CellFormatConsts.IntegerTwoDecimalPlaces;
                     break;
-                case CellFormatTypes.F3:
-                    this.Format = CellFormatConsts.F3;
+                case CellFormatTypes.IntegerThreeDecimalPlaces:
+                    this.Format = CellFormatConsts.IntegerThreeDecimalPlaces;
                     break;
                 case CellFormatTypes.Date:
                     this.Format = CellFormatConsts.Date;

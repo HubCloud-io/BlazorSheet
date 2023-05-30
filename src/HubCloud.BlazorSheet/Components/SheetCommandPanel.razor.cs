@@ -40,9 +40,9 @@ public partial class SheetCommandPanel:ComponentBase
 
         _cellFormatSource = new List<Tuple<string, CellFormatTypes>>();
         _cellFormatSource.Add(new Tuple<string, CellFormatTypes>("Нет формата", CellFormatTypes.None));
-        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>("Целое число", CellFormatTypes.F0));
-        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>("Число 2 знака после запятой", CellFormatTypes.F));
-        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>("Число 3 знака после запятой", CellFormatTypes.F3));
+        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>("Целое число", CellFormatTypes.Integer));
+        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>("Число 2 знака после запятой", CellFormatTypes.IntegerTwoDecimalPlaces));
+        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>("Число 3 знака после запятой", CellFormatTypes.IntegerThreeDecimalPlaces));
         _cellFormatSource.Add(new Tuple<string, CellFormatTypes>("Дата", CellFormatTypes.Date));
         _cellFormatSource.Add(new Tuple<string, CellFormatTypes>("Дата время", CellFormatTypes.DateTime));
         _cellFormatSource.Add(new Tuple<string, CellFormatTypes>("Произвольный", CellFormatTypes.Custom));

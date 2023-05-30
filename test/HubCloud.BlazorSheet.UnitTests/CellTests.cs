@@ -14,9 +14,9 @@ namespace HubCloud.BlazorSheet.UnitTests
     public class CellTests
     {
         [TestCase("123", null, CellFormatConsts.None)]
-        [TestCase("123,44", "123", CellFormatConsts.F0)]
-        [TestCase("123", "123,00", CellFormatConsts.F)]
-        [TestCase("123", "123,000", CellFormatConsts.F3)]
+        [TestCase("123,44", "123", CellFormatConsts.Integer)]
+        [TestCase("123", "123,00", CellFormatConsts.IntegerTwoDecimalPlaces)]
+        [TestCase("123", "123,000", CellFormatConsts.IntegerThreeDecimalPlaces)]
         [TestCase("Вт 30.05.23 13:24:40", "30.05.2023", CellFormatConsts.Date)]
         [TestCase("Вт 30.05.23 13:24:40", "30.05.2023 13:24:40", CellFormatConsts.DateTime)]
         [TestCase("Вт 30.05.23 13:24:40", "30 мая", "d MMMM")]

@@ -14,9 +14,9 @@ namespace HubCloud.BlazorSheet.UnitTests
     public class StyleTests
     {
         [TestCase(CellFormatTypes.None, CellFormatConsts.None)]
-        [TestCase(CellFormatTypes.F0, CellFormatConsts.F0)]
-        [TestCase(CellFormatTypes.F, CellFormatConsts.F)]
-        [TestCase(CellFormatTypes.F3, CellFormatConsts.F3)]
+        [TestCase(CellFormatTypes.Integer, CellFormatConsts.Integer)]
+        [TestCase(CellFormatTypes.IntegerTwoDecimalPlaces, CellFormatConsts.IntegerTwoDecimalPlaces)]
+        [TestCase(CellFormatTypes.IntegerThreeDecimalPlaces, CellFormatConsts.IntegerThreeDecimalPlaces)]
         [TestCase(CellFormatTypes.Date, CellFormatConsts.Date)]
         [TestCase(CellFormatTypes.DateTime, CellFormatConsts.DateTime)]
         public void SetStyle_IsFormatEqualExpected_True(CellFormatTypes formatType, string expected)
@@ -44,9 +44,9 @@ namespace HubCloud.BlazorSheet.UnitTests
 
         [TestCase("", CellFormatTypes.None)]
         [TestCase(null, CellFormatTypes.None)]
-        [TestCase(CellFormatConsts.F0, CellFormatTypes.F0)]
-        [TestCase(CellFormatConsts.F, CellFormatTypes.F)]
-        [TestCase(CellFormatConsts.F3, CellFormatTypes.F3)]
+        [TestCase(CellFormatConsts.Integer, CellFormatTypes.Integer)]
+        [TestCase(CellFormatConsts.IntegerTwoDecimalPlaces, CellFormatTypes.IntegerTwoDecimalPlaces)]
+        [TestCase(CellFormatConsts.IntegerThreeDecimalPlaces, CellFormatTypes.IntegerThreeDecimalPlaces)]
         [TestCase(CellFormatConsts.Date, CellFormatTypes.Date)]
         [TestCase(CellFormatConsts.DateTime, CellFormatTypes.DateTime)]
         [TestCase("C2", CellFormatTypes.Custom)]
