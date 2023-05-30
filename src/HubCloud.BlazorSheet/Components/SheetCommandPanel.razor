@@ -65,6 +65,20 @@
                value="@StyleModel.BorderColor"
                style="width:30px; height: 25px;"/>
 
+    <BbSelect TValue="CellFormatTypes"
+              ItemsSource="@_cellFormatSource"
+              TextName="Item1"
+              ValueName="Item2"
+              HtmlStyle="width:150px;margin-left:5px;margin-right:5px;height:25px;"
+              @bind-Value="@StyleModel.FormatType"
+              Changed="OnCellFormatChanged">
+    </BbSelect>
+
+    @if (StyleModel.FormatType == CellFormatTypes.Custom)
+    {
+        <BbTextInput @bind-Value="@StyleModel.CustomFormat" Changed="OnCustomFormatInputChanged" HtmlStyle="width:150px;margin-right:5px;height:25px;" />
+    }
+
     <button class="btn btn-outline-success ml-1" style="padding-top:2px; padding-bottom: 2px; margin-top: -5px;" @onclick="OnExport">
         <span class="fa fa-file-export"></span>
     </button>

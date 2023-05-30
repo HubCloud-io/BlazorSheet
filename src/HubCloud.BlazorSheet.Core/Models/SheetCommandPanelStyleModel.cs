@@ -1,4 +1,5 @@
 ﻿using System;
+using HubCloud.BlazorSheet.Core.Consts;
 using HubCloud.BlazorSheet.Core.Enums;
 
 namespace HubCloud.BlazorSheet.Core.Models
@@ -17,6 +18,8 @@ namespace HubCloud.BlazorSheet.Core.Models
         public int FontSize { get; set; }
         public string FontFamily { get; set; }
         public string TextAlign { get; set; } = DefaultTextAlign;
+        public string CustomFormat { get; set; }
+        public CellFormatTypes FormatType { get; set; } = CellFormatTypes.None;
 
         public CellBorderTypes BorderType { get; set; }
         public int BorderWidth { get; set; } = 1;
@@ -29,7 +32,6 @@ namespace HubCloud.BlazorSheet.Core.Models
                 return;
             }
 
-     
             this.BackgroundColor = clone.BackgroundColor;
             this.Color = clone.Color;
             this.IsBold = clone.IsBold;
@@ -38,6 +40,8 @@ namespace HubCloud.BlazorSheet.Core.Models
             this.FontFamily = clone.FontFamily;
             this.BorderWidth = clone.BorderWidth;
             this.BorderColor = clone.BorderColor;
+            this.FormatType = clone.FormatType;
+            this.CustomFormat = clone.CustomFormat;
         }
         
         public void CopyFrom(SheetCellStyle cellStyle)
@@ -49,6 +53,7 @@ namespace HubCloud.BlazorSheet.Core.Models
         
             this.BackgroundColor = cellStyle.BackgroundColor;
             this.Color = cellStyle.Color;
+
             if (!string.IsNullOrEmpty(cellStyle.FontWeight))
             {
                 this.IsBold = cellStyle.FontWeight.Equals("bold", StringComparison.OrdinalIgnoreCase) ? true : false;
@@ -77,6 +82,33 @@ namespace HubCloud.BlazorSheet.Core.Models
             else
             {
                 TextAlign = DefaultTextAlign;
+            }
+
+            switch (cellStyle.Format)
+            {
+                case "":
+                case null:
+                    this.FormatType = CellFormatTypes.None;
+                    break;
+                case CellFormatConsts.F0:
+                    this.FormatType = CellFormatTypes.F0;
+                    break;
+                case CellFormatConsts.F:
+                    this.FormatType = CellFormatTypes.F;
+                    break;
+                case CellFormatConsts.F3:
+                    this.FormatType = CellFormatTypes.F3;
+                    break;
+                case CellFormatConsts.Date:
+                    this.FormatType = CellFormatTypes.Date;
+                    break;
+                case CellFormatConsts.DateTime:
+                    this.FormatType = CellFormatTypes.DateTime;
+                    break;
+                default:
+                    this.FormatType = CellFormatTypes.Custom;
+                    this.CustomFormat = cellStyle.Format;
+                    break;
             }
         }
 

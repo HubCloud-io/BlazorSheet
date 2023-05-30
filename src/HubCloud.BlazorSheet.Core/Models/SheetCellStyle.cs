@@ -1,11 +1,12 @@
 ﻿using System;
+using HubCloud.BlazorSheet.Core.Consts;
 using HubCloud.BlazorSheet.Core.Enums;
 
 namespace HubCloud.BlazorSheet.Core.Models
 {
     public class SheetCellStyle
     {
-           public Guid Uid { get; set; } = Guid.NewGuid();
+        public Guid Uid { get; set; } = Guid.NewGuid();
         public string BackgroundColor { get; set; } = "#ffffff";
         public string Color { get; set; } = "#000000";
         public string FontWeight { get; set; } = "normal";
@@ -19,6 +20,8 @@ namespace HubCloud.BlazorSheet.Core.Models
         public string BorderBottom { get; set; } = string.Empty;
         
         public string TextAlign { get; set; } = string.Empty;
+
+        public string Format { get; set; } = string.Empty;
 
         public SheetCellStyle()
         {
@@ -68,6 +71,34 @@ namespace HubCloud.BlazorSheet.Core.Models
                     BorderRight = "";
                     break;
             }
+
+            switch (style.FormatType)
+            {
+                case CellFormatTypes.Custom:
+                    this.Format = style.CustomFormat;
+                    break;
+                case CellFormatTypes.None:
+                    this.Format = CellFormatConsts.None;
+                    break;
+                case CellFormatTypes.F0:
+                    this.Format = CellFormatConsts.F0;
+                    break;
+                case CellFormatTypes.F:
+                    this.Format = CellFormatConsts.F;
+                    break;
+                case CellFormatTypes.F3:
+                    this.Format = CellFormatConsts.F3;
+                    break;
+                case CellFormatTypes.Date:
+                    this.Format = CellFormatConsts.Date;
+                    break;
+                case CellFormatTypes.DateTime:
+                    this.Format = CellFormatConsts.DateTime;
+                    break;
+                default:
+                    this.Format = string.Empty;
+                    break;
+            }
         }
         
         public bool IsStyleEqual(SheetCellStyle other)
@@ -86,7 +117,8 @@ namespace HubCloud.BlazorSheet.Core.Models
                 string.Equals(BorderRight, other.BorderRight, StringComparison.OrdinalIgnoreCase)  &&
                 string.Equals(BorderTop, other.BorderTop, StringComparison.OrdinalIgnoreCase) &&
                 string.Equals(BorderBottom, other.BorderBottom, StringComparison.OrdinalIgnoreCase) &&
-                string.Equals(TextAlign, other.TextAlign, StringComparison.OrdinalIgnoreCase);
+                string.Equals(TextAlign, other.TextAlign, StringComparison.OrdinalIgnoreCase) &&
+                string.Equals(Format, other.TextAlign, StringComparison.OrdinalIgnoreCase);
 
             return isEqual;
         }

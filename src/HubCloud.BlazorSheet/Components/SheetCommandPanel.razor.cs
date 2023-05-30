@@ -7,7 +7,8 @@ namespace HubCloud.BlazorSheet.Components;
 
 public partial class SheetCommandPanel:ComponentBase
 {
-     private List<Tuple<string, string>> _textAlignSource;
+    private List<Tuple<string, string>> _textAlignSource;
+    private List<Tuple<string, CellFormatTypes>>? _cellFormatSource;
     private List<Tuple<CellBorderTypes, string>> _borderTypesSource;
 
     [Parameter]
@@ -37,6 +38,14 @@ public partial class SheetCommandPanel:ComponentBase
         _borderTypesSource.Add(new Tuple<CellBorderTypes, string>(CellBorderTypes.Right, "Right"));
         _borderTypesSource.Add(new Tuple<CellBorderTypes, string>(CellBorderTypes.All, "All"));
 
+        _cellFormatSource = new List<Tuple<string, CellFormatTypes>>();
+        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>("Нет формата", CellFormatTypes.None));
+        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>("Целое число", CellFormatTypes.F0));
+        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>("Число 2 знака после запятой", CellFormatTypes.F));
+        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>("Число 3 знака после запятой", CellFormatTypes.F3));
+        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>("Дата", CellFormatTypes.Date));
+        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>("Дата время", CellFormatTypes.DateTime));
+        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>("Произвольный", CellFormatTypes.Custom));
     }
 
     protected override void OnParametersSet()
@@ -96,5 +105,21 @@ public partial class SheetCommandPanel:ComponentBase
     private async Task OnImport()
     {
         await ImportClicked.InvokeAsync(null);
+    }
+
+    private async Task OnCustomFormatInputChanged()
+    {
+        StyleModel.CustomFormat = StyleModel.CustomFormat.Trim();
+
+        await Changed.InvokeAsync(null);
+    }
+
+    private async Task OnCellFormatChanged(CellFormatTypes formatType)
+    {
+        if (formatType == CellFormatTypes.Custom)
+            return;
+
+        StyleModel.CustomFormat = string.Empty;
+        await Changed.InvokeAsync(null);
     }
 }

@@ -33,5 +33,22 @@ namespace HubCloud.BlazorSheet.Core.Models
         {
             return ConcreteClone();
         }
+
+        public void ApplyFormat(string format)
+        {
+            if (Value == null)
+                return;
+
+            var text = Value as string;
+
+            if (string.IsNullOrEmpty(text) ||
+                string.IsNullOrEmpty(format))
+                return;
+
+            if (DateTime.TryParse(text, out var date))
+                Text = date.ToString(format);
+            else if (decimal.TryParse(text, out var decimalValue))
+                Text = decimalValue.ToString(format);
+        }
     }
 }
