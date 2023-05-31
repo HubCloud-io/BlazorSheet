@@ -39,12 +39,12 @@ public partial class SheetCommandPanel:ComponentBase
         _borderTypesSource.Add(new Tuple<CellBorderTypes, string>(CellBorderTypes.All, "All"));
 
         _cellFormatSource = new List<Tuple<string, CellFormatTypes>>();
-        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>("Нет формата", CellFormatTypes.None));
-        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>("Целое число", CellFormatTypes.Integer));
-        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>("Число 2 знака после запятой", CellFormatTypes.IntegerTwoDecimalPlaces));
-        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>("Число 3 знака после запятой", CellFormatTypes.IntegerThreeDecimalPlaces));
-        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>("Дата", CellFormatTypes.Date));
-        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>("Дата время", CellFormatTypes.DateTime));
+        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>("No format", CellFormatTypes.None));
+        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>("Number 100", CellFormatTypes.Integer));
+        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>("Number 100.12", CellFormatTypes.IntegerTwoDecimalPlaces));
+        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>("Number 100.123", CellFormatTypes.IntegerThreeDecimalPlaces));
+        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>("Date", CellFormatTypes.Date));
+        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>("Date & Time", CellFormatTypes.DateTime));
         _cellFormatSource.Add(new Tuple<string, CellFormatTypes>("Произвольный", CellFormatTypes.Custom));
     }
 
