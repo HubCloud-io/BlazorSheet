@@ -10,6 +10,7 @@ public partial class SheetCommandPanel:ComponentBase
     private List<Tuple<string, string>> _textAlignSource;
     private List<Tuple<string, CellFormatTypes>>? _cellFormatSource;
     private List<Tuple<CellBorderTypes, string>> _borderTypesSource;
+    private List<Tuple<CellControlKinds, string>> _controlKindSource;
 
     [Parameter]
     public SheetCommandPanelStyleModel StyleModel { get; set; }
@@ -44,8 +45,15 @@ public partial class SheetCommandPanel:ComponentBase
         _cellFormatSource.Add(new Tuple<string, CellFormatTypes>("Number 100.12", CellFormatTypes.IntegerTwoDecimalPlaces));
         _cellFormatSource.Add(new Tuple<string, CellFormatTypes>("Number 100.123", CellFormatTypes.IntegerThreeDecimalPlaces));
         _cellFormatSource.Add(new Tuple<string, CellFormatTypes>("Date", CellFormatTypes.Date));
-        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>("Date & Time", CellFormatTypes.DateTime));
-        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>("Произвольный", CellFormatTypes.Custom));
+        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>("Date&Time", CellFormatTypes.DateTime));
+        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>("Custom", CellFormatTypes.Custom));
+
+        _controlKindSource = new List<Tuple<CellControlKinds, string>>();
+        _controlKindSource.Add(new Tuple<CellControlKinds, string>(CellControlKinds.Undefined, "No control"));
+        _controlKindSource.Add(new Tuple<CellControlKinds, string>(CellControlKinds.TextInput, "Text input"));
+        _controlKindSource.Add(new Tuple<CellControlKinds, string>(CellControlKinds.NumberInput, "Number input"));
+        _controlKindSource.Add(new Tuple<CellControlKinds, string>(CellControlKinds.DateInput, "Date input"));
+        _controlKindSource.Add(new Tuple<CellControlKinds, string>(CellControlKinds.DateTimeInput, "Date&Time input"));
     }
 
     protected override void OnParametersSet()

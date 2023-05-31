@@ -13,6 +13,7 @@ namespace HubCloud.BlazorSheet.Core.Models
 
         public List<SheetCell> Cells { get; set; } = new List<SheetCell>();
         public List<SheetCellStyle> Styles { get; set; } = new List<SheetCellStyle>();
+        public List<SheetCellEditSettings> EditSettings { get; set; } = new List<SheetCellEditSettings>();
 
         public void SetStyles(List<SheetCellStyle> styles)
         {
@@ -24,6 +25,19 @@ namespace HubCloud.BlazorSheet.Core.Models
                 }
                 
                 Styles.Add(styleItem);
+            }
+        }
+        
+        public void SetEditSettings(List<SheetCellEditSettings> editSettings)
+        {
+            foreach (var item in editSettings)
+            {
+                if (Cells.All(x => x.EditSettingsUid != item.Uid))
+                {
+                    continue;
+                }
+                
+                EditSettings.Add(item);
             }
         }
     }

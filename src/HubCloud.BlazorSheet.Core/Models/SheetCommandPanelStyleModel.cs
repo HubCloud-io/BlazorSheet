@@ -24,6 +24,9 @@ namespace HubCloud.BlazorSheet.Core.Models
         public CellBorderTypes BorderType { get; set; }
         public int BorderWidth { get; set; } = 1;
         public string BorderColor { get; set; } = "#000000";
+        
+        public CellControlKinds ControlKind { get; set; }
+        public int NumberDigits { get; set; }
 
         public void CopyFrom(SheetCommandPanelStyleModel clone)
         {
@@ -110,6 +113,12 @@ namespace HubCloud.BlazorSheet.Core.Models
                     this.CustomFormat = cellStyle.Format;
                     break;
             }
+        }
+
+        public void SetEditSettings(SheetCellEditSettings editSettings)
+        {
+            ControlKind = editSettings.ControlKind;
+            NumberDigits = editSettings.NumberDigits;
         }
 
         private int ParseFontSize(string fontSizePx)

@@ -1,4 +1,5 @@
 ﻿using System;
+using Newtonsoft.Json;
 
 namespace HubCloud.BlazorSheet.Core.Models
 {
@@ -8,7 +9,10 @@ namespace HubCloud.BlazorSheet.Core.Models
         public Guid RowUid { get; set; }
         public Guid ColumnUid { get; set; }
         public Guid? StyleUid { get; set; }
+        public Guid? EditSettingsUid { get; set; }
         public string Name { get; set; }
+        
+        [JsonIgnore]
         public string Text { get; set; }
         public object Value { get; set; }
 

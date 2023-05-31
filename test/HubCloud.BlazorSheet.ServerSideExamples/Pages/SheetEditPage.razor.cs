@@ -32,6 +32,9 @@ public partial class SheetEditPage: ComponentBase
         _selectedCell = cell;
         var style = _sheet.GetStyle(cell);
         _selectedCellStyle.CopyFrom(style);
+
+        var editSettings = _sheet.GetEditSettings(cell);
+        _selectedCellStyle.SetEditSettings(editSettings);
     }
 
     private void OnCellsSelected(List<SheetCell> cells)
@@ -46,10 +49,7 @@ public partial class SheetEditPage: ComponentBase
             return;
         }
 
-        _sheet.SetStyle(_selectedCells, _selectedCellStyle);
-       
-
-       
+        _sheet.SetSettingsFromCommandPanel(_selectedCells, _selectedCellStyle);
     }
     
 }
