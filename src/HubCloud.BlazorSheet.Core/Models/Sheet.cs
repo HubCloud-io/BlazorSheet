@@ -6,7 +6,7 @@ namespace HubCloud.BlazorSheet.Core.Models
 {
     public class Sheet
     {
-          private const int DefaultRowsCount = 10;
+        private const int DefaultRowsCount = 10;
         private const int DefaultColumnsCount = 10;
 
         private int _rowsCount = DefaultRowsCount;
@@ -15,6 +15,7 @@ namespace HubCloud.BlazorSheet.Core.Models
         private readonly List<SheetColumn> _columns = new List<SheetColumn>();
         private readonly List<SheetCell> _cells = new List<SheetCell>();
         private readonly List<SheetCellStyle> _styles = new List<SheetCellStyle>();
+        private readonly List<SheetCellEditSettings> _editSettings = new List<SheetCellEditSettings>();
 
         public int RowsCount
         {
@@ -44,6 +45,7 @@ namespace HubCloud.BlazorSheet.Core.Models
         public IReadOnlyCollection<SheetColumn> Columns => _columns;
         public IReadOnlyCollection<SheetCell> Cells => _cells;
         public IReadOnlyCollection<SheetCellStyle> Styles => _styles;
+        public IReadOnlyCollection<SheetCellEditSettings> EditSettings => _editSettings;
 
         public Sheet()
         {
@@ -58,6 +60,7 @@ namespace HubCloud.BlazorSheet.Core.Models
             _columns.AddRange(settings.Columns);
             _cells.AddRange(settings.Cells);
             _styles.AddRange(settings.Styles);
+            _editSettings.AddRange(settings.EditSettings);
 
             if (!_cells.Any())
             {
@@ -177,6 +180,21 @@ namespace HubCloud.BlazorSheet.Core.Models
             return style;
         }
 
+        public SheetCellEditSettings GetEditSettings(SheetCell cell)
+        {
+            SheetCellEditSettings editSettings = null;
+
+            if (cell.EditSettingsUid.HasValue)
+                editSettings = EditSettings.FirstOrDefault(x => x.Uid == cell.EditSettingsUid);
+
+            if (editSettings == null)
+            {
+                editSettings = new SheetCellEditSettings();
+            }
+            
+            return editSettings;
+        }
+
         public int RowNumber(SheetRow row)
         {
             return _rows.IndexOf(row) + 1;
@@ -249,7 +267,7 @@ namespace HubCloud.BlazorSheet.Core.Models
 
         public SheetColumn GetColumn(int c)
         {
-            return _columns[c];
+            return _columns[c-1];
         }
 
         public void AddColumn(SheetColumn baseColumn, int position)
@@ -337,20 +355,26 @@ namespace HubCloud.BlazorSheet.Core.Models
             }
         }
 
-        public void SetStyle(IEnumerable<SheetCell> cells, SheetCommandPanelStyleModel style)
+        public void SetSettingsFromCommandPanel(List<SheetCell> cells, SheetCommandPanelStyleModel commandPanelModel)
         {
             if (cells == null)
             {
                 return;
             }
 
-            if (style == null)
+            if (commandPanelModel == null)
             {
                 return;
             }
 
-            var newStyle = new SheetCellStyle(style);
+            var newStyle = new SheetCellStyle(commandPanelModel);
             SetStyle(cells, newStyle);
+            
+            var newEditSettings = new SheetCellEditSettings(commandPanelModel);
+            if (!newEditSettings.IsStandard())
+            {
+                SetEditSettings(cells, newEditSettings);
+            }
         }
 
         public void SetStyle(SheetCell cell, SheetCellStyle newStyle)
@@ -399,6 +423,53 @@ namespace HubCloud.BlazorSheet.Core.Models
                 cell.StyleUid = styleUid;
             }
         }
+        
+        public void SetEditSettings(SheetCell cell, SheetCellEditSettings newEditSettings)
+        {
+            if (cell == null)
+            {
+                return;
+            }
+
+            if (newEditSettings == null)
+            {
+                return;
+            }
+
+            var collection = new SheetCell[] {cell};
+            SetEditSettings(collection, newEditSettings);
+        }
+        
+        public void SetEditSettings(IEnumerable<SheetCell> cells, SheetCellEditSettings newEditSettings)
+        {
+            if (cells == null)
+            {
+                return;
+            }
+
+            if (newEditSettings == null)
+            {
+                return;
+            }
+
+            var existingEditSettings = FindExistingEditSettings(newEditSettings);
+
+            Guid settingsUid;
+            if (existingEditSettings == null)
+            {
+                _editSettings.Add(newEditSettings);
+                settingsUid = newEditSettings.Uid;
+            }
+            else
+            {
+                settingsUid = existingEditSettings.Uid;
+            }
+
+            foreach (var cell in cells)
+            {
+                cell.EditSettingsUid = settingsUid;
+            }
+        }
 
         public SheetCellStyle FindExistingStyle(SheetCellStyle newStyle)
         {
@@ -406,6 +477,17 @@ namespace HubCloud.BlazorSheet.Core.Models
             {
                 if (existingStyle.IsStyleEqual(newStyle))
                     return existingStyle;
+            }
+
+            return null;
+        }
+        
+        public SheetCellEditSettings FindExistingEditSettings(SheetCellEditSettings newEditSettings)
+        {
+            foreach (var item in _editSettings)
+            {
+                if (item.Equals(newEditSettings))
+                    return item;
             }
 
             return null;
@@ -471,7 +553,8 @@ namespace HubCloud.BlazorSheet.Core.Models
             _rows.Clear();
             _columns.Clear();
             _cells.Clear();
-            _styles.Clear();
+            //_styles.Clear();
+            //_editSettings.Clear();
         }
     }
 }

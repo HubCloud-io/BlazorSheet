@@ -11,4 +11,8 @@
     <ProjectReference Include="..\..\src\HubCloud.BlazorSheet\HubCloud.BlazorSheet.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="HubCloud.BBComponents" Version="6.0.31" />
+  </ItemGroup>
+
 </Project>
