@@ -55,6 +55,8 @@ public partial class SheetComponent: ComponentBase
     public EventCallback<SheetRow> RowSelected { get; set; }
     [Parameter]
     public EventCallback<SheetColumn> ColumnSelected { get; set; }
+    [Parameter]
+    public EventCallback<SheetCell> CellValueChanged { get; set; }
 
     [Inject] public IJSRuntime JsRuntime { get; set; }
     
@@ -260,6 +262,11 @@ public partial class SheetComponent: ComponentBase
             _currentRow.HeightValue = heightValue;
             await Changed.InvokeAsync(null);
         }
+    }
+
+    private async Task OnCellValueChanged(SheetCell cell)
+    {
+        await CellValueChanged.InvokeAsync(cell);
     }
     
     public  string CellClass(SheetCell cell)

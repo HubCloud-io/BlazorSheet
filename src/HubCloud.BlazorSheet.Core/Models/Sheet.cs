@@ -267,7 +267,7 @@ namespace HubCloud.BlazorSheet.Core.Models
 
         public SheetColumn GetColumn(int c)
         {
-            return _columns[c];
+            return _columns[c-1];
         }
 
         public void AddColumn(SheetColumn baseColumn, int position)
@@ -553,8 +553,8 @@ namespace HubCloud.BlazorSheet.Core.Models
             _rows.Clear();
             _columns.Clear();
             _cells.Clear();
-            _styles.Clear();
-            _editSettings.Clear();
+            //_styles.Clear();
+            //_editSettings.Clear();
         }
     }
 }

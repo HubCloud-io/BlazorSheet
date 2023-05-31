@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security.Cryptography.X509Certificates;
 using Newtonsoft.Json;
 
 namespace HubCloud.BlazorSheet.Core.Models
@@ -11,10 +12,43 @@ namespace HubCloud.BlazorSheet.Core.Models
         public Guid? StyleUid { get; set; }
         public Guid? EditSettingsUid { get; set; }
         public string Name { get; set; }
-        
-        [JsonIgnore]
-        public string Text { get; set; }
+
+        [JsonIgnore] public string Text { get; set; }
         public object Value { get; set; }
+
+        [JsonIgnore]
+        public decimal DecimalValue
+        {
+            get
+            {
+                if (Value is decimal decimalValue)
+                {
+                    return decimalValue;
+                }
+                else
+                {
+                    return 0M;
+                }
+            }
+            set => Value = value;
+        }
+
+        [JsonIgnore]
+        public DateTime DateTimeValue
+        {
+            get
+            {
+                if (Value is DateTime dateTime)
+                {
+                    return dateTime;
+                }
+                else
+                {
+                    return DateTime.MinValue;
+                }
+            }
+            set => Value = value;
+        }
 
         public SheetCell ConcreteClone()
         {
@@ -24,10 +58,9 @@ namespace HubCloud.BlazorSheet.Core.Models
                 RowUid = this.RowUid,
                 ColumnUid = this.ColumnUid,
                 Name = this.Name,
-                
+
                 Text = this.Text,
                 Value = this.Value
-                
             };
 
             return clone;
