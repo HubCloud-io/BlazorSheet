@@ -8,12 +8,12 @@ namespace HubCloud.BlazorSheet.Components;
 public partial class SheetCommandPanel:ComponentBase
 {
     private List<Tuple<string, string>> _textAlignSource;
-    private List<Tuple<string, CellFormatTypes>>? _cellFormatSource;
+    private List<Tuple<string, CellFormatTypes>> _cellFormatSource;
     private List<Tuple<CellBorderTypes, string>> _borderTypesSource;
     private List<Tuple<CellControlKinds, string>> _controlKindSource;
 
     [Parameter]
-    public SheetCommandPanelStyleModel StyleModel { get; set; }
+    public SheetCommandPanelModel Model { get; set; }
     
     [Parameter]
     public EventCallback Changed { get; set; }
@@ -23,7 +23,7 @@ public partial class SheetCommandPanel:ComponentBase
 
     [Parameter]
     public EventCallback ImportClicked { get; set; }
-
+    
     protected override void OnInitialized()
     {
         _textAlignSource = new List<Tuple<string, string>>();
@@ -62,31 +62,31 @@ public partial class SheetCommandPanel:ComponentBase
 
     private async Task OnBoldClick()
     {
-        StyleModel.IsBold = !StyleModel.IsBold;
+        Model.IsBold = !Model.IsBold;
         await Changed.InvokeAsync(null);
     }
     
     private async Task OnItalicClick()
     {
-        StyleModel.IsItalic = !StyleModel.IsItalic;
+        Model.IsItalic = !Model.IsItalic;
         await Changed.InvokeAsync(null);
     }
 
     private async Task OnColorChange(ChangeEventArgs e)
     {
-        StyleModel.Color = e.Value?.ToString();
+        Model.Color = e.Value?.ToString();
         await Changed.InvokeAsync(null);
     }
     
     private async Task OnBackgroundColorChange(ChangeEventArgs e)
     {
-        StyleModel.BackgroundColor = e.Value?.ToString();
+        Model.BackgroundColor = e.Value?.ToString();
         await Changed.InvokeAsync(null);
     }
 
     private async Task OnBorderColorChange(ChangeEventArgs e)
     {
-        StyleModel.BorderColor = e.Value?.ToString();
+        Model.BorderColor = e.Value?.ToString();
         await Changed.InvokeAsync(null);
     }
 
@@ -94,7 +94,7 @@ public partial class SheetCommandPanel:ComponentBase
     {
         await Changed.InvokeAsync(null);
     }
-
+    
     private static string ToggleButtonStyle(bool flag)
     {
         var sb = new StringBuilder();
@@ -117,7 +117,7 @@ public partial class SheetCommandPanel:ComponentBase
 
     private async Task OnCustomFormatInputChanged()
     {
-        StyleModel.CustomFormat = StyleModel.CustomFormat.Trim();
+        Model.CustomFormat = Model.CustomFormat.Trim();
 
         await Changed.InvokeAsync(null);
     }
@@ -127,7 +127,7 @@ public partial class SheetCommandPanel:ComponentBase
         if (formatType == CellFormatTypes.Custom)
             return;
 
-        StyleModel.CustomFormat = string.Empty;
+        Model.CustomFormat = string.Empty;
         await Changed.InvokeAsync(null);
     }
 }

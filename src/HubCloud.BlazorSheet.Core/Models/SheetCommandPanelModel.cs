@@ -4,7 +4,7 @@ using HubCloud.BlazorSheet.Core.Enums;
 
 namespace HubCloud.BlazorSheet.Core.Models
 {
-    public class SheetCommandPanelStyleModel
+    public class SheetCommandPanelModel
     {
         public const int DefaultFontSize = 12;
         public const string DefaultBackgroundColor = "#ffffff";
@@ -27,8 +27,11 @@ namespace HubCloud.BlazorSheet.Core.Models
         
         public CellControlKinds ControlKind { get; set; }
         public int NumberDigits { get; set; }
+        
+        public string SelectedCellAddress { get; set; }
+        public string InputText { get; set; }
 
-        public void CopyFrom(SheetCommandPanelStyleModel clone)
+        public void CopyFrom(SheetCommandPanelModel clone)
         {
             if (clone == null)
             {

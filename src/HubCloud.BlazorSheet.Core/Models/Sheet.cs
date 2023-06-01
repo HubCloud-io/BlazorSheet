@@ -355,7 +355,7 @@ namespace HubCloud.BlazorSheet.Core.Models
             }
         }
 
-        public void SetSettingsFromCommandPanel(List<SheetCell> cells, SheetCommandPanelStyleModel commandPanelModel)
+        public void SetSettingsFromCommandPanel(List<SheetCell> cells, SheetCell cell, SheetCommandPanelModel commandPanelModel)
         {
             if (cells == null)
             {
@@ -365,6 +365,11 @@ namespace HubCloud.BlazorSheet.Core.Models
             if (commandPanelModel == null)
             {
                 return;
+            }
+
+            if (cell != null)
+            {
+                cell.Formula = commandPanelModel.InputText;
             }
 
             var newStyle = new SheetCellStyle(commandPanelModel);

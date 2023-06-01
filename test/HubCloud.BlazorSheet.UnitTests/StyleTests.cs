@@ -21,7 +21,7 @@ namespace HubCloud.BlazorSheet.UnitTests
         [TestCase(CellFormatTypes.DateTime, CellFormatConsts.DateTime)]
         public void SetStyle_IsFormatEqualExpected_True(CellFormatTypes formatType, string expected)
         {
-            var styleModel = new SheetCommandPanelStyleModel();
+            var styleModel = new SheetCommandPanelModel();
             styleModel.FormatType = formatType;
 
             var sheetCellStyle = new SheetCellStyle(styleModel);
@@ -33,7 +33,7 @@ namespace HubCloud.BlazorSheet.UnitTests
         [TestCase(CellFormatTypes.Custom, "qwerty123", "qwerty123")]
         public void SetStyle_Custom_IsFormatEqualExpected_True(CellFormatTypes formatType, string customFormat, string expected)
         {
-            var styleModel = new SheetCommandPanelStyleModel();
+            var styleModel = new SheetCommandPanelModel();
             styleModel.FormatType = formatType;
             styleModel.CustomFormat = customFormat;
 
@@ -55,7 +55,7 @@ namespace HubCloud.BlazorSheet.UnitTests
             var sheetCellStyle = new SheetCellStyle();
             sheetCellStyle.Format = format;
 
-            var styleModel = new SheetCommandPanelStyleModel();
+            var styleModel = new SheetCommandPanelModel();
             styleModel.CopyFrom(sheetCellStyle);
 
             Assert.AreEqual(expected, styleModel.FormatType);

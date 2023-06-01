@@ -14,7 +14,7 @@ namespace HubCloud.BlazorSheet.Core.Models
                 
         }
 
-        public SheetCellEditSettings(SheetCommandPanelStyleModel commandPanelModel)
+        public SheetCellEditSettings(SheetCommandPanelModel commandPanelModel)
         {
             ControlKind = commandPanelModel.ControlKind;
             NumberDigits = commandPanelModel.NumberDigits;
