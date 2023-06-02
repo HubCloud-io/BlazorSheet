@@ -15,26 +15,47 @@ namespace HubCloud.BlazorSheet.Core.Models
 
             _data = new object[_rowsCount, _columnsCount];
         }
-        
-        public object this[int row, int column]
+
+        public SheetData(Sheet sheet)
+        {
+            _rowsCount = sheet.RowsCount;
+            _columnsCount = sheet.ColumnsCount;
+
+            _data = new object[_rowsCount, _columnsCount];
+
+            foreach (var cell in sheet.Cells)
+            {
+                var cellCoordinates = sheet.CellCoordinates(cell);
+                this[cellCoordinates.Item1, cellCoordinates.Item2] = new UniversalValue(cell.Value);
+            }
+        }
+
+        public UniversalValue this[int row, int column]
         {
             get
             {
-                if (row < 0 || row >= _rowsCount)
-                    throw new IndexOutOfRangeException($"Row index {row} is out of range.");
-                if (column < 0 || column >= _columnsCount)
-                    throw new IndexOutOfRangeException($"Column index {column} is out of range.");
+                if (row <= 0 || row > _rowsCount)
+                    throw new IndexOutOfRangeException($"Row number {row} is out of range.");
+                if (column <= 0 || column > _columnsCount)
+                    throw new IndexOutOfRangeException($"Column number {column} is out of range.");
 
-                return _data[row, column];
+                return new UniversalValue(_data[row - 1, column - 1]);
             }
             set
             {
-                if (row < 0 || row >= _rowsCount)
-                    throw new IndexOutOfRangeException($"Row index {row} is out of range.");
-                if (column < 0 || column >= _columnsCount)
-                    throw new IndexOutOfRangeException($"Column index {column} is out of range.");
+                if (row <= 0 || row > _rowsCount)
+                    throw new IndexOutOfRangeException($"Row number {row} is out of range.");
+                if (column <= 0 || column > _columnsCount)
+                    throw new IndexOutOfRangeException($"Column number {column} is out of range.");
 
-                _data[row, column] = value;
+                if (value is UniversalValue uValue)
+                {
+                    _data[row - 1, column - 1] = uValue.Value;
+                }
+                else
+                {
+                    _data[row - 1, column - 1] = value;
+                }
             }
         }
     }
