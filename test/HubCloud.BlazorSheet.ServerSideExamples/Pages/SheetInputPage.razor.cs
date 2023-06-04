@@ -20,8 +20,8 @@ public partial class SheetInputPage : ComponentBase
 
     private void OnCellValueChanged(SheetCell cell)
     {
-        var coordinates = _sheet.CellCoordinates(cell);
-        _evaluator.SetValue(coordinates.Item1, coordinates.Item2, cell.Value);
+        var cellAddress = _sheet.CellAddress(cell);
+        _evaluator.SetValue(cellAddress.Row, cellAddress.Column, cell.Value);
         _evaluator.EvalSheet();
     }
 

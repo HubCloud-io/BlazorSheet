@@ -24,6 +24,21 @@ namespace HubCloud.BlazorSheet.Core.Models
             Parse(address);
         }
         
+        public SheetCellAddress(string address, int currentRow, int currentColumn)
+        {
+            Parse(address);
+
+            if (Row < 0)
+            {
+                Row += currentRow;
+            }
+
+            if (Column < 0)
+            {
+                Column += currentColumn;
+            }
+        }
+        
         
         private void Parse(string address)
         {

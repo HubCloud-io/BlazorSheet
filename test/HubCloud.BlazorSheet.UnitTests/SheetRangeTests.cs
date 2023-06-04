@@ -23,7 +23,7 @@ public class SheetRangeTests
     [TestCase("Sheet1!R1C1:Sheet2!R2C2")]
     public void Test_SheetRange_String_Constructor(string address)
     {
-        var sheetRange = new SheetRange(address);
+        var sheetRange = new SheetRange(address, 2 , 2);
         Assert.AreEqual(1, sheetRange.RowStart);
         Assert.AreEqual(1, sheetRange.ColumnStart);
         Assert.AreEqual(2, sheetRange.RowEnd);

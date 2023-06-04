@@ -43,9 +43,12 @@ namespace HubCloud.BlazorSheet.Core.EvalEngine
             _cells[row, column] =  value;
         }
         
-        public object Eval(string expression)
+        public object Eval(string expression, int row, int column)
         {
             object result = null;
+
+            _interpreter.SetVariable("_currentRow", row);
+            _interpreter.SetVariable("_currentColumn", column);
 
             var formula = FormulaConverter.PrepareFormula(expression);
 
@@ -53,18 +56,21 @@ namespace HubCloud.BlazorSheet.Core.EvalEngine
             {
                 result = _interpreter.Eval(formula);
                 
-                  
-                _logger.LogDebug("Formula eval: {0}. Result: {1}."
+                _logger.LogDebug("Cell:R{0}C{1}. Formula: {2}. Result: {3}."
+                    , row
+                    , column
                     , formula
                     , result);
                 
             }
             catch (Exception e)
             {
-                _logger.LogError("Cannot eval Formula: {0}. Prepared formula: {1}. Message: {2}",
-                    expression,
-                    formula,
-                    e.Message);
+                _logger.LogError("Cell:R{0}C{1}. Cannot eval Formula: {0}. Prepared formula: {1}. Message: {2}"
+                    ,row
+                    ,column
+                    ,expression
+                    ,formula
+                    ,e.Message);
 
             }
 
@@ -75,7 +81,11 @@ namespace HubCloud.BlazorSheet.Core.EvalEngine
         {
             foreach (var cell in _sheet.Cells.Where(x=>!string.IsNullOrWhiteSpace(x.Formula)))
             {
-                var evalResult = Eval(cell.Formula);
+                var cellAddress = _sheet.CellAddress(cell);
+                _cells.CurrentRow = cellAddress.Row;
+                _cells.CurrentColumn = cellAddress.Column;
+                
+                var evalResult = Eval(cell.Formula, cellAddress.Row, cellAddress.Column);
 
                 if (evalResult is UniversalValue uValue)
                 {
@@ -87,9 +97,8 @@ namespace HubCloud.BlazorSheet.Core.EvalEngine
                 }
                
                 cell.Text = cell.Value?.ToString();
-
-                var cellCoordinates = _sheet.CellCoordinates(cell);
-                _cells[cellCoordinates.Item1, cellCoordinates.Item2] = cell.Value;
+                
+                _cells[cellAddress.Row, cellAddress.Column] = cell.Value;
             }
         }
         

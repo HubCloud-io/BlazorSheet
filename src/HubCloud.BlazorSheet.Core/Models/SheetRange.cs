@@ -24,9 +24,29 @@ namespace HubCloud.BlazorSheet.Core.Models
             ColumnEnd = columnEnd;
         }
 
-        public SheetRange(string rangeStr)
+        public SheetRange(string rangeStr, int currentRow, int currentColumn)
         {
             Parse(rangeStr);
+
+            if (RowStart < 0)
+            {
+                RowStart += currentRow;
+            }
+
+            if (RowEnd < 0)
+            {
+                RowEnd += currentRow;
+            }
+
+            if (ColumnStart < 0)
+            {
+                ColumnStart += currentColumn;
+            }
+
+            if (ColumnStart < 0)
+            {
+                ColumnStart += currentColumn;
+            }
         }
         
         public bool IsCellInRange(int row, int column)

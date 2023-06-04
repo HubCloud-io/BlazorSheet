@@ -72,7 +72,7 @@ public class SheetSmallBudgetBuilder
         sheet.GetCell(4, 6).Value = "Total";
         sheet.GetCell(4, 6).StyleUid = totalStyle.Uid;
 
-        sheet.GetCell(8, 6).Formula = $"$c.Sum(\"R5C6:R7C6\")";
+        sheet.GetCell(8, 6).Formula = $"$c.Sum(\"R5C6:R-1C6\")";
         sheet.GetCell(8, 6).StyleUid = totalStyle.Uid;
     
         sheet.PrepareCellText();
@@ -92,7 +92,7 @@ public class SheetSmallBudgetBuilder
 
     private void SetTotalColumnFormula(int row, int column, SheetCellStyle totalStyle, Sheet sheet)
     {
-        sheet.GetCell(8, column).Formula = $"$c.GetValue(5,{column})+$c.GetValue(6,{column})+$c.GetValue(7,{column})";
+        sheet.GetCell(8, column).Formula = $"$c.GetValue(\"R5C{column}\")+$c.GetValue(6,{column})+$c.GetValue(7,{column})";
         sheet.GetCell(8, column).StyleUid = totalStyle.Uid;
 
     }

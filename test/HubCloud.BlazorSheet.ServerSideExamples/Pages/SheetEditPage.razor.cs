@@ -33,8 +33,8 @@ public partial class SheetEditPage: ComponentBase
         var style = _sheet.GetStyle(cell);
         _commandPanelModel.CopyFrom(style);
 
-        var cellCoordinates = _sheet.CellCoordinates(cell);
-        _commandPanelModel.SelectedCellAddress = $"R{cellCoordinates.Item1}C{cellCoordinates.Item2}";
+        var cellAddress = _sheet.CellAddress(cell);
+        _commandPanelModel.SelectedCellAddress = $"R{cellAddress.Row}C{cellAddress.Column}";
         _commandPanelModel.InputText = cell.Formula;
 
         var editSettings = _sheet.GetEditSettings(cell);
