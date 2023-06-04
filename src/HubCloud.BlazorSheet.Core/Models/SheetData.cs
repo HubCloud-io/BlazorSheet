@@ -56,7 +56,25 @@ namespace HubCloud.BlazorSheet.Core.Models
         {
             return new UniversalValue(_data[row - 1, column - 1]);
         }
-        
+
+        public UniversalValue Sum(string address)
+        {
+
+            var total = new UniversalValue(0M);
+            
+            var range = new SheetRange(address);
+
+            for (var r = range.RowStart; r <= range.RowEnd; r++)
+            {
+                for (var c = range.ColumnStart; c <= range.ColumnEnd; c++)
+                {
+                    var uValue = GetValue(r, c);
+                    total += uValue;
+                }
+            }
+
+            return total;
+        }
         
     }
 }

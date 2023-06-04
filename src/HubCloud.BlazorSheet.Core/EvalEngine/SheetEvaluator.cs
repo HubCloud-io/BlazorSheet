@@ -89,7 +89,7 @@ namespace HubCloud.BlazorSheet.Core.EvalEngine
                 cell.Text = cell.Value?.ToString();
 
                 var cellCoordinates = _sheet.CellCoordinates(cell);
-                _cells[cellCoordinates.Item1, cellCoordinates.Item2] = new UniversalValue(cell.Value);
+                _cells[cellCoordinates.Item1, cellCoordinates.Item2] = cell.Value;
             }
         }
         
