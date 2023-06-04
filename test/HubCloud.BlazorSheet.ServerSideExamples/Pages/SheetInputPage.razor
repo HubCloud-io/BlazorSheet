@@ -6,12 +6,50 @@
 
 <div class="row">
     <div class="col-sm-12">
-        
-        <HubCloud.BlazorSheet.Components.SheetComponent 
-            Sheet="@_sheet" 
-            Regime="SheetRegimes.Readonly" 
-            CellValueChanged="OnCellValueChanged" ></HubCloud.BlazorSheet.Components.SheetComponent>
-        
+
+        <HubCloud.BlazorSheet.Components.SheetComponent
+            Sheet="@_sheet"
+            Regime="SheetRegimes.Readonly"
+            CellValueChanged="OnCellValueChanged">
+        </HubCloud.BlazorSheet.Components.SheetComponent>
+
     </div>
 </div>
 
+
+@if (_evaluator != null)
+{
+    <hr/>
+
+    <div class="row">
+        <div class="col-sm-12">
+            <button class="btn btn-sm btn-outline-primary" @onclick="OnClearLogClick">Clear log</button>
+        </div>
+    </div>
+
+    <div class="row" style="font-size: 10px;margin-top: 3px;">
+        <div class="col-sm-6">
+            <div class="list-group">
+                @foreach (var msg in _evaluator.Messages)
+                {
+                    if (msg.Level == LogLevel.Error)
+                    {
+                        <div class="list-group-item list-group-item-danger">
+                            <span>@msg.Period</span>
+                            <span>&nbsp;</span>
+                            <span>@msg.Text</span>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="list-group-item">
+                            <span>@msg.Period</span>
+                            <span>&nbsp;</span>
+                            <span>@msg.Text</span>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+}

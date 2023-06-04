@@ -23,8 +23,8 @@ public class SheetDataTests
     [TestCase(10,10)]
     public void IndexerGet_ValidIndices_ReturnsCorrectValue(int r, int c)
     {
-        _sheetData[r, c] = new UniversalValue("TestValue");
-        Assert.AreEqual("TestValue", _sheetData[r, c].Value);
+        _sheetData[r, c] = "TestValue";
+        Assert.AreEqual("TestValue", _sheetData[r, c]);
     }
     
     [Test]
@@ -39,7 +39,7 @@ public class SheetDataTests
     [Test]
     public void IndexerSet_RowIndexOutOfRange_ThrowsIndexOutOfRangeException()
     {
-        Assert.Throws<IndexOutOfRangeException>(() => { _sheetData[11, 5] = new UniversalValue("TestValue"); });
+        Assert.Throws<IndexOutOfRangeException>(() => { _sheetData[11, 5] = "TestValue"; });
     }
 
     [Test]
@@ -54,6 +54,6 @@ public class SheetDataTests
     [Test]
     public void IndexerSet_ColumnIndexOutOfRange_ThrowsIndexOutOfRangeException()
     {
-        Assert.Throws<IndexOutOfRangeException>(() => { _sheetData[5, 11] = new UniversalValue("TestValue"); });
+        Assert.Throws<IndexOutOfRangeException>(() => { _sheetData[5, 11] = "TestValue"; });
     }
 }

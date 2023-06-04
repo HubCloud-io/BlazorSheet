@@ -82,7 +82,7 @@ public class SheetSmallBudgetBuilder
 
     private void SetTotalColumnFormula(int row, int column, SheetCellStyle totalStyle, Sheet sheet)
     {
-        sheet.GetCell(8, column).Formula = $"$c[5,{column}]+$c[6,{column}]+$c[7,{column}]";
+        sheet.GetCell(8, column).Formula = $"$c.GetValue(5,{column})+$c.GetValue(6,{column})+$c.GetValue(7,{column})";
         sheet.GetCell(8, column).StyleUid = totalStyle.Uid;
 
     }

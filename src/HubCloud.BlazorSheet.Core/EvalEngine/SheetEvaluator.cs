@@ -40,7 +40,7 @@ namespace HubCloud.BlazorSheet.Core.EvalEngine
 
         public void SetValue(int row, int column, object value)
         {
-            _cells[row, column] = new UniversalValue(value);
+            _cells[row, column] =  value;
         }
         
         public object Eval(string expression)
@@ -52,6 +52,12 @@ namespace HubCloud.BlazorSheet.Core.EvalEngine
             try
             {
                 result = _interpreter.Eval(formula);
+                
+                  
+                _logger.LogDebug("Formula eval: {0}. Result: {1}."
+                    , formula
+                    , result);
+                
             }
             catch (Exception e)
             {
