@@ -205,7 +205,7 @@ namespace HubCloud.BlazorSheet.Core.Models
             return _columns.IndexOf(column) + 1;
         }
 
-        public Tuple<int, int> CellCoordinates(SheetCell cell)
+        public SheetCellAddress CellAddress(SheetCell cell)
         {
             var row = _rows.FirstOrDefault(x => x.Uid == cell.RowUid);
             var column = _columns.FirstOrDefault(x => x.Uid == cell.ColumnUid);
@@ -213,7 +213,7 @@ namespace HubCloud.BlazorSheet.Core.Models
             var rowNumber = RowNumber(row);
             var columnNumber = ColumnNumber(column);
 
-            return new Tuple<int, int>(rowNumber, columnNumber);
+            return new SheetCellAddress(rowNumber, columnNumber);
         }
 
         public SheetRow GetRow(int r)
@@ -355,7 +355,7 @@ namespace HubCloud.BlazorSheet.Core.Models
             }
         }
 
-        public void SetSettingsFromCommandPanel(List<SheetCell> cells, SheetCommandPanelStyleModel commandPanelModel)
+        public void SetSettingsFromCommandPanel(List<SheetCell> cells, SheetCell cell, SheetCommandPanelModel commandPanelModel)
         {
             if (cells == null)
             {
@@ -365,6 +365,11 @@ namespace HubCloud.BlazorSheet.Core.Models
             if (commandPanelModel == null)
             {
                 return;
+            }
+
+            if (cell != null)
+            {
+                cell.Formula = commandPanelModel.InputText;
             }
 
             var newStyle = new SheetCellStyle(commandPanelModel);
@@ -500,8 +505,8 @@ namespace HubCloud.BlazorSheet.Core.Models
 
             foreach (var sourceCell in sourceCells)
             {
-                var cellCoordinates = sourceSheet.CellCoordinates(sourceCell);
-                var destinationCell = this.GetCell(destinationRowNumber, cellCoordinates.Item2);
+                var cellAddress = sourceSheet.CellAddress(sourceCell);
+                var destinationCell = this.GetCell(destinationRowNumber, cellAddress.Column);
 
                 if (destinationCell == null)
                 {
@@ -520,8 +525,8 @@ namespace HubCloud.BlazorSheet.Core.Models
 
             foreach (var sourceCell in sourceCells)
             {
-                var cellCoordinates = sourceSheet.CellCoordinates(sourceCell);
-                var destinationCell = this.GetCell(cellCoordinates.Item1, destinationColumnNumber);
+                var cellAddress = sourceSheet.CellAddress(sourceCell);
+                var destinationCell = this.GetCell(cellAddress.Row, destinationColumnNumber);
 
                 if (destinationCell == null)
                 {

@@ -15,6 +15,7 @@ namespace HubCloud.BlazorSheet.Core.Models
 
         [JsonIgnore] public string Text { get; set; }
         public object Value { get; set; }
+        public string Formula { get; set; }
 
         [JsonIgnore]
         public decimal DecimalValue

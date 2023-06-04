@@ -28,12 +28,12 @@ namespace HubCloud.BlazorSheet.Core.Models
             
         }
 
-        public SheetCellStyle(SheetCommandPanelStyleModel style)
+        public SheetCellStyle(SheetCommandPanelModel style)
         {
             SetStyle(style);
         }
         
-        public void SetStyle(SheetCommandPanelStyleModel style)
+        public void SetStyle(SheetCommandPanelModel style)
         {
             this.BackgroundColor = style.BackgroundColor;
             this.Color = style.Color;

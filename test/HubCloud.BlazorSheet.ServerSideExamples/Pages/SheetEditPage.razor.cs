@@ -6,7 +6,7 @@ namespace HubCloud.BlazorSheet.ServerSideExamples.Pages;
 public partial class SheetEditPage: ComponentBase
 {
     private Sheet _sheet;
-    private SheetCommandPanelStyleModel _selectedCellStyle { get; set; } = new SheetCommandPanelStyleModel();
+    private SheetCommandPanelModel _commandPanelModel { get; set; } = new SheetCommandPanelModel();
     private SheetCell _selectedCell { get; set; }
     private List<SheetCell> _selectedCells { get; set; }
     private SheetRow _selectedSheetRow { get; set; }
@@ -31,10 +31,14 @@ public partial class SheetEditPage: ComponentBase
     {
         _selectedCell = cell;
         var style = _sheet.GetStyle(cell);
-        _selectedCellStyle.CopyFrom(style);
+        _commandPanelModel.CopyFrom(style);
+
+        var cellAddress = _sheet.CellAddress(cell);
+        _commandPanelModel.SelectedCellAddress = $"R{cellAddress.Row}C{cellAddress.Column}";
+        _commandPanelModel.InputText = cell.Formula;
 
         var editSettings = _sheet.GetEditSettings(cell);
-        _selectedCellStyle.SetEditSettings(editSettings);
+        _commandPanelModel.SetEditSettings(editSettings);
     }
 
     private void OnCellsSelected(List<SheetCell> cells)
@@ -48,8 +52,8 @@ public partial class SheetEditPage: ComponentBase
         {
             return;
         }
-
-        _sheet.SetSettingsFromCommandPanel(_selectedCells, _selectedCellStyle);
+        
+        _sheet.SetSettingsFromCommandPanel(_selectedCells, _selectedCell, _commandPanelModel);
     }
     
 }
