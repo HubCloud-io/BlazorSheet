@@ -15,6 +15,7 @@ namespace HubCloud.BlazorSheet.Core.Models
 
         public Workbook(WorkbookSettings settings)
         {
+            Uid = settings.Uid; 
             foreach(var sheetSettings in settings.Sheets)
             {
                 var newSheet = new Sheet(sheetSettings);
@@ -40,6 +41,7 @@ namespace HubCloud.BlazorSheet.Core.Models
         public WorkbookSettings ToSettings()
         {
             var settings = new WorkbookSettings();
+            settings.Uid = Uid;
 
             foreach(var sheet in _sheets)
             {

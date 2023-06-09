@@ -6,6 +6,7 @@ namespace HubCloud.BlazorSheet.Core.Models
 {
     public class WorkbookSettings
     {
+        public Guid Uid { get; set; } = Guid.NewGuid();
         public List<SheetSettings> Sheets { get; set; } = new List<SheetSettings>();
     }
 }
