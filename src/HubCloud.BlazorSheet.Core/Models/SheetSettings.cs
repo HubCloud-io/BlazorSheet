@@ -1,10 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace HubCloud.BlazorSheet.Core.Models
 {
     public class SheetSettings
     {
+        public Guid Uid { get; set; }
+        public string Name { get; set; }
         public int RowsCount { get; set; }
         public int ColumnsCount { get; set; }
         

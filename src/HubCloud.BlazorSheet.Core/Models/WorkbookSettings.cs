@@ -1,0 +1,11 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace HubCloud.BlazorSheet.Core.Models
+{
+    public class WorkbookSettings
+    {
+        public List<SheetSettings> Sheets { get; set; } = new List<SheetSettings>();
+    }
+}
