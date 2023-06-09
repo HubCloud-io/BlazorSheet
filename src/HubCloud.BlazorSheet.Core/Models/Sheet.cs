@@ -555,7 +555,7 @@ namespace HubCloud.BlazorSheet.Core.Models
 
         public void ChangeSize(int newColumnsCount, int newRowsCount)
         {
-            if (newColumnsCount == 0 || newRowsCount == 0)
+            if (newColumnsCount <= 0 || newRowsCount <= 0)
                 return;
 
             var columnsAddRemoveCount = Columns.Count - newColumnsCount;
