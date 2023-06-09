@@ -14,7 +14,9 @@ public class ContextMenuBuilder
     
     public const string RemoveItemName = "Remove";
     public const string CloseItemName = "Close";
-    
+
+    public const string SheetSizeItemName = "SheetSize";
+
     public static IEnumerable<IMenuItem> BuildColumnContextMenu(string callFrom)
     {
         var items = new List<IMenuItem>();
@@ -56,7 +58,15 @@ public class ContextMenuBuilder
                 IconClass = "fa fa-edit text-primary"
             });
         }
-        
+
+        items.Add(new MenuItem()
+        {
+            Kind = MenuItemKinds.Item,
+            Name = SheetSizeItemName,
+            Title = "Change sheet size",
+            IconClass = "fa fa-edit text-primary"
+        });
+
         items.Add(new MenuItem()
         {
             Kind = MenuItemKinds.Delimiter

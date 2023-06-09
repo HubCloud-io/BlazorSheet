@@ -146,3 +146,13 @@
                                   Closed="OnRowHeightValueModalClosed"
                                   Title="Row height"></ValueInputModal>
 }
+
+@if (_isSheetSizeModalOpen)
+{
+    <SheetSizeInputModal ClientX="@_clientX"
+                     ClientY="@_clientY"
+                     Width="150"
+                     Closed="OnSheetSizeModalClosed"
+                     Columns="@Sheet.Columns.Count"
+                     Rows="@Sheet.Rows.Count" />
+}

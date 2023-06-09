@@ -33,6 +33,7 @@ public partial class SheetComponent : ComponentBase
     private bool _isColumnWidthModalOpen;
     private IEnumerable<IMenuItem> _columnMenuItems;
 
+    private bool _isSheetSizeModalOpen;
 
     [Parameter] public Sheet Sheet { get; set; }
 
@@ -179,6 +180,10 @@ public partial class SheetComponent : ComponentBase
 
             case ContextMenuBuilder.CloseItemName:
                 break;
+
+            case ContextMenuBuilder.SheetSizeItemName:
+                _isSheetSizeModalOpen = true;
+                break;
         }
     }
 
@@ -216,6 +221,10 @@ public partial class SheetComponent : ComponentBase
 
             case ContextMenuBuilder.CloseItemName:
                 break;
+
+            case ContextMenuBuilder.SheetSizeItemName:
+                _isSheetSizeModalOpen = true;
+                break;
         }
     }
 
@@ -247,6 +256,18 @@ public partial class SheetComponent : ComponentBase
         if (args is double heightValue)
         {
             _currentRow.HeightValue = heightValue;
+            await Changed.InvokeAsync(null);
+        }
+    }
+
+    private async Task OnSheetSizeModalClosed(object args)
+    {
+        _isSheetSizeModalOpen = false;
+
+        if (args is SheetSize sheetSize)
+        {
+            Sheet.ChangeSize(sheetSize.Columns, sheetSize.Rows);
+
             await Changed.InvokeAsync(null);
         }
     }

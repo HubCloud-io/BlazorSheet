@@ -7,13 +7,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{06761E04-C90
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{34589507-5B45-4BA5-9CD0-2A5D5B4E764C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HubCloud.BlazorSheet.Core", "src\HubCloud.BlazorSheet.Core\HubCloud.BlazorSheet.Core.csproj", "{F285C1A8-7AA4-43B2-8817-9E9B78D08AFF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HubCloud.BlazorSheet.Core", "src\HubCloud.BlazorSheet.Core\HubCloud.BlazorSheet.Core.csproj", "{F285C1A8-7AA4-43B2-8817-9E9B78D08AFF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HubCloud.BlazorSheet", "src\HubCloud.BlazorSheet\HubCloud.BlazorSheet.csproj", "{44FB029C-1BC0-4914-BAB1-BC2F7F43C117}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HubCloud.BlazorSheet", "src\HubCloud.BlazorSheet\HubCloud.BlazorSheet.csproj", "{44FB029C-1BC0-4914-BAB1-BC2F7F43C117}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HubCloud.BlazorSheet.ServerSideExamples", "test\HubCloud.BlazorSheet.ServerSideExamples\HubCloud.BlazorSheet.ServerSideExamples.csproj", "{A2739279-4A65-43E2-9EB3-C236ECDFFD2E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HubCloud.BlazorSheet.ServerSideExamples", "test\HubCloud.BlazorSheet.ServerSideExamples\HubCloud.BlazorSheet.ServerSideExamples.csproj", "{A2739279-4A65-43E2-9EB3-C236ECDFFD2E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HubCloud.BlazorSheet.UnitTests", "test\HubCloud.BlazorSheet.UnitTests\HubCloud.BlazorSheet.UnitTests.csproj", "{F1A04EB3-97CD-433C-B0FD-AAE8E51ACF99}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HubCloud.BlazorSheet.UnitTests", "test\HubCloud.BlazorSheet.UnitTests\HubCloud.BlazorSheet.UnitTests.csproj", "{F1A04EB3-97CD-433C-B0FD-AAE8E51ACF99}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

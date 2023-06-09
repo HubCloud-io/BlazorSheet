@@ -553,6 +553,45 @@ namespace HubCloud.BlazorSheet.Core.Models
             return settings;
         }
 
+        public void ChangeSize(int newColumnsCount, int newRowsCount)
+        {
+            if (newColumnsCount == 0 || newRowsCount == 0)
+                return;
+
+            var columnsAddRemoveCount = Columns.Count - newColumnsCount;
+            var rowsAddRemoveCount = Rows.Count - newRowsCount;
+
+            if (columnsAddRemoveCount != 0)
+                ChangeSize<SheetColumn>(columnsAddRemoveCount, Columns, RemoveColumn, AddColumn);
+
+            if (rowsAddRemoveCount != 0)
+                ChangeSize<SheetRow>(rowsAddRemoveCount, Rows, RemoveRow, AddRow);
+        }
+
+        private void ChangeSize<T>(int addRemoveCount, IReadOnlyCollection<T> collection, Action<T> removeAction, Action<T, int> addAction) where T : class
+        {
+            if (addRemoveCount > 0)
+            {
+                for (int i = 0; i < addRemoveCount; i++)
+                {
+                    var lastItem = collection.LastOrDefault();
+
+                    if (lastItem != null)
+                        removeAction(lastItem);
+                }
+            }
+            else
+            {
+                for (int i = 0; i < addRemoveCount * -1; i++)
+                {
+                    var lastItem = collection.LastOrDefault();
+
+                    if (lastItem != null)
+                        addAction(lastItem, 1);
+                }
+            }
+        }
+
         private void Clear()
         {
             _rows.Clear();
