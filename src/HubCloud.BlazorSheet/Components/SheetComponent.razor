@@ -22,6 +22,7 @@
                 }
 
                 <td class="hc-grid-cell text-center"
+                    @onclick="(e => OnColumnNumberCellClick(column))"
                     @oncontextmenu="(e => OnColumnContextMenu(e, column))"
                     @oncontextmenu:preventDefault
                     style="width:@column.Width; max-width: @column.Width;">
@@ -36,6 +37,7 @@
         {
             <tr>
                 <td class="hc-grid-cell"
+                    @onclick="(e => OnRowNumberCellClick(row))"
                     @oncontextmenu="(e => OnRowContextMenu(e, row))"
                     @oncontextmenu:preventDefault>
                     <span>@(Sheet.RowNumber(row))</span>
