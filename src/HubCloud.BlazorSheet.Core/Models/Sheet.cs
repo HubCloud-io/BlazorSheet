@@ -17,6 +17,8 @@ namespace HubCloud.BlazorSheet.Core.Models
         private readonly List<SheetCellStyle> _styles = new List<SheetCellStyle>();
         private readonly List<SheetCellEditSettings> _editSettings = new List<SheetCellEditSettings>();
 
+        public Guid Uid { get; set; } = Guid.NewGuid();
+        public string Name { get; set; }
         public int RowsCount
         {
             get => _rowsCount;
@@ -53,6 +55,8 @@ namespace HubCloud.BlazorSheet.Core.Models
 
         public Sheet(SheetSettings settings)
         {
+            Uid = settings.Uid;
+            Name = settings.Name;
             RowsCount = settings.RowsCount;
             ColumnsCount = settings.ColumnsCount;
 
@@ -541,6 +545,8 @@ namespace HubCloud.BlazorSheet.Core.Models
         {
             var settings = new SheetSettings()
             {
+                Uid = Uid,
+                Name = Name,
                 RowsCount = RowsCount,
                 ColumnsCount = ColumnsCount,
             };

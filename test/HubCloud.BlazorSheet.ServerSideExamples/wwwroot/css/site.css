@@ -63,27 +63,4 @@ a, .btn-link {
         content: "An error has occurred."
     }
 
-.hc-sheet {
-    position: relative;
-    border-collapse: separate;
-    table-layout: fixed;
-    border-spacing: 0;
-}
 
-    .hc-sheet .hc-grid-cell {
-        background: #f8f8f8;
-        border: 1px solid #ececec;
-        padding: 3px;
-        font-size: 9pt;
-    }
-
-    .hc-sheet .hc-sheet-cell {
-        background: #fff;
-        border-right: 1px solid #ececec;
-        border-bottom: 1px solid #ececec;
-        padding: 3px;
-    }
-
-    .hc-sheet .hc-sheet-cell__active {
-        border: 1px solid #0000ff !important;
-    }
