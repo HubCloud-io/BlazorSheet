@@ -6,7 +6,8 @@
 <div style="overflow-y: auto; overflow-x: auto; max-height: @MaxHeight;">
 
     <table class="hc-sheet"
-           @onkeydown="(e=>OnTableKeyDown(e))" 
+           tabindex="0"
+           @onkeydown="(e=>OnTableKeyDown(e))"
            @onkeyup="(e=>OnTableKeyUp(e))">
 
         @*Sheet rows*@
@@ -22,9 +23,10 @@
                 }
 
                 <td class="hc-grid-cell text-center"
-                    @oncontextmenu="(e => OnColumnContextMenu(e, column))"
-                    @oncontextmenu:preventDefault
-                    style="width:@column.Width; max-width: @column.Width;">
+                @onclick="(e => OnColumnNumberCellClick(column))"
+                @oncontextmenu="(e => OnColumnContextMenu(e, column))"
+                @oncontextmenu:preventDefault
+                style="width:@column.Width; max-width: @column.Width;">
                     @Sheet.ColumnNumber(column)
                 </td>
             }
@@ -36,8 +38,9 @@
         {
             <tr>
                 <td class="hc-grid-cell"
-                    @oncontextmenu="(e => OnRowContextMenu(e, row))"
-                    @oncontextmenu:preventDefault>
+                @onclick="(e => OnRowNumberCellClick(row))"
+                @oncontextmenu="(e => OnRowContextMenu(e, row))"
+                @oncontextmenu:preventDefault>
                     <span>@(Sheet.RowNumber(row))</span>
                 </td>
                 @foreach (var column in Sheet.Columns)
@@ -51,11 +54,11 @@
                     @if (Regime == SheetRegimes.Edit)
                     {
                         <td class="@CellClass(cell)"
-                            contenteditable="true"
-                            style="@CellStyle(Sheet, row, column, cell)"
-                            @oninput="(e => OnInput(e, cell))"
-                            @onclick="(e=>OnCellClick(row, column, cell))"
-                            @onfocusout="(e => OnCellFocusOut(e, cell))">
+                contenteditable="true"
+                style="@CellStyle(Sheet, row, column, cell)"
+                @oninput="(e => OnInput(e, cell))"
+                @onclick="(e=>OnCellClick(row, column, cell))"
+                @onfocusout="(e => OnCellFocusOut(e, cell))">
                             @cell.Text
                         </td>
                     }
@@ -68,24 +71,24 @@
                                 if (editSettings.ControlKind == CellControlKinds.NumberInput)
                                 {
                                     <BbNumberInput TValue="decimal"
-                                                   HtmlStyle="width:100%; text-align:right;"
-                                                   Digits="@editSettings.NumberDigits"
-                                                   @bind-Value="@cell.DecimalValue" 
-                                                   Changed="(e=>OnCellValueChanged(cell))"></BbNumberInput>
+                               HtmlStyle="width:100%; text-align:right;"
+                               Digits="@editSettings.NumberDigits"
+                               @bind-Value="@cell.DecimalValue"
+                               Changed="(e=>OnCellValueChanged(cell))"></BbNumberInput>
                                 }
                                 else if (editSettings.ControlKind == CellControlKinds.DateInput)
                                 {
                                     <BbDatePicker @bind-Value="@cell.DateTimeValue"
-                                                  DropdownPosition="DropdownPositions.Fixed"
-                                                  Size="BootstrapElementSizes.Sm"
-                                                  Changed="(e=>OnCellValueChanged(cell))"></BbDatePicker>
+                              DropdownPosition="DropdownPositions.Fixed"
+                              Size="BootstrapElementSizes.Sm"
+                              Changed="(e=>OnCellValueChanged(cell))"></BbDatePicker>
                                 }
                                 else if (editSettings.ControlKind == CellControlKinds.DateTimeInput)
                                 {
                                     <BbDatePicker @bind-Value="@cell.DateTimeValue"
-                                                  DropdownPosition="DropdownPositions.Fixed"
-                                                  Size="BootstrapElementSizes.Sm"
-                                                  Changed="(e=>OnCellValueChanged(cell))"></BbDatePicker>
+                              DropdownPosition="DropdownPositions.Fixed"
+                              Size="BootstrapElementSizes.Sm"
+                              Changed="(e=>OnCellValueChanged(cell))"></BbDatePicker>
                                 }
                                 else
                                 {
@@ -94,13 +97,13 @@
                             }
                             else
                             {
-                                @cell.Text 
+                                @cell.Text
                             }
-                            
+
                         </td>
                     }
-                    
-                  
+
+
                 }
             </tr>
         }
@@ -112,39 +115,39 @@
 @if (_isColumnContextMenuOpen)
 {
     <BbContextMenu ClientX="@_clientX"
-                   ClientY="@_clientY"
-                   Items="@_columnMenuItems"
-                   Closed="OnColumnMenuClosed">
+               ClientY="@_clientY"
+               Items="@_columnMenuItems"
+               Closed="OnColumnMenuClosed">
     </BbContextMenu>
 }
 
 @if (_isColumnWidthModalOpen)
 {
-    <ValueInputModal ClientX="@_clientX" 
-                                  ClientY="@_clientY"
-                                  Width="150"
-                                  Value="@_currentColumn.WidthValue"
-                                  Closed="OnColumnWidthValueModalClosed"
-                                  Title="Column width"></ValueInputModal>
+    <ValueInputModal ClientX="@_clientX"
+                 ClientY="@_clientY"
+                 Width="150"
+                 Value="@_currentColumn.WidthValue"
+                 Closed="OnColumnWidthValueModalClosed"
+                 Title="Column width"></ValueInputModal>
 }
 
 @if (_isRowContextMenuOpen)
 {
     <BbContextMenu ClientX="@_clientX"
-                   ClientY="@_clientY"
-                   Items="@_rowMenuItems"
-                   Closed="OnRowMenuClosed">
+               ClientY="@_clientY"
+               Items="@_rowMenuItems"
+               Closed="OnRowMenuClosed">
     </BbContextMenu>
 }
 
 @if (_isRowHeightModalOpen)
 {
-    <ValueInputModal ClientX="@_clientX" 
-                                  ClientY="@_clientY"
-                                  Width="150"
-                                  Value="@_currentRow.HeightValue"
-                                  Closed="OnRowHeightValueModalClosed"
-                                  Title="Row height"></ValueInputModal>
+    <ValueInputModal ClientX="@_clientX"
+                 ClientY="@_clientY"
+                 Width="150"
+                 Value="@_currentRow.HeightValue"
+                 Closed="OnRowHeightValueModalClosed"
+                 Title="Row height"></ValueInputModal>
 }
 
 @if (_isSheetSizeModalOpen)

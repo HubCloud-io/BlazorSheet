@@ -277,19 +277,75 @@ public partial class SheetComponent : ComponentBase
         await CellValueChanged.InvokeAsync(cell);
     }
 
+    private async Task OnColumnNumberCellClick(SheetColumn column)
+    {
+        if (!_multipleSelection)
+        {
+            _selectedCells.Clear();
+            _selectedIdentifiers.Clear();
+        }
+
+        var cells = Sheet.Cells.Where(x => x.ColumnUid == column.Uid);
+
+        if (!cells.Any())
+            return;
+        
+        foreach (var cell in cells)
+        {
+            if (!_selectedCells.Contains(cell))
+                _selectedCells.Add(cell);
+
+            _selectedIdentifiers.Add(cell.Uid);
+
+         
+        }
+
+        var firstCell = cells.FirstOrDefault();
+        if(firstCell != null)
+        {
+            await CellSelected.InvokeAsync(firstCell);
+        }
+        await CellsSelected.InvokeAsync(_selectedCells);
+        await ColumnSelected.InvokeAsync(column);
+    }
+
+    private async Task OnRowNumberCellClick(SheetRow row)
+    {
+        if (!_multipleSelection)
+        {
+            _selectedCells.Clear();
+            _selectedIdentifiers.Clear();
+        }
+
+        var cells = Sheet.Cells.Where(x => x.RowUid == row.Uid);
+
+        if (!cells.Any())
+            return;
+
+        foreach (var cell in cells)
+        {
+            if (!_selectedCells.Contains(cell))
+                _selectedCells.Add(cell);
+
+            _selectedIdentifiers.Add(cell.Uid);
+
+        }
+
+        var firstCell = cells.FirstOrDefault();
+        if (firstCell != null)
+        {
+            await CellSelected.InvokeAsync(firstCell);
+        }
+        await CellsSelected.InvokeAsync(_selectedCells);
+        await RowSelected.InvokeAsync(row);
+    }
+
     public string CellClass(SheetCell cell)
     {
         var result = "hc-sheet-cell";
 
-        if (_currentCell == null)
-        {
-            return result;
-        }
-
         if (_selectedIdentifiers.Contains(cell.Uid))
-        {
-            result += " hc-sheet-cell__active";
-        }
+            return result += " hc-sheet-cell__active";
 
         return result;
     }
