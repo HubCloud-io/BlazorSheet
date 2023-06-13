@@ -279,8 +279,11 @@ public partial class SheetComponent : ComponentBase
 
     private async Task OnColumnNumberCellClick(SheetColumn column)
     {
-        _selectedCells.Clear();
-        _selectedIdentifiers.Clear();
+        if (!_multipleSelection)
+        {
+            _selectedCells.Clear();
+            _selectedIdentifiers.Clear();
+        }
 
         var cells = Sheet.Cells.Where(x => x.ColumnUid == column.Uid);
 
@@ -294,17 +297,25 @@ public partial class SheetComponent : ComponentBase
 
             _selectedIdentifiers.Add(cell.Uid);
 
-            await CellSelected.InvokeAsync(cell);
+         
         }
 
+        var firstCell = cells.FirstOrDefault();
+        if(firstCell != null)
+        {
+            await CellSelected.InvokeAsync(firstCell);
+        }
         await CellsSelected.InvokeAsync(_selectedCells);
         await ColumnSelected.InvokeAsync(column);
     }
 
     private async Task OnRowNumberCellClick(SheetRow row)
     {
-        _selectedCells.Clear();
-        _selectedIdentifiers.Clear();
+        if (!_multipleSelection)
+        {
+            _selectedCells.Clear();
+            _selectedIdentifiers.Clear();
+        }
 
         var cells = Sheet.Cells.Where(x => x.RowUid == row.Uid);
 
@@ -318,9 +329,13 @@ public partial class SheetComponent : ComponentBase
 
             _selectedIdentifiers.Add(cell.Uid);
 
-            await CellSelected.InvokeAsync(cell);
         }
 
+        var firstCell = cells.FirstOrDefault();
+        if (firstCell != null)
+        {
+            await CellSelected.InvokeAsync(firstCell);
+        }
         await CellsSelected.InvokeAsync(_selectedCells);
         await RowSelected.InvokeAsync(row);
     }
