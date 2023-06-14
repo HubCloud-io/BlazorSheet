@@ -16,6 +16,7 @@ public partial class SheetInputPage : ComponentBase
         _sheet = builder.BuildSheet();
         _evaluator = new SheetEvaluator(_sheet);
         _evaluator.SetLogLevel(LogLevel.Trace);
+        _evaluator.EvalSheet();
     }
 
     private void OnCellValueChanged(SheetCell cell)

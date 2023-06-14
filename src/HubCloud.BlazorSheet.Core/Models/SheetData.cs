@@ -84,6 +84,5 @@ namespace HubCloud.BlazorSheet.Core.Models
 
             return total;
         }
-        
     }
 }

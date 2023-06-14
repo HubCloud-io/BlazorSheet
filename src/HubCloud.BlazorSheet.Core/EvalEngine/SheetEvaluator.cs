@@ -17,24 +17,23 @@ namespace HubCloud.BlazorSheet.Core.EvalEngine
         
         public IEnumerable<IEvaluatorLogMessage> Messages => _logger.Messages;
         public LogLevel LogLevel => _logger.MinimumLevel;
-
+        
         public SheetEvaluator(Sheet sheet)
         {
-            _logger = new EvaluatorLogger();
-            _interpreter = InterpreterInitializer.CreateInterpreter();
-
             _cells = new SheetData(sheet);
             _sheet = sheet;
+            _logger = new EvaluatorLogger();
             
+            _interpreter = InterpreterInitializer.CreateInterpreter(_cells);
             _interpreter.SetVariable("_cells", _cells);
         }
 
         public SheetEvaluator(SheetData cells)
         {
-            _logger = new EvaluatorLogger();
-            _interpreter = InterpreterInitializer.CreateInterpreter();
-            
             _cells = cells;
+            _logger = new EvaluatorLogger();
+            
+            _interpreter = InterpreterInitializer.CreateInterpreter(_cells);
             _interpreter.SetVariable("_cells", _cells);
         }
 
@@ -42,15 +41,24 @@ namespace HubCloud.BlazorSheet.Core.EvalEngine
         {
             _cells[row, column] =  value;
         }
-        
+
+        private string PrepareFormula(string formulaIn)
+        {
+            var formulaOut = formulaIn.Replace("$c", "_cells");
+            if (formulaOut[0] == '=')
+                formulaOut = formulaOut.Substring(1, formulaOut.Length - 1);
+
+            return formulaOut;
+        }
+
         public object Eval(string expression, int row, int column)
         {
             object result = null;
 
-            _interpreter.SetVariable("_currentRow", row);
-            _interpreter.SetVariable("_currentColumn", column);
+            // _interpreter.SetVariable("_currentRow", row);
+            // _interpreter.SetVariable("_currentColumn", column);
 
-            var formula = FormulaConverter.PrepareFormula(expression);
+            var formula = PrepareFormula(expression);
 
             try
             {
@@ -79,7 +87,8 @@ namespace HubCloud.BlazorSheet.Core.EvalEngine
 
         public void EvalSheet()
         {
-            foreach (var cell in _sheet.Cells.Where(x=>!string.IsNullOrWhiteSpace(x.Formula)))
+            var formulaCells = _sheet.Cells.Where(x => !string.IsNullOrWhiteSpace(x.Formula)).ToList();
+            foreach (var cell in formulaCells)
             {
                 var cellAddress = _sheet.CellAddress(cell);
                 _cells.CurrentRow = cellAddress.Row;
@@ -88,13 +97,9 @@ namespace HubCloud.BlazorSheet.Core.EvalEngine
                 var evalResult = Eval(cell.Formula, cellAddress.Row, cellAddress.Column);
 
                 if (evalResult is UniversalValue uValue)
-                {
                     cell.Value = uValue.Value;
-                }
                 else
-                {
                     cell.Value = evalResult;
-                }
                
                 cell.Text = cell.Value?.ToString();
                 

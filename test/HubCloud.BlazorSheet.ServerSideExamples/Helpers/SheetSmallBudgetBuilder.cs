@@ -61,18 +61,29 @@ public class SheetSmallBudgetBuilder
         sheet.GetCell(8, 2).StyleUid = totalStyle.Uid;
         sheet.GetCell(8, 2).Value = "Total";
         
-        SetTotalColumnFormula(8, 3, totalStyle, sheet);
-        SetTotalColumnFormula(8, 4, totalStyle, sheet);
-        SetTotalColumnFormula(8, 5, totalStyle, sheet);
-
-        SetTotalRowFormula(5, 6, totalStyle, sheet);
-        SetTotalRowFormula(6, 6, totalStyle, sheet);
-        SetTotalRowFormula(7, 6, totalStyle, sheet);
+        
+        // 1
+        sheet.GetCell(8, 9).Value = 1;
+        sheet.GetCell(9, 9).Value = 2;
+        sheet.GetCell(10, 9).Formula = $"$c.Sum(\"R8C9:R9C9\")";
+        //2
+        sheet.GetCell(8, 10).Value = 1;
+        sheet.GetCell(9, 10).Value = 2;
+        sheet.GetCell(10, 10).Formula = $"=СУММ(\"R8C9:R-1C9\")";
+        
+        
+        // SetTotalColumnFormula(8, 3, totalStyle, sheet);
+        // SetTotalColumnFormula(8, 4, totalStyle, sheet);
+        // SetTotalColumnFormula(8, 5, totalStyle, sheet);
+        //
+        // SetTotalRowFormula(5, 6, totalStyle, sheet);
+        // SetTotalRowFormula(6, 6, totalStyle, sheet);
+        // SetTotalRowFormula(7, 6, totalStyle, sheet);
 
         sheet.GetCell(4, 6).Value = "Total";
         sheet.GetCell(4, 6).StyleUid = totalStyle.Uid;
 
-        sheet.GetCell(8, 6).Formula = $"$c.Sum(\"R5C6:R-1C6\")";
+        // sheet.GetCell(8, 6).Formula = $"$c.Sum(\"R5C6:R-1C6\")";
         sheet.GetCell(8, 6).StyleUid = totalStyle.Uid;
     
         sheet.PrepareCellText();
