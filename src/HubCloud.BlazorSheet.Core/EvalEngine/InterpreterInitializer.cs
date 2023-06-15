@@ -19,7 +19,7 @@ namespace HubCloud.BlazorSheet.Core.EvalEngine
             interpreter.Reference(typeof(System.Linq.Enumerable));
 
             Func<string, object> sumFunction = Sum;
-            interpreter.SetFunction(DictMain.SumFunc, sumFunction);
+            interpreter.SetFunction("SUM", sumFunction);
             
             return interpreter;
         }

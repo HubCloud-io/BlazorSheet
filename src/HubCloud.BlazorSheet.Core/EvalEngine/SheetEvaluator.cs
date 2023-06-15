@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
 using DynamicExpresso;
+using DynamicExpresso.Exceptions;
 using HubCloud.BlazorSheet.Core.EvalEngine.Abstract;
 using HubCloud.BlazorSheet.Core.Models;
 using Microsoft.Extensions.Logging;
@@ -42,47 +45,92 @@ namespace HubCloud.BlazorSheet.Core.EvalEngine
             _cells[row, column] =  value;
         }
 
-        private string PrepareFormula(string formulaIn)
-        {
-            var formulaOut = formulaIn.Replace("$c", "_cells");
-            if (formulaOut[0] == '=')
-                formulaOut = formulaOut.Substring(1, formulaOut.Length - 1);
-
-            return formulaOut;
-        }
-
         public object Eval(string expression, int row, int column)
         {
             object result = null;
 
-            // _interpreter.SetVariable("_currentRow", row);
-            // _interpreter.SetVariable("_currentColumn", column);
-
-            var formula = PrepareFormula(expression);
+            var formula = FormulaConverter.PrepareFormula(expression);
 
             try
             {
                 result = _interpreter.Eval(formula);
-                
+
                 _logger.LogDebug("Cell:R{0}C{1}. Formula: {2}. Result: {3}."
                     , row
                     , column
                     , formula
                     , result);
-                
+
+            }
+            catch (UnknownIdentifierException e)
+            {
+                return TryEval(formula, row, column);
             }
             catch (Exception e)
             {
-                _logger.LogError("Cell:R{0}C{1}. Cannot eval Formula: {0}. Prepared formula: {1}. Message: {2}"
+                _logger.LogError("Cell:R{0}C{1}. Cannot eval Formula: {2}. Prepared formula: {3}. Message: {4}"
                     ,row
                     ,column
                     ,expression
                     ,formula
                     ,e.Message);
-
             }
 
             return result;
+        }
+
+        private object TryEval(string expression, int row, int column)
+        {
+            object result = null;
+            
+            expression = FormulaConverter.PrepareFormula(expression);
+            
+            var sb = new StringBuilder(expression);
+            var dict = GetValueDict(expression);
+
+            foreach (var item in dict)
+            {
+                sb = sb.Replace(item.Key, item.Value);
+            }
+
+            var formula = sb.ToString();
+            
+            try
+            {
+                result = _interpreter.Eval(formula);
+                _logger.LogDebug("Cell:R{0}C{1}. Formula: {2}. Result: {3}."
+                    , row
+                    , column
+                    , expression
+                    , result);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError("Cell:R{0}C{1}. Cannot eval Formula: {2}. Prepared formula: {3}. Message: {4}"
+                    ,row
+                    ,column
+                    ,expression
+                    ,formula
+                    ,e.Message); 
+            }
+
+            return result;
+        }
+
+        private Dictionary<string, string> GetValueDict(string formula)
+        {
+            var regex = new Regex(@"R-*\d*C-*\d*");
+            var matches = regex.Matches(formula);
+
+            var dict = new Dictionary<string, string>();
+            foreach (var match in matches)
+            {
+                var key = match.ToString();
+                var val = _cells.GetValue(key);
+                dict.Add(key, val.ToString());
+            }
+            
+            return dict;
         }
 
         public void EvalSheet()

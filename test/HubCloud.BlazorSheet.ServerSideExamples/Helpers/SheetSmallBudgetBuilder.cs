@@ -62,16 +62,13 @@ public class SheetSmallBudgetBuilder
         sheet.GetCell(8, 2).Value = "Total";
         
         
-        // 1
-        sheet.GetCell(8, 9).Value = 1;
-        sheet.GetCell(9, 9).Value = 2;
-        sheet.GetCell(10, 9).Formula = $"$c.Sum(\"R8C9:R9C9\")";
-        //2
         sheet.GetCell(8, 10).Value = 1;
         sheet.GetCell(9, 10).Value = 2;
-        sheet.GetCell(10, 10).Formula = $"=СУММ(\"R8C9:R-1C9\")";
-        
-        
+        // sheet.GetCell(10, 10).Formula = $"SUM(\"R8C10:R-1C10\")";
+        sheet.GetCell(10, 10).Formula = $"R8C10+R-1C10";
+        // sheet.GetCell(10, 10).Formula = $"Hello+world";
+
+
         // SetTotalColumnFormula(8, 3, totalStyle, sheet);
         // SetTotalColumnFormula(8, 4, totalStyle, sheet);
         // SetTotalColumnFormula(8, 5, totalStyle, sheet);
