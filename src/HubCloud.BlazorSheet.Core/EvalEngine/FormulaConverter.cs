@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO.IsolatedStorage;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -7,44 +8,62 @@ namespace HubCloud.BlazorSheet.Core.EvalEngine
 {
     public class FormulaConverter
     {
-        public static string PrepareFormula(string formula, string contextName)
+        private int _currentIndent;
+        public string PrepareFormula(string formula, string contextName)
         {
-            var sb = new StringBuilder(formula.Replace("$c", contextName));
+            var funcDict = new Dictionary<string, string>();
             
-            var regex = new Regex(@"[A-z]+[(][^()]+[)]");
-            var matches = regex.Matches(formula)
-                .Cast<Match>()
-                .Select(m => m.Value)
-                .Distinct()
-                .ToList();
+            formula = formula.Replace("$c", contextName);
+            var sb = new StringBuilder(formula);
 
-            var i = 0;
-            var functionDict = new Dictionary<string, string>();
-            foreach (var match in matches)
+            _currentIndent = 0;
+
+            bool isFound;
+            do
             {
-                var key = "{{" + i++ + "}}";
-                sb = sb.Replace(match, key);
-                functionDict.Add(key, match);
-            }
-
+                isFound = Isolate(sb, funcDict);
+            } while (isFound);
+            
             var valueDict = GetValueDict(sb);
             foreach (var item in valueDict)
             {
                 sb = sb.Replace(item.Key, item.Value);
             }
-            
-            foreach (var item in functionDict)
+
+            foreach (var item in funcDict.Reverse())
             {
                 sb = sb.Replace(item.Key, item.Value);
             }
 
             return sb.ToString();
         }
+
+        private bool Isolate(StringBuilder sb, Dictionary<string, string> funcDict)
+        {
+            var regex = new Regex(@"[A-z]+[(][^()]+[)]");
+            var matches = regex.Matches(sb.ToString())
+                .Cast<Match>()
+                .Select(m => m.Value)
+                .Distinct()
+                .ToList();
+
+            foreach (var match in matches)
+            {
+                var key = "{{" + _currentIndent++ + "}}";
+                sb = sb.Replace(match, key);
+                funcDict.Add(key, match);
+            }
+
+            return matches.Any();
+        }
+
+        private Dictionary<string, string> GetValueDict(StringBuilder formula)
+            => GetValueDict(formula.ToString());
         
-        private static Dictionary<string, string> GetValueDict(StringBuilder formula)
+        private Dictionary<string, string> GetValueDict(string formula)
         {
             var regex = new Regex(@"R-*\d*C-*\d*");
-            var matches = regex.Matches(formula.ToString());
+            var matches = regex.Matches(formula);
 
             var dict = new Dictionary<string, string>();
             foreach (var match in matches)

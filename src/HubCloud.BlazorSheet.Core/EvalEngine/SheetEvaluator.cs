@@ -51,7 +51,8 @@ namespace HubCloud.BlazorSheet.Core.EvalEngine
         {
             object result = null;
 
-            var formula = FormulaConverter.PrepareFormula(expression, ContextName);
+            var formulaConverter = new FormulaConverter();
+            var formula = formulaConverter.PrepareFormula(expression, ContextName);
 
             try
             {
@@ -64,10 +65,6 @@ namespace HubCloud.BlazorSheet.Core.EvalEngine
                     , result);
 
             }
-            // catch (UnknownIdentifierException e)
-            // {
-            //     return TryEval(formula, row, column);
-            // }
             catch (Exception e)
             {
                 _logger.LogError("Cell:R{0}C{1}. Cannot eval Formula: {2}. Prepared formula: {3}. Message: {4}"
@@ -79,60 +76,6 @@ namespace HubCloud.BlazorSheet.Core.EvalEngine
             }
 
             return result;
-        }
-
-        private object TryEval(string expression, int row, int column)
-        {
-            object result = null;
-            
-            expression = FormulaConverter.PrepareFormula(expression, ContextName);
-            
-            var sb = new StringBuilder(expression);
-            var dict = GetValueDict(expression);
-
-            foreach (var item in dict)
-            {
-                sb = sb.Replace(item.Key, item.Value);
-            }
-
-            var formula = sb.ToString();
-            
-            try
-            {
-                result = _interpreter.Eval(formula);
-                _logger.LogDebug("Cell:R{0}C{1}. Formula: {2}. Result: {3}."
-                    , row
-                    , column
-                    , expression
-                    , result);
-            }
-            catch (Exception e)
-            {
-                _logger.LogError("Cell:R{0}C{1}. Cannot eval Formula: {2}. Prepared formula: {3}. Message: {4}"
-                    ,row
-                    ,column
-                    ,expression
-                    ,formula
-                    ,e.Message); 
-            }
-
-            return result;
-        }
-
-        private Dictionary<string, string> GetValueDict(string formula)
-        {
-            var regex = new Regex(@"R-*\d*C-*\d*");
-            var matches = regex.Matches(formula);
-
-            var dict = new Dictionary<string, string>();
-            foreach (var match in matches)
-            {
-                var key = match.ToString();
-                var val = $"_cells.GetValue(\"{key}\")";
-                dict.Add(key, val);
-            }
-            
-            return dict;
         }
 
         public void EvalSheet()
