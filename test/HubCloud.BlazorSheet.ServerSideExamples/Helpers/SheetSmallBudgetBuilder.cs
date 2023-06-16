@@ -1,7 +1,7 @@
 ﻿using HubCloud.BlazorSheet.Core.Enums;
 using HubCloud.BlazorSheet.Core.Models;
 
-namespace Company.WebApplication1.Helpers;
+namespace HubCloud.BlazorSheet.ServerSideExamples.Helpers;
 
 public class SheetSmallBudgetBuilder
 {
@@ -62,11 +62,10 @@ public class SheetSmallBudgetBuilder
         sheet.GetCell(8, 2).Value = "Total";
         
         
-        sheet.GetCell(8, 10).Value = 1;
-        sheet.GetCell(9, 10).Value = 2;
-        // sheet.GetCell(10, 10).Formula = $"SUM(\"R8C10:R-1C10\")";
-        sheet.GetCell(10, 10).Formula = $"R8C10+R-1C10";
-        // sheet.GetCell(10, 10).Formula = $"Hello+world";
+        sheet.GetCell(8, 10).Value = 1m;
+        sheet.GetCell(9, 10).Value = 2m;
+        sheet.GetCell(10, 10).Formula = $"SUM(\"R8C10:R-1C10\")+R8C10+R-1C10+SUM(\"R8C10:R-1C10\")+SUM(\"R8C11:R-1C10\")";
+        // sheet.GetCell(10, 10).Formula = $"R8C10+R-1C10";
 
 
         // SetTotalColumnFormula(8, 3, totalStyle, sheet);

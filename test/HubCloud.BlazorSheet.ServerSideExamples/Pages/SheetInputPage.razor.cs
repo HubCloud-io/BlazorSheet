@@ -1,6 +1,6 @@
-﻿using Company.WebApplication1.Helpers;
-using HubCloud.BlazorSheet.Core.EvalEngine;
+﻿using HubCloud.BlazorSheet.Core.EvalEngine;
 using HubCloud.BlazorSheet.Core.Models;
+using HubCloud.BlazorSheet.ServerSideExamples.Helpers;
 using Microsoft.AspNetCore.Components;
 
 namespace HubCloud.BlazorSheet.ServerSideExamples.Pages;

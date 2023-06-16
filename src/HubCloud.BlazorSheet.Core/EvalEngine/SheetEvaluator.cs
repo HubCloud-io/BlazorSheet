@@ -13,6 +13,8 @@ namespace HubCloud.BlazorSheet.Core.EvalEngine
 {
     public class SheetEvaluator
     {
+        private const string ContextName = "_cells";
+        
         private readonly IEvaluatorLogger _logger;
         private Interpreter _interpreter;
         private SheetData _cells;
@@ -28,7 +30,7 @@ namespace HubCloud.BlazorSheet.Core.EvalEngine
             _logger = new EvaluatorLogger();
             
             _interpreter = InterpreterInitializer.CreateInterpreter(_cells);
-            _interpreter.SetVariable("_cells", _cells);
+            _interpreter.SetVariable(ContextName, _cells);
         }
 
         public SheetEvaluator(SheetData cells)
@@ -37,7 +39,7 @@ namespace HubCloud.BlazorSheet.Core.EvalEngine
             _logger = new EvaluatorLogger();
             
             _interpreter = InterpreterInitializer.CreateInterpreter(_cells);
-            _interpreter.SetVariable("_cells", _cells);
+            _interpreter.SetVariable(ContextName, _cells);
         }
 
         public void SetValue(int row, int column, object value)
@@ -49,7 +51,7 @@ namespace HubCloud.BlazorSheet.Core.EvalEngine
         {
             object result = null;
 
-            var formula = FormulaConverter.PrepareFormula(expression);
+            var formula = FormulaConverter.PrepareFormula(expression, ContextName);
 
             try
             {
@@ -62,10 +64,10 @@ namespace HubCloud.BlazorSheet.Core.EvalEngine
                     , result);
 
             }
-            catch (UnknownIdentifierException e)
-            {
-                return TryEval(formula, row, column);
-            }
+            // catch (UnknownIdentifierException e)
+            // {
+            //     return TryEval(formula, row, column);
+            // }
             catch (Exception e)
             {
                 _logger.LogError("Cell:R{0}C{1}. Cannot eval Formula: {2}. Prepared formula: {3}. Message: {4}"
@@ -83,7 +85,7 @@ namespace HubCloud.BlazorSheet.Core.EvalEngine
         {
             object result = null;
             
-            expression = FormulaConverter.PrepareFormula(expression);
+            expression = FormulaConverter.PrepareFormula(expression, ContextName);
             
             var sb = new StringBuilder(expression);
             var dict = GetValueDict(expression);
@@ -126,8 +128,8 @@ namespace HubCloud.BlazorSheet.Core.EvalEngine
             foreach (var match in matches)
             {
                 var key = match.ToString();
-                var val = _cells.GetValue(key);
-                dict.Add(key, val.ToString());
+                var val = $"_cells.GetValue(\"{key}\")";
+                dict.Add(key, val);
             }
             
             return dict;
