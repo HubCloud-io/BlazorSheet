@@ -9,6 +9,7 @@ namespace HubCloud.BlazorSheet.Core.EvalEngine
     public class FormulaConverter2 : IFormulaConverter
     {
         private string _contextName;
+
         public string PrepareFormula(string formula, string contextName)
         {
             _contextName = contextName;
@@ -19,9 +20,9 @@ namespace HubCloud.BlazorSheet.Core.EvalEngine
         {
             var funcDict = new Dictionary<string, string>();
             var sb = new StringBuilder(formula.Replace("$c", _contextName));
-            
+
             CutFunctions(sb, funcDict);
-            
+
             sb = SetValues(sb);
 
             PasteFunctions(sb, funcDict);
@@ -36,7 +37,7 @@ namespace HubCloud.BlazorSheet.Core.EvalEngine
                 sb = sb.Replace(item.Key, item.Value);
             }
         }
-        
+
         private void CutFunctions(StringBuilder sb, Dictionary<string, string> funcDict)
         {
             var regex = new Regex(@"[A-z]+[(][^()]+[)]");
@@ -60,26 +61,29 @@ namespace HubCloud.BlazorSheet.Core.EvalEngine
         {
             var startIndex = function.IndexOf("(", StringComparison.InvariantCulture);
             var endIndex = function.IndexOf(")", StringComparison.InvariantCulture);
-            
+
             var parameters = function.Substring(startIndex + 1, endIndex - startIndex - 1)
                 .Split(',')
                 .ToList();
 
-            // var values = new List<string>();
-            // foreach (var parameter in parameters.Where(x => !x.Contains(':')))
-            // {
-            //     values.Add(PrepareFormulaInner(parameter));
-            // }
-            
+            var values = new List<string>();
+            foreach (var parameter in parameters)
+            {
+                if (!parameter.Contains(':'))
+                    values.Add(PrepareFormulaInner(parameter));
+                else
+                    values.Add(parameter);
+            }
+
             var restoredFunction = function.Substring(0, startIndex + 1);
-            foreach (var value in parameters)
+            foreach (var value in values)
             {
                 restoredFunction += $"{value},";
             }
 
             restoredFunction = restoredFunction.TrimEnd(',');
             restoredFunction += function.Substring(endIndex, function.Length - endIndex);
-            
+
             return restoredFunction;
         }
 
@@ -93,10 +97,10 @@ namespace HubCloud.BlazorSheet.Core.EvalEngine
 
             return sb;
         }
-        
+
         private Dictionary<string, string> GetValueDict(StringBuilder formula)
             => GetValueDict(formula.ToString());
-        
+
         private Dictionary<string, string> GetValueDict(string formula)
         {
             var regex = new Regex(@"R-*\d*C-*\d*");
@@ -109,7 +113,7 @@ namespace HubCloud.BlazorSheet.Core.EvalEngine
                 var val = $"_cells.GetValue(\"{key}\")";
                 dict.Add(key, val);
             }
-            
+
             return dict;
         }
     }
