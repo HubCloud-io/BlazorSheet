@@ -125,6 +125,23 @@ public class SheetTests
         Assert.AreEqual(greenStyle.Uid, sheet.GetCell(1, 3).StyleUid);
     }
 
+    [TestCase(10, 10, 10, 10)]
+    [TestCase(5, 5, 5, 5)]
+    [TestCase(0, 0, 5, 5)]
+    [TestCase(-1, -1, 5, 5)]
+    [TestCase(1, 1, 1, 1)]
+    public void ChangeSize(int newColumnsCount, int newRowsCount, int checkColumnsCount, int checkRowsCount)
+    {
+        var sheetSettings = BuildSheetSettingsWithCellNames(5, 5);
+
+        var sheet = new Sheet(sheetSettings);
+
+        sheet.ChangeSize(newColumnsCount, newRowsCount);
+
+        Assert.AreEqual(checkColumnsCount, sheet.Columns.Count);
+        Assert.AreEqual(checkRowsCount, sheet.Rows.Count);
+    }
+
     private SheetSettings BuildSheetSettingsWithCellNames(int rowsCount, int columnsCount)
     {
         var sheetSettings = new SheetSettings()
