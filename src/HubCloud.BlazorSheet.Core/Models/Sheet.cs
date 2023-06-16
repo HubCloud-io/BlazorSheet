@@ -43,6 +43,9 @@ namespace HubCloud.BlazorSheet.Core.Models
             }
         }
 
+        public int FreezedRows { get; set; }
+        public int FreezedColumns { get; set; }
+
         public IReadOnlyCollection<SheetRow> Rows => _rows;
         public IReadOnlyCollection<SheetColumn> Columns => _columns;
         public IReadOnlyCollection<SheetCell> Cells => _cells;
@@ -384,6 +387,9 @@ namespace HubCloud.BlazorSheet.Core.Models
             {
                 SetEditSettings(cells, newEditSettings);
             }
+
+            FreezedRows = commandPanelModel.FreezedRows;
+            FreezedColumns = commandPanelModel.FreezedColumns;
         }
 
         public void SetStyle(SheetCell cell, SheetCellStyle newStyle)

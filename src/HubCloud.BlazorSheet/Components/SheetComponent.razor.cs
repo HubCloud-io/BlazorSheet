@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Data.Common;
+using System.Text;
 using BBComponents.Abstract;
 using HubCloud.BlazorSheet.Core.Enums;
 using HubCloud.BlazorSheet.Core.Models;
@@ -440,7 +441,95 @@ public partial class SheetComponent : ComponentBase
             sb.Append(";");
         }
 
+        AddFreezedStyle(sb, sheet, row, column);
 
         return sb.ToString();
+    }
+
+    private static void AddFreezedStyle(StringBuilder sb, Sheet sheet, SheetRow row, SheetColumn column)
+    {
+        if (sheet.FreezedColumns == 0 && sheet.FreezedRows == 0)
+            return;
+
+        var rowNumber = sheet.Rows.ToList().IndexOf(row) + 1;
+        var columnNumber = sheet.Columns.ToList().IndexOf(column) + 1;
+
+        var htmlPosition = HtmlPosition(sheet, rowNumber, columnNumber);
+
+        if (!string.IsNullOrEmpty(htmlPosition))
+        {
+            sb.Append("position: ");
+            sb.Append(htmlPosition);
+            sb.Append(";");
+
+            var leftPosition = LeftPosition(sheet, columnNumber, column.WidthValue);
+            var topPosition = TopPosition(sheet, rowNumber, row.HeightValue);
+
+            if (!string.IsNullOrEmpty(topPosition))
+            {
+                sb.Append("top: ");
+                sb.Append(topPosition);
+                sb.Append(";");
+            }
+            if (!string.IsNullOrEmpty(leftPosition))
+            {
+                sb.Append("left: ");
+                sb.Append(leftPosition);
+                sb.Append(";");
+            }
+
+            if (!string.IsNullOrEmpty(leftPosition) && !string.IsNullOrEmpty(topPosition))
+            {
+                sb.Append("z-index: 10;");
+            }
+            else
+            {
+                if (!string.IsNullOrEmpty(leftPosition) || !string.IsNullOrEmpty(topPosition))
+                {
+                    sb.Append("z-index: 1;");
+                }
+            }
+        }
+
+        if (rowNumber == sheet.FreezedRows)
+        {
+            sb.Append("border-bottom: 2px solid navy;");
+        }
+
+        if (columnNumber == sheet.FreezedColumns)
+        {
+            sb.Append("border-right: 2px solid navy;");
+        }
+    }
+
+    private static string HtmlPosition(Sheet sheet, int rowNumber, int columnNumber)
+    {
+        return (rowNumber <= sheet.FreezedRows || columnNumber <= sheet.FreezedColumns) ? "sticky" : "";
+    }
+
+    private static string LeftPosition(Sheet sheet, int columnNumber, double columnWidth)
+    {
+        double left = 0;
+
+        if (columnNumber > 0)
+            left += 30;
+
+        var htmlLeft = columnNumber <= sheet.FreezedColumns ? $"{(int)left}px" : "";
+
+        return htmlLeft;
+    }
+
+    private static string TopPosition(Sheet sheet, int rowNumber, double rowHeight)
+    {
+        double top = 0;
+
+        for (int i = 0; i < rowNumber; i++)
+        {
+            top += sheet.Rows.ToArray()[i].HeightValue;
+        }
+
+        var htmlTop = rowNumber <= sheet.FreezedRows ? $"{(int)top}px" : "";
+
+        return htmlTop;
     }
 }
