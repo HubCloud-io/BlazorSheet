@@ -1,52 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO.IsolatedStorage;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
 namespace HubCloud.BlazorSheet.Core.EvalEngine
 {
-    public class FormulaConverter : IFormulaConverter
+    public class FormulaConverter
     {
-        private int _currentIndent;
-        public string PrepareFormula(string formula, string contextName)
+        public static string PrepareFormula(string formula, string contextName)
         {
             var funcDict = new Dictionary<string, string>();
-            
-            formula = formula.Replace("$c", contextName);
-            var sb = new StringBuilder(formula);
+            var sb = new StringBuilder(formula.Replace("$c", contextName));
 
-            _currentIndent = 0;
-
-            bool isFound;
-            do
-            {
-                isFound = IsolateFunctions(sb, funcDict);
-            } while (isFound);
+            CutFunctions(sb, funcDict, contextName);
 
             sb = SetValues(sb);
 
-            foreach (var item in funcDict.Reverse())
-            {
-                sb = sb.Replace(item.Key, item.Value);
-            }
+            PasteFunctions(sb, funcDict);
 
             return sb.ToString();
         }
 
-        private StringBuilder SetValues(StringBuilder sb)
+        private static void PasteFunctions(StringBuilder sb, Dictionary<string, string> funcDict)
         {
-            var valueDict = GetValueDict(sb);
-            foreach (var item in valueDict)
+            foreach (var item in funcDict.Reverse())
             {
                 sb = sb.Replace(item.Key, item.Value);
             }
-
-            return sb;
         }
 
-        private bool IsolateFunctions(StringBuilder sb, Dictionary<string, string> funcDict)
+        private static void CutFunctions(StringBuilder sb, Dictionary<string, string> funcDict, string contextName)
         {
             var regex = new Regex(@"[A-z]+[(][^()]+[)]");
             var functions = regex.Matches(sb.ToString())
@@ -55,41 +39,36 @@ namespace HubCloud.BlazorSheet.Core.EvalEngine
                 .Distinct()
                 .ToList();
 
-            var processedFunctions = new List<string>();
+            var currentIndent = 0;
             foreach (var function in functions)
             {
-                processedFunctions.Add(ProcessFunction(function));
+                var processed = ProcessFunction(function, contextName);
+                var key = "{{" + currentIndent++ + "}}";
+                sb = sb.Replace(processed, key);
+                funcDict.Add(key, processed);
             }
-
-            foreach (var function in processedFunctions)
-            {
-                var key = "{{" + _currentIndent++ + "}}";
-                sb = sb.Replace(function, key);
-                funcDict.Add(key, function);
-            }
-
-            return functions.Any();
         }
 
-        private string ProcessFunction(string function)
+        private static string ProcessFunction(string function, string contextName)
         {
             var startIndex = function.IndexOf("(", StringComparison.InvariantCulture);
             var endIndex = function.IndexOf(")", StringComparison.InvariantCulture);
 
             var parameters = function.Substring(startIndex + 1, endIndex - startIndex - 1)
                 .Split(',')
-                .Where(x => !x.Contains(':'))
                 .ToList();
 
-            var parameterValues = new List<string>();
+            var values = new List<string>();
             foreach (var parameter in parameters)
             {
-                var v = SetValues(new StringBuilder(parameter)).ToString();
-                parameterValues.Add(v);
+                if (!parameter.Contains(':'))
+                    values.Add(PrepareFormula(parameter, contextName));
+                else
+                    values.Add(parameter);
             }
 
             var restoredFunction = function.Substring(0, startIndex + 1);
-            foreach (var value in parameterValues)
+            foreach (var value in values)
             {
                 restoredFunction += $"{value},";
             }
@@ -100,10 +79,21 @@ namespace HubCloud.BlazorSheet.Core.EvalEngine
             return restoredFunction;
         }
 
-        private Dictionary<string, string> GetValueDict(StringBuilder formula)
+        private static StringBuilder SetValues(StringBuilder sb)
+        {
+            var valueDict = GetValueDict(sb);
+            foreach (var item in valueDict)
+            {
+                sb = sb.Replace(item.Key, item.Value);
+            }
+
+            return sb;
+        }
+
+        private static Dictionary<string, string> GetValueDict(StringBuilder formula)
             => GetValueDict(formula.ToString());
-        
-        private Dictionary<string, string> GetValueDict(string formula)
+
+        private static Dictionary<string, string> GetValueDict(string formula)
         {
             var regex = new Regex(@"R-*\d*C-*\d*");
             var matches = regex.Matches(formula);
@@ -115,7 +105,7 @@ namespace HubCloud.BlazorSheet.Core.EvalEngine
                 var val = $"_cells.GetValue(\"{key}\")";
                 dict.Add(key, val);
             }
-            
+
             return dict;
         }
     }

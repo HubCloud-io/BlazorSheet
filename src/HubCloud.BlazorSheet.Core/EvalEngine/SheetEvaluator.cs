@@ -51,8 +51,7 @@ namespace HubCloud.BlazorSheet.Core.EvalEngine
         {
             object result = null;
 
-            var formulaConverter = new FormulaConverter();
-            var formula = formulaConverter.PrepareFormula(expression, ContextName);
+            var formula = FormulaConverter.PrepareFormula(expression, ContextName);
 
             try
             {

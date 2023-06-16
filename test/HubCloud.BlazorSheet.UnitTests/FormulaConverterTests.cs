@@ -16,8 +16,7 @@ public class FormulaConverterTests
     [TestCase("IIF(R1C1 > 10, IIF(R1C2 = 0, 1, 2) + R4C5, 45)", $@"IIF({ContextName}.GetValue(""R1C1"") > 10, IIF({ContextName}.GetValue(""R1C2"") = 0, 1, 2) + {ContextName}.GetValue(""R4C5""), 45)")]
     public void PrepareFormula_Tests(string formulaIn, string expected)
     {
-        IFormulaConverter formulaConverter = new FormulaConverter2();
-        var formulaOut = formulaConverter.PrepareFormula(formulaIn, ContextName);
+        var formulaOut = FormulaConverter.PrepareFormula(formulaIn, ContextName);
         
         Assert.AreEqual(expected, formulaOut);
     }
