@@ -11,8 +11,14 @@ namespace HubCloud.BlazorSheet.Core.Models
 
         public Guid Uid { get; set; } = Guid.NewGuid();
 
-        public Sheet FirstSheet => _sheets[0];
+        public Sheet FirstSheet => _sheets.FirstOrDefault();
+        public IReadOnlyCollection<Sheet> Sheets => _sheets;
 
+        public Workbook()
+        {
+            
+        }
+        
         public Workbook(WorkbookSettings settings)
         {
             Uid = settings.Uid; 

@@ -7,7 +7,9 @@ namespace HubCloud.BlazorSheet.Core.Models
         private readonly int _rowsCount;
         private readonly int _columnsCount;
         private readonly object[,] _data;
-        
+
+        public Guid Uid { get; private set; }
+        public string Name { get; private set; }
         public int CurrentRow { get; set; }
         public int CurrentColumn { get; set; }
 
@@ -21,6 +23,9 @@ namespace HubCloud.BlazorSheet.Core.Models
 
         public SheetData(Sheet sheet)
         {
+            Name = sheet.Name;
+            Uid = sheet.Uid;
+            
             _rowsCount = sheet.RowsCount;
             _columnsCount = sheet.ColumnsCount;
 
@@ -29,7 +34,7 @@ namespace HubCloud.BlazorSheet.Core.Models
             foreach (var cell in sheet.Cells)
             {
                 var cellAddress = sheet.CellAddress(cell);
-                this[cellAddress.Row, cellAddress.Column] =  cell.Value;
+                this[cellAddress.Row, cellAddress.Column] = cell.Value;
             }
         }
 
@@ -59,7 +64,7 @@ namespace HubCloud.BlazorSheet.Core.Models
         {
             return new UniversalValue(_data[row - 1, column - 1]);
         }
-        
+
         public UniversalValue GetValue(string address)
         {
             var cellAddress = new SheetCellAddress(address, CurrentRow, CurrentColumn);
@@ -68,9 +73,8 @@ namespace HubCloud.BlazorSheet.Core.Models
 
         public UniversalValue Sum(string address)
         {
-
             var total = new UniversalValue(0M);
-            
+
             var range = new SheetRange(address, CurrentRow, CurrentColumn);
 
             for (var r = range.RowStart; r <= range.RowEnd; r++)
@@ -84,6 +88,5 @@ namespace HubCloud.BlazorSheet.Core.Models
 
             return total;
         }
-        
     }
 }
