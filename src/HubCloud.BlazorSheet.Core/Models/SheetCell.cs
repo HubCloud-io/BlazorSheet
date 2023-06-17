@@ -33,6 +33,13 @@ namespace HubCloud.BlazorSheet.Core.Models
             }
             set => Value = value;
         }
+        
+        [JsonIgnore]
+        public string StringValue
+        {
+            get => Value?.ToString() ?? string.Empty;
+            set => Value = value;
+        }
 
         [JsonIgnore]
         public DateTime DateTimeValue
