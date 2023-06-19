@@ -61,4 +61,64 @@ public class UniversalValueTests
         
         Assert.AreEqual(2M, result.Value);
     }
+
+    [Test]
+    public void Substring_StartIndex_SubstringValue()
+    {
+        var uv = new UniversalValue("qwerty");
+
+        var result = uv.Substring(1);
+
+        Assert.AreEqual("werty", result.Value);
+    }
+
+    [Test]
+    public void Substring_StartIndexLength_SubstringValue()
+    {
+        var uv = new UniversalValue("qwerty");
+
+        var result = uv.Substring(0, 1);
+
+        Assert.AreEqual("q", result.Value);
+    }
+
+    [Test]
+    public void ToUpper_ToUpperValue()
+    {
+        var uv = new UniversalValue("qwerty");
+
+        var result = uv.ToUpper();
+
+        Assert.AreEqual("QWERTY", result.Value);
+    }
+
+    [Test]
+    public void ToLower_ToLowerValue()
+    {
+        var uv = new UniversalValue("QWERTY");
+
+        var result = uv.ToLower();
+
+        Assert.AreEqual("qwerty", result.Value);
+    }
+
+    [Test]
+    public void IndexOf_StringValue_IndexOfValue()
+    {
+        var uv = new UniversalValue("QWERTY");
+
+        var result = uv.IndexOf("W");
+
+        Assert.AreEqual(1, result.Value);
+    }
+
+    [Test]
+    public void Replace_OldValueNewValue_ReplaceValue()
+    {
+        var uv = new UniversalValue("QWERTY");
+
+        var result = uv.Replace("WERT", "____");
+
+        Assert.AreEqual("Q____Y", result.Value);
+    }
 }

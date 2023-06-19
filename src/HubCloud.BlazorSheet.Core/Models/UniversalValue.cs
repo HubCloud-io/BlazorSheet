@@ -33,6 +33,54 @@ namespace HubCloud.BlazorSheet.Core.Models
             return PerformOperation(v1, v2, (a, b) => a / b);
         }
 
+        public UniversalValue Substring(int startIndex)
+        {
+            if (Value is string valueString)
+                return new UniversalValue(valueString.Substring(startIndex));
+            else
+                return new UniversalValue(Value.ToString());
+        }
+
+        public UniversalValue Substring(int startIndex, int length)
+        {
+            if (Value is string valueString)
+                return new UniversalValue(valueString.Substring(startIndex, length));
+            else
+                return new UniversalValue(Value.ToString());
+        }
+
+        public UniversalValue ToUpper()
+        {
+            if (Value is string valueString)
+                return new UniversalValue(valueString.ToUpper());
+            else
+                return new UniversalValue(Value.ToString());
+        }
+
+        public UniversalValue ToLower()
+        {
+            if (Value is string valueString)
+                return new UniversalValue(valueString.ToLower());
+            else
+                return new UniversalValue(Value.ToString());
+        }
+
+        public UniversalValue IndexOf(string value)
+        {
+            if (Value is string valueString)
+                return new UniversalValue(valueString.IndexOf(value));
+            else
+                return new UniversalValue(Value.ToString());
+        }
+
+        public UniversalValue Replace(string oldValue, string newValue)
+        {
+            if (Value is string valueString)
+                return new UniversalValue(valueString.Replace(oldValue, newValue));
+            else
+                return new UniversalValue(Value.ToString());
+        }
+
         private static UniversalValue PerformOperation(UniversalValue v1,
             UniversalValue v2,
             Func<decimal, decimal, object> decimalOperation)
