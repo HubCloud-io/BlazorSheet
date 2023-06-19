@@ -58,7 +58,8 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
 
         private void WriteAddExample(Sheet sheet, int row, int column)
         {
-            sheet.GetCell(row, column).Value = "VAL(\"R2C3\")+VAL(\"R2C4\")";
+            var formula = "VAL(\"R2C3\")+VAL(\"R2C4\")";
+            sheet.GetCell(row, column).Value = formula;
 
             sheet.GetCell(row, column + 1).EditSettingsUid = _numberInputSettings.Uid;
             sheet.GetCell(row, column + 1).Value = 1.5m;
@@ -66,7 +67,7 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
             sheet.GetCell(row, column + 2).EditSettingsUid = _numberInputSettings.Uid;
             sheet.GetCell(row, column + 2).Value = 2.5m;
 
-            sheet.GetCell(row, column + 3).Formula = "VAL(\"R2C3\")+VAL(\"R2C4\")";
+            sheet.GetCell(row, column + 3).Formula = formula;
         }
     }
 }
