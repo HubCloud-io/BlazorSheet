@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using HubCloud.BlazorSheet.Core.EvalEngine.Abstract;
+using HubCloud.BlazorSheet.EvalEngine.Abstract;
 using Microsoft.Extensions.Logging;
 
-namespace HubCloud.BlazorSheet.Core.EvalEngine
+namespace HubCloud.BlazorSheet.EvalEngine.Engine
 {
      public class EvaluatorLogger : IEvaluatorLogger
     {

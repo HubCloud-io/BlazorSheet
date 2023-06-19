@@ -1,7 +1,7 @@
 ﻿using System;
 using DynamicExpresso;
 
-namespace HubCloud.BlazorSheet.Core.EvalEngine
+namespace HubCloud.BlazorSheet.EvalEngine.Engine
 {
     public class InterpreterInitializer
     {

@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\HubCloud.BlazorSheet.Core\HubCloud.BlazorSheet.Core.csproj" />
+    <ProjectReference Include="..\..\src\HubCloud.BlazorSheet.EvalEngine\HubCloud.BlazorSheet.EvalEngine.csproj" />
     <ProjectReference Include="..\..\src\HubCloud.BlazorSheet\HubCloud.BlazorSheet.csproj" />
   </ItemGroup>
 

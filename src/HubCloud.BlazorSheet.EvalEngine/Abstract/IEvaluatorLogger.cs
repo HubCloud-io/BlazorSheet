@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 
-namespace HubCloud.BlazorSheet.Core.EvalEngine.Abstract
+namespace HubCloud.BlazorSheet.EvalEngine.Abstract
 {
     public interface IEvaluatorLogger : ILogger
     {
