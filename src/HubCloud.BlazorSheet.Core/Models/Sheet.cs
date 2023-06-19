@@ -62,6 +62,8 @@ namespace HubCloud.BlazorSheet.Core.Models
             Name = settings.Name;
             RowsCount = settings.RowsCount;
             ColumnsCount = settings.ColumnsCount;
+            FreezedColumns = settings.FreezedColumns;
+            FreezedRows = settings.FreezedRows;
 
             _rows.AddRange(settings.Rows);
             _columns.AddRange(settings.Columns);
@@ -555,6 +557,8 @@ namespace HubCloud.BlazorSheet.Core.Models
                 Name = Name,
                 RowsCount = RowsCount,
                 ColumnsCount = ColumnsCount,
+                FreezedColumns = FreezedColumns,
+                FreezedRows = FreezedRows
             };
 
             settings.Rows.AddRange(_rows);

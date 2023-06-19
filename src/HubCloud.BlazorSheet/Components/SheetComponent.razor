@@ -3,17 +3,18 @@
 @using BBComponents.Components
 @using BBComponents.Enums
 
-<div style="overflow-y: auto; overflow-x: auto; max-height: @MaxHeight;">
+<div style="overflow-y: auto; overflow-x: auto; max-height: @MaxHeight; height: 500px; width: 1000px;">
 
     <table class="hc-sheet"
            tabindex="0"
+           width="100%"
            @onkeydown="(e=>OnTableKeyDown(e))"
            @onkeyup="(e=>OnTableKeyUp(e))">
 
         @*Sheet rows*@
         <tr>
 
-            <td class="hc-grid-cell" style="width: 30px;"></td>
+            <td class="hc-grid-cell" style="width: 30px; top: 0; left: 0; position: sticky; z-index: 20;"></td>
 
             @foreach (var column in Sheet.Columns)
             {
@@ -23,10 +24,10 @@
                 }
 
                 <td class="hc-grid-cell text-center"
-                @onclick="(e => OnColumnNumberCellClick(column))"
-                @oncontextmenu="(e => OnColumnContextMenu(e, column))"
-                @oncontextmenu:preventDefault
-                style="width:@column.Width; max-width: @column.Width;">
+                    @onclick="(e => OnColumnNumberCellClick(column))"
+                    @oncontextmenu="(e => OnColumnContextMenu(e, column))"
+                    @oncontextmenu:preventDefault
+                    style="@HeaderCellStyle(Sheet, column)">
                     @Sheet.ColumnNumber(column)
                 </td>
             }
@@ -38,9 +39,10 @@
         {
             <tr>
                 <td class="hc-grid-cell"
-                @onclick="(e => OnRowNumberCellClick(row))"
-                @oncontextmenu="(e => OnRowContextMenu(e, row))"
-                @oncontextmenu:preventDefault>
+                    style="@LeftSideCellStyle(Sheet, row)"
+                    @onclick="(e => OnRowNumberCellClick(row))"
+                    @oncontextmenu="(e => OnRowContextMenu(e, row))"
+                    @oncontextmenu:preventDefault>
                     <span>@(Sheet.RowNumber(row))</span>
                 </td>
                 @foreach (var column in Sheet.Columns)

@@ -10,7 +10,10 @@ namespace HubCloud.BlazorSheet.Core.Models
         public string Name { get; set; }
         public int RowsCount { get; set; }
         public int ColumnsCount { get; set; }
-        
+
+        public int FreezedRows { get; set; }
+        public int FreezedColumns { get; set; }
+
         public List<SheetRow> Rows { get; set; } = new List<SheetRow>();
         public List<SheetColumn> Columns { get; set; } = new List<SheetColumn>();
 

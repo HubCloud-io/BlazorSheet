@@ -14,7 +14,7 @@ public partial class SheetEditPage: ComponentBase
     
     protected override void OnInitialized()
     {
-        _sheet = new Sheet(5, 5);
+        _sheet = new Sheet(25, 25);
     }
     
     private void OnRowSelected(SheetRow row)
