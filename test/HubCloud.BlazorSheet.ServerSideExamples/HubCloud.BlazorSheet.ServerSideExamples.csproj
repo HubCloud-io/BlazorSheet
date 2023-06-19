@@ -8,11 +8,17 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\HubCloud.BlazorSheet.Core\HubCloud.BlazorSheet.Core.csproj" />
+    <ProjectReference Include="..\..\src\HubCloud.BlazorSheet.EvalEngine\HubCloud.BlazorSheet.EvalEngine.csproj" />
     <ProjectReference Include="..\..\src\HubCloud.BlazorSheet\HubCloud.BlazorSheet.csproj" />
+    <ProjectReference Include="..\HubCloud.BlazorSheet.ExamplesShared\HubCloud.BlazorSheet.ExamplesShared.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="HubCloud.BBComponents" Version="6.0.31" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Helpers\" />
   </ItemGroup>
 
 </Project>

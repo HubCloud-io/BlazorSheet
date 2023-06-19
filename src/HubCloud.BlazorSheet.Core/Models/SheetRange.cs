@@ -73,12 +73,17 @@ namespace HubCloud.BlazorSheet.Core.Models
                 ColumnStart = startAddress.Column;
             }
 
-            if (parts.Length >= 1)
+            if (parts.Length > 1)
             {
                 var endAddress = new SheetCellAddress(parts[1]);
                 
                 RowEnd = endAddress.Row;
                 ColumnEnd = endAddress.Column;
+            }
+            else
+            {
+                RowEnd = RowStart;
+                ColumnEnd = ColumnStart;
             }
         }
     }

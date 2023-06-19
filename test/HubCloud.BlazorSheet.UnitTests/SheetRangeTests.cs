@@ -31,7 +31,16 @@ public class SheetRangeTests
         Assert.AreEqual("Sheet1", sheetRange.SheetName);
     }
 
-   
+    [Test]
+    public void SheetRange_OneCellRange_Constructor()
+    {
+        var sheetRange = new SheetRange("R2C3", 1, 1);
+        
+        Assert.AreEqual(2, sheetRange.RowStart);
+        Assert.AreEqual(2, sheetRange.RowEnd);
+        Assert.AreEqual(3, sheetRange.ColumnStart);
+        Assert.AreEqual(3, sheetRange.ColumnEnd);
+    }
     
     [TestCase(1, 2, 3, 4, 2, 3, true)]
     [TestCase(1, 2, 3, 4, 1, 2, true)]

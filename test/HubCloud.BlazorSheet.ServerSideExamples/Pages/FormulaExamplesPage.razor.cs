@@ -5,14 +5,14 @@ using Microsoft.AspNetCore.Components;
 
 namespace HubCloud.BlazorSheet.ServerSideExamples.Pages;
 
-public partial class SheetInputPage : ComponentBase
+public partial class FormulaExamplesPage:ComponentBase
 {
     private Workbook _workbook;
     private WorkbookEvaluator _evaluator;
 
     protected override void OnInitialized()
     {
-        var builder = new WorkbookSmallBudgetBuilder();
+        var builder = new WorkbookFormulaExamplesBuilder();
         _workbook = builder.Build();
         
         _evaluator = new WorkbookEvaluator(_workbook);
@@ -30,5 +30,9 @@ public partial class SheetInputPage : ComponentBase
     {
         _evaluator.ClearLog();
     }
-    
+
+    private void OnCalcClick()
+    {
+        _evaluator.EvalWorkbook();
+    }
 }

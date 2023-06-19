@@ -565,6 +565,7 @@ namespace HubCloud.BlazorSheet.Core.Models
             settings.Columns.AddRange(_columns);
             settings.Cells.AddRange(_cells);
             settings.SetStyles(_styles);
+            settings.SetEditSettings(_editSettings);
 
             return settings;
         }

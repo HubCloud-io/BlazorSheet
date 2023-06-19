@@ -16,6 +16,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\src\HubCloud.BlazorSheet.Core\HubCloud.BlazorSheet.Core.csproj" />
+      <ProjectReference Include="..\HubCloud.BlazorSheet.ExamplesShared\HubCloud.BlazorSheet.ExamplesShared.csproj" />
     </ItemGroup>
 
 </Project>
