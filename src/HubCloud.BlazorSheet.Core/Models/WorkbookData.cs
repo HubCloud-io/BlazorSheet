@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace HubCloud.BlazorSheet.Core.Models
@@ -20,6 +21,8 @@ namespace HubCloud.BlazorSheet.Core.Models
                 _sheets.Add(sheetData);
             }
         }
+
+       
 
         public UniversalValue GetValue(string sheetName, int row, int column)
         {
@@ -92,7 +95,7 @@ namespace HubCloud.BlazorSheet.Core.Models
             return sheet;
         }
         
-        private SheetData GetSheetByName(string sheetName)
+        public SheetData GetSheetByName(string sheetName)
         {
          
             SheetData sheet;

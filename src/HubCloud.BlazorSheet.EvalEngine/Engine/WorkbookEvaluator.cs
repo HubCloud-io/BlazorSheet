@@ -8,47 +8,43 @@ using Microsoft.Extensions.Logging;
 
 namespace HubCloud.BlazorSheet.EvalEngine.Engine
 {
-    public class SheetEvaluator
+    public class WorkbookEvaluator
     {
         private readonly IEvaluatorLogger _logger;
-        private Interpreter _interpreter;
-        private SheetData _cells;
-        private Sheet _sheet;
+        private readonly Interpreter _interpreter;
+        private readonly WorkbookData _data;
+        private readonly Workbook _workbook;
         
         public IEnumerable<IEvaluatorLogMessage> Messages => _logger.Messages;
         public LogLevel LogLevel => _logger.MinimumLevel;
 
-        public SheetEvaluator(Sheet sheet)
+        public WorkbookEvaluator(Workbook workbook)
         {
             _logger = new EvaluatorLogger();
-           // _interpreter = InterpreterInitializer.CreateInterpreter();
-
-            _cells = new SheetData(sheet);
-            _sheet = sheet;
             
-            _interpreter.SetVariable("_cells", _cells);
+            _data = new WorkbookData(workbook);
+            _workbook = workbook;
+            
+            _interpreter = InterpreterInitializer.CreateInterpreter(_data);
+            
+            _interpreter.SetVariable("_data", _data);    
         }
 
-        public SheetEvaluator(SheetData cells)
+        public WorkbookEvaluator(WorkbookData data)
         {
             _logger = new EvaluatorLogger();
-          //  _interpreter = InterpreterInitializer.CreateInterpreter();
+            _data = data;
             
-            _cells = cells;
-            _interpreter.SetVariable("_cells", _cells);
-        }
-
-        public void SetValue(int row, int column, object value)
-        {
-            _cells[row, column] =  value;
+            _interpreter = InterpreterInitializer.CreateInterpreter(_data);
+            
+          
+            _interpreter.SetVariable("_data", _data);
         }
         
         public object Eval(string expression, int row, int column)
         {
             object result = null;
-
-            _interpreter.SetVariable("_currentRow", row);
-            _interpreter.SetVariable("_currentColumn", column);
+            
 
             var formula = FormulaConverter.PrepareFormula(expression);
 
@@ -65,7 +61,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
             }
             catch (Exception e)
             {
-                _logger.LogError("Cell:R{0}C{1}. Cannot eval Formula: {0}. Prepared formula: {1}. Message: {2}"
+                _logger.LogError("Cell:R{0}C{1}. Cannot eval Formula: {2}. Prepared formula: {3}. Message: {4}"
                     ,row
                     ,column
                     ,expression
@@ -77,13 +73,22 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
             return result;
         }
 
-        public void EvalSheet()
+        public void EvalWorkbook()
         {
-            foreach (var cell in _sheet.Cells.Where(x=>!string.IsNullOrWhiteSpace(x.Formula)))
+            foreach (var sheet in _workbook.Sheets)
             {
-                var cellAddress = _sheet.CellAddress(cell);
-                _cells.CurrentRow = cellAddress.Row;
-                _cells.CurrentColumn = cellAddress.Column;
+                var cells = _data.GetSheetByName(sheet.Name);
+                EvalSheet(sheet, cells);
+            }
+        }
+        
+        private void EvalSheet(Sheet sheet, SheetData cells)
+        {
+            foreach (var cell in sheet.Cells.Where(x=>!string.IsNullOrWhiteSpace(x.Formula)))
+            {
+                var cellAddress = sheet.CellAddress(cell);
+                _data.CurrentRow = cellAddress.Row;
+                _data.CurrentColumn = cellAddress.Column;
                 
                 var evalResult = Eval(cell.Formula, cellAddress.Row, cellAddress.Column);
 
@@ -98,9 +103,18 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
                
                 cell.Text = cell.Value?.ToString();
                 
-                _cells[cellAddress.Row, cellAddress.Column] = cell.Value;
+                cells[cellAddress.Row, cellAddress.Column] = cell.Value;
             }
         }
+        
+        public void SetValue(int row, int column, object value)
+        {
+
+            var cells = _data.FirstSheet;
+            
+            cells[row, column] =  value;
+        }
+
         
         public void SetLogLevel(LogLevel level)
         {

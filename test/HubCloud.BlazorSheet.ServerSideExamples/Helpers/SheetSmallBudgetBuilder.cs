@@ -5,11 +5,13 @@ namespace Company.WebApplication1.Helpers;
 
 public class SheetSmallBudgetBuilder
 {
-    public Sheet BuildSheet()
+    public Workbook Build()
     {
+        
+        
         var sheetSettings = new SheetSettings();
         sheetSettings.RowsCount = 10;
-        sheetSettings.ColumnsCount = 10;
+        sheetSettings.ColumnsCount = 6;
 
         var editSettings = new SheetCellEditSettings()
         {
@@ -34,6 +36,7 @@ public class SheetSmallBudgetBuilder
         sheetSettings.Styles.Add(totalStyle);
 
         var sheet = new Sheet(sheetSettings);
+        sheet.Name = "budget";
 
         sheet.GetCell(1, 2).Value = "Department";
         sheet.GetCell(1, 3).Value = "Start date";
@@ -72,7 +75,7 @@ public class SheetSmallBudgetBuilder
         sheet.GetCell(4, 6).Value = "Total";
         sheet.GetCell(4, 6).StyleUid = totalStyle.Uid;
 
-        sheet.GetCell(8, 6).Formula = $"$c.Sum(\"R5C6:R-1C6\")";
+        sheet.GetCell(8, 6).Formula = $"Sum(\"R5C6:R-1C6\")";
         sheet.GetCell(8, 6).StyleUid = totalStyle.Uid;
     
         sheet.PrepareCellText();
@@ -83,23 +86,27 @@ public class SheetSmallBudgetBuilder
         column = sheet.GetColumn(2);
         column.WidthValue = 200;
 
-        sheet.GetColumn(3).WidthValue = 150;
-        sheet.GetColumn(4).WidthValue = 150;
-        sheet.GetColumn(5).WidthValue = 150;
+        sheet.GetColumn(3).WidthValue = 120;
+        sheet.GetColumn(4).WidthValue = 120;
+        sheet.GetColumn(5).WidthValue = 120;
 
-        return sheet;
+        var workbook = new Workbook();
+        workbook.AddSheet(sheet);
+        
+        return workbook;
     }
 
     private void SetTotalColumnFormula(int row, int column, SheetCellStyle totalStyle, Sheet sheet)
     {
-        sheet.GetCell(8, column).Formula = $"$c.GetValue(\"R5C{column}\")+$c.GetValue(6,{column})+$c.GetValue(7,{column})";
+       
+        sheet.GetCell(8, column).Formula = $"Val(\"R5C{column}\")+Val(\"R6C{column}\")+Val(\"R7C{column}\")";
         sheet.GetCell(8, column).StyleUid = totalStyle.Uid;
 
     }
 
     private void SetTotalRowFormula(int row, int column, SheetCellStyle totalStyle, Sheet sheet)
     {
-        sheet.GetCell(row, column).Formula = $"$c.Sum(\"R{row}C3:R{row}C5\")";
+        sheet.GetCell(row, column).Formula = $"Sum(\"R{row}C3:R{row}C5\")";
         sheet.GetCell(row, column).StyleUid = totalStyle.Uid;
     }
 }

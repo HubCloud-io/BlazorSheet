@@ -3,33 +3,29 @@
 
 <h3>Sheet Input</h3>
 <hr/>
-
 <div class="row">
     <div class="col-sm-12">
+        <button class="btn btn-sm btn-outline-primary" @onclick="OnClearLogClick">Clear log</button>
+    </div>
+</div>
+<hr/>
+
+
+<div class="row">
+    <div class="col-sm-8">
 
         <HubCloud.BlazorSheet.Components.SheetComponent
-            Sheet="@_sheet"
+            Sheet="@_workbook.FirstSheet"
             Regime="SheetRegimes.Readonly"
             CellValueChanged="OnCellValueChanged">
         </HubCloud.BlazorSheet.Components.SheetComponent>
 
     </div>
-</div>
-
-
-@if (_evaluator != null)
-{
-    <hr/>
-
-    <div class="row">
-        <div class="col-sm-12">
-            <button class="btn btn-sm btn-outline-primary" @onclick="OnClearLogClick">Clear log</button>
-        </div>
-    </div>
-
-    <div class="row" style="font-size: 10px;margin-top: 3px;">
-        <div class="col-sm-6">
-            <div class="list-group">
+    <div class="col-sm-4">
+        
+        @if (_evaluator != null)
+        {
+            <div class="list-group" style="overflow-y:auto; max-height: 500px;font-size: 10px;">
                 @foreach (var msg in _evaluator.Messages)
                 {
                     if (msg.Level == LogLevel.Error)
@@ -50,6 +46,8 @@
                     }
                 }
             </div>
-        </div>
+        }
+        
     </div>
-}
+</div>
+
