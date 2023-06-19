@@ -6,12 +6,9 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
 {
     public class InterpreterInitializer
     {
-        
-        private static WorkbookData _data;
-        
+
         public static Interpreter CreateInterpreter(WorkbookData data)
         {
-            _data = data;
             
             var interpreter = new Interpreter(InterpreterOptions.DefaultCaseInsensitive);
 
@@ -19,26 +16,16 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
             interpreter.Reference(typeof(System.MidpointRounding));
             interpreter.Reference(typeof(System.Linq.Enumerable));
 
-            Func<string, UniversalValue> sumFunction = Sum;
+            Func<string, UniversalValue> sumFunction = data.Sum;
             interpreter.SetFunction("SUM", sumFunction);
             
-            Func<string, UniversalValue> valFunction = Val;
+            Func<string, UniversalValue> valFunction = data.GetValue;
             interpreter.SetFunction("VAL", valFunction);
             
             return interpreter;
         }
         
-        private static UniversalValue Sum(string address)
-        {
-            var result = _data.Sum(address);
-            return result;
-        }
-        
-        private static UniversalValue Val(string address)
-        {
-            var result = _data.GetValue(address);
-            return result;
-        }
+    
         
     }
 }
