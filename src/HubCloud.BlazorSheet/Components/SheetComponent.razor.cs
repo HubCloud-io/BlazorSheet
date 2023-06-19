@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Data.Common;
+using System.Text;
 using BBComponents.Abstract;
 using HubCloud.BlazorSheet.Core.Enums;
 using HubCloud.BlazorSheet.Core.Models;
@@ -11,6 +12,8 @@ namespace HubCloud.BlazorSheet.Components;
 
 public partial class SheetComponent : ComponentBase
 {
+    private const int LeftSideCellWidth = 30;
+
     private bool _multipleSelection;
 
     private string _currentCellText;
@@ -350,6 +353,98 @@ public partial class SheetComponent : ComponentBase
         return result;
     }
 
+    public string LeftSideCellStyle(Sheet sheet, SheetRow row)
+    {
+        var sb = new StringBuilder();
+
+        sb.Append("left:");
+        sb.Append(0);
+        sb.Append(";");
+
+        sb.Append("position:");
+        sb.Append("sticky");
+        sb.Append(";");
+
+        if (sheet.FreezedRows > 0)
+        {
+            var rowIndex = sheet.Rows.ToList().IndexOf(row);
+            var rowNumber = rowIndex + 1;
+
+            if (rowNumber <= sheet.FreezedRows)
+            {
+                sb.Append("z-index:");
+                sb.Append(10);
+                sb.Append(";");
+
+                var topPosition = TopPosition(sheet, rowNumber);
+
+                if (!string.IsNullOrEmpty(topPosition))
+                {
+                    sb.Append("top: ");
+                    sb.Append(topPosition);
+                    sb.Append(";");
+                }
+            }
+
+            if (rowNumber == sheet.FreezedRows)
+            {
+                sb.Append("border-bottom: 2px solid navy;");
+            }
+        }
+
+        return sb.ToString();
+    }
+
+    public string HeaderCellStyle(Sheet sheet, SheetColumn column)
+    {
+        var sb = new StringBuilder();
+
+        sb.Append("width:");
+        sb.Append(column.Width);
+        sb.Append(";");
+
+        sb.Append("max-width:");
+        sb.Append(column.Width);
+        sb.Append(";");
+
+        sb.Append("position: ");
+        sb.Append("sticky");
+        sb.Append(";");
+
+        sb.Append("top: ");
+        sb.Append(0);
+        sb.Append(";");
+
+        if (sheet.FreezedColumns > 0)
+        {
+            var columnIndex = sheet.Columns.ToList().IndexOf(column);
+            var columnNumber = columnIndex + 1;
+
+            if (columnNumber <= sheet.FreezedColumns)
+            {
+                sb.Append("z-index: ");
+                sb.Append(10);
+                sb.Append(";");
+
+                var leftPosition = LeftPosition(sheet, columnNumber, columnIndex);
+
+                if (!string.IsNullOrEmpty(leftPosition))
+                {
+                    sb.Append("left: ");
+                    sb.Append(leftPosition);
+                    sb.Append(";");
+                }
+            }
+
+            if (columnNumber == sheet.FreezedColumns)
+            {
+                sb.Append("border-right: 2px solid navy;");
+            }
+        }
+
+        return sb.ToString();
+    }
+
     public static string CellStyle(Sheet sheet, SheetRow row, SheetColumn column, SheetCell cell)
     {
         var cellStyle = sheet.GetStyle(cell);
@@ -440,7 +535,104 @@ public partial class SheetComponent : ComponentBase
             sb.Append(";");
         }
 
+        AddFreezedStyle(sb, sheet, row, column);
 
         return sb.ToString();
+    }
+
+    private static void AddFreezedStyle(StringBuilder sb, Sheet sheet, SheetRow row, SheetColumn column)
+    {
+        if (sheet.FreezedColumns == 0 && sheet.FreezedRows == 0)
+            return;
+
+        var rowNumber = sheet.Rows.ToList().IndexOf(row) + 1;
+        var columnIndex = sheet.Columns.ToList().IndexOf(column);
+        var columnNumber = columnIndex + 1;
+
+        var htmlPosition = HtmlPosition(sheet, rowNumber, columnNumber);
+
+        if (!string.IsNullOrEmpty(htmlPosition))
+        {
+            sb.Append("position: ");
+            sb.Append(htmlPosition);
+            sb.Append(";");
+
+            var leftPosition = LeftPosition(sheet, columnNumber, columnIndex);
+            var topPosition = TopPosition(sheet, rowNumber);
+
+            if (!string.IsNullOrEmpty(topPosition))
+            {
+                sb.Append("top: ");
+                sb.Append(topPosition);
+                sb.Append(";");
+            }
+            if (!string.IsNullOrEmpty(leftPosition))
+            {
+                sb.Append("left: ");
+                sb.Append(leftPosition);
+                sb.Append(";");
+            }
+
+            if (!string.IsNullOrEmpty(leftPosition) && !string.IsNullOrEmpty(topPosition))
+            {
+                sb.Append("z-index: 10;");
+            }
+            else
+            {
+                if (!string.IsNullOrEmpty(leftPosition) || !string.IsNullOrEmpty(topPosition))
+                {
+                    sb.Append("z-index: 1;");
+                }
+            }
+        }
+
+        if (rowNumber == sheet.FreezedRows)
+        {
+            sb.Append("border-bottom: 2px solid navy;");
+        }
+
+        if (columnNumber == sheet.FreezedColumns)
+        {
+            sb.Append("border-right: 2px solid navy;");
+        }
+    }
+
+    private static string HtmlPosition(Sheet sheet, int rowNumber, int columnNumber)
+    {
+        return (rowNumber <= sheet.FreezedRows || columnNumber <= sheet.FreezedColumns) ? "sticky" : "";
+    }
+
+    private static string LeftPosition(Sheet sheet, int columnNumber, int columnIndex)
+    {
+        double left = 0;
+
+        if (columnNumber > 0)
+            left += LeftSideCellWidth;
+
+        for (int i = 0; i < columnIndex; i++)
+        {
+            var column = sheet.Columns.ToArray()[i];
+
+            if (column.Hidden)
+                continue;
+
+            left += column.WidthValue;
+        }
+
+        var htmlLeft = columnNumber <= sheet.FreezedColumns ? $"{(int)left}px" : "";
+
+        return htmlLeft;
+    }
+
+    private static string TopPosition(Sheet sheet, int rowNumber)
+    {
+        double top = 0;
+
+        for (int i = 0; i < rowNumber; i++)
+        {
+            top += sheet.Rows.ToArray()[i].HeightValue + 6;
+        }
+
+        return rowNumber <= sheet.FreezedRows ? $"{(int)top}px" : "";
     }
 }

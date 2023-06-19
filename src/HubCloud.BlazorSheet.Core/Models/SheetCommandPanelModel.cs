@@ -16,6 +16,8 @@ namespace HubCloud.BlazorSheet.Core.Models
         public bool IsBold { get; set; }
         public bool IsItalic { get; set; }
         public int FontSize { get; set; }
+        public int FreezedRows { get; set; }
+        public int FreezedColumns { get; set; }
         public string FontFamily { get; set; }
         public string TextAlign { get; set; } = DefaultTextAlign;
         public string CustomFormat { get; set; }

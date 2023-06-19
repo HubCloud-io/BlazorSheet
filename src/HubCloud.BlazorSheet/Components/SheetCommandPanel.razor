@@ -6,6 +6,20 @@
 
         <div class="col-sm-12">
 
+            <span class="fa fa-light fa-snowflake text-primary"></span>
+            <span class="text-primary">R</span>
+            <BbNumberInput TValue="int" 
+                           @bind-Value="@Model.FreezedRows"
+                           Changed="OnSettingsChanged"
+                           HtmlStyle="width:30px;margin-left:5px; text-align:right;">
+            </BbNumberInput>
+            <span class="text-primary">С</span>
+            <BbNumberInput TValue="int" 
+                           @bind-Value="@Model.FreezedColumns"
+                           Changed="OnSettingsChanged"
+                           HtmlStyle="width:30px;margin-left:5px; text-align:right;">
+            </BbNumberInput>
+
             <span class="fa fa-font text-primary" style="margin-left: 3px;"></span>
             <BbNumberInput TValue="int"
                            @bind-Value="@Model.FontSize"

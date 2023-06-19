@@ -43,6 +43,9 @@ namespace HubCloud.BlazorSheet.Core.Models
             }
         }
 
+        public int FreezedRows { get; set; }
+        public int FreezedColumns { get; set; }
+
         public IReadOnlyCollection<SheetRow> Rows => _rows;
         public IReadOnlyCollection<SheetColumn> Columns => _columns;
         public IReadOnlyCollection<SheetCell> Cells => _cells;
@@ -59,6 +62,8 @@ namespace HubCloud.BlazorSheet.Core.Models
             Name = settings.Name;
             RowsCount = settings.RowsCount;
             ColumnsCount = settings.ColumnsCount;
+            FreezedColumns = settings.FreezedColumns;
+            FreezedRows = settings.FreezedRows;
 
             _rows.AddRange(settings.Rows);
             _columns.AddRange(settings.Columns);
@@ -384,6 +389,9 @@ namespace HubCloud.BlazorSheet.Core.Models
             {
                 SetEditSettings(cells, newEditSettings);
             }
+
+            FreezedRows = commandPanelModel.FreezedRows;
+            FreezedColumns = commandPanelModel.FreezedColumns;
         }
 
         public void SetStyle(SheetCell cell, SheetCellStyle newStyle)
@@ -549,6 +557,8 @@ namespace HubCloud.BlazorSheet.Core.Models
                 Name = Name,
                 RowsCount = RowsCount,
                 ColumnsCount = ColumnsCount,
+                FreezedColumns = FreezedColumns,
+                FreezedRows = FreezedRows
             };
 
             settings.Rows.AddRange(_rows);
