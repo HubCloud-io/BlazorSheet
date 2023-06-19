@@ -4,11 +4,23 @@
     {
         public static string PrepareFormula(string formulaIn)
         {
-            var result = formulaIn;
+            var formula = formulaIn;
 
-            result = result.Replace("$c", "_cells");
-
-            return result;
+           
+            formula = formula
+                .Replace("=","==")
+                .Replace("====","==")
+                .Replace("<>","!=")
+                .Replace("!==","!=")
+                .Replace(">==",">=")
+                .Replace("<==","<=")
+                .Replace("==>","=>")
+                .Replace(" and "," && ")
+                .Replace(" AND "," && ")
+                .Replace(" or "," || ")
+                .Replace(" OR "," || ");
+            
+            return formula;
         }
     }
 }
