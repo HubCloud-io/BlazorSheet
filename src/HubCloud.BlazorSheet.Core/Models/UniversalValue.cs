@@ -50,17 +50,27 @@ namespace HubCloud.BlazorSheet.Core.Models
 
         public UniversalValue Substring(int startIndex, int length)
         {
-            try
+
+            var stringValue = ToString();
+
+            if (string.IsNullOrEmpty(stringValue))
             {
-                if (Value is string valueString)
-                    return new UniversalValue(valueString.Substring(startIndex, length));
-                else
-                    return new UniversalValue(ToString().Substring(startIndex, length));
+                return new UniversalValue(string.Empty);
             }
-            catch
-            {
-                return new UniversalValue();
-            }
+
+            return new UniversalValue(stringValue.Substring(startIndex, length));
+
+            // try
+            // {
+            //     if (Value is string valueString)
+            //         return new UniversalValue(valueString.Substring(startIndex, length));
+            //     else
+            //         return new UniversalValue(ToString().Substring(startIndex, length));
+            // }
+            // catch
+            // {
+            //     return new UniversalValue();
+            // }
         }
 
         public UniversalValue ToUpper()
