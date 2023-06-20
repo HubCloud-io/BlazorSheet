@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Numerics;
 
 namespace HubCloud.BlazorSheet.Core.Models
@@ -35,17 +36,12 @@ namespace HubCloud.BlazorSheet.Core.Models
 
         public UniversalValue Substring(int startIndex)
         {
-            try
-            {
-                if (Value is string valueString)
-                    return new UniversalValue(valueString.Substring(startIndex));
-                else
-                    return new UniversalValue(ToString().Substring(startIndex));
-            }
-            catch
-            {
-                return new UniversalValue();
-            }
+            var stringValue = ToString();
+
+            if (string.IsNullOrEmpty(stringValue))
+                return new UniversalValue(string.Empty);
+
+            return new UniversalValue(stringValue.Substring(startIndex));
         }
 
         public UniversalValue Substring(int startIndex, int length)
@@ -54,55 +50,49 @@ namespace HubCloud.BlazorSheet.Core.Models
             var stringValue = ToString();
 
             if (string.IsNullOrEmpty(stringValue))
-            {
                 return new UniversalValue(string.Empty);
-            }
 
             return new UniversalValue(stringValue.Substring(startIndex, length));
-
-            // try
-            // {
-            //     if (Value is string valueString)
-            //         return new UniversalValue(valueString.Substring(startIndex, length));
-            //     else
-            //         return new UniversalValue(ToString().Substring(startIndex, length));
-            // }
-            // catch
-            // {
-            //     return new UniversalValue();
-            // }
         }
 
         public UniversalValue ToUpper()
         {
-            if (Value is string valueString)
-                return new UniversalValue(valueString.ToUpper());
-            else
-                return new UniversalValue(ToString().ToUpper());
+            var stringValue = ToString();
+
+            if (string.IsNullOrEmpty(stringValue))
+                return new UniversalValue(string.Empty);
+
+            return new UniversalValue(stringValue.ToUpper());
         }
 
         public UniversalValue ToLower()
         {
-            if (Value is string valueString)
-                return new UniversalValue(valueString.ToLower());
-            else
-                return new UniversalValue(ToString().ToLower());
+            var stringValue = ToString();
+
+            if (string.IsNullOrEmpty(stringValue))
+                return new UniversalValue(string.Empty);
+
+            return new UniversalValue(stringValue.ToLower());
         }
 
         public UniversalValue IndexOf(string value)
         {
-            if (Value is string valueString)
-                return new UniversalValue(valueString.IndexOf(value));
-            else
-                return new UniversalValue(ToString().IndexOf(value));
+            var stringValue = ToString();
+
+            if (string.IsNullOrEmpty(stringValue))
+                return new UniversalValue(string.Empty);
+
+            return new UniversalValue(stringValue.IndexOf(value));
         }
 
         public UniversalValue Replace(string oldValue, string newValue)
         {
-            if (Value is string valueString)
-                return new UniversalValue(valueString.Replace(oldValue, newValue));
-            else
-                return new UniversalValue(ToString().Replace(oldValue, newValue));
+            var stringValue = ToString();
+
+            if (string.IsNullOrEmpty(stringValue))
+                return new UniversalValue(string.Empty);
+
+            return new UniversalValue(stringValue.Replace(oldValue, newValue));
         }
 
         private static UniversalValue PerformOperation(UniversalValue v1,
