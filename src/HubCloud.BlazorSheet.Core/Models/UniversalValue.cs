@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Numerics;
 
 namespace HubCloud.BlazorSheet.Core.Models
@@ -31,6 +32,67 @@ namespace HubCloud.BlazorSheet.Core.Models
         public static UniversalValue operator /(UniversalValue v1, UniversalValue v2)
         {
             return PerformOperation(v1, v2, (a, b) => a / b);
+        }
+
+        public UniversalValue Substring(int startIndex)
+        {
+            var stringValue = ToString();
+
+            if (string.IsNullOrEmpty(stringValue))
+                return new UniversalValue(string.Empty);
+
+            return new UniversalValue(stringValue.Substring(startIndex));
+        }
+
+        public UniversalValue Substring(int startIndex, int length)
+        {
+
+            var stringValue = ToString();
+
+            if (string.IsNullOrEmpty(stringValue))
+                return new UniversalValue(string.Empty);
+
+            return new UniversalValue(stringValue.Substring(startIndex, length));
+        }
+
+        public UniversalValue ToUpper()
+        {
+            var stringValue = ToString();
+
+            if (string.IsNullOrEmpty(stringValue))
+                return new UniversalValue(string.Empty);
+
+            return new UniversalValue(stringValue.ToUpper());
+        }
+
+        public UniversalValue ToLower()
+        {
+            var stringValue = ToString();
+
+            if (string.IsNullOrEmpty(stringValue))
+                return new UniversalValue(string.Empty);
+
+            return new UniversalValue(stringValue.ToLower());
+        }
+
+        public UniversalValue IndexOf(string value)
+        {
+            var stringValue = ToString();
+
+            if (string.IsNullOrEmpty(stringValue))
+                return new UniversalValue(string.Empty);
+
+            return new UniversalValue(stringValue.IndexOf(value));
+        }
+
+        public UniversalValue Replace(string oldValue, string newValue)
+        {
+            var stringValue = ToString();
+
+            if (string.IsNullOrEmpty(stringValue))
+                return new UniversalValue(string.Empty);
+
+            return new UniversalValue(stringValue.Replace(oldValue, newValue));
         }
 
         private static UniversalValue PerformOperation(UniversalValue v1,
@@ -67,7 +129,10 @@ namespace HubCloud.BlazorSheet.Core.Models
 
         public override string ToString()
         {
-            return Value?.ToString();
+            if (Value != null)
+                return Value.ToString();
+            else
+                return string.Empty;
         }
     }
 }
