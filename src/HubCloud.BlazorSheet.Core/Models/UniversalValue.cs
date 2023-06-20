@@ -35,18 +35,32 @@ namespace HubCloud.BlazorSheet.Core.Models
 
         public UniversalValue Substring(int startIndex)
         {
-            if (Value is string valueString)
-                return new UniversalValue(valueString.Substring(startIndex));
-            else
-                return new UniversalValue(Value.ToString());
+            try
+            {
+                if (Value is string valueString)
+                    return new UniversalValue(valueString.Substring(startIndex));
+                else
+                    return new UniversalValue(ToString().Substring(startIndex));
+            }
+            catch
+            {
+                return new UniversalValue();
+            }
         }
 
         public UniversalValue Substring(int startIndex, int length)
         {
-            if (Value is string valueString)
-                return new UniversalValue(valueString.Substring(startIndex, length));
-            else
-                return new UniversalValue(Value.ToString());
+            try
+            {
+                if (Value is string valueString)
+                    return new UniversalValue(valueString.Substring(startIndex, length));
+                else
+                    return new UniversalValue(ToString().Substring(startIndex, length));
+            }
+            catch
+            {
+                return new UniversalValue();
+            }
         }
 
         public UniversalValue ToUpper()
@@ -54,7 +68,7 @@ namespace HubCloud.BlazorSheet.Core.Models
             if (Value is string valueString)
                 return new UniversalValue(valueString.ToUpper());
             else
-                return new UniversalValue(Value.ToString());
+                return new UniversalValue(ToString().ToUpper());
         }
 
         public UniversalValue ToLower()
@@ -62,7 +76,7 @@ namespace HubCloud.BlazorSheet.Core.Models
             if (Value is string valueString)
                 return new UniversalValue(valueString.ToLower());
             else
-                return new UniversalValue(Value.ToString());
+                return new UniversalValue(ToString().ToLower());
         }
 
         public UniversalValue IndexOf(string value)
@@ -70,7 +84,7 @@ namespace HubCloud.BlazorSheet.Core.Models
             if (Value is string valueString)
                 return new UniversalValue(valueString.IndexOf(value));
             else
-                return new UniversalValue(Value.ToString());
+                return new UniversalValue(ToString().IndexOf(value));
         }
 
         public UniversalValue Replace(string oldValue, string newValue)
@@ -78,7 +92,7 @@ namespace HubCloud.BlazorSheet.Core.Models
             if (Value is string valueString)
                 return new UniversalValue(valueString.Replace(oldValue, newValue));
             else
-                return new UniversalValue(Value.ToString());
+                return new UniversalValue(ToString().Replace(oldValue, newValue));
         }
 
         private static UniversalValue PerformOperation(UniversalValue v1,
@@ -115,7 +129,10 @@ namespace HubCloud.BlazorSheet.Core.Models
 
         public override string ToString()
         {
-            return Value?.ToString();
+            if (Value != null)
+                return Value.ToString();
+            else
+                return string.Empty;
         }
     }
 }
