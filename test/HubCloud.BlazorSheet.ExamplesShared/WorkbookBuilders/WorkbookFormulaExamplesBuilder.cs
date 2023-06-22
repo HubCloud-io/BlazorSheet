@@ -15,7 +15,7 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
         public Workbook Build()
         {
             var sheetSettings = new SheetSettings();
-            sheetSettings.RowsCount = 40;
+            sheetSettings.RowsCount = 50;
             sheetSettings.ColumnsCount = 6;
 
             _numberInputSettings = new SheetCellEditSettings()
@@ -103,6 +103,15 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
             WriteMinuteExample(sheet, 37, 2);
             WriteSecondExample(sheet, 38, 2);
             WriteYearExample(sheet, 39, 2);
+
+            sheet.GetCell(40, 2).Value = "ExpressoFunctions";
+            sheet.GetCell(40, 2).StyleUid = _titleStyle.Uid;
+
+            WriteIsEmptyExample(sheet, 41, 2);
+            WriteIsNotEmptyExample(sheet, 42, 2);
+            WriteDateDiffExample(sheet, 43, 2);
+            WriteIifExample(sheet, 44, 2);
+            WriteIfsExample(sheet, 45, 2);
 
             sheet.PrepareCellText();
 
@@ -501,6 +510,71 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
 
             sheet.GetCell(row, column + 1).EditSettingsUid = _dateTimeInputSettings.Uid;
             sheet.GetCell(row, column + 1).Value = DateTime.Now;
+
+            sheet.GetCell(row, column + 3).Formula = formula;
+        }
+
+        private void WriteIsEmptyExample(Sheet sheet, int row, int column)
+        {
+            var formula = "IsEmpty(VAL(\"R41C3\"))";
+            sheet.GetCell(row, column).Value = formula;
+
+            sheet.GetCell(row, column + 1).EditSettingsUid = _stringInputSettings.Uid;
+            sheet.GetCell(row, column + 1).Value = "qwerty";
+
+            sheet.GetCell(row, column + 3).Formula = formula;
+        }
+
+        private void WriteIsNotEmptyExample(Sheet sheet, int row, int column)
+        {
+            var formula = "IsNotEmpty(VAL(\"R42C3\"))";
+            sheet.GetCell(row, column).Value = formula;
+
+            sheet.GetCell(row, column + 1).EditSettingsUid = _stringInputSettings.Uid;
+            sheet.GetCell(row, column + 1).Value = "qwerty";
+
+            sheet.GetCell(row, column + 3).Formula = formula;
+        }
+
+        private void WriteDateDiffExample(Sheet sheet, int row, int column)
+        {
+            var formula = "DateDiff(\"day\", VAL(\"R43C3\"), VAL(\"R43C4\"))";
+            sheet.GetCell(row, column).Value = formula;
+
+            sheet.GetCell(row, column + 1).EditSettingsUid = _dateTimeInputSettings.Uid;
+            sheet.GetCell(row, column + 1).Value = DateTime.Now;
+
+            sheet.GetCell(row, column + 2).EditSettingsUid = _dateTimeInputSettings.Uid;
+            sheet.GetCell(row, column + 2).Value = DateTime.Now;
+
+            sheet.GetCell(row, column + 3).Formula = formula;
+        }
+
+        private void WriteIifExample(Sheet sheet, int row, int column)
+        {
+            //var formula = "iif( VAL(\"R44C3\") > VAL(\"R43C4\"), True, False)";
+            var formula = "iif( 10 > 5, True, False)";
+            sheet.GetCell(row, column).Value = formula;
+
+            //sheet.GetCell(row, column + 1).EditSettingsUid = _numberInputSettings.Uid;
+            //sheet.GetCell(row, column + 1).Value = 10m;
+
+            //sheet.GetCell(row, column + 2).EditSettingsUid = _numberInputSettings.Uid;
+            //sheet.GetCell(row, column + 2).Value = 5m;
+
+            sheet.GetCell(row, column + 3).Formula = formula;
+        }
+
+        private void WriteIfsExample(Sheet sheet, int row, int column)
+        {
+            var formula = "ifs( 5 > 10, True, 10 > 5, True, False)";
+            sheet.GetCell(row, column).Value = formula;
+
+            //sheet.GetCell(row, column + 1).EditSettingsUid = _numberInputSettings.Uid;
+            //sheet.GetCell(row, column + 1).Value = 10m;
+
+            //sheet.GetCell(row, column + 2).EditSettingsUid = _numberInputSettings.Uid;
+            //sheet.GetCell(row, column + 2).Value = 5m;
 
             sheet.GetCell(row, column + 3).Formula = formula;
         }
