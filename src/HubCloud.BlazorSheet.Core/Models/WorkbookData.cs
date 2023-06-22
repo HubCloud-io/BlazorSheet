@@ -96,120 +96,33 @@ namespace HubCloud.BlazorSheet.Core.Models
 
             var result = ExpressoFunctions.FunctionLibrary.IsEmptyFunction.Eval(universalValue.Value);
             return new UniversalValue(result);
-            
-            // if (universalValue.Value == null)
-            //     return new UniversalValue(true);
-            //
-            // if (universalValue.Value is int intValue)
-            //     return new UniversalValue(intValue == 0);
-            //
-            // if (universalValue.Value is decimal decimalValue)
-            //     return new UniversalValue(decimalValue == 0M);
-            //
-            // if (universalValue.Value is bool boolValue)
-            //     return new UniversalValue(boolValue == false);
-            //
-            // if (universalValue.Value is DateTime dateTimeValue)
-            //     return new UniversalValue(dateTimeValue == DateTime.MinValue);
-            //
-            // if (universalValue.Value is long longValue)
-            //     return new UniversalValue(longValue == 0);
-            //
-            // if (universalValue.Value is byte byteValue)
-            //     return new UniversalValue(byteValue == 0);
-            //
-            // if (string.IsNullOrEmpty(universalValue.Value?.ToString()))
-            //     return new UniversalValue(true);
-            //
-            // if (string.IsNullOrWhiteSpace(universalValue.Value?.ToString()))
-            //     return new UniversalValue(true);
-            //
-            // return new UniversalValue(false);
         }
 
         public UniversalValue IsNotEmpty(UniversalValue universalValue)
         {
-            if (IsEmpty(universalValue).Value is bool boolValue)
-                return new UniversalValue(!boolValue);
-            else
-                return new UniversalValue(false);
+            var result = ExpressoFunctions.FunctionLibrary.IsNotEmptyFunction.Eval(universalValue.Value);
+            return new UniversalValue(result);
         }
 
         public UniversalValue DateDiff(string datePartName, UniversalValue universalValueStart, UniversalValue universalValueEnd)
         {
-            var dateStart = GetDateTime(universalValueStart);
-            var dateFinish = GetDateTime(universalValueEnd);
+            var dateStart = universalValueStart.ToDate();
+            var dateFinish = universalValueEnd.ToDate();
 
-            if (dateStart != DateTime.MinValue && dateFinish != DateTime.MinValue)
-            {
-                TimeSpan span = dateFinish - dateStart;
-                Enum.TryParse<DateParts>(datePartName, true, out var datePart);
-
-                switch (datePart)
-                {
-                    case DateParts.Year:
-                        return new UniversalValue(dateFinish.Year - dateStart.Year);
-                    case DateParts.Month:
-                        return new UniversalValue((dateFinish.Year - dateStart.Year) * 12 + dateFinish.Month - dateStart.Month);
-                    case DateParts.Day:
-                        return new UniversalValue((decimal)span.TotalDays);
-                    case DateParts.Hour:
-                        return new UniversalValue((decimal)span.TotalHours);
-                    case DateParts.Minute:
-                        return new UniversalValue((decimal)span.TotalMinutes);
-                    case DateParts.Second:
-                        return new UniversalValue((decimal)span.TotalSeconds);
-                    default:
-                        throw new ArgumentOutOfRangeException(nameof(datePart), datePart, null);
-                }
-            }
-
-            return new UniversalValue();
+            var result = ExpressoFunctions.FunctionLibrary.DateDiffFunction.Eval(datePartName, dateStart, dateFinish);
+            return new UniversalValue(result);
         }
 
         public UniversalValue Iif(bool logicResult, object valueTrue, object valueFalse)
         {
-            return new UniversalValue(logicResult ? valueTrue : valueFalse);
+            var result = ExpressoFunctions.FunctionLibrary.IifFunction.Eval(logicResult, valueTrue, valueFalse);
+            return new UniversalValue(result);
         }
 
         public UniversalValue Ifs(params object[] args)
         {
-            for (var i = 0; i < args.Length; i += 2)
-            {
-                var expressionResult = args[i];
-
-                if (expressionResult is bool boolResult)
-                {
-                    if (boolResult == true)
-                    {
-                        if (i + 1 < args.Length)
-                        {
-                            var currentValue = args[i + 1];
-
-                            // It is neccessary to cast number to decimal to avoid errors in next operations.
-                            if (currentValue is double doubleVal)
-                            {
-                                return new UniversalValue((decimal)doubleVal);
-                            }
-                            else if (currentValue is float floatVal)
-                            {
-                                return new UniversalValue((decimal)floatVal);
-                            }
-                            else
-                            {
-                                return new UniversalValue(currentValue);
-                            }
-
-                        }
-                        else
-                        {
-                            return new UniversalValue();
-                        }
-                    }
-                }
-            }
-
-            return new UniversalValue();
+            var result = ExpressoFunctions.FunctionLibrary.IfsFunction.Eval(args);
+            return new UniversalValue(result);
         }
 
         private SheetData GetSheet(string address)
@@ -228,22 +141,6 @@ namespace HubCloud.BlazorSheet.Core.Models
 
             return sheet;
         }
-
-        private DateTime GetDateTime(UniversalValue universalValue)
-        {
-            if (universalValue.Value is DateTime dateTime)
-            {
-                return dateTime;
-            }
-
-            if (universalValue.Value is string stringValue)
-            {
-                if (DateTime.TryParse(stringValue, out dateTime))
-                    return dateTime;
-            }
-
-            return DateTime.MinValue;
-        }
         
         public SheetData GetSheetByName(string sheetName)
         {
@@ -260,6 +157,5 @@ namespace HubCloud.BlazorSheet.Core.Models
 
             return sheet;
         }
-        
     }
 }
