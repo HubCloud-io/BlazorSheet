@@ -475,6 +475,32 @@ public class UniversalValueTests
         Assert.AreEqual(minValPlusQuarter, result_5.Value);
     }
 
+   [TestCase(null, 1, "0001-04-01T00:00:00")]
+   [TestCase("", 1, "0001-04-01T00:00:00")]
+    [TestCase("2023-06-21T14:51:11", 1, "2023-09-21T14:51:11")]
+    public void SetQuarter_Quarters1_UniversalValue(string dateStr, int quarter, string checkStr)
+    {
+        DateTime.TryParse(checkStr, out var dateTimeCheck);
+
+        UniversalValue result;
+        if (string.IsNullOrWhiteSpace(dateStr))
+        {
+            var uv = new UniversalValue(dateStr);
+            
+            result = uv.AddQuarters(quarter);
+        }
+        else
+        {
+            DateTime.TryParse(dateStr, out var dateTimeStart);
+            var uv = new UniversalValue(dateTimeStart);
+            
+            result = uv.AddQuarters(quarter);
+        }
+
+        Assert.AreEqual(result.Value, dateTimeCheck);
+        
+    }
+
     [TestCase(6, 10, 10)]
     public void SetMonth_Months_UniversalValue(int months, int setMonths, int expectedMonths)
     {
