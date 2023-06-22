@@ -2,6 +2,7 @@
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
 using System;
+using ExpressoFunctions.FunctionLibrary;
 
 namespace HubCloud.BlazorSheet.UnitTests;
 
@@ -319,12 +320,13 @@ public class UniversalValueTests
         var result_5 = uv.AddQuarters(quarter);
 
         var expected = new DateTime(2023, expectedMonths, 20, 15, 14, 13);
+        var minValuePlusQuarter = DateTime.MinValue.AddMonths(3);
 
         Assert.AreEqual(expected, result_1.Value);
         Assert.AreEqual(expected, result_2.Value);
-        Assert.AreEqual(null, result_3.Value);
-        Assert.AreEqual(null, result_4.Value);
-        Assert.AreEqual(null, result_5.Value);
+        Assert.AreEqual(minValuePlusQuarter, result_3.Value);
+        Assert.AreEqual(minValuePlusQuarter, result_4.Value);
+        Assert.AreEqual(minValuePlusQuarter, result_5.Value);
     }
 
     [TestCase(44, 10, 10)]
@@ -464,12 +466,13 @@ public class UniversalValueTests
         var result_5 = uv.AddQuarters(quarter);
 
         var expected = new DateTime(2023, expectedMonths, 20, 15, 14, 13);
+        var minValPlusQuarter = DateTime.MinValue.AddMonths(3);
 
         Assert.AreEqual(expected, result_1.Value);
         Assert.AreEqual(expected, result_2.Value);
-        Assert.AreEqual(null, result_3.Value);
-        Assert.AreEqual(null, result_4.Value);
-        Assert.AreEqual(null, result_5.Value);
+        Assert.AreEqual(minValPlusQuarter, result_3.Value);
+        Assert.AreEqual(minValPlusQuarter, result_4.Value);
+        Assert.AreEqual(minValPlusQuarter, result_5.Value);
     }
 
     [TestCase(6, 10, 10)]

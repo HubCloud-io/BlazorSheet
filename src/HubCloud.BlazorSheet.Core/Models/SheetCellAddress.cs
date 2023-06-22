@@ -28,12 +28,12 @@ namespace HubCloud.BlazorSheet.Core.Models
         {
             Parse(address);
 
-            if (Row < 0)
+            if (Row <= 0)
             {
                 Row += currentRow;
             }
 
-            if (Column < 0)
+            if (Column <= 0)
             {
                 Column += currentColumn;
             }
