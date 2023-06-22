@@ -2,6 +2,7 @@
 using Newtonsoft.Json.Linq;
 using System;
 using System.Numerics;
+using ExpressoFunctions.FunctionLibrary;
 
 namespace HubCloud.BlazorSheet.Core.Models
 {
@@ -314,20 +315,39 @@ namespace HubCloud.BlazorSheet.Core.Models
                 return string.Empty;
         }
 
-        public UniversalValue AddQuarters(int quarter)
+        public DateTime ToDate()
         {
             if (Value is DateTime dateTime)
             {
-                return new UniversalValue(dateTime.AddMonths(quarter * 3));
+                return dateTime;
             }
-
+            
             if (Value is string stringValue)
             {
                 if (DateTime.TryParse(stringValue, out dateTime))
-                    return new UniversalValue(dateTime.AddMonths(quarter * 3));
+                    return dateTime;
             }
 
-            return new UniversalValue();
+            return DateTime.MinValue;
+        }
+
+        public UniversalValue AddQuarters(int quarter)
+        {
+            // if (Value is DateTime dateTime)
+            // {
+            //     return new UniversalValue(dateTime.AddMonths(quarter * 3));
+            // }
+            //
+            // if (Value is string stringValue)
+            // {
+            //     if (DateTime.TryParse(stringValue, out dateTime))
+            //         return new UniversalValue(dateTime.AddMonths(quarter * 3));
+            // }
+
+            var dateTime = ToDate();
+            var result = new UniversalValue(dateTime.AddQuarters(quarter));
+
+            return result;
         }
 
         public UniversalValue SetSecond(int second)
