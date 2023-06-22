@@ -21,6 +21,12 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
             
             Func<string, UniversalValue> valFunction = data.GetValue;
             interpreter.SetFunction("VAL", valFunction);
+            
+            Func<UniversalValue> rowFunction = data.Row;
+            interpreter.SetFunction("ROW", rowFunction);
+            
+            Func<UniversalValue> columnFunction = data.Column;
+            interpreter.SetFunction("COLUMN", columnFunction);
 
             Func<UniversalValue, UniversalValue> isEmptyFunction = data.IsEmpty;
             interpreter.SetFunction("IsEmpty", isEmptyFunction);

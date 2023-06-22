@@ -2,6 +2,7 @@
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace HubCloud.BlazorSheet.Core.Models
@@ -78,6 +79,16 @@ namespace HubCloud.BlazorSheet.Core.Models
             total = sheet.Sum(address);
 
             return total;
+        }
+
+        public UniversalValue Row()
+        {
+            return new UniversalValue(CurrentRow);
+        }
+
+        public UniversalValue Column()
+        {
+            return new UniversalValue(CurrentColumn);
         }
 
         public UniversalValue IsEmpty(UniversalValue universalValue)
