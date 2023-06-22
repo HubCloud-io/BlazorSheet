@@ -108,7 +108,7 @@ namespace HubCloud.BlazorSheet.Core.Models
         {
             var dateStart = universalValueStart.ToDate();
             var dateFinish = universalValueEnd.ToDate();
-
+            
             var result = ExpressoFunctions.FunctionLibrary.DateDiffFunction.Eval(datePartName, dateStart, dateFinish);
             return new UniversalValue(result);
         }
