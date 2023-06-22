@@ -82,34 +82,38 @@ namespace HubCloud.BlazorSheet.Core.Models
 
         public UniversalValue IsEmpty(UniversalValue universalValue)
         {
-            if (universalValue.Value == null)
-                return new UniversalValue(true);
 
-            if (universalValue.Value is int intValue)
-                return new UniversalValue(intValue == 0);
-
-            if (universalValue.Value is decimal decimalValue)
-                return new UniversalValue(decimalValue == 0M);
-
-            if (universalValue.Value is bool boolValue)
-                return new UniversalValue(boolValue == false);
-
-            if (universalValue.Value is DateTime dateTimeValue)
-                return new UniversalValue(dateTimeValue == DateTime.MinValue);
-
-            if (universalValue.Value is long longValue)
-                return new UniversalValue(longValue == 0);
-
-            if (universalValue.Value is byte byteValue)
-                return new UniversalValue(byteValue == 0);
-
-            if (string.IsNullOrEmpty(universalValue.Value?.ToString()))
-                return new UniversalValue(true);
-
-            if (string.IsNullOrWhiteSpace(universalValue.Value?.ToString()))
-                return new UniversalValue(true);
-
-            return new UniversalValue(false);
+            var result = ExpressoFunctions.FunctionLibrary.IsEmptyFunction.Eval(universalValue.Value);
+            return new UniversalValue(result);
+            
+            // if (universalValue.Value == null)
+            //     return new UniversalValue(true);
+            //
+            // if (universalValue.Value is int intValue)
+            //     return new UniversalValue(intValue == 0);
+            //
+            // if (universalValue.Value is decimal decimalValue)
+            //     return new UniversalValue(decimalValue == 0M);
+            //
+            // if (universalValue.Value is bool boolValue)
+            //     return new UniversalValue(boolValue == false);
+            //
+            // if (universalValue.Value is DateTime dateTimeValue)
+            //     return new UniversalValue(dateTimeValue == DateTime.MinValue);
+            //
+            // if (universalValue.Value is long longValue)
+            //     return new UniversalValue(longValue == 0);
+            //
+            // if (universalValue.Value is byte byteValue)
+            //     return new UniversalValue(byteValue == 0);
+            //
+            // if (string.IsNullOrEmpty(universalValue.Value?.ToString()))
+            //     return new UniversalValue(true);
+            //
+            // if (string.IsNullOrWhiteSpace(universalValue.Value?.ToString()))
+            //     return new UniversalValue(true);
+            //
+            // return new UniversalValue(false);
         }
 
         public UniversalValue IsNotEmpty(UniversalValue universalValue)
