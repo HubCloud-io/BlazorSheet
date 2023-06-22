@@ -10,7 +10,6 @@ namespace HubCloud.BlazorSheet.Core.Models
 
         public SheetCellAddress()
         {
-
         }
 
         public SheetCellAddress(int row, int column)
@@ -23,7 +22,7 @@ namespace HubCloud.BlazorSheet.Core.Models
         {
             Parse(address);
         }
-        
+
         public SheetCellAddress(string address, int currentRow, int currentColumn)
         {
             Parse(address);
@@ -38,8 +37,8 @@ namespace HubCloud.BlazorSheet.Core.Models
                 Column += currentColumn;
             }
         }
-        
-        
+
+
         private void Parse(string address)
         {
             if (string.IsNullOrWhiteSpace(address))
@@ -53,9 +52,9 @@ namespace HubCloud.BlazorSheet.Core.Models
             {
                 var separatorIndex = address.IndexOf('!');
                 SheetName = address.Substring(0, separatorIndex);
-                address = address.Substring(separatorIndex+1);
+                address = address.Substring(separatorIndex + 1);
             }
-            
+
             int rIndex = address.IndexOf("R", StringComparison.OrdinalIgnoreCase);
             int cIndex = address.IndexOf("C", StringComparison.OrdinalIgnoreCase);
 
@@ -63,19 +62,22 @@ namespace HubCloud.BlazorSheet.Core.Models
             {
                 throw new ArgumentException("Invalid cell address format.", nameof(address));
             }
-            
+
             var rString = address.Substring(1, cIndex - rIndex - 1);
             var cString = address.Substring(cIndex + 1);
 
-            if (!int.TryParse(rString, out int row) ||
-                !int.TryParse(cString, out int col))
+            if (int.TryParse(rString, out var row))
             {
-                throw new ArgumentException("Invalid cell address format.", nameof(address));
+                Row = row;
+            }
+
+            if (int.TryParse(cString, out var col))
+            {
+                Column = col;
             }
 
             Row = row;
             Column = col;
         }
-
     }
 }
