@@ -21,7 +21,22 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
             
             Func<string, UniversalValue> valFunction = data.GetValue;
             interpreter.SetFunction("VAL", valFunction);
-            
+
+            Func<UniversalValue, UniversalValue> isEmptyFunction = data.IsEmpty;
+            interpreter.SetFunction("IsEmpty", isEmptyFunction);
+
+            Func<UniversalValue, UniversalValue> isNotEmptyFunction = data.IsNotEmpty;
+            interpreter.SetFunction("IsNotEmpty", isNotEmptyFunction);
+
+            Func<string, UniversalValue, UniversalValue, UniversalValue> dateDiffFunction = data.DateDiff;
+            interpreter.SetFunction("DateDiff", dateDiffFunction);
+
+            Func<bool, object, object, UniversalValue> iifFunction = data.Iif;
+            interpreter.SetFunction("iif", iifFunction);
+
+            Func<object[], UniversalValue> ifsFunction = data.Ifs;
+            interpreter.SetFunction("ifs", ifsFunction);
+
             return interpreter;
         }
         
