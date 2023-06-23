@@ -15,7 +15,7 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
         public Workbook Build()
         {
             var sheetSettings = new SheetSettings();
-            sheetSettings.RowsCount = 50;
+            sheetSettings.RowsCount = 60;
             sheetSettings.ColumnsCount = 6;
 
             _numberInputSettings = new SheetCellEditSettings()
@@ -113,6 +113,17 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
             WriteIifExample(sheet, 44, 2);
             WriteIfsExample(sheet, 45, 2);
 
+            sheet.GetCell(46, 2).Value = "Сomparison operators";
+            sheet.GetCell(46, 2).StyleUid = _titleStyle.Uid;
+
+            WriteMoreThanExample(sheet, 47, 2);
+            WriteLessThanExample(sheet, 48, 2);
+            WriteMoreThanOrEqualExample(sheet, 49, 2);
+            WriteLessThanOrEqualExample(sheet, 50, 2);
+            WriteEqualExample(sheet, 51, 2);
+            WriteNotEqualExample(sheet, 52, 2);
+            WriteEqualsExample(sheet, 53, 2);
+
             sheet.PrepareCellText();
 
             sheet.GetColumn(1).WidthValue = 30;
@@ -137,7 +148,6 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
 
             sheet.GetCell(row, column + 3).Formula = formula;
         }
-
 
         private void WriteSubstringExample_1(Sheet sheet, int row, int column)
         {
@@ -575,6 +585,104 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
 
             //sheet.GetCell(row, column + 2).EditSettingsUid = _numberInputSettings.Uid;
             //sheet.GetCell(row, column + 2).Value = 5m;
+
+            sheet.GetCell(row, column + 3).Formula = formula;
+        }
+
+        private void WriteMoreThanExample(Sheet sheet, int row, int column)
+        {
+            var formula = "VAL(\"R47C3\") > VAL(\"R47C4\")";
+            sheet.GetCell(row, column).Value = formula;
+
+            sheet.GetCell(row, column + 1).EditSettingsUid = _numberInputSettings.Uid;
+            sheet.GetCell(row, column + 1).Value = 10m;
+
+            sheet.GetCell(row, column + 2).EditSettingsUid = _numberInputSettings.Uid;
+            sheet.GetCell(row, column + 2).Value = 5m;
+
+            sheet.GetCell(row, column + 3).Formula = formula;
+        }
+
+        private void WriteLessThanExample(Sheet sheet, int row, int column)
+        {
+            var formula = "VAL(\"R48C3\") < VAL(\"R48C4\")";
+            sheet.GetCell(row, column).Value = formula;
+
+            sheet.GetCell(row, column + 1).EditSettingsUid = _numberInputSettings.Uid;
+            sheet.GetCell(row, column + 1).Value = 10m;
+
+            sheet.GetCell(row, column + 2).EditSettingsUid = _numberInputSettings.Uid;
+            sheet.GetCell(row, column + 2).Value = 5m;
+
+            sheet.GetCell(row, column + 3).Formula = formula;
+        }
+
+        private void WriteMoreThanOrEqualExample(Sheet sheet, int row, int column)
+        {
+            var formula = "VAL(\"R49C3\") >= VAL(\"R49C4\")";
+            sheet.GetCell(row, column).Value = formula;
+
+            sheet.GetCell(row, column + 1).EditSettingsUid = _numberInputSettings.Uid;
+            sheet.GetCell(row, column + 1).Value = 10m;
+
+            sheet.GetCell(row, column + 2).EditSettingsUid = _numberInputSettings.Uid;
+            sheet.GetCell(row, column + 2).Value = 5m;
+
+            sheet.GetCell(row, column + 3).Formula = formula;
+        }
+
+        private void WriteLessThanOrEqualExample(Sheet sheet, int row, int column)
+        {
+            var formula = "VAL(\"R50C3\") <= VAL(\"R50C4\")";
+            sheet.GetCell(row, column).Value = formula;
+
+            sheet.GetCell(row, column + 1).EditSettingsUid = _numberInputSettings.Uid;
+            sheet.GetCell(row, column + 1).Value = 10m;
+
+            sheet.GetCell(row, column + 2).EditSettingsUid = _numberInputSettings.Uid;
+            sheet.GetCell(row, column + 2).Value = 5m;
+
+            sheet.GetCell(row, column + 3).Formula = formula;
+        }
+
+        private void WriteEqualExample(Sheet sheet, int row, int column)
+        {
+            var formula = "VAL(\"R51C3\") == VAL(\"R51C4\")";
+            sheet.GetCell(row, column).Value = formula;
+
+            sheet.GetCell(row, column + 1).EditSettingsUid = _numberInputSettings.Uid;
+            sheet.GetCell(row, column + 1).Value = 10m;
+
+            sheet.GetCell(row, column + 2).EditSettingsUid = _numberInputSettings.Uid;
+            sheet.GetCell(row, column + 2).Value = 5m;
+
+            sheet.GetCell(row, column + 3).Formula = formula;
+        }
+
+        private void WriteNotEqualExample(Sheet sheet, int row, int column)
+        {
+            var formula = "VAL(\"R52C3\") != VAL(\"R52C4\")";
+            sheet.GetCell(row, column).Value = formula;
+
+            sheet.GetCell(row, column + 1).EditSettingsUid = _numberInputSettings.Uid;
+            sheet.GetCell(row, column + 1).Value = 10m;
+
+            sheet.GetCell(row, column + 2).EditSettingsUid = _numberInputSettings.Uid;
+            sheet.GetCell(row, column + 2).Value = 5m;
+
+            sheet.GetCell(row, column + 3).Formula = formula;
+        }
+
+        private void WriteEqualsExample(Sheet sheet, int row, int column)
+        {
+            var formula = "VAL(\"R53C3\").Equals(VAL(\"R53C4\"))";
+            sheet.GetCell(row, column).Value = formula;
+
+            sheet.GetCell(row, column + 1).EditSettingsUid = _numberInputSettings.Uid;
+            sheet.GetCell(row, column + 1).Value = 10m;
+
+            sheet.GetCell(row, column + 2).EditSettingsUid = _numberInputSettings.Uid;
+            sheet.GetCell(row, column + 2).Value = 5m;
 
             sheet.GetCell(row, column + 3).Formula = formula;
         }

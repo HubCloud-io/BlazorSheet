@@ -150,6 +150,36 @@ namespace HubCloud.BlazorSheet.Core.Models
             return PerformOperation(v1, v2, (a, b) => a / b);
         }
 
+        public static UniversalValue operator >(UniversalValue v1, UniversalValue v2)
+        {
+            return PerformOperation(v1, v2, (a, b) => a > b);
+        }
+
+        public static UniversalValue operator <(UniversalValue v1, UniversalValue v2)
+        {
+            return PerformOperation(v1, v2, (a, b) => a < b);
+        }
+
+        public static UniversalValue operator >=(UniversalValue v1, UniversalValue v2)
+        {
+            return PerformOperation(v1, v2, (a, b) => a >= b);
+        }
+
+        public static UniversalValue operator <=(UniversalValue v1, UniversalValue v2)
+        {
+            return PerformOperation(v1, v2, (a, b) => a <= b);
+        }
+
+        public static UniversalValue operator ==(UniversalValue v1, UniversalValue v2)
+        {
+            return PerformOperation(v1, v2, (a, b) => a == b);
+        }
+
+        public static UniversalValue operator !=(UniversalValue v1, UniversalValue v2)
+        {
+            return PerformOperation(v1, v2, (a, b) => a != b);
+        }
+
         public UniversalValue Substring(int startIndex)
         {
             var stringValue = ToString();
@@ -305,7 +335,18 @@ namespace HubCloud.BlazorSheet.Core.Models
             }
 
             return new UniversalValue();
-        }        
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (Value == null || obj == null) 
+                return false;
+
+            if (obj is UniversalValue uv)
+                return Value.Equals(uv.Value);
+            else
+                return false;
+        }
 
         public override string ToString()
         {
@@ -694,7 +735,7 @@ namespace HubCloud.BlazorSheet.Core.Models
 
             return new UniversalValue(v1.Value?.ToString() + v2.Value?.ToString());
         }
-
+        
         private int GetMonthBegin(int dateMonth)
         {
             int monthBegin;
