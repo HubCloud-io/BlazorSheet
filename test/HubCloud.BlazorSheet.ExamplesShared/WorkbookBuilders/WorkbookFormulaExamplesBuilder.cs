@@ -123,6 +123,10 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
             WriteEqualExample(sheet, 51, 2);
             WriteNotEqualExample(sheet, 52, 2);
             WriteEqualsExample(sheet, 53, 2);
+            WriteAndExample(sheet, 54, 2);
+            WriteOrExample(sheet, 55, 2);
+            WriteAndExample2(sheet, 56, 2);
+            WriteOrExample2(sheet, 57, 2);
 
             sheet.PrepareCellText();
 
@@ -683,6 +687,62 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
 
             sheet.GetCell(row, column + 2).EditSettingsUid = _numberInputSettings.Uid;
             sheet.GetCell(row, column + 2).Value = 5m;
+
+            sheet.GetCell(row, column + 3).Formula = formula;
+        }
+
+        private void WriteAndExample(Sheet sheet, int row, int column)
+        {
+            var formula = "(VAL(\"R54C3\") < 5) && (VAL(\"R54C4\") > 10)";
+            sheet.GetCell(row, column).Value = formula;
+
+            sheet.GetCell(row, column + 1).EditSettingsUid = _numberInputSettings.Uid;
+            sheet.GetCell(row, column + 1).Value = 10m;
+
+            sheet.GetCell(row, column + 2).EditSettingsUid = _numberInputSettings.Uid;
+            sheet.GetCell(row, column + 2).Value = 5m;
+
+            sheet.GetCell(row, column + 3).Formula = formula;
+        }
+
+        private void WriteOrExample(Sheet sheet, int row, int column)
+        {
+            var formula = "(VAL(\"R55C3\") > 5) || (VAL(\"R55C4\") < 10)";
+            sheet.GetCell(row, column).Value = formula;
+
+            sheet.GetCell(row, column + 1).EditSettingsUid = _numberInputSettings.Uid;
+            sheet.GetCell(row, column + 1).Value = 10m;
+
+            sheet.GetCell(row, column + 2).EditSettingsUid = _numberInputSettings.Uid;
+            sheet.GetCell(row, column + 2).Value = 5m;
+
+            sheet.GetCell(row, column + 3).Formula = formula;
+        }
+
+        private void WriteAndExample2(Sheet sheet, int row, int column)
+        {
+            var formula = "VAL(\"R56C3\") && VAL(\"R56C4\")";
+            sheet.GetCell(row, column).Value = formula;
+
+            sheet.GetCell(row, column + 1).EditSettingsUid = _stringInputSettings.Uid;
+            sheet.GetCell(row, column + 1).Value = true;
+
+            sheet.GetCell(row, column + 2).EditSettingsUid = _stringInputSettings.Uid;
+            sheet.GetCell(row, column + 2).Value = true;
+
+            sheet.GetCell(row, column + 3).Formula = formula;
+        }
+
+        private void WriteOrExample2(Sheet sheet, int row, int column)
+        {
+            var formula = "VAL(\"R57C3\") || VAL(\"R57C4\")";
+            sheet.GetCell(row, column).Value = formula;
+
+            sheet.GetCell(row, column + 1).EditSettingsUid = _stringInputSettings.Uid;
+            sheet.GetCell(row, column + 1).Value = true;
+
+            sheet.GetCell(row, column + 2).EditSettingsUid = _stringInputSettings.Uid;
+            sheet.GetCell(row, column + 2).Value = true;
 
             sheet.GetCell(row, column + 3).Formula = formula;
         }

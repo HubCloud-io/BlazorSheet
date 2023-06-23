@@ -177,6 +177,38 @@ namespace HubCloud.BlazorSheet.Core.Models
             return PerformOperation(new UniversalValue(v1), v2, (a, b) => a != b);
         }
 
+        public static UniversalValue operator &(UniversalValue v1, UniversalValue v2)
+        {
+            if (bool.TryParse(v1.ToString(), out bool v1Bool))
+            {
+                if (bool.TryParse(v2.ToString(), out bool v2Bool))
+                    return new UniversalValue(v1Bool & v2Bool);
+            }
+
+            return new UniversalValue(false);
+        }
+        public static UniversalValue operator |(UniversalValue v1, UniversalValue v2)
+        {
+            if (bool.TryParse(v1.ToString(), out bool v1Bool))
+            {
+                if (bool.TryParse(v2.ToString(), out bool v2Bool))
+                    return new UniversalValue(v1Bool | v2Bool);
+            }
+
+            return new UniversalValue(false);
+        }
+        public static bool operator true(UniversalValue uv)
+        {
+            if (bool.TryParse(uv.ToString(), out bool valBool))
+                return valBool;
+
+            return false;
+        }
+        public static bool operator false(UniversalValue uv)
+        {
+            return false;
+        }
+
         public UniversalValue Substring(int startIndex)
         {
             var stringValue = ToString();
