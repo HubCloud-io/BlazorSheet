@@ -10,119 +10,17 @@ namespace HubCloud.BlazorSheet.Core.Models
     {
         public object Value { get; set; }
 
-        public UniversalValue Day
-        {
-            get
-            {
-                if (Value is DateTime dateTime)
-                {
-                    return new UniversalValue(dateTime.Day);
-                }
+        public UniversalValue Day => new UniversalValue(ToDate().Day);
 
-                if (Value is string stringValue)
-                {
-                    if (DateTime.TryParse(stringValue, out dateTime))
-                        return new UniversalValue(dateTime.Day);
-                }
+        public UniversalValue Hour => new UniversalValue(ToDate().Hour);
 
-                return new UniversalValue();
-            }
-        }
+        public UniversalValue Month => new UniversalValue(ToDate().Month);
 
-        public UniversalValue Hour
-        {
-            get
-            {
-                if (Value is DateTime dateTime)
-                {
-                    return new UniversalValue(dateTime.Hour);
-                }
+        public UniversalValue Minute => new UniversalValue(ToDate().Minute);
 
-                if (Value is string stringValue)
-                {
-                    if (DateTime.TryParse(stringValue, out dateTime))
-                        return new UniversalValue(dateTime.Hour);
-                }
+        public UniversalValue Second => new UniversalValue(ToDate().Second);
 
-                return new UniversalValue();
-            }
-        }
-
-        public UniversalValue Month
-        {
-            get
-            {
-                if (Value is DateTime dateTime)
-                {
-                    return new UniversalValue(dateTime.Month);
-                }
-
-                if (Value is string stringValue)
-                {
-                    if (DateTime.TryParse(stringValue, out dateTime))
-                        return new UniversalValue(dateTime.Month);
-                }
-
-                return new UniversalValue();
-            }
-        }
-
-        public UniversalValue Minute
-        {
-            get
-            {
-                if (Value is DateTime dateTime)
-                {
-                    return new UniversalValue(dateTime.Minute);
-                }
-
-                if (Value is string stringValue)
-                {
-                    if (DateTime.TryParse(stringValue, out dateTime))
-                        return new UniversalValue(dateTime.Minute);
-                }
-
-                return new UniversalValue();
-            }
-        }
-
-        public UniversalValue Second
-        {
-            get
-            {
-                if (Value is DateTime dateTime)
-                {
-                    return new UniversalValue(dateTime.Second);
-                }
-
-                if (Value is string stringValue)
-                {
-                    if (DateTime.TryParse(stringValue, out dateTime))
-                        return new UniversalValue(dateTime.Second);
-                }
-
-                return new UniversalValue();
-            }
-        }
-
-        public UniversalValue Year
-        {
-            get
-            {
-                if (Value is DateTime dateTime)
-                {
-                    return new UniversalValue(dateTime.Year);
-                }
-
-                if (Value is string stringValue)
-                {
-                    if (DateTime.TryParse(stringValue, out dateTime))
-                        return new UniversalValue(dateTime.Year);
-                }
-
-                return new UniversalValue();
-            }
-        }
+        public UniversalValue Year => new UniversalValue(ToDate().Year);
 
         public UniversalValue(object value)
         {
@@ -243,98 +141,38 @@ namespace HubCloud.BlazorSheet.Core.Models
 
         public UniversalValue AddDays(decimal value)
         {
-            if (Value is DateTime dateTime)
-            {
-                return new UniversalValue(dateTime.AddDays((double)value));
-            }
-
-            if (Value is string stringValue)
-            {
-                if (DateTime.TryParse(stringValue, out dateTime))
-                    return new UniversalValue(dateTime.AddDays((double)value));
-            }
-
-            return new UniversalValue();
+            var dateTime = ToDate();
+            return new UniversalValue(dateTime.AddDays(value));
         }
 
         public UniversalValue AddHours(decimal value)
         {
-            if (Value is DateTime dateTime)
-            {
-                return new UniversalValue(dateTime.AddHours((double)value));
-            }
-
-            if (Value is string stringValue)
-            {
-                if (DateTime.TryParse(stringValue, out dateTime))
-                    return new UniversalValue(dateTime.AddHours((double)value));
-            }
-
-            return new UniversalValue();
+            var dateTime = ToDate();
+            return new UniversalValue(dateTime.AddHours(value));
         }
 
         public UniversalValue AddMinutes(decimal value)
         {
-            if (Value is DateTime dateTime)
-            {
-                return new UniversalValue(dateTime.AddMinutes((double)value));
-            }
-
-            if (Value is string stringValue)
-            {
-                if (DateTime.TryParse(stringValue, out dateTime))
-                    return new UniversalValue(dateTime.AddMinutes((double)value));
-            }
-
-            return new UniversalValue();
+            var dateTime = ToDate();
+            return new UniversalValue(dateTime.AddMinutes(value));
         }
 
         public UniversalValue AddMonths(int months)
         {
-            if (Value is DateTime dateTime)
-            {
-                return new UniversalValue(dateTime.AddMonths(months));
-            }
-
-            if (Value is string stringValue)
-            {
-                if (DateTime.TryParse(stringValue, out dateTime))
-                    return new UniversalValue(dateTime.AddMonths(months));
-            }
-
-            return new UniversalValue();
+            var dateTime = ToDate();
+            return new UniversalValue(dateTime.AddMonths(months));
         }
 
         public UniversalValue AddSeconds(decimal value)
         {
-            if (Value is DateTime dateTime)
-            {
-                return new UniversalValue(dateTime.AddSeconds((double)value));
-            }
-
-            if (Value is string stringValue)
-            {
-                if (DateTime.TryParse(stringValue, out dateTime))
-                    return new UniversalValue(dateTime.AddSeconds((double)value));
-            }
-
-            return new UniversalValue();
+            var dateTime = ToDate();
+            return new UniversalValue(dateTime.AddSeconds(value));
         }
 
         public UniversalValue AddYears(int value)
         {
-            if (Value is DateTime dateTime)
-            {
-                return new UniversalValue(dateTime.AddYears(value));
-            }
-
-            if (Value is string stringValue)
-            {
-                if (DateTime.TryParse(stringValue, out dateTime))
-                    return new UniversalValue(dateTime.AddYears(value));
-            }
-
-            return new UniversalValue();
+            var dateTime = ToDate();
+            return new UniversalValue(dateTime.AddYears(value));
         }
 
         public override bool Equals(object obj)
@@ -374,17 +212,6 @@ namespace HubCloud.BlazorSheet.Core.Models
 
         public UniversalValue AddQuarters(int quarter)
         {
-            // if (Value is DateTime dateTime)
-            // {
-            //     return new UniversalValue(dateTime.AddMonths(quarter * 3));
-            // }
-            //
-            // if (Value is string stringValue)
-            // {
-            //     if (DateTime.TryParse(stringValue, out dateTime))
-            //         return new UniversalValue(dateTime.AddMonths(quarter * 3));
-            // }
-
             var dateTime = ToDate();
             var result = new UniversalValue(dateTime.AddQuarters(quarter));
 
@@ -393,316 +220,92 @@ namespace HubCloud.BlazorSheet.Core.Models
 
         public UniversalValue SetSecond(int second)
         {
-            if (Value is DateTime dateTime)
-            {
-                var resDate = new DateTime(dateTime.Year, dateTime.Month, dateTime.Day, dateTime.Hour, dateTime.Minute, second);
-                return new UniversalValue(resDate);
-            }
-
-            if (Value is string stringValue)
-            {
-                if (DateTime.TryParse(stringValue, out dateTime))
-                {
-                    var resDate = new DateTime(dateTime.Year, dateTime.Month, dateTime.Day, dateTime.Hour, dateTime.Minute, second);
-                    return new UniversalValue(resDate);
-                }
-            }
-
-            return new UniversalValue();
+            var dateTime = ToDate();
+            return new UniversalValue(dateTime.SetSecond(second));
         }
 
         public UniversalValue SetMinute(int minute)
         {
-            if (Value is DateTime dateTime)
-            {
-                var resDate = new DateTime(dateTime.Year, dateTime.Month, dateTime.Day, dateTime.Hour, minute, dateTime.Second);
-                return new UniversalValue(resDate);
-            }
-
-            if (Value is string stringValue)
-            {
-                if (DateTime.TryParse(stringValue, out dateTime))
-                {
-                    var resDate = new DateTime(dateTime.Year, dateTime.Month, dateTime.Day, dateTime.Hour, minute, dateTime.Second);
-                    return new UniversalValue(resDate);
-                }
-            }
-
-            return new UniversalValue();
+            var dateTime = ToDate();
+            return new UniversalValue(dateTime.SetMinute(minute));
         }
 
         public UniversalValue SetHour(int hour)
         {
-            if (Value is DateTime dateTime)
-            {
-                var resDate = new DateTime(dateTime.Year, dateTime.Month, dateTime.Day, hour, dateTime.Minute, dateTime.Second);
-                return new UniversalValue(resDate);
-            }
-
-            if (Value is string stringValue)
-            {
-                if (DateTime.TryParse(stringValue, out dateTime))
-                {
-                    var resDate = new DateTime(dateTime.Year, dateTime.Month, dateTime.Day, hour, dateTime.Minute, dateTime.Second);
-                    return new UniversalValue(resDate);
-                }
-            }
-
-            return new UniversalValue();
+            var dateTime = ToDate();
+            return new UniversalValue(dateTime.SetHour(hour));
         }
 
         public UniversalValue SetDay(int day)
         {
-            if (Value is DateTime dateTime)
-            {
-                var resDate = new DateTime(dateTime.Year, dateTime.Month, day, dateTime.Hour, dateTime.Minute, dateTime.Second);
-                return new UniversalValue(resDate);
-            }
-
-            if (Value is string stringValue)
-            {
-                if (DateTime.TryParse(stringValue, out dateTime))
-                {
-                    var resDate = new DateTime(dateTime.Year, dateTime.Month, day, dateTime.Hour, dateTime.Minute, dateTime.Second);
-                    return new UniversalValue(resDate);
-                }
-            }
-
-            return new UniversalValue();
+            var dateTime = ToDate();
+            return new UniversalValue(dateTime.SetDay(day));
         }
 
         public UniversalValue SetQuarter(int quarter)
         {
-            int monthBegin;
-
-            switch (quarter)
-            {
-                case 1:
-                    monthBegin = 1;
-                    break;
-                case 2:
-                    monthBegin = 4;
-                    break;
-                case 3:
-                    monthBegin = 7;
-                    break;
-                case 4:
-                    monthBegin = 10;
-                    break;
-                default:
-                    monthBegin = 1;
-                    break;
-            }
-
-            return SetMonth(monthBegin);
+            var dateTime = ToDate();
+            return new UniversalValue(dateTime.SetQuarter(quarter));
         }
 
         public UniversalValue SetMonth(int month)
         {
-            if (Value is DateTime dateTime)
-            {
-                var resDate = new DateTime(dateTime.Year, month, dateTime.Day, dateTime.Hour, dateTime.Minute, dateTime.Second);
-                return new UniversalValue(resDate);
-            }
-
-            if (Value is string stringValue)
-            {
-                if (DateTime.TryParse(stringValue, out dateTime))
-                {
-                    var resDate = new DateTime(dateTime.Year, month, dateTime.Day, dateTime.Hour, dateTime.Minute, dateTime.Second);
-                    return new UniversalValue(resDate);
-                }
-            }
-
-            return new UniversalValue();
+            var dateTime = ToDate();
+            return new UniversalValue(dateTime.SetMonth(month));
         }
 
         public UniversalValue SetYear(int year)
         {
-            if (Value is DateTime dateTime)
-            {
-                var resDate = new DateTime(year, dateTime.Month, dateTime.Day, dateTime.Hour, dateTime.Minute, dateTime.Second);
-                return new UniversalValue(resDate);
-            }
-
-            if (Value is string stringValue)
-            {
-                if (DateTime.TryParse(stringValue, out dateTime))
-                {
-                    var resDate = new DateTime(year, dateTime.Month, dateTime.Day, dateTime.Hour, dateTime.Minute, dateTime.Second);
-                    return new UniversalValue(resDate);
-                }
-            }
-
-            return new UniversalValue();
+            var dateTime = ToDate();
+            return new UniversalValue(dateTime.SetYear(year));
         }
 
         public UniversalValue EndYear()
         {
-            if (Value is DateTime dateTime)
-            {
-                var resDate = new DateTime(dateTime.Year, 12, 31, 23, 59, 59);
-                return new UniversalValue(resDate);
-            }
-
-            if (Value is string stringValue)
-            {
-                if (DateTime.TryParse(stringValue, out dateTime))
-                {
-                    var resDate = new DateTime(dateTime.Year, 12, 31, 23, 59, 59);
-                    return new UniversalValue(resDate);
-                }
-            }
-
-            return new UniversalValue();
+            var dateTime = ToDate();
+            return new UniversalValue(dateTime.EndYear());
         }
 
         public UniversalValue BeginYear()
         {
-            if (Value is DateTime dateTime)
-            {
-                var resDate = new DateTime(dateTime.Year, 1, 1, 0, 0, 0);
-                return new UniversalValue(resDate);
-            }
-
-            if (Value is string stringValue)
-            {
-                if (DateTime.TryParse(stringValue, out dateTime))
-                {
-                    var resDate = new DateTime(dateTime.Year, 1, 1, 0, 0, 0);
-                    return new UniversalValue(resDate);
-                }
-            }
-
-            return new UniversalValue();
+            var dateTime = ToDate();
+            return new UniversalValue(dateTime.BeginYear());
         }
 
         public UniversalValue BeginDay()
         {
-            if (Value is DateTime dateTime)
-            {
-                var resDate = new DateTime(dateTime.Year, dateTime.Month, dateTime.Day, 0, 0, 0);
-                return new UniversalValue(resDate);
-            }
-
-            if (Value is string stringValue)
-            {
-                if (DateTime.TryParse(stringValue, out dateTime))
-                {
-                    var resDate = new DateTime(dateTime.Year, dateTime.Month, dateTime.Day, 0, 0, 0);
-                    return new UniversalValue(resDate);
-                }
-            }
-
-            return new UniversalValue();
+            var dateTime = ToDate();
+            return new UniversalValue(dateTime.BeginDay());
         }
 
         public UniversalValue EndDay()
         {
-            if (Value is DateTime dateTime)
-            {
-                var resDate = new DateTime(dateTime.Year, dateTime.Month, dateTime.Day, 23, 59, 59);
-                return new UniversalValue(resDate);
-            }
-
-            if (Value is string stringValue)
-            {
-                if (DateTime.TryParse(stringValue, out dateTime))
-                {
-                    var resDate = new DateTime(dateTime.Year, dateTime.Month, dateTime.Day, 23, 59, 59);
-                    return new UniversalValue(resDate);
-                }
-            }
-
-            return new UniversalValue();
+            var dateTime = ToDate();
+            return new UniversalValue(dateTime.EndDay());
         }
 
         public UniversalValue BeginMonth()
         {
-            if (Value is DateTime dateTime)
-            {
-                var resDate = new DateTime(dateTime.Year, dateTime.Month, 1, 0, 0, 0);
-                return new UniversalValue(resDate);
-            }
-
-            if (Value is string stringValue)
-            {
-                if (DateTime.TryParse(stringValue, out dateTime))
-                {
-                    var resDate = new DateTime(dateTime.Year, dateTime.Month, 1, 0, 0, 0);
-                    return new UniversalValue(resDate);
-                }
-            }
-
-            return new UniversalValue();
+            var dateTime = ToDate();
+            return new UniversalValue(dateTime.BeginMonth());
         }
 
         public UniversalValue EndMonth()
         {
-            var tempUniversalValue = AddMonths(1);
-            tempUniversalValue = tempUniversalValue.BeginMonth();
-            tempUniversalValue = tempUniversalValue.AddDays(-1);
-
-            if (tempUniversalValue.Value is DateTime dateTime)
-            {
-                var resDate = new DateTime(dateTime.Year, dateTime.Month, dateTime.Day, 23, 59, 59);
-                return new UniversalValue(resDate);
-            }
-
-            if (tempUniversalValue.Value is string stringValue)
-            {
-                if (DateTime.TryParse(stringValue, out dateTime))
-                {
-                    var resDate = new DateTime(dateTime.Year, dateTime.Month, dateTime.Day, 23, 59, 59);
-                    return new UniversalValue(resDate);
-                }
-            }
-
-            return new UniversalValue();
+            var dateTime = ToDate();
+            return new UniversalValue(dateTime.EndMonth());
         }
 
         public UniversalValue BeginQuarter()
         {
-            if (Value is DateTime dateTime)
-            {
-                var monthBegin = GetMonthBegin(dateTime.Month);
-                var resDate = new DateTime(dateTime.Year, monthBegin, 1, 0, 0, 0);
-                return new UniversalValue(resDate);
-            }
-
-            if (Value is string stringValue)
-            {
-                if (DateTime.TryParse(stringValue, out dateTime))
-                {
-                    var monthBegin = GetMonthBegin(dateTime.Month);
-                    var resDate = new DateTime(dateTime.Year, monthBegin, 1, 0, 0, 0);
-                    return new UniversalValue(resDate);
-                }
-            }
-
-            return new UniversalValue();
+            var dateTime = ToDate();
+            return new UniversalValue(dateTime.BeginQuarter());
         }
 
         public UniversalValue EndQuarter()
         {
-            if (Value is DateTime dateTime)
-            {
-                var monthEnd = GetMonthEnd(dateTime.Month);
-                var tempUniversalValue = new UniversalValue(new DateTime(dateTime.Year, monthEnd, 1, 0, 0, 0));
-                return tempUniversalValue.EndMonth();
-            }
-
-            if (Value is string stringValue)
-            {
-                if (DateTime.TryParse(stringValue, out dateTime))
-                {
-                    var monthEnd = GetMonthEnd(dateTime.Month);
-                    UniversalValue tempUniversalValue = new UniversalValue(new DateTime(dateTime.Year, monthEnd, 1, 0, 0, 0));
-                    return tempUniversalValue.EndMonth();
-                }
-            }
-
-            return new UniversalValue();
+            var dateTime = ToDate();
+            return new UniversalValue(dateTime.EndQuarter());
         }
 
         private static UniversalValue PerformOperation(UniversalValue v1,
@@ -735,72 +338,6 @@ namespace HubCloud.BlazorSheet.Core.Models
 
             return new UniversalValue(v1.Value?.ToString() + v2.Value?.ToString());
         }
-        
-        private int GetMonthBegin(int dateMonth)
-        {
-            int monthBegin;
 
-            switch (dateMonth)
-            {
-                case 1:
-                case 2:
-                case 3:
-                    monthBegin = 1;
-                    break;
-                case 4:
-                case 5:
-                case 6:
-                    monthBegin = 4;
-                    break;
-                case 7:
-                case 8:
-                case 9:
-                    monthBegin = 7;
-                    break;
-                case 10:
-                case 11:
-                case 12:
-                    monthBegin = 10;
-                    break;
-                default:
-                    monthBegin = 1;
-                    break;
-            }
-
-            return monthBegin;
-        }
-        private int GetMonthEnd(int dateMonth)
-        {
-            int monthEnd;
-
-            switch (dateMonth)
-            {
-                case 1:
-                case 2:
-                case 3:
-                    monthEnd = 3;
-                    break;
-                case 4:
-                case 5:
-                case 6:
-                    monthEnd = 6;
-                    break;
-                case 7:
-                case 8:
-                case 9:
-                    monthEnd = 9;
-                    break;
-                case 10:
-                case 11:
-                case 12:
-                    monthEnd = 12;
-                    break;
-                default:
-                    monthEnd = 3;
-                    break;
-            }
-
-            return monthEnd;
-        }
     }
 }

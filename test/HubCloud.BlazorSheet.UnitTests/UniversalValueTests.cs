@@ -125,831 +125,367 @@ public class UniversalValueTests
         Assert.AreEqual(expectedValue, result.Value);
     }
 
-    [TestCase(21, 1, 22)]
-    public void AddDays_Days_UniversalValue(int days, int addedDays, int expectedDays)
-    {
-        var dateTime = new DateTime(2023, 6, days, 15, 14, 13);
-
-        var uv = new UniversalValue(dateTime);
-        var result_1 = uv.AddDays(addedDays);
-
-        uv = new UniversalValue(dateTime.ToString());
-        var result_2 = uv.AddDays(addedDays);
-
-        uv = new UniversalValue("");
-        var result_3 = uv.AddDays(addedDays);
-
-        uv = new UniversalValue(123);
-        var result_4 = uv.AddDays(addedDays);
-
-        uv = new UniversalValue(null);
-        var result_5 = uv.AddDays(addedDays);
-
-        var expected = new DateTime(2023, 6, expectedDays, 15, 14, 13);
-
-        Assert.AreEqual(expected, result_1.Value);
-        Assert.AreEqual(expected, result_2.Value);
-        Assert.AreEqual(null, result_3.Value);
-        Assert.AreEqual(null, result_4.Value);
-        Assert.AreEqual(null, result_5.Value);
-    }
-
-    [TestCase(15, 1, 16)]
-    public void AddHours_Hours_UniversalValue(int hours, int addedHours, int expectedHours)
-    {
-        var dateTime = new DateTime(2023, 6, 20, hours, 14, 13);
-
-        var uv = new UniversalValue(dateTime);
-        var result_1 = uv.AddHours(addedHours);
-
-        uv = new UniversalValue(dateTime.ToString());
-        var result_2 = uv.AddHours(addedHours);
-
-        uv = new UniversalValue("");
-        var result_3 = uv.AddHours(addedHours);
-
-        uv = new UniversalValue(123);
-        var result_4 = uv.AddHours(addedHours);
-
-        uv = new UniversalValue(null);
-        var result_5 = uv.AddHours(addedHours);
-
-        var expected = new DateTime(2023, 6, 20, expectedHours, 14, 13);
-
-        Assert.AreEqual(expected, result_1.Value);
-        Assert.AreEqual(expected, result_2.Value);
-        Assert.AreEqual(null, result_3.Value);
-        Assert.AreEqual(null, result_4.Value);
-        Assert.AreEqual(null, result_5.Value);
-    }
-
-    [TestCase(14, 10, 24)]
-    public void AddMinutes_Minutes_UniversalValue(int minutes, int addedMinutes, int expectedMinutes)
-    {
-        var dateTime = new DateTime(2023, 6, 20, 15, minutes, 13);
-
-        var uv = new UniversalValue(dateTime);
-        var result_1 = uv.AddMinutes(addedMinutes);
-
-        uv = new UniversalValue(dateTime.ToString());
-        var result_2 = uv.AddMinutes(addedMinutes);
-
-        uv = new UniversalValue("");
-        var result_3 = uv.AddMinutes(addedMinutes);
-
-        uv = new UniversalValue(123);
-        var result_4 = uv.AddMinutes(addedMinutes);
-
-        uv = new UniversalValue(null);
-        var result_5 = uv.AddMinutes(addedMinutes);
-
-        var expected = new DateTime(2023, 6, 20, 15, expectedMinutes, 13);
-
-        Assert.AreEqual(expected, result_1.Value);
-        Assert.AreEqual(expected, result_2.Value);
-        Assert.AreEqual(null, result_3.Value);
-        Assert.AreEqual(null, result_4.Value);
-        Assert.AreEqual(null, result_5.Value);
-    }
-
-    [TestCase(6, 1, 7)]
-    public void AddMonths_Months_UniversalValue(int months, int addedMonths, int expectedMonths)
-    {
-        var dateTime = new DateTime(2023, months, 20, 15, 14, 13);
-
-        var uv = new UniversalValue(dateTime);
-        var result_1 = uv.AddMonths(addedMonths);
-
-        uv = new UniversalValue(dateTime.ToString());
-        var result_2 = uv.AddMonths(addedMonths);
-
-        uv = new UniversalValue("");
-        var result_3 = uv.AddMonths(addedMonths);
-
-        uv = new UniversalValue(123);
-        var result_4 = uv.AddMonths(addedMonths);
-
-        uv = new UniversalValue(null);
-        var result_5 = uv.AddMonths(addedMonths);
-
-        var expected = new DateTime(2023, expectedMonths, 20, 15, 14, 13);
-
-        Assert.AreEqual(expected, result_1.Value);
-        Assert.AreEqual(expected, result_2.Value);
-        Assert.AreEqual(null, result_3.Value);
-        Assert.AreEqual(null, result_4.Value);
-        Assert.AreEqual(null, result_5.Value);
-    }
-
-    [TestCase(13, 10, 23)]
-    public void AddSeconds_Seconds_UniversalValue(int seconds, int addedSeconds, int expectedSeconds)
-    {
-        var dateTime = new DateTime(2023, 6, 20, 15, 14, seconds);
-
-        var uv = new UniversalValue(dateTime);
-        var result_1 = uv.AddSeconds(addedSeconds);
-
-        uv = new UniversalValue(dateTime.ToString());
-        var result_2 = uv.AddSeconds(addedSeconds);
-
-        uv = new UniversalValue("");
-        var result_3 = uv.AddSeconds(addedSeconds);
-
-        uv = new UniversalValue(123);
-        var result_4 = uv.AddSeconds(addedSeconds);
-
-        uv = new UniversalValue(null);
-        var result_5 = uv.AddSeconds(addedSeconds);
-
-        var expected = new DateTime(2023, 6, 20, 15, 14, expectedSeconds);
-
-        Assert.AreEqual(expected, result_1.Value);
-        Assert.AreEqual(expected, result_2.Value);
-        Assert.AreEqual(null, result_3.Value);
-        Assert.AreEqual(null, result_4.Value);
-        Assert.AreEqual(null, result_5.Value);
-    }
-
-    [TestCase(2023, 2, 2025)]
-    public void AddYears_Years_UniversalValue(int years, int addedYears, int expectedYears)
-    {
-        var dateTime = new DateTime(years, 6, 20, 15, 14, 13);
-
-        var uv = new UniversalValue(dateTime);
-        var result_1 = uv.AddYears(addedYears);
-
-        uv = new UniversalValue(dateTime.ToString());
-        var result_2 = uv.AddYears(addedYears);
-
-        uv = new UniversalValue("");
-        var result_3 = uv.AddYears(addedYears);
-
-        uv = new UniversalValue(123);
-        var result_4 = uv.AddYears(addedYears);
-
-        uv = new UniversalValue(null);
-        var result_5 = uv.AddYears(addedYears);
-
-        var expected = new DateTime(expectedYears, 6, 20, 15, 14, 13);
-
-        Assert.AreEqual(expected, result_1.Value);
-        Assert.AreEqual(expected, result_2.Value);
-        Assert.AreEqual(null, result_3.Value);
-        Assert.AreEqual(null, result_4.Value);
-        Assert.AreEqual(null, result_5.Value);
-    }
-
-    [TestCase(1, 6, 9)]
-    public void AddQuarters_Quarters_UniversalValue(int quarter, int months, int expectedMonths)
-    {
-        var dateTime = new DateTime(2023, months, 20, 15, 14, 13);
-
-        var uv = new UniversalValue(dateTime);
-        var result_1 = uv.AddQuarters(quarter);
-
-        uv = new UniversalValue(dateTime.ToString());
-        var result_2 = uv.AddQuarters(quarter);
-
-        uv = new UniversalValue("");
-        var result_3 = uv.AddQuarters(quarter);
-
-        uv = new UniversalValue(123);
-        var result_4 = uv.AddQuarters(quarter);
-
-        uv = new UniversalValue(null);
-        var result_5 = uv.AddQuarters(quarter);
-
-        var expected = new DateTime(2023, expectedMonths, 20, 15, 14, 13);
-        var minValuePlusQuarter = DateTime.MinValue.AddMonths(3);
-
-        Assert.AreEqual(expected, result_1.Value);
-        Assert.AreEqual(expected, result_2.Value);
-        Assert.AreEqual(minValuePlusQuarter, result_3.Value);
-        Assert.AreEqual(minValuePlusQuarter, result_4.Value);
-        Assert.AreEqual(minValuePlusQuarter, result_5.Value);
-    }
-
-    [TestCase(44, 10, 10)]
-    public void SetSecond_Seconds_UniversalValue(int seconds, int setSeconds, int expectedSeconds)
-    {
-        var dateTime = new DateTime(2023, 6, 20, 15, 14, seconds);
-
-        var uv = new UniversalValue(dateTime);
-        var result_1 = uv.SetSecond(setSeconds);
-
-        uv = new UniversalValue(dateTime.ToString());
-        var result_2 = uv.SetSecond(setSeconds);
-
-        uv = new UniversalValue("");
-        var result_3 = uv.SetSecond(setSeconds);
-
-        uv = new UniversalValue(123);
-        var result_4 = uv.SetSecond(setSeconds);
-
-        uv = new UniversalValue(null);
-        var result_5 = uv.SetSecond(setSeconds);
-
-        var expected = new DateTime(2023, 6, 20, 15, 14, expectedSeconds);
-
-        Assert.AreEqual(expected, result_1.Value);
-        Assert.AreEqual(expected, result_2.Value);
-        Assert.AreEqual(null, result_3.Value);
-        Assert.AreEqual(null, result_4.Value);
-        Assert.AreEqual(null, result_5.Value);
-    }
-
-    [TestCase(14, 10, 10)]
-    public void SetMinute_Minutes_UniversalValue(int minutes, int setMinutes, int expectedMinutes)
-    {
-        var dateTime = new DateTime(2023, 6, 20, 15, minutes, 13);
-
-        var uv = new UniversalValue(dateTime);
-        var result_1 = uv.SetMinute(setMinutes);
-
-        uv = new UniversalValue(dateTime.ToString());
-        var result_2 = uv.SetMinute(setMinutes);
-
-        uv = new UniversalValue("");
-        var result_3 = uv.SetMinute(setMinutes);
-
-        uv = new UniversalValue(123);
-        var result_4 = uv.SetMinute(setMinutes);
-
-        uv = new UniversalValue(null);
-        var result_5 = uv.SetMinute(setMinutes);
-
-        var expected = new DateTime(2023, 6, 20, 15, expectedMinutes, 13);
-
-        Assert.AreEqual(expected, result_1.Value);
-        Assert.AreEqual(expected, result_2.Value);
-        Assert.AreEqual(null, result_3.Value);
-        Assert.AreEqual(null, result_4.Value);
-        Assert.AreEqual(null, result_5.Value);
-    }
-
-    [TestCase(15, 10, 10)]
-    public void SetHour_Hours_UniversalValue(int hours, int setHours, int expectedHours)
-    {
-        var dateTime = new DateTime(2023, 6, 20, hours, 14, 13);
-
-        var uv = new UniversalValue(dateTime);
-        var result_1 = uv.SetHour(setHours);
-
-        uv = new UniversalValue(dateTime.ToString());
-        var result_2 = uv.SetHour(setHours);
-
-        uv = new UniversalValue("");
-        var result_3 = uv.SetHour(setHours);
-
-        uv = new UniversalValue(123);
-        var result_4 = uv.SetHour(setHours);
-
-        uv = new UniversalValue(null);
-        var result_5 = uv.SetHour(setHours);
-
-        var expected = new DateTime(2023, 6, 20, expectedHours, 14, 13);
-
-        Assert.AreEqual(expected, result_1.Value);
-        Assert.AreEqual(expected, result_2.Value);
-        Assert.AreEqual(null, result_3.Value);
-        Assert.AreEqual(null, result_4.Value);
-        Assert.AreEqual(null, result_5.Value);
-    }
-
-    [TestCase(20, 10, 10)]
-    public void SetDay_Days_UniversalValue(int days, int setDays, int expectedDays)
-    {
-        var dateTime = new DateTime(2023, 6, days, 15, 14, 13);
-
-        var uv = new UniversalValue(dateTime);
-        var result_1 = uv.SetDay(setDays);
-
-        uv = new UniversalValue(dateTime.ToString());
-        var result_2 = uv.SetDay(setDays);
-
-        uv = new UniversalValue("");
-        var result_3 = uv.SetDay(setDays);
-
-        uv = new UniversalValue(123);
-        var result_4 = uv.SetDay(setDays);
-
-        uv = new UniversalValue(null);
-        var result_5 = uv.SetDay(setDays);
-
-        var expected = new DateTime(2023, 6, expectedDays, 15, 14, 13);
-
-        Assert.AreEqual(expected, result_1.Value);
-        Assert.AreEqual(expected, result_2.Value);
-        Assert.AreEqual(null, result_3.Value);
-        Assert.AreEqual(null, result_4.Value);
-        Assert.AreEqual(null, result_5.Value);
-    }
-
-    [TestCase(1, 6, 9)]
-    public void SetQuarter_Quarters_UniversalValue(int quarter, int months, int expectedMonths)
-    {
-        var dateTime = new DateTime(2023, months, 20, 15, 14, 13);
-
-        var uv = new UniversalValue(dateTime);
-        var result_1 = uv.AddQuarters(quarter);
-
-        uv = new UniversalValue(dateTime.ToString());
-        var result_2 = uv.AddQuarters(quarter);
-
-        uv = new UniversalValue("");
-        var result_3 = uv.AddQuarters(quarter);
-
-        uv = new UniversalValue(123);
-        var result_4 = uv.AddQuarters(quarter);
-
-        uv = new UniversalValue(null);
-        var result_5 = uv.AddQuarters(quarter);
-
-        var expected = new DateTime(2023, expectedMonths, 20, 15, 14, 13);
-        var minValPlusQuarter = DateTime.MinValue.AddMonths(3);
-
-        Assert.AreEqual(expected, result_1.Value);
-        Assert.AreEqual(expected, result_2.Value);
-        Assert.AreEqual(minValPlusQuarter, result_3.Value);
-        Assert.AreEqual(minValPlusQuarter, result_4.Value);
-        Assert.AreEqual(minValPlusQuarter, result_5.Value);
-    }
-
-   [TestCase(null, 1, "0001-04-01T00:00:00")]
-   [TestCase("", 1, "0001-04-01T00:00:00")]
-    [TestCase("2023-06-21T14:51:11", 1, "2023-09-21T14:51:11")]
-    public void SetQuarter_Quarters1_UniversalValue(string dateStr, int quarter, string checkStr)
+    [TestCase(null, 1, "0001-01-02T00:00:00")]
+    [TestCase("", 1, "0001-01-02T00:00:00")]
+    [TestCase("2023-06-21T14:51:11", 1, "2023-06-22T14:51:11")]
+    public void AddDays_Days_UniversalValue(string dateStr, int days, string checkStr)
     {
         DateTime.TryParse(checkStr, out var dateTimeCheck);
 
-        UniversalValue result;
-        if (string.IsNullOrWhiteSpace(dateStr))
-        {
-            var uv = new UniversalValue(dateStr);
-            
-            result = uv.AddQuarters(quarter);
-        }
-        else
-        {
-            DateTime.TryParse(dateStr, out var dateTimeStart);
-            var uv = new UniversalValue(dateTimeStart);
-            
-            result = uv.AddQuarters(quarter);
-        }
+        var uv = new UniversalValue(dateStr);
+        var result = uv.AddDays(days);
 
-        Assert.AreEqual(result.Value, dateTimeCheck);
-        
+        Assert.AreEqual(dateTimeCheck, result.Value);
     }
 
-    [TestCase(6, 10, 10)]
-    public void SetMonth_Months_UniversalValue(int months, int setMonths, int expectedMonths)
+    [TestCase(null, 1, "0001-01-01T01:00:00")]
+    [TestCase("", 1, "0001-01-01T01:00:00")]
+    [TestCase("2023-06-21T14:51:11", 1, "2023-06-21T15:51:11")]
+    public void AddHours_Hours_UniversalValue(string dateStr, int hours, string checkStr)
     {
-        var dateTime = new DateTime(2023, months, 20, 15, 14, 13);
+        DateTime.TryParse(checkStr, out var dateTimeCheck);
 
-        var uv = new UniversalValue(dateTime);
-        var result_1 = uv.SetMonth(setMonths);
+        var uv = new UniversalValue(dateStr);
+        var result = uv.AddHours(hours);
 
-        uv = new UniversalValue(dateTime.ToString());
-        var result_2 = uv.SetMonth(setMonths);
-
-        uv = new UniversalValue("");
-        var result_3 = uv.SetMonth(setMonths);
-
-        uv = new UniversalValue(123);
-        var result_4 = uv.SetMonth(setMonths);
-
-        uv = new UniversalValue(null);
-        var result_5 = uv.SetMonth(setMonths);
-
-        var expected = new DateTime(2023, expectedMonths, 20, 15, 14, 13);
-
-        Assert.AreEqual(expected, result_1.Value);
-        Assert.AreEqual(expected, result_2.Value);
-        Assert.AreEqual(null, result_3.Value);
-        Assert.AreEqual(null, result_4.Value);
-        Assert.AreEqual(null, result_5.Value);
+        Assert.AreEqual(dateTimeCheck, result.Value);
     }
 
-    [TestCase(2023, 2033, 2033)]
-    public void SetYear_Years_UniversalValue(int years, int setYears, int expectedYears)
+    [TestCase(null, 1, "0001-01-01T00:01:00")]
+    [TestCase("", 1, "0001-01-01T00:01:00")]
+    [TestCase("2023-06-21T14:51:11", 1, "2023-06-21T14:52:11")]
+    public void AddMinutes_Minutes_UniversalValue(string dateStr, int minutes, string checkStr)
     {
-        var dateTime = new DateTime(years, 6, 20, 15, 14, 13);
+        DateTime.TryParse(checkStr, out var dateTimeCheck);
 
-        var uv = new UniversalValue(dateTime);
-        var result_1 = uv.SetYear(setYears);
+        var uv = new UniversalValue(dateStr);
+        var result = uv.AddMinutes(minutes);
 
-        uv = new UniversalValue(dateTime.ToString());
-        var result_2 = uv.SetYear(setYears);
-
-        uv = new UniversalValue("");
-        var result_3 = uv.SetYear(setYears);
-
-        uv = new UniversalValue(123);
-        var result_4 = uv.SetYear(setYears);
-
-        uv = new UniversalValue(null);
-        var result_5 = uv.SetYear(setYears);
-
-        var expected = new DateTime(expectedYears, 6, 20, 15, 14, 13);
-
-        Assert.AreEqual(expected, result_1.Value);
-        Assert.AreEqual(expected, result_2.Value);
-        Assert.AreEqual(null, result_3.Value);
-        Assert.AreEqual(null, result_4.Value);
-        Assert.AreEqual(null, result_5.Value);
+        Assert.AreEqual(dateTimeCheck, result.Value);
     }
 
-    [TestCase(12, 31, 23, 59, 59)]
-    public void EndYear_UniversalValue(int expectedMonths, int expectedDays, int expectedHours, int expectedMinutes, int expectedSeconds)
+    [TestCase(null, 1, "0001-02-01T00:00:00")]
+    [TestCase("", 1, "0001-02-01T00:00:00")]
+    [TestCase("2023-06-21T14:51:11", 1, "2023-07-21T14:51:11")]
+    public void AddMonths_Months_UniversalValue(string dateStr, int months, string checkStr)
     {
-        var dateTime = new DateTime(2023, 6, 20, 15, 14, 13);
+        DateTime.TryParse(checkStr, out var dateTimeCheck);
 
-        var uv = new UniversalValue(dateTime);
-        var result_1 = uv.EndYear();
+        var uv = new UniversalValue(dateStr);
+        var result = uv.AddMonths(months);
 
-        uv = new UniversalValue(dateTime.ToString());
-        var result_2 = uv.EndYear();
-
-        uv = new UniversalValue("");
-        var result_3 = uv.EndYear();
-
-        uv = new UniversalValue(123);
-        var result_4 = uv.EndYear();
-
-        uv = new UniversalValue(null);
-        var result_5 = uv.EndYear();
-
-        var expected = new DateTime(2023, expectedMonths, expectedDays, expectedHours, expectedMinutes, expectedSeconds);
-
-        Assert.AreEqual(expected, result_1.Value);
-        Assert.AreEqual(expected, result_2.Value);
-        Assert.AreEqual(null, result_3.Value);
-        Assert.AreEqual(null, result_4.Value);
-        Assert.AreEqual(null, result_5.Value);
+        Assert.AreEqual(dateTimeCheck, result.Value);
     }
 
-    [TestCase(1, 1, 0, 0, 0)]
-    public void BeginYear_UniversalValue(int expectedMonths, int expectedDays, int expectedHours, int expectedMinutes, int expectedSeconds)
+    [TestCase(null, 1, "0001-01-01T00:00:01")]
+    [TestCase("", 1, "0001-01-01T00:00:01")]
+    [TestCase("2023-06-21T14:51:11", 1, "2023-06-21T14:51:12")]
+    public void AddSeconds_Seconds_UniversalValue(string dateStr, int seconds, string checkStr)
     {
-        var dateTime = new DateTime(2023, 6, 20, 15, 14, 13);
+        DateTime.TryParse(checkStr, out var dateTimeCheck);
 
-        var uv = new UniversalValue(dateTime);
-        var result_1 = uv.BeginYear();
+        var uv = new UniversalValue(dateStr);
+        var result = uv.AddSeconds(seconds);
 
-        uv = new UniversalValue(dateTime.ToString());
-        var result_2 = uv.BeginYear();
-
-        uv = new UniversalValue("");
-        var result_3 = uv.BeginYear();
-
-        uv = new UniversalValue(123);
-        var result_4 = uv.BeginYear();
-
-        uv = new UniversalValue(null);
-        var result_5 = uv.BeginYear();
-
-        var expected = new DateTime(2023, expectedMonths, expectedDays, expectedHours, expectedMinutes, expectedSeconds);
-
-        Assert.AreEqual(expected, result_1.Value);
-        Assert.AreEqual(expected, result_2.Value);
-        Assert.AreEqual(null, result_3.Value);
-        Assert.AreEqual(null, result_4.Value);
-        Assert.AreEqual(null, result_5.Value);
+        Assert.AreEqual(dateTimeCheck, result.Value);
     }
 
-    [TestCase(0, 0, 0)]
-    public void BeginDay_UniversalValue(int expectedHours, int expectedMinutes, int expectedSeconds)
+    [TestCase(null, 1, "0002-01-01T00:00:00")]
+    [TestCase("", 1, "0002-01-01T00:00:00")]
+    [TestCase("2023-06-21T14:51:11", 1, "2024-06-21T14:51:11")]
+    public void AddYears_Years_UniversalValue(string dateStr, int years, string checkStr)
     {
-        var dateTime = new DateTime(2023, 6, 20, 15, 14, 13);
+        DateTime.TryParse(checkStr, out var dateTimeCheck);
 
-        var uv = new UniversalValue(dateTime);
-        var result_1 = uv.BeginDay();
+        var uv = new UniversalValue(dateStr);
+        var result = uv.AddYears(years);
 
-        uv = new UniversalValue(dateTime.ToString());
-        var result_2 = uv.BeginDay();
-
-        uv = new UniversalValue("");
-        var result_3 = uv.BeginDay();
-
-        uv = new UniversalValue(123);
-        var result_4 = uv.BeginDay();
-
-        uv = new UniversalValue(null);
-        var result_5 = uv.BeginDay();
-
-        var expected = new DateTime(2023, 6, 20, expectedHours, expectedMinutes, expectedSeconds);
-
-        Assert.AreEqual(expected, result_1.Value);
-        Assert.AreEqual(expected, result_2.Value);
-        Assert.AreEqual(null, result_3.Value);
-        Assert.AreEqual(null, result_4.Value);
-        Assert.AreEqual(null, result_5.Value);
+        Assert.AreEqual(dateTimeCheck, result.Value);
     }
 
-    [TestCase(23, 59, 59)]
-    public void EndDay_UniversalValue(int expectedHours, int expectedMinutes, int expectedSeconds)
+    [TestCase(null, 1, "0001-04-01T00:00:00")]
+    [TestCase("", 1, "0001-04-01T00:00:00")]
+    [TestCase("2023-06-21T14:51:11", 1, "2023-09-21T14:51:11")]
+    public void AddQuarters_Quarters_UniversalValue(string dateStr, int quorters, string checkStr)
     {
-        var dateTime = new DateTime(2023, 6, 20, 15, 14, 13);
+        DateTime.TryParse(checkStr, out var dateTimeCheck);
 
-        var uv = new UniversalValue(dateTime);
-        var result_1 = uv.EndDay();
+        var uv = new UniversalValue(dateStr);
+        var result = uv.AddQuarters(quorters);
 
-        uv = new UniversalValue(dateTime.ToString());
-        var result_2 = uv.EndDay();
-
-        uv = new UniversalValue("");
-        var result_3 = uv.EndDay();
-
-        uv = new UniversalValue(123);
-        var result_4 = uv.EndDay();
-
-        uv = new UniversalValue(null);
-        var result_5 = uv.EndDay();
-
-        var expected = new DateTime(2023, 6, 20, expectedHours, expectedMinutes, expectedSeconds);
-
-        Assert.AreEqual(expected, result_1.Value);
-        Assert.AreEqual(expected, result_2.Value);
-        Assert.AreEqual(null, result_3.Value);
-        Assert.AreEqual(null, result_4.Value);
-        Assert.AreEqual(null, result_5.Value);
+        Assert.AreEqual(dateTimeCheck, result.Value);
     }
 
-    [TestCase(1, 0, 0, 0)]
-    public void BeginMonth_UniversalValue(int expectedDays, int expectedHours, int expectedMinutes, int expectedSeconds)
+    [TestCase(null, 4, "0001-01-01T00:00:04")]
+    [TestCase("", 4, "0001-01-01T00:00:04")]
+    [TestCase("2023-06-21T14:51:11", 4, "2023-06-21T14:51:04")]
+    public void SetSecond_Seconds_UniversalValue(string dateStr, int second, string checkStr)
     {
-        var dateTime = new DateTime(2023, 6, 20, 15, 14, 13);
+        DateTime.TryParse(checkStr, out var dateTimeCheck);
 
-        var uv = new UniversalValue(dateTime);
-        var result_1 = uv.BeginMonth();
+        var uv = new UniversalValue(dateStr);
+        var result = uv.SetSecond(second);
 
-        uv = new UniversalValue(dateTime.ToString());
-        var result_2 = uv.BeginMonth();
-
-        uv = new UniversalValue("");
-        var result_3 = uv.BeginMonth();
-
-        uv = new UniversalValue(123);
-        var result_4 = uv.BeginMonth();
-
-        uv = new UniversalValue(null);
-        var result_5 = uv.BeginMonth();
-
-        var expected = new DateTime(2023, 6, expectedDays, expectedHours, expectedMinutes, expectedSeconds);
-
-        Assert.AreEqual(expected, result_1.Value);
-        Assert.AreEqual(expected, result_2.Value);
-        Assert.AreEqual(null, result_3.Value);
-        Assert.AreEqual(null, result_4.Value);
-        Assert.AreEqual(null, result_5.Value);
+        Assert.AreEqual(dateTimeCheck, result.Value);
     }
 
-    [TestCase(30, 23, 59, 59)]
-    public void EndMonth_UniversalValue(int expectedDays, int expectedHours, int expectedMinutes, int expectedSeconds)
+    [TestCase(null, 4, "0001-01-01T00:04:00")]
+    [TestCase("", 4, "0001-01-01T00:04:00")]
+    [TestCase("2023-06-21T14:51:11", 4, "2023-06-21T14:04:11")]
+    public void SetMinute_Minutes_UniversalValue(string dateStr, int minute, string checkStr)
     {
-        var dateTime = new DateTime(2023, 6, 20, 15, 14, 13);
+        DateTime.TryParse(checkStr, out var dateTimeCheck);
 
-        var uv = new UniversalValue(dateTime);
-        var result_1 = uv.EndMonth();
+        var uv = new UniversalValue(dateStr);
+        var result = uv.SetMinute(minute);
 
-        uv = new UniversalValue(dateTime.ToString());
-        var result_2 = uv.EndMonth();
-
-        uv = new UniversalValue("");
-        var result_3 = uv.EndMonth();
-
-        uv = new UniversalValue(123);
-        var result_4 = uv.EndMonth();
-
-        uv = new UniversalValue(null);
-        var result_5 = uv.EndMonth();
-
-        var expected = new DateTime(2023, 6, expectedDays, expectedHours, expectedMinutes, expectedSeconds);
-
-        Assert.AreEqual(expected, result_1.Value);
-        Assert.AreEqual(expected, result_2.Value);
-        Assert.AreEqual(null, result_3.Value);
-        Assert.AreEqual(null, result_4.Value);
-        Assert.AreEqual(null, result_5.Value);
+        Assert.AreEqual(dateTimeCheck, result.Value);
     }
 
-    [TestCase(4, 1, 0, 0, 0)]
-    public void BeginQuarter_UniversalValue(int expectedMonths, int expectedDays, int expectedHours, int expectedMinutes, int expectedSeconds)
+    [TestCase(null, 4, "0001-01-01T04:00:00")]
+    [TestCase("", 4, "0001-01-01T04:00:00")]
+    [TestCase("2023-06-21T14:51:11", 4, "2023-06-21T04:51:11")]
+    public void SetHour_Hour_UniversalValue(string dateStr, int hour, string checkStr)
     {
-        var dateTime = new DateTime(2023, 6, 20, 15, 14, 13);
+        DateTime.TryParse(checkStr, out var dateTimeCheck);
 
-        var uv = new UniversalValue(dateTime);
-        var result_1 = uv.BeginQuarter();
+        var uv = new UniversalValue(dateStr);
+        var result = uv.SetHour(hour);
 
-        uv = new UniversalValue(dateTime.ToString());
-        var result_2 = uv.BeginQuarter();
-
-        uv = new UniversalValue("");
-        var result_3 = uv.BeginQuarter();
-
-        uv = new UniversalValue(123);
-        var result_4 = uv.BeginQuarter();
-
-        uv = new UniversalValue(null);
-        var result_5 = uv.BeginQuarter();
-
-        var expected = new DateTime(2023, expectedMonths, expectedDays, expectedHours, expectedMinutes, expectedSeconds);
-
-        Assert.AreEqual(expected, result_1.Value);
-        Assert.AreEqual(expected, result_2.Value);
-        Assert.AreEqual(null, result_3.Value);
-        Assert.AreEqual(null, result_4.Value);
-        Assert.AreEqual(null, result_5.Value);
+        Assert.AreEqual(dateTimeCheck, result.Value);
     }
 
-    [TestCase(6, 30, 23, 59, 59)]
-    public void EndQuarter_UniversalValue(int expectedMonths, int expectedDays, int expectedHours, int expectedMinutes, int expectedSeconds)
+    [TestCase(null, 4, "0001-01-04T00:00:00")]
+    [TestCase("", 4, "0001-01-04T00:00:00")]
+    [TestCase("2023-06-21T14:51:11", 1, "2023-06-01T14:51:11")]
+    public void SetDay_Day_UniversalValue(string dateStr, int day, string checkStr)
     {
-        var dateTime = new DateTime(2023, 6, 20, 15, 14, 13);
+        DateTime.TryParse(checkStr, out var dateTimeCheck);
 
-        var uv = new UniversalValue(dateTime);
-        var result_1 = uv.EndQuarter();
+        var uv = new UniversalValue(dateStr);
+        var result = uv.SetDay(day);
 
-        uv = new UniversalValue(dateTime.ToString());
-        var result_2 = uv.EndQuarter();
-
-        uv = new UniversalValue("");
-        var result_3 = uv.EndQuarter();
-
-        uv = new UniversalValue(123);
-        var result_4 = uv.EndQuarter();
-
-        uv = new UniversalValue(null);
-        var result_5 = uv.EndQuarter();
-
-        var expected = new DateTime(2023, expectedMonths, expectedDays, expectedHours, expectedMinutes, expectedSeconds);
-
-        Assert.AreEqual(expected, result_1.Value);
-        Assert.AreEqual(expected, result_2.Value);
-        Assert.AreEqual(null, result_3.Value);
-        Assert.AreEqual(null, result_4.Value);
-        Assert.AreEqual(null, result_5.Value);
+        Assert.AreEqual(dateTimeCheck, result.Value);
     }
 
-    [TestCase(21, 21)]
-    public void Get_Property_Day_UniversalValue(int days, int expectedDays)
+    [TestCase(null, 1, "0001-04-01T00:00:00")]
+    [TestCase("", 1, "0001-04-01T00:00:00")]
+    [TestCase("2023-06-21T14:51:11", 1, "2023-09-21T14:51:11")]
+    public void SetQuarter_Quarter_UniversalValue(string dateStr, int quarter, string checkStr)
     {
-        var dateTime = new DateTime(2023, 6, days, 15, 14, 13);
+        DateTime.TryParse(checkStr, out var dateTimeCheck);
 
-        var uv = new UniversalValue(dateTime);
-        var result_1 = uv.Day;
+        var uv = new UniversalValue(dateStr);
+        var result = uv.AddQuarters(quarter);
 
-        uv = new UniversalValue(dateTime.ToString());
-        var result_2 = uv.Day;
-
-        uv = new UniversalValue("");
-        var result_3 = uv.Day;
-
-        uv = new UniversalValue(123);
-        var result_4 = uv.Day;
-
-        uv = new UniversalValue(null);
-        var result_5 = uv.Day;
-
-        Assert.AreEqual(expectedDays, result_1.Value);
-        Assert.AreEqual(expectedDays, result_2.Value);
-        Assert.AreEqual(null, result_3.Value);
-        Assert.AreEqual(null, result_4.Value);
-        Assert.AreEqual(null, result_5.Value);
+        Assert.AreEqual(dateTimeCheck, result.Value);
     }
 
-    [TestCase(15, 15)]
-    public void Get_Property_Hour_UniversalValue(int hours, int expectedHours)
+    [TestCase(null, 2, "0001-02-01T00:00:00")]
+    [TestCase("", 2, "0001-02-01T00:00:00")]
+    [TestCase("2023-06-21T14:51:11", 1, "2023-01-21T14:51:11")]
+    public void SetMonth_Month_UniversalValue(string dateStr, int month, string checkStr)
     {
-        var dateTime = new DateTime(2023, 6, 20, hours, 14, 13);
+        DateTime.TryParse(checkStr, out var dateTimeCheck);
 
-        var uv = new UniversalValue(dateTime);
-        var result_1 = uv.Hour;
+        var uv = new UniversalValue(dateStr);
+        var result = uv.SetMonth(month);
 
-        uv = new UniversalValue(dateTime.ToString());
-        var result_2 = uv.Hour;
-
-        uv = new UniversalValue("");
-        var result_3 = uv.Hour;
-
-        uv = new UniversalValue(123);
-        var result_4 = uv.Hour;
-
-        uv = new UniversalValue(null);
-        var result_5 = uv.Hour;
-
-        Assert.AreEqual(expectedHours, result_1.Value);
-        Assert.AreEqual(expectedHours, result_2.Value);
-        Assert.AreEqual(null, result_3.Value);
-        Assert.AreEqual(null, result_4.Value);
-        Assert.AreEqual(null, result_5.Value);
+        Assert.AreEqual(dateTimeCheck, result.Value);
     }
 
-    [TestCase(6, 6)]
-    public void Get_Property_Month_UniversalValue(int months, int expectedMonths)
+    [TestCase(null, 2, "0002-01-01T00:00:00")]
+    [TestCase("", 2, "0002-01-01T00:00:00")]
+    [TestCase("2023-06-21T14:51:11", 2, "0002-06-21T14:51:11")]
+    public void SetYear_Year_UniversalValue(string dateStr, int year, string checkStr)
     {
-        var dateTime = new DateTime(2023, months, 20, 15, 14, 13);
+        DateTime.TryParse(checkStr, out var dateTimeCheck);
 
-        var uv = new UniversalValue(dateTime);
-        var result_1 = uv.Month;
+        var uv = new UniversalValue(dateStr);
+        var result = uv.SetYear(year);
 
-        uv = new UniversalValue(dateTime.ToString());
-        var result_2 = uv.Month;
-
-        uv = new UniversalValue("");
-        var result_3 = uv.Month;
-
-        uv = new UniversalValue(123);
-        var result_4 = uv.Month;
-
-        uv = new UniversalValue(null);
-        var result_5 = uv.Month;
-
-        Assert.AreEqual(expectedMonths, result_1.Value);
-        Assert.AreEqual(expectedMonths, result_2.Value);
-        Assert.AreEqual(null, result_3.Value);
-        Assert.AreEqual(null, result_4.Value);
-        Assert.AreEqual(null, result_5.Value);
+        Assert.AreEqual(dateTimeCheck, result.Value);
     }
 
-    [TestCase(14, 14)]
-    public void Get_Property_Minute_UniversalValue(int minutes, int expectedMinutes)
+    [TestCase(null, "0001-12-31T23:59:59")]
+    [TestCase("", "0001-12-31T23:59:59")]
+    [TestCase("2023-06-21T14:51:11", "2023-12-31T23:59:59")]
+    public void EndYear_UniversalValue(string dateStr, string checkStr)
     {
-        var dateTime = new DateTime(2023, 6, 20, 15, minutes, 13);
+        DateTime.TryParse(checkStr, out var dateTimeCheck);
 
-        var uv = new UniversalValue(dateTime);
-        var result_1 = uv.Minute;
+        var uv = new UniversalValue(dateStr);
+        var result = uv.EndYear();
 
-        uv = new UniversalValue(dateTime.ToString());
-        var result_2 = uv.Minute;
-
-        uv = new UniversalValue("");
-        var result_3 = uv.Minute;
-
-        uv = new UniversalValue(123);
-        var result_4 = uv.Minute;
-
-        uv = new UniversalValue(null);
-        var result_5 = uv.Minute;
-
-        Assert.AreEqual(expectedMinutes, result_1.Value);
-        Assert.AreEqual(expectedMinutes, result_2.Value);
-        Assert.AreEqual(null, result_3.Value);
-        Assert.AreEqual(null, result_4.Value);
-        Assert.AreEqual(null, result_5.Value);
+        Assert.AreEqual(dateTimeCheck, result.Value);
     }
 
-    [TestCase(13, 13)]
-    public void Get_Property_Second_UniversalValue(int seconds, int expectedSeconds)
+    [TestCase(null, "0001-01-01T00:00:00")]
+    [TestCase("", "0001-01-01T00:00:00")]
+    [TestCase("2023-06-21T14:51:11", "2023-01-01T00:00:00")]
+    public void BeginYear_UniversalValue(string dateStr, string checkStr)
     {
-        var dateTime = new DateTime(2023, 6, 20, 15, 14, seconds);
+        DateTime.TryParse(checkStr, out var dateTimeCheck);
 
-        var uv = new UniversalValue(dateTime);
-        var result_1 = uv.Second;
+        var uv = new UniversalValue(dateStr);
+        var result = uv.BeginYear();
 
-        uv = new UniversalValue(dateTime.ToString());
-        var result_2 = uv.Second;
-
-        uv = new UniversalValue("");
-        var result_3 = uv.Second;
-
-        uv = new UniversalValue(123);
-        var result_4 = uv.Second;
-
-        uv = new UniversalValue(null);
-        var result_5 = uv.Second;
-
-        Assert.AreEqual(expectedSeconds, result_1.Value);
-        Assert.AreEqual(expectedSeconds, result_2.Value);
-        Assert.AreEqual(null, result_3.Value);
-        Assert.AreEqual(null, result_4.Value);
-        Assert.AreEqual(null, result_5.Value);
+        Assert.AreEqual(dateTimeCheck, result.Value);
     }
 
-    [TestCase(2023, 2023)]
-    public void Get_Property_Year_UniversalValue(int years, int expectedYears)
+    [TestCase(null, "0001-01-01T00:00:00")]
+    [TestCase("", "0001-01-01T00:00:00")]
+    [TestCase("2023-06-21T14:51:11", "2023-06-21T00:00:00")]
+    public void BeginDay_UniversalValue(string dateStr, string checkStr)
     {
-        var dateTime = new DateTime(years, 6, 20, 15, 14, 13);
+        DateTime.TryParse(checkStr, out var dateTimeCheck);
 
-        var uv = new UniversalValue(dateTime);
-        var result_1 = uv.Year;
+        var uv = new UniversalValue(dateStr);
+        var result = uv.BeginDay();
 
-        uv = new UniversalValue(dateTime.ToString());
-        var result_2 = uv.Year;
+        Assert.AreEqual(dateTimeCheck, result.Value);
+    }
 
-        uv = new UniversalValue("");
-        var result_3 = uv.Year;
+    [TestCase(null, "0001-01-01T23:59:59")]
+    [TestCase("", "0001-01-01T23:59:59")]
+    [TestCase("2023-06-21T14:51:11", "2023-06-21T23:59:59")]
+    public void EndDay_UniversalValue(string dateStr, string checkStr)
+    {
+        DateTime.TryParse(checkStr, out var dateTimeCheck);
 
-        uv = new UniversalValue(123);
-        var result_4 = uv.Year;
+        var uv = new UniversalValue(dateStr);
+        var result = uv.EndDay();
 
-        uv = new UniversalValue(null);
-        var result_5 = uv.Year;
+        Assert.AreEqual(dateTimeCheck, result.Value);
+    }
 
-        Assert.AreEqual(expectedYears, result_1.Value);
-        Assert.AreEqual(expectedYears, result_2.Value);
-        Assert.AreEqual(null, result_3.Value);
-        Assert.AreEqual(null, result_4.Value);
-        Assert.AreEqual(null, result_5.Value);
+    [TestCase(null, "0001-01-01T00:00:00")]
+    [TestCase("", "0001-01-01T00:00:00")]
+    [TestCase("2023-06-21T14:51:11", "2023-06-01T00:00:00")]
+    public void BeginMonth_UniversalValue(string dateStr, string checkStr)
+    {
+        DateTime.TryParse(checkStr, out var dateTimeCheck);
+
+        var uv = new UniversalValue(dateStr);
+        var result = uv.BeginMonth();
+
+        Assert.AreEqual(dateTimeCheck, result.Value);
+    }
+
+    [TestCase(null, "0001-01-31T23:59:59")]
+    [TestCase("", "0001-01-31T23:59:59")]
+    [TestCase("2023-06-21T14:51:11", "2023-06-30T23:59:59")]
+    public void EndMonth_UniversalValue(string dateStr, string checkStr)
+    {
+        DateTime.TryParse(checkStr, out var dateTimeCheck);
+
+        var uv = new UniversalValue(dateStr);
+        var result = uv.EndMonth();
+
+        Assert.AreEqual(dateTimeCheck, result.Value);
+    }
+
+    [TestCase(null, "0001-01-01T00:00:00")]
+    [TestCase("", "0001-01-01T00:00:00")]
+    [TestCase("2023-06-21T14:51:11", "2023-04-01T00:00:00")]
+    public void BeginQuarter_UniversalValue(string dateStr, string checkStr)
+    {
+        DateTime.TryParse(checkStr, out var dateTimeCheck);
+
+        var uv = new UniversalValue(dateStr);
+        var result = uv.BeginQuarter();
+
+        Assert.AreEqual(dateTimeCheck, result.Value);
+    }
+
+    [TestCase(null, "0001-03-31T23:59:59")]
+    [TestCase("", "0001-03-31T23:59:59")]
+    [TestCase("2023-06-21T14:51:11", "2023-06-30T23:59:59")]
+    public void EndQuarter_UniversalValue(string dateStr, string checkStr)
+    {
+        DateTime.TryParse(checkStr, out var dateTimeCheck);
+
+        var uv = new UniversalValue(dateStr);
+        var result = uv.EndQuarter();
+
+        Assert.AreEqual(dateTimeCheck, result.Value);
+    }
+
+    [TestCase(null, "0001-01-01T00:00:00")]
+    [TestCase("", "0001-01-01T00:00:00")]
+    [TestCase("2023-06-21T14:51:11", "2023-06-21T14:51:11")]
+    public void Get_Property_Day_UniversalValue(string dateStr, string checkStr)
+    {
+        DateTime.TryParse(checkStr, out var dateTimeCheck);
+
+        var uv = new UniversalValue(dateStr);
+        var result = uv.Day;
+
+        Assert.AreEqual(dateTimeCheck.Day, result.Value);
+    }
+
+    [TestCase(null, "0001-01-01T00:00:00")]
+    [TestCase("", "0001-01-01T00:00:00")]
+    [TestCase("2023-06-21T14:51:11", "2023-06-21T14:51:11")]
+    public void Get_Property_Hour_UniversalValue(string dateStr, string checkStr)
+    {
+        DateTime.TryParse(checkStr, out var dateTimeCheck);
+
+        var uv = new UniversalValue(dateStr);
+        var result = uv.Hour;
+
+        Assert.AreEqual(dateTimeCheck.Hour, result.Value);
+    }
+
+    [TestCase(null, "0001-01-01T00:00:00")]
+    [TestCase("", "0001-01-01T00:00:00")]
+    [TestCase("2023-06-21T14:51:11", "2023-06-21T14:51:11")]
+    public void Get_Property_Month_UniversalValue(string dateStr, string checkStr)
+    {
+        DateTime.TryParse(checkStr, out var dateTimeCheck);
+
+        var uv = new UniversalValue(dateStr);
+        var result = uv.Month;
+
+        Assert.AreEqual(dateTimeCheck.Month, result.Value);
+    }
+
+    [TestCase(null, "0001-01-01T00:00:00")]
+    [TestCase("", "0001-01-01T00:00:00")]
+    [TestCase("2023-06-21T14:51:11", "2023-06-21T14:51:11")]
+    public void Get_Property_Minute_UniversalValue(string dateStr, string checkStr)
+    {
+        DateTime.TryParse(checkStr, out var dateTimeCheck);
+
+        var uv = new UniversalValue(dateStr);
+        var result = uv.Minute;
+
+        Assert.AreEqual(dateTimeCheck.Minute, result.Value);
+    }
+
+    [TestCase(null, "0001-01-01T00:00:00")]
+    [TestCase("", "0001-01-01T00:00:00")]
+    [TestCase("2023-06-21T14:51:11", "2023-06-21T14:51:11")]
+    public void Get_Property_Second_UniversalValue(string dateStr, string checkStr)
+    {
+        DateTime.TryParse(checkStr, out var dateTimeCheck);
+
+        var uv = new UniversalValue(dateStr);
+        var result = uv.Second;
+
+        Assert.AreEqual(dateTimeCheck.Second, result.Value);
+    }
+
+    [TestCase(null, "0001-01-01T00:00:00")]
+    [TestCase("", "0001-01-01T00:00:00")]
+    [TestCase("2023-06-21T14:51:11", "2023-06-21T14:51:11")]
+    public void Get_Property_Year_UniversalValue(string dateStr, string checkStr)
+    {
+        DateTime.TryParse(checkStr, out var dateTimeCheck);
+
+        var uv = new UniversalValue(dateStr);
+        var result = uv.Year;
+
+        Assert.AreEqual(dateTimeCheck.Year, result.Value);
     }
 }
