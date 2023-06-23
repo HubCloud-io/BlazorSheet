@@ -32,20 +32,59 @@ namespace HubCloud.BlazorSheet.Core.Models
             return PerformOperation(v1, v2, (a, b) => a + b);
         }
 
+        public static UniversalValue operator +(object v1, UniversalValue v2)
+        {
+            return PerformOperation(new UniversalValue(v1), v2, (a, b) => a + b);
+        }
+
+        public static UniversalValue operator +(UniversalValue v1, object v2)
+        {
+            return PerformOperation(v1, new UniversalValue(v2), (a, b) => a + b);
+        }
+
         public static UniversalValue operator -(UniversalValue v1, UniversalValue v2)
         {
             return PerformOperation(v1, v2, (a, b) => a - b);
         }
-        
+
+        public static UniversalValue operator -(UniversalValue v1, object v2)
+        {
+            return PerformOperation(v1, new UniversalValue(v2), (a, b) => a - b);
+        }
+
+        public static UniversalValue operator -(object v1, UniversalValue v2)
+        {
+            return PerformOperation(new UniversalValue(v1), v2, (a, b) => a - b);
+        }
+
         public static UniversalValue operator *(UniversalValue v1, UniversalValue v2)
         {
             return PerformOperation(v1, v2, (a, b) => a * b);
         }
-        
-        
+
+        public static UniversalValue operator *(UniversalValue v1, object v2)
+        {
+            return PerformOperation(v1, new UniversalValue(v2), (a, b) => a * b);
+        }
+
+        public static UniversalValue operator *(object v1, UniversalValue v2)
+        {
+            return PerformOperation(new UniversalValue(v1), v2, (a, b) => a * b);
+        }
+
         public static UniversalValue operator /(UniversalValue v1, UniversalValue v2)
         {
             return PerformOperation(v1, v2, (a, b) => a / b);
+        }
+
+        public static UniversalValue operator /(UniversalValue v1, object v2)
+        {
+            return PerformOperation(v1, new UniversalValue(v2), (a, b) => a / b);
+        }
+
+        public static UniversalValue operator /(object v1, UniversalValue v2)
+        {
+            return PerformOperation(new UniversalValue(v1), v2, (a, b) => a / b);
         }
 
         public static UniversalValue operator >(UniversalValue v1, UniversalValue v2)
