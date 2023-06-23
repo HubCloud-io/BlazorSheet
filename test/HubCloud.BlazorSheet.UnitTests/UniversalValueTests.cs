@@ -526,4 +526,34 @@ public class UniversalValueTests
 
         Assert.AreEqual(expected, result.Value);
     }
+
+    [TestCase(5, 5, true)]
+    [TestCase("qwerty", "qwerty", true)]
+    [TestCase(null, "qwerty", false)]
+    [TestCase("qwerty", false, false)]
+    [TestCase("qwerty", 5, false)]
+    public void Equals_UniversalValueAndUniversalValue_ReturnBool(object value1, object value2, bool expected)
+    {
+        var uValue1 = new UniversalValue(value1);
+        var uValue2 = new UniversalValue(value2);
+
+        var result = uValue1.Equals(uValue2);
+
+        Assert.AreEqual(expected, result);
+    }
+
+    [TestCase(5, 5, true)]
+    [TestCase(5, null, false)]
+    [TestCase("qwerty", "qwerty", true)]
+    [TestCase(null, "qwerty", false)]
+    [TestCase("qwerty", false, false)]
+    [TestCase("qwerty", 5, false)]
+    public void Equals_UniversalValueAndObject_ReturnBool(object value1, object value2, bool expected)
+    {
+        var uValue1 = new UniversalValue(value1);
+
+        var result = uValue1.Equals(value2);
+
+        Assert.AreEqual(expected, result);
+    }
 }

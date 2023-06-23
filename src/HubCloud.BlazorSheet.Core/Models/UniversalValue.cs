@@ -319,11 +319,13 @@ namespace HubCloud.BlazorSheet.Core.Models
         {
             if (Value == null || obj == null) 
                 return false;
-
-            if (obj is UniversalValue uv)
-                return Value.Equals(uv.Value);
             else
-                return false;
+            {
+                if (obj is UniversalValue uv)
+                    return Value.Equals(uv.Value);
+                else
+                    return Value.Equals(obj);
+            }
         }
 
         public override string ToString()
