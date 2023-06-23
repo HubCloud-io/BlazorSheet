@@ -123,10 +123,14 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
             WriteEqualExample(sheet, 51, 2);
             WriteNotEqualExample(sheet, 52, 2);
             WriteEqualsExample(sheet, 53, 2);
-            WriteAndExample(sheet, 54, 2);
-            WriteOrExample(sheet, 55, 2);
-            WriteAndExample2(sheet, 56, 2);
-            WriteOrExample2(sheet, 57, 2);
+
+            sheet.GetCell(54, 2).Value = "Logic operators";
+            sheet.GetCell(54, 2).StyleUid = _titleStyle.Uid;
+
+            WriteAndExample(sheet, 55, 2);
+            WriteOrExample(sheet, 56, 2);
+            WriteAndExample2(sheet, 57, 2);
+            WriteOrExample2(sheet, 58, 2);
 
             sheet.PrepareCellText();
 
@@ -693,7 +697,7 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
 
         private void WriteAndExample(Sheet sheet, int row, int column)
         {
-            var formula = "(VAL(\"R54C3\") < 5) && (VAL(\"R54C4\") > 10)";
+            var formula = "(VAL(\"R55C3\") < 5) && (VAL(\"R55C4\") > 10)";
             sheet.GetCell(row, column).Value = formula;
 
             sheet.GetCell(row, column + 1).EditSettingsUid = _numberInputSettings.Uid;
@@ -707,7 +711,7 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
 
         private void WriteOrExample(Sheet sheet, int row, int column)
         {
-            var formula = "(VAL(\"R55C3\") > 5) || (VAL(\"R55C4\") < 10)";
+            var formula = "(VAL(\"R56C3\") > 5) || (VAL(\"R56C4\") < 10)";
             sheet.GetCell(row, column).Value = formula;
 
             sheet.GetCell(row, column + 1).EditSettingsUid = _numberInputSettings.Uid;
@@ -721,7 +725,7 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
 
         private void WriteAndExample2(Sheet sheet, int row, int column)
         {
-            var formula = "VAL(\"R56C3\") && VAL(\"R56C4\")";
+            var formula = "VAL(\"R57C3\") && VAL(\"R57C4\")";
             sheet.GetCell(row, column).Value = formula;
 
             sheet.GetCell(row, column + 1).EditSettingsUid = _stringInputSettings.Uid;
@@ -735,7 +739,7 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
 
         private void WriteOrExample2(Sheet sheet, int row, int column)
         {
-            var formula = "VAL(\"R57C3\") || VAL(\"R57C4\")";
+            var formula = "VAL(\"R58C3\") || VAL(\"R58C4\")";
             sheet.GetCell(row, column).Value = formula;
 
             sheet.GetCell(row, column + 1).EditSettingsUid = _stringInputSettings.Uid;
