@@ -179,24 +179,32 @@ namespace HubCloud.BlazorSheet.Core.Models
 
         public static UniversalValue operator &(UniversalValue v1, UniversalValue v2)
         {
-            if (bool.TryParse(v1.ToString(), out bool v1Bool))
-            {
-                if (bool.TryParse(v2.ToString(), out bool v2Bool))
-                    return new UniversalValue(v1Bool & v2Bool);
-            }
-
-            return new UniversalValue(false);
+            return AndOrOperationResult(v1, v2, (a, b) => a & b);
         }
+
         public static UniversalValue operator |(UniversalValue v1, UniversalValue v2)
+        {
+            return AndOrOperationResult(v1, v2, (a, b) => a | b);
+        }
+
+        private static UniversalValue AndOrOperationResult(UniversalValue v1, UniversalValue v2, Func<bool?, bool?, bool?> func)
         {
             if (bool.TryParse(v1.ToString(), out bool v1Bool))
             {
                 if (bool.TryParse(v2.ToString(), out bool v2Bool))
-                    return new UniversalValue(v1Bool | v2Bool);
+                    return new UniversalValue(func(v1Bool, v2Bool));
+                else
+                    return new UniversalValue(func(v1Bool, null));
             }
-
-            return new UniversalValue(false);
+            else
+            {
+                if (bool.TryParse(v2.ToString(), out bool v2Bool))
+                    return new UniversalValue(func(null, v2Bool));
+                else
+                    return new UniversalValue();
+            }
         }
+
         public static bool operator true(UniversalValue uv)
         {
             if (bool.TryParse(uv.ToString(), out bool valBool))
@@ -204,6 +212,7 @@ namespace HubCloud.BlazorSheet.Core.Models
 
             return false;
         }
+
         public static bool operator false(UniversalValue uv)
         {
             return false;
