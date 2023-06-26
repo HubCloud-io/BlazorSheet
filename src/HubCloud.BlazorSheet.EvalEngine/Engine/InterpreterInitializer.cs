@@ -34,6 +34,9 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
             Func<UniversalValue, UniversalValue> isNotEmptyFunction = data.IsNotEmpty;
             interpreter.SetFunction("IsNotEmpty", isNotEmptyFunction);
 
+            Func<UniversalValue> nowFunction = data.Now;
+            interpreter.SetFunction("NOW", nowFunction);
+            
             Func<string, UniversalValue, UniversalValue, UniversalValue> dateDiffFunction = data.DateDiff;
             interpreter.SetFunction("DateDiff", dateDiffFunction);
 

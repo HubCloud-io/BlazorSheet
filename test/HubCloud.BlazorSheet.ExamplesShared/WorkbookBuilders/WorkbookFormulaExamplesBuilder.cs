@@ -101,6 +101,9 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
             sheet.GetCell(currentRow, 2).StyleUid = _titleStyle.Uid;
             currentRow++;
 
+            WriteNowExample(sheet, currentRow, 2);
+            currentRow++;
+            
             WriteAddDaysExample(sheet, currentRow, 2);
             currentRow++;
 
@@ -384,6 +387,15 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
             sheet.GetCell(row, column + 3).Formula = formula;
         }
 
+        private void WriteNowExample(Sheet sheet, int row, int column)
+        {
+            var formula = $"Now()";
+            sheet.GetCell(row, column).Value = formula;
+            
+
+            sheet.GetCell(row, column + 3).Formula = formula;
+        }
+        
         private void WriteAddDaysExample(Sheet sheet, int row, int column)
         {
             var formula = $"VAL(\"R{row}C3\").AddDays(10)";
