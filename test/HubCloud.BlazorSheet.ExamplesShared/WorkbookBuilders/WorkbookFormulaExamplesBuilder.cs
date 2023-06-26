@@ -61,6 +61,13 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
 
             WriteAddExample(sheet, currentRow, 2);
             currentRow++;
+            
+            WriteAddConstantExample(sheet, currentRow, 2);
+            currentRow++;
+            
+            WriteAddIntConstantExample(sheet, currentRow, 2);
+            currentRow++;
+            
 
             sheet.GetCell(currentRow, 2).Value = "String operations";
             sheet.GetCell(currentRow, 2).StyleUid = _titleStyle.Uid;
@@ -263,9 +270,42 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
         
         private void WriteAddConstantExample(Sheet sheet, int row, int column)
         {
-            var formula = "VAL(\"R2C3\")+1.5";
+            var formula = $"VAL(\"R{row}C3\")+2.5";
             sheet.GetCell(row, column).Value = formula;
-
+            
+            sheet.GetCell(row, column + 1).EditSettingsUid = _numberInputSettings.Uid;
+            sheet.GetCell(row, column + 1).Value = 1.5m;
+            
+            sheet.GetCell(row, column + 3).Formula = formula;
+        }
+        
+        private void WriteAddIntConstantExample(Sheet sheet, int row, int column)
+        {
+            var formula = $"VAL(\"R{row}C3\")+2";
+            sheet.GetCell(row, column).Value = formula;
+            
+            sheet.GetCell(row, column + 1).EditSettingsUid = _numberInputSettings.Uid;
+            sheet.GetCell(row, column + 1).Value = 1.5m;
+            
+            sheet.GetCell(row, column + 3).Formula = formula;
+        }
+        
+        private void WriteMultiplyIntConstantExample(Sheet sheet, int row, int column)
+        {
+            var formula = $"VAL(\"R{row}C3\")*2";
+            sheet.GetCell(row, column).Value = formula;
+            
+            sheet.GetCell(row, column + 1).EditSettingsUid = _numberInputSettings.Uid;
+            sheet.GetCell(row, column + 1).Value = 1.5m;
+            
+            sheet.GetCell(row, column + 3).Formula = formula;
+        }
+        
+        private void WriteMultiplyConstantExample(Sheet sheet, int row, int column)
+        {
+            var formula = $"VAL(\"R{row}C3\")*2.5";
+            sheet.GetCell(row, column).Value = formula;
+            
             sheet.GetCell(row, column + 1).EditSettingsUid = _numberInputSettings.Uid;
             sheet.GetCell(row, column + 1).Value = 1.5m;
             

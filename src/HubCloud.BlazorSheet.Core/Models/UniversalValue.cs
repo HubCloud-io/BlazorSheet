@@ -125,8 +125,8 @@ namespace HubCloud.BlazorSheet.Core.Models
 
         public static UniversalValue operator >(UniversalValue v1, UniversalValue v2)
         {
-            return PerformComparisonOperation(v1, 
-                v2, 
+            return PerformComparisonOperation(v1,
+                v2,
                 (a, b) => a > b);
         }
 
@@ -487,7 +487,7 @@ namespace HubCloud.BlazorSheet.Core.Models
             var dateTime = ToDate();
             return new UniversalValue(dateTime.EndQuarter());
         }
-        
+
         private static UniversalValue PerformOperation(UniversalValue v1,
             UniversalValue v2,
             Func<decimal, decimal, object> decimalOperation,
@@ -510,10 +510,31 @@ namespace HubCloud.BlazorSheet.Core.Models
                     return new UniversalValue(decimalOperation((decimal) v1Int, (decimal) v2.Value));
                 }
 
+                if (v1.Value is float v1Float)
+                {
+                    return new UniversalValue(decimalOperation((decimal) v1Float, (decimal) v2.Value));
+                }
+
+                if (v1.Value is double v1Double)
+                {
+                    return new UniversalValue(decimalOperation((decimal) v1Double, (decimal) v2.Value));
+                }
+
                 if (v2.Value is int v2Int)
                 {
                     return new UniversalValue(decimalOperation((decimal) v1.Value, (decimal) v2Int));
                 }
+                
+                if (v2.Value is float v2Float)
+                {
+                    return new UniversalValue(decimalOperation((decimal) v1.Value, (decimal) v2Float));
+                }
+                
+                if (v2.Value is double v2Double)
+                {
+                    return new UniversalValue(decimalOperation((decimal) v1.Value, (decimal) v2Double));
+                }
+
 
                 return new UniversalValue(decimalOperation((decimal) v1.Value, (decimal) v2.Value));
             }

@@ -22,6 +22,17 @@ public class UniversalValueArithmeticsOperatorsTests
     }
     
     [Test]
+    public void Plus_UvDecimalAndUvDouble_SumValue()
+    {
+        var uValue1 = new UniversalValue(1.5M);
+        var uValue2 = new UniversalValue(2.5);
+
+        var result = uValue1 + uValue2;
+        
+        Assert.AreEqual(4M, result.Value);
+    }
+    
+    [Test]
     public void Plus_UvDecimalValueAndDecimal_SumValue()
     {
         var uValue1 = new UniversalValue(1M);
