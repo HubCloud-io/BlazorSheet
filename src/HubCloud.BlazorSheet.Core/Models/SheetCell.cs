@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Security.Cryptography.X509Certificates;
 using Newtonsoft.Json;
 
@@ -92,8 +93,12 @@ namespace HubCloud.BlazorSheet.Core.Models
 
             if (DateTime.TryParse(text, out var date))
                 Text = date.ToString(format);
-            else if (decimal.TryParse(text, out var decimalValue))
-                Text = decimalValue.ToString(format);
+            else if (decimal.TryParse(
+                text.Replace(',', '.'),
+                NumberStyles.AllowDecimalPoint,
+                new NumberFormatInfo { NumberDecimalSeparator = "." },
+                out var decimalValue))
+                Text = decimalValue.ToString(format, CultureInfo.InvariantCulture);
         }
     }
 }
