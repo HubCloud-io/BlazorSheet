@@ -27,7 +27,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
             
             _interpreter = InterpreterInitializer.CreateInterpreter(_data);
             
-            _interpreter.SetVariable("_data", _data);    
+            _interpreter.SetVariable("_data", _data);
         }
 
         public WorkbookEvaluator(WorkbookData data)
@@ -47,7 +47,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
             _data.CurrentRow = row;
             _data.CurrentColumn = column;
 
-            var formula = FormulaConverter.PrepareFormula(expression);
+            var formula = FormulaConverter.PrepareFormula(expression, "_data");
 
             try
             {

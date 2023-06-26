@@ -50,7 +50,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
             _interpreter.SetVariable("_currentRow", row);
             _interpreter.SetVariable("_currentColumn", column);
 
-            var formula = FormulaConverter.PrepareFormula(expression);
+            var formula = FormulaConverter.PrepareFormula(expression, "_cells");
 
             try
             {

@@ -8,9 +8,18 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
 {
     public class FormulaConverter
     {
-        public static string PrepareFormula(string formulaIn, string contextName = "_cells")
+        public static string PrepareFormula(string formulaIn, string contextName)
         {
-            var formula = formulaIn;
+            var funcDict = new Dictionary<string, string>();
+            var sb = new StringBuilder(formulaIn.Replace("$c", contextName));
+            
+            CutFunctions(sb, funcDict, contextName);
+            
+            sb = SetValues(sb);
+            
+            PasteFunctions(sb, funcDict);
+            
+            var formula = sb.ToString();
             formula = formula
                 .Replace("=","==")
                 .Replace("====","==")
@@ -25,17 +34,6 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
                 .Replace(" OR "," || ");
 
             return formula;
-            
-            // var funcDict = new Dictionary<string, string>();
-            // var sb = new StringBuilder(formula.Replace("$c", contextName));
-            //
-            // CutFunctions(sb, funcDict, contextName);
-            //
-            // sb = SetValues(sb);
-            //
-            // PasteFunctions(sb, funcDict);
-            //
-            // return sb.ToString();
         }
         
         private static void PasteFunctions(StringBuilder sb, Dictionary<string, string> funcDict)
@@ -48,6 +46,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
 
         private static void CutFunctions(StringBuilder sb, Dictionary<string, string> funcDict, string contextName)
         {
+            // find functions by format 'FunctionName(..)'
             var regex = new Regex(@"[A-z]+[(][^()]+[)]");
             var functions = regex.Matches(sb.ToString())
                 .Cast<Match>()
@@ -111,6 +110,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
 
         private static Dictionary<string, string> GetValueDict(string formula)
         {
+            // find cell address by format 'R<some digits>C<some digits>'
             var regex = new Regex(@"R-*\d*C-*\d*");
             var matches = regex.Matches(formula);
 

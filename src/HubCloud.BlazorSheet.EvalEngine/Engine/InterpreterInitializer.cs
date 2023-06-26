@@ -9,7 +9,6 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
 
         public static Interpreter CreateInterpreter(WorkbookData data)
         {
-            
             var interpreter = new Interpreter(InterpreterOptions.DefaultCaseInsensitive);
 
             interpreter.Reference(typeof(DateTime));
