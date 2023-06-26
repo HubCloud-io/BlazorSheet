@@ -6,8 +6,9 @@
 
 <hr/>
 
-<SheetCommandPanel Model="@_commandPanelModel" 
-                           Changed="OnStyleChanged"></SheetCommandPanel>
+<SheetCommandPanel Model="@_commandPanelModel"
+                   Changed="OnStyleChanged">
+</SheetCommandPanel>
 
 <hr/>
 
@@ -16,11 +17,13 @@
     <div class="col-sm-12">
 
         <SheetComponent Sheet="@_sheet"
-                                Regime="@SheetRegimes.Edit"
-                                CellSelected="OnCellSelected"
-                                CellsSelected="OnCellsSelected"
-                                RowSelected="OnRowSelected"
-                                ColumnSelected="OnColumnSelected">
+                        MaxHeight="500px"
+                        MaxWidth="1000px"
+                        Regime="@SheetRegimes.Edit"
+                        CellSelected="OnCellSelected"
+                        CellsSelected="OnCellsSelected"
+                        RowSelected="OnRowSelected"
+                        ColumnSelected="OnColumnSelected">
         </SheetComponent>
 
     </div>
