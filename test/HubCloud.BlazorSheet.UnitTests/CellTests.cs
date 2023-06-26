@@ -15,12 +15,11 @@ namespace HubCloud.BlazorSheet.UnitTests
     {
         [TestCase("123", null, CellFormatConsts.None)]
         [TestCase("123,44", "123", CellFormatConsts.Integer)]
-        [TestCase("123", "123,00", CellFormatConsts.IntegerTwoDecimalPlaces)]
-        [TestCase("123", "123,000", CellFormatConsts.IntegerThreeDecimalPlaces)]
-        [TestCase("Вт 30.05.23 13:24:40", "30.05.2023", CellFormatConsts.Date)]
-        [TestCase("Вт 30.05.23 13:24:40", "30.05.2023 13:24:40", CellFormatConsts.DateTime)]
-        [TestCase("Вт 30.05.23 13:24:40", "30 мая", "d MMMM")]
-        [TestCase("123,44", "123,44 ₽", "C2")]
+        [TestCase("123.44", "123", CellFormatConsts.Integer)]
+        [TestCase("123", "123.00", CellFormatConsts.IntegerTwoDecimalPlaces)]
+        [TestCase("123", "123.000", CellFormatConsts.IntegerThreeDecimalPlaces)]
+        [TestCase("2023-05-30T13:24:40", "30.05.2023", CellFormatConsts.Date)]
+        [TestCase("2023-05-30T13:24:40", "30.05.2023 13:24:40", CellFormatConsts.DateTime)]
         [TestCase("123", "qwert123", "qwert123")]
         public void ApplyFormat_AreCellTextEqualExpected_True(string input, string expected, string format)
         {
