@@ -29,17 +29,17 @@ namespace HubCloud.BlazorSheet.Core.Models
 
         public static UniversalValue operator +(UniversalValue v1, UniversalValue v2)
         {
-            return PerformOperation(v1, v2, (a, b) => a + b);
+            return PerformOperationPlus(v1, v2);
         }
 
         public static UniversalValue operator +(object v1, UniversalValue v2)
         {
-            return PerformOperation(new UniversalValue(v1), v2, (a, b) => a + b);
+            return PerformOperationPlus(new UniversalValue(v1), v2);
         }
 
         public static UniversalValue operator +(UniversalValue v1, object v2)
         {
-            return PerformOperation(v1, new UniversalValue(v2), (a, b) => a + b);
+            return PerformOperationPlus(v1, new UniversalValue(v2));
         }
 
         public static UniversalValue operator -(UniversalValue v1, UniversalValue v2)
@@ -187,7 +187,8 @@ namespace HubCloud.BlazorSheet.Core.Models
             return AndOrOperationResult(v1, v2, (a, b) => a | b);
         }
 
-        private static UniversalValue AndOrOperationResult(UniversalValue v1, UniversalValue v2, Func<bool?, bool?, bool?> func)
+        private static UniversalValue AndOrOperationResult(UniversalValue v1, UniversalValue v2,
+            Func<bool?, bool?, bool?> func)
         {
             if (bool.TryParse(v1.ToString(), out bool v1Bool))
             {
@@ -230,7 +231,6 @@ namespace HubCloud.BlazorSheet.Core.Models
 
         public UniversalValue Substring(int startIndex, int length)
         {
-
             var stringValue = ToString();
 
             if (string.IsNullOrEmpty(stringValue))
@@ -317,7 +317,7 @@ namespace HubCloud.BlazorSheet.Core.Models
 
         public override bool Equals(object obj)
         {
-            if (Value == null || obj == null) 
+            if (Value == null || obj == null)
                 return false;
             else
             {
@@ -342,7 +342,7 @@ namespace HubCloud.BlazorSheet.Core.Models
             {
                 return dateTime;
             }
-            
+
             if (Value is string stringValue)
             {
                 if (DateTime.TryParse(stringValue, out dateTime))
@@ -466,22 +466,59 @@ namespace HubCloud.BlazorSheet.Core.Models
                 }
                 else if (v1.Value is int v1Int)
                 {
-                    return new UniversalValue(decimalOperation((decimal)v1Int, (decimal)v2.Value));
+                    return new UniversalValue(decimalOperation((decimal) v1Int, (decimal) v2.Value));
                 }
                 else if (v2.Value is int v2Int)
                 {
-                    return new UniversalValue(decimalOperation((decimal)v1.Value, (decimal)v2Int));
+                    return new UniversalValue(decimalOperation((decimal) v1.Value, (decimal) v2Int));
                 }
                 else
                 {
-                    return new UniversalValue(decimalOperation((decimal)v1.Value, (decimal)v2.Value));
+                    return new UniversalValue(decimalOperation((decimal) v1.Value, (decimal) v2.Value));
                 }
             }
 
             return new UniversalValue(v1.Value?.ToString() + v2.Value?.ToString());
         }
 
-        private static UniversalValue PerformComparisonOperation(UniversalValue v1, UniversalValue v2, Func<decimal, decimal, bool> func)
+        private static UniversalValue PerformOperationPlus(UniversalValue v1,
+            UniversalValue v2)
+        {
+            if (v1.Value == null)
+            {
+                return v2;
+            }
+
+            if (v2.Value == null)
+            {
+                return v1;
+            }
+
+            if (v1.Value is decimal || v2.Value is decimal)
+            {
+                if (v1.Value is int v1Int)
+                {
+                    return new UniversalValue((decimal) v1Int + (decimal) v2.Value);
+                }
+
+                if (v2.Value is int v2Int)
+                {
+                    return new UniversalValue((decimal) v1.Value + (decimal) v2Int);
+                }
+
+                return new UniversalValue((decimal) v1.Value + (decimal) v2.Value);
+            }
+
+            if (v1.Value is int || v2.Value is int)
+            {
+                return new UniversalValue((int) v1.Value + (int) v2.Value);
+            }
+
+            return new UniversalValue(v1.Value?.ToString() + v2.Value?.ToString());
+        }
+
+        private static UniversalValue PerformComparisonOperation(UniversalValue v1, UniversalValue v2,
+            Func<decimal, decimal, bool> func)
         {
             if (v1.Value == null || v2.Value == null)
                 return new UniversalValue(false);
@@ -490,15 +527,15 @@ namespace HubCloud.BlazorSheet.Core.Models
             {
                 if (v1.Value is int v1Int)
                 {
-                    return new UniversalValue(func(v1Int, (decimal)v2.Value));
+                    return new UniversalValue(func(v1Int, (decimal) v2.Value));
                 }
                 else if (v2.Value is int v2Int)
                 {
-                    return new UniversalValue(func((decimal)v1.Value, v2Int));
+                    return new UniversalValue(func((decimal) v1.Value, v2Int));
                 }
                 else
                 {
-                    return new UniversalValue(func((decimal)v1.Value, (decimal)v2.Value));
+                    return new UniversalValue(func((decimal) v1.Value, (decimal) v2.Value));
                 }
             }
 
