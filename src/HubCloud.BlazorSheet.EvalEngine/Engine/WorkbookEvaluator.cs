@@ -44,7 +44,8 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
         public object Eval(string expression, int row, int column)
         {
             object result = null;
-            
+            _data.CurrentRow = row;
+            _data.CurrentColumn = column;
 
             var formula = FormulaConverter.PrepareFormula(expression);
 
@@ -87,8 +88,6 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
             foreach (var cell in sheet.Cells.Where(x=>!string.IsNullOrWhiteSpace(x.Formula)))
             {
                 var cellAddress = sheet.CellAddress(cell);
-                _data.CurrentRow = cellAddress.Row;
-                _data.CurrentColumn = cellAddress.Column;
                 
                 var evalResult = Eval(cell.Formula, cellAddress.Row, cellAddress.Column);
 
