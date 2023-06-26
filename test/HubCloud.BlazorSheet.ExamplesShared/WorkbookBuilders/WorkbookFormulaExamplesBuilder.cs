@@ -14,7 +14,7 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
         public Workbook Build()
         {
             var sheetSettings = new SheetSettings();
-            sheetSettings.RowsCount = 60;
+            sheetSettings.RowsCount = 100;
             sheetSettings.ColumnsCount = 6;
 
             _numberInputSettings = new SheetCellEditSettings()
@@ -66,6 +66,12 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
             currentRow++;
             
             WriteAddIntConstantExample(sheet, currentRow, 2);
+            currentRow++;
+            
+            WriteMultiplyConstantExample(sheet, currentRow, 2);
+            currentRow++;
+            
+            WriteMultiplyIntConstantExample(sheet, currentRow, 2);
             currentRow++;
             
 
