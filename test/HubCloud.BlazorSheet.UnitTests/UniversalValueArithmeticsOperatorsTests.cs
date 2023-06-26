@@ -94,4 +94,37 @@ public class UniversalValueArithmeticsOperatorsTests
         
         Assert.AreEqual(2M, result.Value);
     }
+    
+    [Test]
+    public void Multiply_UvDecimalAndUvDecimal_Result()
+    {
+        var value1 = new UniversalValue(2m);
+        var value2 = new UniversalValue(3m);
+
+        var result = value1 * value2;
+        
+        Assert.AreEqual(6m, result.Value);
+    }
+    
+    [Test]
+    public void Multiply_DecimalAndUvDecimal_Result()
+    {
+        var value1 = 2.5m;
+        var value2 = new UniversalValue(2m);
+
+        var result = value1 * value2;
+        
+        Assert.AreEqual(5m, result.Value);
+    }
+    
+    [Test]
+    public void Multiply_IntAndUvDecimal_Result()
+    {
+        var value1 = 2;
+        var value2 = new UniversalValue(3m);
+
+        var result = value1 * value2;
+        
+        Assert.AreEqual(6m, result.Value);
+    }
 }
