@@ -18,16 +18,12 @@
 
             @foreach (var column in Sheet.Columns)
             {
-                @if (column.Hidden)
-                {
-                    continue;
-                }
-
                 <td class="hc-grid-cell text-center"
                     @onclick="(e => OnColumnNumberCellClick(column))"
                     @oncontextmenu="(e => OnColumnContextMenu(e, column))"
                     @oncontextmenu:preventDefault
-                    style="@HeaderCellStyle(Sheet, column)">
+                    style="@HeaderCellStyle(Sheet, column)"
+                    hidden="@CellHidden(column)">
                     @Sheet.ColumnNumber(column)
                 </td>
             }
@@ -42,7 +38,8 @@
                     style="@LeftSideCellStyle(Sheet, row)"
                     @onclick="(e => OnRowNumberCellClick(row))"
                     @oncontextmenu="(e => OnRowContextMenu(e, row))"
-                    @oncontextmenu:preventDefault>
+                    @oncontextmenu:preventDefault
+                    hidden="@CellHidden(row)">
                     <span>@(Sheet.RowNumber(row))</span>
                 </td>
                 @foreach (var column in Sheet.Columns)
@@ -60,7 +57,8 @@
                             style="@CellStyle(Sheet, row, column, cell)"
                             @oninput="(e => OnInput(e, cell))"
                             @onclick="(e => OnCellClick(row, column, cell))"
-                            @onfocusout="(e => OnCellFocusOut(e, cell))">
+                            @onfocusout="(e => OnCellFocusOut(e, cell))" 
+                            hidden="@CellHidden(column, row)">
                             
                             @if (cell.EditSettingsUid.HasValue)
                             {
@@ -112,7 +110,9 @@
                     }
                     else
                     {
-                        <td class="@CellClass(cell)" style="@CellStyle(Sheet, row, column, cell)">
+                        <td class="@CellClass(cell)" 
+                            style="@CellStyle(Sheet, row, column, cell)"
+                            hidden="@CellHidden(column, row)">
                             @if (cell.EditSettingsUid.HasValue)
                             {
                                 var editSettings = Sheet.GetEditSettings(cell);

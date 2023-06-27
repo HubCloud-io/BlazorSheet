@@ -17,6 +17,9 @@ public class ContextMenuBuilder
 
     public const string SheetSizeItemName = "SheetSize";
 
+    public const string ShowHideItemName = "Show/Hide";
+    public const string ShowHiddenHideHiddenItemName = "ShowHidden/HideHidden";
+
     public static IEnumerable<IMenuItem> BuildColumnContextMenu(string callFrom)
     {
         var items = new List<IMenuItem>();
@@ -65,6 +68,27 @@ public class ContextMenuBuilder
             Name = SheetSizeItemName,
             Title = "Change sheet size",
             IconClass = "fa fa-edit text-primary"
+        });
+
+        items.Add(new MenuItem()
+        {
+            Kind = MenuItemKinds.Delimiter
+        });
+
+        items.Add(new MenuItem()
+        {
+            Kind = MenuItemKinds.Item,
+            Name = ShowHideItemName,
+            Title = ShowHideItemName,
+            IconClass = "fa fa-sharp fa-regular fa-eye"
+        });
+
+        items.Add(new MenuItem()
+        {
+            Kind = MenuItemKinds.Item,
+            Name = ShowHiddenHideHiddenItemName,
+            Title = "Show hidden/Hide hidden",
+            IconClass = "fa fa-sharp fa-regular fa-eye"
         });
 
         items.Add(new MenuItem()
