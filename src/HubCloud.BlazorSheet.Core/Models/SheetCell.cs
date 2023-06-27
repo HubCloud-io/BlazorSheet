@@ -36,6 +36,40 @@ namespace HubCloud.BlazorSheet.Core.Models
         }
         
         [JsonIgnore]
+        public int IntValue
+        {
+            get
+            {
+                if (Value is int intValue)
+                {
+                    return intValue;
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+            set => Value = value;
+        }
+        
+        [JsonIgnore]
+        public bool BoolValue
+        {
+            get
+            {
+                if (Value is bool boolValue)
+                {
+                    return boolValue;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            set => Value = value;
+        }
+        
+        [JsonIgnore]
         public string StringValue
         {
             get => Value?.ToString() ?? string.Empty;

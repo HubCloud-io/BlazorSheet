@@ -6,7 +6,9 @@
         TextInput = 1,
         NumberInput = 2,
         DateInput = 3,
-        DateTimeInput = 4
+        DateTimeInput = 4,
+        CheckBox = 5,
+        ComboBox = 6
         
     }
 }

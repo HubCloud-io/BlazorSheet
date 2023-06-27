@@ -1,6 +1,8 @@
 ﻿using System.Text;
 using HubCloud.BlazorSheet.Core.Enums;
+using HubCloud.BlazorSheet.Core.Interfaces;
 using HubCloud.BlazorSheet.Core.Models;
+using HubCloud.BlazorSheet.Infrastructure;
 using Microsoft.AspNetCore.Components;
 
 namespace HubCloud.BlazorSheet.Components;
@@ -11,6 +13,7 @@ public partial class SheetCommandPanel:ComponentBase
     private List<Tuple<string, CellFormatTypes>> _cellFormatSource;
     private List<Tuple<CellBorderTypes, string>> _borderTypesSource;
     private List<Tuple<CellControlKinds, string>> _controlKindSource;
+    private List<Tuple<string, string>> _itemsSourceSource;
 
     [Parameter]
     public SheetCommandPanelModel Model { get; set; }
@@ -23,6 +26,8 @@ public partial class SheetCommandPanel:ComponentBase
 
     [Parameter]
     public EventCallback ImportClicked { get; set; }
+
+    [Parameter] public IItemsSourceDataProvider ItemsSourceDataProvider { get; set; } 
     
     protected override void OnInitialized()
     {
@@ -48,12 +53,19 @@ public partial class SheetCommandPanel:ComponentBase
         _cellFormatSource.Add(new Tuple<string, CellFormatTypes>("Date&Time", CellFormatTypes.DateTime));
         _cellFormatSource.Add(new Tuple<string, CellFormatTypes>("Custom", CellFormatTypes.Custom));
 
+        if (ItemsSourceDataProvider != null)
+        {
+            _itemsSourceSource = ItemsSourceDataProvider.GetItems().ToList();
+        }
+        
         _controlKindSource = new List<Tuple<CellControlKinds, string>>();
         _controlKindSource.Add(new Tuple<CellControlKinds, string>(CellControlKinds.Undefined, "No control"));
         _controlKindSource.Add(new Tuple<CellControlKinds, string>(CellControlKinds.TextInput, "Text input"));
         _controlKindSource.Add(new Tuple<CellControlKinds, string>(CellControlKinds.NumberInput, "Number input"));
         _controlKindSource.Add(new Tuple<CellControlKinds, string>(CellControlKinds.DateInput, "Date input"));
         _controlKindSource.Add(new Tuple<CellControlKinds, string>(CellControlKinds.DateTimeInput, "Date&Time input"));
+        _controlKindSource.Add(new Tuple<CellControlKinds, string>(CellControlKinds.CheckBox, "Check box"));
+        _controlKindSource.Add(new Tuple<CellControlKinds, string>(CellControlKinds.ComboBox, "Combo box"));
     }
 
     protected override void OnParametersSet()

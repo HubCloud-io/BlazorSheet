@@ -96,6 +96,11 @@
                                                   Changed="(e => OnCellValueChanged(cell))">
                                     </BbDatePicker>
                                 }
+                                else if (editSettings.ControlKind == CellControlKinds.CheckBox)
+                                {
+                                    <BbCheckBox @bind-Value="@cell.BoolValue" 
+                                                Changed="(e => OnCellValueChanged(cell))"></BbCheckBox>
+                                }
                                 else
                                 {
                                     <span style="color:red;">Unknown control</span>
@@ -148,6 +153,11 @@
                                                   Size="BootstrapElementSizes.Sm"
                                                   Changed="(e => OnCellValueChanged(cell))">
                                     </BbDatePicker>
+                                }
+                                else if (editSettings.ControlKind == CellControlKinds.CheckBox)
+                                {
+                                    <BbCheckBox @bind-Value="@cell.BoolValue" 
+                                                Changed="(e => OnCellValueChanged(cell))"></BbCheckBox>
                                 }
                                 else
                                 {
