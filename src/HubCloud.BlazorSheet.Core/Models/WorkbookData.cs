@@ -104,6 +104,11 @@ namespace HubCloud.BlazorSheet.Core.Models
             return new UniversalValue(result);
         }
 
+        public UniversalValue Now()
+        {
+            return new UniversalValue(DateTime.Now);
+        }
+        
         public UniversalValue DateDiff(string datePartName, UniversalValue universalValueStart, UniversalValue universalValueEnd)
         {
             var dateStart = universalValueStart.ToDate();

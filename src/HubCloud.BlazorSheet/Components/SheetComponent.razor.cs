@@ -47,6 +47,7 @@ public partial class SheetComponent : ComponentBase
     [Parameter] public SheetRegimes Regime { get; set; }
 
     [Parameter] public string MaxHeight { get; set; }
+    [Parameter] public string MaxWidth { get; set; }
 
     [Parameter] public EventCallback Changed { get; set; }
 

@@ -44,9 +44,9 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
 
             sheet.GetCell(4, 2).Value = "Budget item / Period";
 
-            sheet.GetCell(4, 3).Value = "January";
-            sheet.GetCell(4, 4).Value = "February";
-            sheet.GetCell(4, 5).Value = "March";
+            sheet.GetCell(4, 3).Formula = $"Val(\"R2C3\").BeginYear()";
+            sheet.GetCell(4, 4).Formula = $"Val(\"R2C3\").BeginYear().AddMonths(1)";
+            sheet.GetCell(4, 5).Formula = $"Val(\"R2C3\").BeginYear().AddMonths(2)";
 
             sheet.GetCell(5, 2).Value = "Rent";
             sheet.GetCell(6, 2).Value = "Tax";

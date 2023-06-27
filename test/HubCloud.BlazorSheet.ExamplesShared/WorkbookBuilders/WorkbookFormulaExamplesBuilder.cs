@@ -4,7 +4,6 @@ using System;
 
 namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
 {
-
     public class WorkbookFormulaExamplesBuilder
     {
         private SheetCellEditSettings _numberInputSettings;
@@ -15,7 +14,7 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
         public Workbook Build()
         {
             var sheetSettings = new SheetSettings();
-            sheetSettings.RowsCount = 60;
+            sheetSettings.RowsCount = 100;
             sheetSettings.ColumnsCount = 6;
 
             _numberInputSettings = new SheetCellEditSettings()
@@ -53,84 +52,205 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
             var sheet = new Sheet(sheetSettings);
             sheet.Name = "main";
 
-            sheet.GetCell(1, 2).Value = "Arithmetic operations";
-            sheet.GetCell(1, 2).StyleUid = _titleStyle.Uid;
+            var startRow = 1;
+            var currentRow = startRow;
 
-            WriteAddExample(sheet, 2, 2);
+            sheet.GetCell(currentRow, 2).Value = "Arithmetic operations";
+            sheet.GetCell(currentRow, 2).StyleUid = _titleStyle.Uid;
+            currentRow++;
 
-            sheet.GetCell(3, 2).Value = "String operations";
-            sheet.GetCell(3, 2).StyleUid = _titleStyle.Uid;
+            WriteAddExample(sheet, currentRow, 2);
+            currentRow++;
+            
+            WriteAddConstantExample(sheet, currentRow, 2);
+            currentRow++;
+            
+            WriteAddIntConstantExample(sheet, currentRow, 2);
+            currentRow++;
+            
+            WriteMultiplyConstantExample(sheet, currentRow, 2);
+            currentRow++;
+            
+            WriteMultiplyIntConstantExample(sheet, currentRow, 2);
+            currentRow++;
+            
 
-            WriteSubstringExample_1(sheet, 4, 2);
-            WriteSubstringExample_2(sheet, 5, 2);
-            WriteToUpperExample(sheet, 6, 2);
-            WriteToLowerExample(sheet, 7, 2);
-            WriteIndexOfExample(sheet, 8, 2);
-            WriteReplaceExample(sheet, 9, 2);
+            sheet.GetCell(currentRow, 2).Value = "String operations";
+            sheet.GetCell(currentRow, 2).StyleUid = _titleStyle.Uid;
+            currentRow++;
 
-            sheet.GetCell(10, 2).Value = "DateTime operations";
-            sheet.GetCell(10, 2).StyleUid = _titleStyle.Uid;
+            WriteSubstringExample_1(sheet, currentRow, 2);
+            currentRow++;
 
-            WriteAddDaysExample(sheet, 11, 2);
-            WriteAddHoursExample(sheet, 12, 2);
-            WriteAddMinutesExample(sheet, 13, 2);
-            WriteAddMonthsExample(sheet, 14, 2);
-            WriteAddSecondsExample(sheet, 15, 2);
-            WriteAddYearsExample(sheet, 16, 2);
-            WriteAddQuartersExample(sheet, 17, 2);
-            WriteSetSecondExample(sheet, 18, 2);
-            WriteSetMinuteExample(sheet, 19, 2);
-            WriteSetHourExample(sheet, 20, 2);
-            WriteSetDayExample(sheet, 21, 2);
-            WriteSetQuarterExample(sheet, 22, 2);
-            WriteSetMonthExample(sheet, 23, 2);
-            WriteSetYearExample(sheet, 24, 2);
-            WriteEndYearExample(sheet, 25, 2);
-            WriteBeginYearExample(sheet, 26, 2);
-            WriteBeginDayExample(sheet, 27, 2);
-            WriteEndDayExample(sheet, 28, 2);
-            WriteBeginMonthExample(sheet, 29, 2);
-            WriteEndMonthExample(sheet, 30, 2);
-            WriteBeginQuarterExample(sheet, 31, 2);
-            WriteEndQuarterExample(sheet, 32, 2);
+            WriteSubstringExample_2(sheet, currentRow, 2);
+            currentRow++;
 
-            sheet.GetCell(33, 2).Value = "DateTime properties";
-            sheet.GetCell(33, 2).StyleUid = _titleStyle.Uid;
+            WriteToUpperExample(sheet, currentRow, 2);
+            currentRow++;
 
-            WriteDayExample(sheet, 34, 2);
-            WriteHourExample(sheet, 35, 2);
-            WriteMonthExample(sheet, 36, 2);
-            WriteMinuteExample(sheet, 37, 2);
-            WriteSecondExample(sheet, 38, 2);
-            WriteYearExample(sheet, 39, 2);
+            WriteToLowerExample(sheet, currentRow, 2);
+            currentRow++;
 
-            sheet.GetCell(40, 2).Value = "ExpressoFunctions";
-            sheet.GetCell(40, 2).StyleUid = _titleStyle.Uid;
+            WriteIndexOfExample(sheet, currentRow, 2);
+            currentRow++;
 
-            WriteIsEmptyExample(sheet, 41, 2);
-            WriteIsNotEmptyExample(sheet, 42, 2);
-            WriteDateDiffExample(sheet, 43, 2);
-            WriteIifExample(sheet, 44, 2);
-            WriteIfsExample(sheet, 45, 2);
+            WriteReplaceExample(sheet, currentRow, 2);
+            currentRow++;
 
-            sheet.GetCell(46, 2).Value = "Сomparison operators";
-            sheet.GetCell(46, 2).StyleUid = _titleStyle.Uid;
+            sheet.GetCell(currentRow, 2).Value = "DateTime operations";
+            sheet.GetCell(currentRow, 2).StyleUid = _titleStyle.Uid;
+            currentRow++;
 
-            WriteMoreThanExample(sheet, 47, 2);
-            WriteLessThanExample(sheet, 48, 2);
-            WriteMoreThanOrEqualExample(sheet, 49, 2);
-            WriteLessThanOrEqualExample(sheet, 50, 2);
-            WriteEqualExample(sheet, 51, 2);
-            WriteNotEqualExample(sheet, 52, 2);
-            WriteEqualsExample(sheet, 53, 2);
+            WriteNowExample(sheet, currentRow, 2);
+            currentRow++;
+            
+            WriteAddDaysExample(sheet, currentRow, 2);
+            currentRow++;
 
-            sheet.GetCell(54, 2).Value = "Logic operators";
-            sheet.GetCell(54, 2).StyleUid = _titleStyle.Uid;
+            WriteAddHoursExample(sheet, currentRow, 2);
+            currentRow++;
 
-            WriteAndExample(sheet, 55, 2);
-            WriteOrExample(sheet, 56, 2);
-            WriteAndExample2(sheet, 57, 2);
-            WriteOrExample2(sheet, 58, 2);
+            WriteAddMinutesExample(sheet, currentRow, 2);
+            currentRow++;
+
+            WriteAddMonthsExample(sheet, currentRow, 2);
+            currentRow++;
+
+            WriteAddSecondsExample(sheet, currentRow, 2);
+            currentRow++;
+            
+            WriteAddYearsExample(sheet, currentRow, 2);
+            currentRow++;
+            
+            WriteAddQuartersExample(sheet, currentRow, 2);
+            currentRow++;
+            
+            WriteSetSecondExample(sheet, currentRow, 2);
+            currentRow++;
+            
+            WriteSetMinuteExample(sheet, currentRow, 2);
+            currentRow++;
+            
+            WriteSetHourExample(sheet, currentRow, 2);
+            currentRow++;
+            
+            WriteSetDayExample(sheet, currentRow, 2);
+            currentRow++;
+            
+            WriteSetQuarterExample(sheet, currentRow, 2);
+            currentRow++;
+            
+            WriteSetMonthExample(sheet, currentRow, 2);
+            currentRow++;
+            
+            WriteSetYearExample(sheet, currentRow, 2);
+            currentRow++;
+            
+            WriteEndYearExample(sheet, currentRow, 2);
+            currentRow++;
+            
+            WriteBeginYearExample(sheet, currentRow, 2);
+            currentRow++;
+            
+            WriteBeginDayExample(sheet, currentRow, 2);
+            currentRow++;
+            
+            WriteEndDayExample(sheet, currentRow, 2);
+            currentRow++;
+            
+            WriteBeginMonthExample(sheet, currentRow, 2);
+            currentRow++;
+            
+            WriteEndMonthExample(sheet, currentRow, 2);
+            currentRow++;
+            
+            WriteBeginQuarterExample(sheet, currentRow, 2);
+            currentRow++;
+            
+            WriteEndQuarterExample(sheet, currentRow, 2);
+            currentRow++;
+
+            sheet.GetCell(currentRow, 2).Value = "DateTime properties";
+            sheet.GetCell(currentRow, 2).StyleUid = _titleStyle.Uid;
+            currentRow++;
+
+            WriteDayExample(sheet, currentRow, 2);
+            currentRow++;
+            
+            WriteHourExample(sheet, currentRow, 2);
+            currentRow++;
+            
+            WriteMonthExample(sheet, currentRow, 2);
+            currentRow++;
+            
+            WriteMinuteExample(sheet, currentRow, 2);
+            currentRow++;
+            
+            WriteSecondExample(sheet, currentRow, 2);
+            currentRow++;
+            
+            WriteYearExample(sheet, currentRow, 2);
+            currentRow++;
+
+            sheet.GetCell(currentRow, 2).Value = "ExpressoFunctions";
+            sheet.GetCell(currentRow, 2).StyleUid = _titleStyle.Uid;
+            currentRow++;
+
+            WriteIsEmptyExample(sheet, currentRow, 2);
+            currentRow++;
+            
+            WriteIsNotEmptyExample(sheet, currentRow, 2);
+            currentRow++;
+            
+            WriteDateDiffExample(sheet, currentRow, 2);
+            currentRow++;
+            
+            WriteIifExample(sheet, currentRow, 2);
+            currentRow++;
+            
+            WriteIfsExample(sheet, currentRow, 2);
+            currentRow++;
+
+            sheet.GetCell(currentRow, 2).Value = "Сomparison operators";
+            sheet.GetCell(currentRow, 2).StyleUid = _titleStyle.Uid;
+            currentRow++;
+
+            WriteMoreThanExample(sheet, currentRow, 2);
+            currentRow++;
+            
+            WriteLessThanExample(sheet, currentRow, 2);
+            currentRow++;
+            
+            WriteMoreThanOrEqualExample(sheet, currentRow, 2);
+            currentRow++;
+            
+            WriteLessThanOrEqualExample(sheet, currentRow, 2);
+            currentRow++;
+            
+            WriteEqualExample(sheet, currentRow, 2);
+            currentRow++;
+            
+            WriteNotEqualExample(sheet, currentRow, 2);
+            currentRow++;
+            
+            WriteEqualsExample(sheet, currentRow, 2);
+            currentRow++;
+
+            sheet.GetCell(currentRow, 2).Value = "Logic operators";
+            sheet.GetCell(currentRow, 2).StyleUid = _titleStyle.Uid;
+            currentRow++;
+
+            WriteAndExample(sheet, currentRow, 2);
+            currentRow++;
+            
+            WriteOrExample(sheet, currentRow, 2);
+            currentRow++;
+            
+            WriteAndExample2(sheet, currentRow, 2);
+            currentRow++;
+            
+            WriteOrExample2(sheet, currentRow, 2);
+            currentRow++;
 
             sheet.PrepareCellText();
 
@@ -156,10 +276,54 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
 
             sheet.GetCell(row, column + 3).Formula = formula;
         }
+        
+        private void WriteAddConstantExample(Sheet sheet, int row, int column)
+        {
+            var formula = $"VAL(\"R{row}C3\")+2.5";
+            sheet.GetCell(row, column).Value = formula;
+            
+            sheet.GetCell(row, column + 1).EditSettingsUid = _numberInputSettings.Uid;
+            sheet.GetCell(row, column + 1).Value = 1.5m;
+            
+            sheet.GetCell(row, column + 3).Formula = formula;
+        }
+        
+        private void WriteAddIntConstantExample(Sheet sheet, int row, int column)
+        {
+            var formula = $"VAL(\"R{row}C3\")+2";
+            sheet.GetCell(row, column).Value = formula;
+            
+            sheet.GetCell(row, column + 1).EditSettingsUid = _numberInputSettings.Uid;
+            sheet.GetCell(row, column + 1).Value = 1.5m;
+            
+            sheet.GetCell(row, column + 3).Formula = formula;
+        }
+        
+        private void WriteMultiplyIntConstantExample(Sheet sheet, int row, int column)
+        {
+            var formula = $"VAL(\"R{row}C3\")*2";
+            sheet.GetCell(row, column).Value = formula;
+            
+            sheet.GetCell(row, column + 1).EditSettingsUid = _numberInputSettings.Uid;
+            sheet.GetCell(row, column + 1).Value = 1.5m;
+            
+            sheet.GetCell(row, column + 3).Formula = formula;
+        }
+        
+        private void WriteMultiplyConstantExample(Sheet sheet, int row, int column)
+        {
+            var formula = $"VAL(\"R{row}C3\")*2.5";
+            sheet.GetCell(row, column).Value = formula;
+            
+            sheet.GetCell(row, column + 1).EditSettingsUid = _numberInputSettings.Uid;
+            sheet.GetCell(row, column + 1).Value = 1.5m;
+            
+            sheet.GetCell(row, column + 3).Formula = formula;
+        }
 
         private void WriteSubstringExample_1(Sheet sheet, int row, int column)
         {
-            var formula = "VAL(\"R4C3\").Substring(1)";
+            var formula = $"VAL(\"R{row}C3\").Substring(1)";
             sheet.GetCell(row, column).Value = formula;
 
             sheet.GetCell(row, column + 1).EditSettingsUid = _stringInputSettings.Uid;
@@ -170,7 +334,7 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
 
         private void WriteSubstringExample_2(Sheet sheet, int row, int column)
         {
-            var formula = "VAL(\"R5C3\").Substring(0, 2)";
+            var formula = $"VAL(\"R{row}C3\").Substring(0, 2)";
             sheet.GetCell(row, column).Value = formula;
 
             sheet.GetCell(row, column + 1).EditSettingsUid = _stringInputSettings.Uid;
@@ -181,7 +345,7 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
 
         private void WriteToUpperExample(Sheet sheet, int row, int column)
         {
-            var formula = "VAL(\"R6C3\").ToUpper()";
+            var formula = $"VAL(\"R{row}C3\").ToUpper()";
             sheet.GetCell(row, column).Value = formula;
 
             sheet.GetCell(row, column + 1).EditSettingsUid = _stringInputSettings.Uid;
@@ -192,7 +356,7 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
 
         private void WriteToLowerExample(Sheet sheet, int row, int column)
         {
-            var formula = "VAL(\"R7C3\").ToLower()";
+            var formula = $"VAL(\"R{row}C3\").ToLower()";
             sheet.GetCell(row, column).Value = formula;
 
             sheet.GetCell(row, column + 1).EditSettingsUid = _stringInputSettings.Uid;
@@ -203,7 +367,7 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
 
         private void WriteIndexOfExample(Sheet sheet, int row, int column)
         {
-            var formula = "VAL(\"R8C3\").IndexOf(\"w\")";
+            var formula = $"VAL(\"R{row}C3\").IndexOf(\"w\")";
             sheet.GetCell(row, column).Value = formula;
 
             sheet.GetCell(row, column + 1).EditSettingsUid = _stringInputSettings.Uid;
@@ -214,7 +378,7 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
 
         private void WriteReplaceExample(Sheet sheet, int row, int column)
         {
-            var formula = "VAL(\"R9C3\").Replace(\"wert\", \"____\")";
+            var formula = $"VAL(\"R{row}C3\").Replace(\"wert\", \"____\")";
             sheet.GetCell(row, column).Value = formula;
 
             sheet.GetCell(row, column + 1).EditSettingsUid = _stringInputSettings.Uid;
@@ -223,9 +387,18 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
             sheet.GetCell(row, column + 3).Formula = formula;
         }
 
+        private void WriteNowExample(Sheet sheet, int row, int column)
+        {
+            var formula = $"Now()";
+            sheet.GetCell(row, column).Value = formula;
+            
+
+            sheet.GetCell(row, column + 3).Formula = formula;
+        }
+        
         private void WriteAddDaysExample(Sheet sheet, int row, int column)
         {
-            var formula = "VAL(\"R11C3\").AddDays(10)";
+            var formula = $"VAL(\"R{row}C3\").AddDays(10)";
             sheet.GetCell(row, column).Value = formula;
 
             sheet.GetCell(row, column + 1).EditSettingsUid = _dateTimeInputSettings.Uid;
@@ -236,7 +409,7 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
 
         private void WriteAddHoursExample(Sheet sheet, int row, int column)
         {
-            var formula = "VAL(\"R12C3\").AddHours(10)";
+            var formula = $"VAL(\"R{row}C3\").AddHours(10)";
             sheet.GetCell(row, column).Value = formula;
 
             sheet.GetCell(row, column + 1).EditSettingsUid = _dateTimeInputSettings.Uid;
@@ -247,7 +420,7 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
 
         private void WriteAddMinutesExample(Sheet sheet, int row, int column)
         {
-            var formula = "VAL(\"R13C3\").AddMinutes(10)";
+            var formula = $"VAL(\"R{row}C3\").AddMinutes(10)";
             sheet.GetCell(row, column).Value = formula;
 
             sheet.GetCell(row, column + 1).EditSettingsUid = _dateTimeInputSettings.Uid;
@@ -258,7 +431,7 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
 
         private void WriteAddMonthsExample(Sheet sheet, int row, int column)
         {
-            var formula = "VAL(\"R14C3\").AddMonths(10)";
+            var formula = $"VAL(\"R{row}C3\").AddMonths(10)";
             sheet.GetCell(row, column).Value = formula;
 
             sheet.GetCell(row, column + 1).EditSettingsUid = _dateTimeInputSettings.Uid;
@@ -269,7 +442,7 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
 
         private void WriteAddSecondsExample(Sheet sheet, int row, int column)
         {
-            var formula = "VAL(\"R15C3\").AddSeconds(10)";
+            var formula = $"VAL(\"R{row}C3\").AddSeconds(10)";
             sheet.GetCell(row, column).Value = formula;
 
             sheet.GetCell(row, column + 1).EditSettingsUid = _dateTimeInputSettings.Uid;
@@ -280,7 +453,7 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
 
         private void WriteAddYearsExample(Sheet sheet, int row, int column)
         {
-            var formula = "VAL(\"R16C3\").AddYears(10)";
+            var formula = $"VAL(\"R{row}C3\").AddYears(10)";
             sheet.GetCell(row, column).Value = formula;
 
             sheet.GetCell(row, column + 1).EditSettingsUid = _dateTimeInputSettings.Uid;
@@ -291,7 +464,7 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
 
         private void WriteAddQuartersExample(Sheet sheet, int row, int column)
         {
-            var formula = "VAL(\"R17C3\").AddQuarters(1)";
+            var formula = $"VAL(\"R{row}C3\").AddQuarters(1)";
             sheet.GetCell(row, column).Value = formula;
 
             sheet.GetCell(row, column + 1).EditSettingsUid = _dateTimeInputSettings.Uid;
@@ -302,7 +475,7 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
 
         private void WriteSetSecondExample(Sheet sheet, int row, int column)
         {
-            var formula = "VAL(\"R18C3\").SetSecond(10)";
+            var formula = $"VAL(\"R{row}C3\").SetSecond(10)";
             sheet.GetCell(row, column).Value = formula;
 
             sheet.GetCell(row, column + 1).EditSettingsUid = _dateTimeInputSettings.Uid;
@@ -313,7 +486,7 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
 
         private void WriteSetMinuteExample(Sheet sheet, int row, int column)
         {
-            var formula = "VAL(\"R19C3\").SetMinute(10)";
+            var formula = $"VAL(\"R{row}C3\").SetMinute(10)";
             sheet.GetCell(row, column).Value = formula;
 
             sheet.GetCell(row, column + 1).EditSettingsUid = _dateTimeInputSettings.Uid;
@@ -324,7 +497,7 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
 
         private void WriteSetHourExample(Sheet sheet, int row, int column)
         {
-            var formula = "VAL(\"R20C3\").SetHour(10)";
+            var formula = $"VAL(\"R{row}C3\").SetHour(10)";
             sheet.GetCell(row, column).Value = formula;
 
             sheet.GetCell(row, column + 1).EditSettingsUid = _dateTimeInputSettings.Uid;
@@ -335,7 +508,7 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
 
         private void WriteSetDayExample(Sheet sheet, int row, int column)
         {
-            var formula = "VAL(\"R21C3\").SetDay(10)";
+            var formula = $"VAL(\"R{row}C3\").SetDay(10)";
             sheet.GetCell(row, column).Value = formula;
 
             sheet.GetCell(row, column + 1).EditSettingsUid = _dateTimeInputSettings.Uid;
@@ -346,7 +519,7 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
 
         private void WriteSetQuarterExample(Sheet sheet, int row, int column)
         {
-            var formula = "VAL(\"R22C3\").SetQuarter(10)";
+            var formula = $"VAL(\"R{row}C3\").SetQuarter(10)";
             sheet.GetCell(row, column).Value = formula;
 
             sheet.GetCell(row, column + 1).EditSettingsUid = _dateTimeInputSettings.Uid;
@@ -357,7 +530,7 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
 
         private void WriteSetMonthExample(Sheet sheet, int row, int column)
         {
-            var formula = "VAL(\"R23C3\").SetMonth(10)";
+            var formula = $"VAL(\"R{row}C3\").SetMonth(10)";
             sheet.GetCell(row, column).Value = formula;
 
             sheet.GetCell(row, column + 1).EditSettingsUid = _dateTimeInputSettings.Uid;
@@ -368,7 +541,7 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
 
         private void WriteSetYearExample(Sheet sheet, int row, int column)
         {
-            var formula = "VAL(\"R24C3\").SetYear(10)";
+            var formula = $"VAL(\"R{row}C3\").SetYear(10)";
             sheet.GetCell(row, column).Value = formula;
 
             sheet.GetCell(row, column + 1).EditSettingsUid = _dateTimeInputSettings.Uid;
@@ -379,7 +552,7 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
 
         private void WriteEndYearExample(Sheet sheet, int row, int column)
         {
-            var formula = "VAL(\"R25C3\").EndYear()";
+            var formula = $"VAL(\"R{row}C3\").EndYear()";
             sheet.GetCell(row, column).Value = formula;
 
             sheet.GetCell(row, column + 1).EditSettingsUid = _dateTimeInputSettings.Uid;
@@ -390,7 +563,7 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
 
         private void WriteBeginYearExample(Sheet sheet, int row, int column)
         {
-            var formula = "VAL(\"R26C3\").BeginYear()";
+            var formula = $"VAL(\"R{row}C3\").BeginYear()";
             sheet.GetCell(row, column).Value = formula;
 
             sheet.GetCell(row, column + 1).EditSettingsUid = _dateTimeInputSettings.Uid;
@@ -401,7 +574,7 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
 
         private void WriteBeginDayExample(Sheet sheet, int row, int column)
         {
-            var formula = "VAL(\"R27C3\").BeginDay()";
+            var formula = $"VAL(\"R{row}C3\").BeginDay()";
             sheet.GetCell(row, column).Value = formula;
 
             sheet.GetCell(row, column + 1).EditSettingsUid = _dateTimeInputSettings.Uid;
@@ -412,7 +585,7 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
 
         private void WriteEndDayExample(Sheet sheet, int row, int column)
         {
-            var formula = "VAL(\"R28C3\").EndDay()";
+            var formula = $"VAL(\"R{row}C3\").EndDay()";
             sheet.GetCell(row, column).Value = formula;
 
             sheet.GetCell(row, column + 1).EditSettingsUid = _dateTimeInputSettings.Uid;
@@ -423,7 +596,7 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
 
         private void WriteBeginMonthExample(Sheet sheet, int row, int column)
         {
-            var formula = "VAL(\"R29C3\").BeginMonth()";
+            var formula = $"VAL(\"R{row}C3\").BeginMonth()";
             sheet.GetCell(row, column).Value = formula;
 
             sheet.GetCell(row, column + 1).EditSettingsUid = _dateTimeInputSettings.Uid;
@@ -434,7 +607,7 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
 
         private void WriteEndMonthExample(Sheet sheet, int row, int column)
         {
-            var formula = "VAL(\"R30C3\").EndMonth()";
+            var formula = $"VAL(\"R{row}C3\").EndMonth()";
             sheet.GetCell(row, column).Value = formula;
 
             sheet.GetCell(row, column + 1).EditSettingsUid = _dateTimeInputSettings.Uid;
@@ -445,7 +618,7 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
 
         private void WriteBeginQuarterExample(Sheet sheet, int row, int column)
         {
-            var formula = "VAL(\"R31C3\").BeginQuarter()";
+            var formula = $"VAL(\"R{row}C3\").BeginQuarter()";
             sheet.GetCell(row, column).Value = formula;
 
             sheet.GetCell(row, column + 1).EditSettingsUid = _dateTimeInputSettings.Uid;
@@ -456,7 +629,7 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
 
         private void WriteEndQuarterExample(Sheet sheet, int row, int column)
         {
-            var formula = "VAL(\"R32C3\").EndQuarter()";
+            var formula = $"VAL(\"R{row}C3\").EndQuarter()";
             sheet.GetCell(row, column).Value = formula;
 
             sheet.GetCell(row, column + 1).EditSettingsUid = _dateTimeInputSettings.Uid;
@@ -468,7 +641,7 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
 
         private void WriteDayExample(Sheet sheet, int row, int column)
         {
-            var formula = "VAL(\"R34C3\").Day";
+            var formula = $"VAL(\"R{row}C3\").Day";
             sheet.GetCell(row, column).Value = formula;
 
             sheet.GetCell(row, column + 1).EditSettingsUid = _dateTimeInputSettings.Uid;
@@ -479,7 +652,7 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
 
         private void WriteHourExample(Sheet sheet, int row, int column)
         {
-            var formula = "VAL(\"R35C3\").Hour";
+            var formula = $"VAL(\"R{row}C3\").Hour";
             sheet.GetCell(row, column).Value = formula;
 
             sheet.GetCell(row, column + 1).EditSettingsUid = _dateTimeInputSettings.Uid;
@@ -490,7 +663,7 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
 
         private void WriteMonthExample(Sheet sheet, int row, int column)
         {
-            var formula = "VAL(\"R36C3\").Month";
+            var formula = $"VAL(\"R{row}C3\").Month";
             sheet.GetCell(row, column).Value = formula;
 
             sheet.GetCell(row, column + 1).EditSettingsUid = _dateTimeInputSettings.Uid;
@@ -501,7 +674,7 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
 
         private void WriteMinuteExample(Sheet sheet, int row, int column)
         {
-            var formula = "VAL(\"R37C3\").Minute";
+            var formula = $"VAL(\"R{row}C3\").Minute";
             sheet.GetCell(row, column).Value = formula;
 
             sheet.GetCell(row, column + 1).EditSettingsUid = _dateTimeInputSettings.Uid;
@@ -512,7 +685,7 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
 
         private void WriteSecondExample(Sheet sheet, int row, int column)
         {
-            var formula = "VAL(\"R38C3\").Second";
+            var formula = $"VAL(\"R{row}C3\").Second";
             sheet.GetCell(row, column).Value = formula;
 
             sheet.GetCell(row, column + 1).EditSettingsUid = _dateTimeInputSettings.Uid;
@@ -523,7 +696,7 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
 
         private void WriteYearExample(Sheet sheet, int row, int column)
         {
-            var formula = "VAL(\"R39C3\").Year";
+            var formula = $"VAL(\"R{row}C3\").Year";
             sheet.GetCell(row, column).Value = formula;
 
             sheet.GetCell(row, column + 1).EditSettingsUid = _dateTimeInputSettings.Uid;
@@ -534,7 +707,7 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
 
         private void WriteIsEmptyExample(Sheet sheet, int row, int column)
         {
-            var formula = "IsEmpty(VAL(\"R41C3\"))";
+            var formula = $"IsEmpty(VAL(\"R{row}C3\"))";
             sheet.GetCell(row, column).Value = formula;
 
             sheet.GetCell(row, column + 1).EditSettingsUid = _stringInputSettings.Uid;
@@ -545,7 +718,7 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
 
         private void WriteIsNotEmptyExample(Sheet sheet, int row, int column)
         {
-            var formula = "IsNotEmpty(VAL(\"R42C3\"))";
+            var formula = $"IsNotEmpty(VAL(\"R{row}C3\"))";
             sheet.GetCell(row, column).Value = formula;
 
             sheet.GetCell(row, column + 1).EditSettingsUid = _stringInputSettings.Uid;
@@ -556,7 +729,7 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
 
         private void WriteDateDiffExample(Sheet sheet, int row, int column)
         {
-            var formula = "DateDiff(\"day\", VAL(\"R43C3\"), VAL(\"R43C4\"))";
+            var formula = $"DateDiff(\"day\", VAL(\"R{row}C3\"), VAL(\"R{row}C4\"))";
             sheet.GetCell(row, column).Value = formula;
 
             sheet.GetCell(row, column + 1).EditSettingsUid = _dateTimeInputSettings.Uid;
@@ -599,7 +772,7 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
 
         private void WriteMoreThanExample(Sheet sheet, int row, int column)
         {
-            var formula = "VAL(\"R47C3\") > VAL(\"R47C4\")";
+            var formula = $"VAL(\"R{row}C3\") > VAL(\"R{row}C4\")";
             sheet.GetCell(row, column).Value = formula;
 
             sheet.GetCell(row, column + 1).EditSettingsUid = _numberInputSettings.Uid;
@@ -613,7 +786,7 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
 
         private void WriteLessThanExample(Sheet sheet, int row, int column)
         {
-            var formula = "VAL(\"R48C3\") < VAL(\"R48C4\")";
+            var formula = $"VAL(\"R{row}C3\") < VAL(\"R{row}C4\")";
             sheet.GetCell(row, column).Value = formula;
 
             sheet.GetCell(row, column + 1).EditSettingsUid = _numberInputSettings.Uid;
@@ -627,7 +800,7 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
 
         private void WriteMoreThanOrEqualExample(Sheet sheet, int row, int column)
         {
-            var formula = "VAL(\"R49C3\") >= VAL(\"R49C4\")";
+            var formula = $"VAL(\"R{row}C3\") >= VAL(\"R{row}C4\")";
             sheet.GetCell(row, column).Value = formula;
 
             sheet.GetCell(row, column + 1).EditSettingsUid = _numberInputSettings.Uid;
@@ -641,7 +814,7 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
 
         private void WriteLessThanOrEqualExample(Sheet sheet, int row, int column)
         {
-            var formula = "VAL(\"R50C3\") <= VAL(\"R50C4\")";
+            var formula = $"VAL(\"R{row}C3\") <= VAL(\"R{row}C4\")";
             sheet.GetCell(row, column).Value = formula;
 
             sheet.GetCell(row, column + 1).EditSettingsUid = _numberInputSettings.Uid;
@@ -655,7 +828,7 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
 
         private void WriteEqualExample(Sheet sheet, int row, int column)
         {
-            var formula = "VAL(\"R51C3\") == VAL(\"R51C4\")";
+            var formula = $"VAL(\"R{row}C3\") == VAL(\"R{row}C4\")";
             sheet.GetCell(row, column).Value = formula;
 
             sheet.GetCell(row, column + 1).EditSettingsUid = _numberInputSettings.Uid;
@@ -669,7 +842,7 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
 
         private void WriteNotEqualExample(Sheet sheet, int row, int column)
         {
-            var formula = "VAL(\"R52C3\") != VAL(\"R52C4\")";
+            var formula = $"VAL(\"R{row}C3\") != VAL(\"R{row}C4\")";
             sheet.GetCell(row, column).Value = formula;
 
             sheet.GetCell(row, column + 1).EditSettingsUid = _numberInputSettings.Uid;
@@ -683,7 +856,7 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
 
         private void WriteEqualsExample(Sheet sheet, int row, int column)
         {
-            var formula = "VAL(\"R53C3\").Equals(VAL(\"R53C4\"))";
+            var formula = $"VAL(\"R{row}C3\").Equals(VAL(\"R{row}C4\"))";
             sheet.GetCell(row, column).Value = formula;
 
             sheet.GetCell(row, column + 1).EditSettingsUid = _numberInputSettings.Uid;
@@ -697,7 +870,7 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
 
         private void WriteAndExample(Sheet sheet, int row, int column)
         {
-            var formula = "(VAL(\"R55C3\") < 5) && (VAL(\"R55C4\") > 10)";
+            var formula = $"(VAL(\"R{row}C3\") < 5) && (VAL(\"R{row}C4\") > 10)";
             sheet.GetCell(row, column).Value = formula;
 
             sheet.GetCell(row, column + 1).EditSettingsUid = _numberInputSettings.Uid;
@@ -711,7 +884,7 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
 
         private void WriteOrExample(Sheet sheet, int row, int column)
         {
-            var formula = "(VAL(\"R56C3\") > 5) || (VAL(\"R56C4\") < 10)";
+            var formula = $"(VAL(\"R{row}C3\") > 5) || (VAL(\"R{row}C4\") < 10)";
             sheet.GetCell(row, column).Value = formula;
 
             sheet.GetCell(row, column + 1).EditSettingsUid = _numberInputSettings.Uid;
@@ -725,7 +898,7 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
 
         private void WriteAndExample2(Sheet sheet, int row, int column)
         {
-            var formula = "VAL(\"R57C3\") && VAL(\"R57C4\")";
+            var formula = $"VAL(\"R{row}C3\") && VAL(\"R{row}C4\")";
             sheet.GetCell(row, column).Value = formula;
 
             sheet.GetCell(row, column + 1).EditSettingsUid = _stringInputSettings.Uid;
@@ -739,7 +912,7 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
 
         private void WriteOrExample2(Sheet sheet, int row, int column)
         {
-            var formula = "VAL(\"R58C3\") || VAL(\"R58C4\")";
+            var formula = $"VAL(\"R{row}C3\") || VAL(\"R{row}C4\")";
             sheet.GetCell(row, column).Value = formula;
 
             sheet.GetCell(row, column + 1).EditSettingsUid = _stringInputSettings.Uid;
