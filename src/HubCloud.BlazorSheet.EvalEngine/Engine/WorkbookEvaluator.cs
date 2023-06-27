@@ -10,6 +10,8 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
 {
     public class WorkbookEvaluator
     {
+        private const string ContextName = "_data";
+        
         private readonly IEvaluatorLogger _logger;
         private readonly Interpreter _interpreter;
         private readonly WorkbookData _data;
@@ -38,7 +40,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
             _interpreter = InterpreterInitializer.CreateInterpreter(_data);
             
           
-            _interpreter.SetVariable("_data", _data);
+            _interpreter.SetVariable(ContextName, _data);
         }
         
         public object Eval(string expression, int row, int column)
@@ -47,7 +49,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
             _data.CurrentRow = row;
             _data.CurrentColumn = column;
 
-            var formula = FormulaConverter.PrepareFormula(expression, "_data");
+            var formula = FormulaConverter.PrepareFormula(expression, ContextName);
 
             try
             {

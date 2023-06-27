@@ -12,14 +12,16 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
             var interpreter = new Interpreter(InterpreterOptions.DefaultCaseInsensitive);
 
             interpreter.Reference(typeof(DateTime));
-            interpreter.Reference(typeof(System.MidpointRounding));
+            interpreter.Reference(typeof(MidpointRounding));
             interpreter.Reference(typeof(System.Linq.Enumerable));
 
             Func<string, UniversalValue> sumFunction = data.Sum;
             interpreter.SetFunction("SUM", sumFunction);
+            FormulaConverter.AddToExceptionList("SUM");
             
             Func<string, UniversalValue> valFunction = data.GetValue;
             interpreter.SetFunction("VAL", valFunction);
+            FormulaConverter.AddToExceptionList("VAL");
             
             Func<UniversalValue> rowFunction = data.Row;
             interpreter.SetFunction("ROW", rowFunction);
@@ -44,8 +46,5 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
 
             return interpreter;
         }
-        
-    
-        
     }
 }
