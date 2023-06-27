@@ -77,18 +77,66 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
         {
             // разбираем формулу
             var statementTree = GetStatementTree(formula);
-            
+
             // собираем формулу
+            var buildFormula = BuildFormula(statementTree);
+            return buildFormula;
+        }
+
+        private StringBuilder BuildFormulaSimple(List<Statement> statementTree)
+        {
             var outFormula = new StringBuilder();
             foreach (var statement in statementTree)
             {
                 if (statement.Type == ElementType.Function)
-                    outFormula.Append($"{statement.FunctionName}({statement.FunctionParamsList?.Aggregate((x, y) => $"{x}, {y}")}) ");
+                    outFormula.Append(
+                        $"{statement.FunctionName}({statement.FunctionParamsList?.Aggregate((x, y) => $"{x}, {y}")}) ");
                 else
                     outFormula.Append($"{statement.ProcessedStatement} ");
             }
 
             outFormula = outFormula.Remove(outFormula.Length - 1, 1);
+            return outFormula;
+        }
+
+        private StringBuilder BuildFormula(List<Statement> statementTree)
+        {
+            var outFormula = new StringBuilder();
+            foreach (var statement in statementTree)
+            {
+                if (statement.Type != ElementType.Function)
+                {
+                    switch (statement.Type)
+                    {
+                        case ElementType.Operator:
+                            outFormula.Append($" {statement.ProcessedStatement} ");
+                            break;
+                        default:
+                            outFormula.Append($"{statement.ProcessedStatement}");
+                            break;
+                    }
+                }
+                else
+                {
+                    outFormula.Append($"{statement.FunctionName}");
+                    outFormula.Append("(");
+                    var argIndex = 1;
+                    foreach (var innerStatement in statement.InnerStatements)
+                    {
+                        var currentArg = BuildFormula(new List<Statement> {innerStatement});
+                        outFormula.Append(currentArg);
+                        if (argIndex < statement.InnerStatements.Count)
+                        {
+                            outFormula.Append(", ");
+                            argIndex++;
+                        }
+                    }
+                    
+                    outFormula.Append(")");
+                }
+            }
+
+            // outFormula = outFormula.Remove(outFormula.Length - 1, 1);
             return outFormula;
         }
 
@@ -109,7 +157,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
                     {
                         Type = type
                     };
-                    
+
                     switch (type)
                     {
                         case ElementType.Function:
@@ -123,7 +171,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
                                 .ToUpper();
                             break;
                     }
-                    
+
                     statementTree.Add(item);
                     var nextOperator = GetOperator(formula, i);
                     if (nextOperator != null)
@@ -154,13 +202,13 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
                 .ToString()
                 .Trim()
                 .ToUpper();
-            
+
             currentStatement.Clear();
             var balance = 0;
             while (i < formula.Length)
             {
                 currentStatement.Append(formula[i]);
-                
+
                 if (formula[i] == '(')
                     balance++;
                 if (formula[i] == ')')
@@ -170,18 +218,18 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
                     break;
                 i++;
             }
-            
+
             item.FunctionParamsList = GetParameters(currentStatement);
             var innerStatements = new List<Statement>();
             foreach (var p in item.FunctionParamsList)
             {
                 innerStatements.AddRange(GetStatementTree(new StringBuilder(p)));
             }
-            
+
             if (innerStatements.Any())
                 item.InnerStatements = innerStatements;
             item.OriginStatement = $"{item.FunctionName}{currentStatement}";
-            
+
             i++;
 
             return i;
@@ -191,7 +239,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
         {
             if (formula.Length == i)
                 return null;
-            
+
             if (!_operatorChars.Contains(formula[i + 1]))
             {
                 return new Statement
@@ -221,7 +269,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
 
             return ElementType.Function;
         }
-        
+
         private List<string> GetParameters(StringBuilder parameters)
         {
             var p = parameters.ToString()
@@ -231,7 +279,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
                 .ToUpper();
 
             var paramsList = new List<string>();
-            
+
             var i = 0;
             var balance = 0;
             var currentParam = new StringBuilder();
@@ -245,7 +293,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
                 else
                 {
                     currentParam.Append(p[i]);
-                    
+
                     if (p[i] == '(')
                         balance++;
                     if (p[i] == ')')
