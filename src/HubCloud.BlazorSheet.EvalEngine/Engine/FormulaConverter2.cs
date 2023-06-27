@@ -15,46 +15,11 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
 
     public class Statement
     {
-        private List<string> _paramsList = new List<string>();
-        
         public ElementType Type { get; set; }
-        public string OriginExpression { get; set; }
-        public string ProcessedExpression => OriginExpression;
+        public string OriginStatement { get; set; }
+        public string ProcessedStatement => OriginStatement;
         public string FunctionName { get; set; }
-        public string FunctionParams => _paramsList.Aggregate((x, y) => $"{x}, {y}");
-        public void SetFunctionParameters(StringBuilder parameters)
-        {
-            var p = parameters.ToString()
-                .Trim()
-                .TrimStart('(')
-                .TrimEnd(')')
-                .ToUpper();
-            
-            _paramsList.Clear();
-            
-            var i = 0;
-            var balance = 0;
-            var currentParam = new StringBuilder();
-            while (i <= p.Length)
-            {
-                if (i == p.Length || (p[i] == ',' && balance == 0))
-                {
-                    _paramsList.Add(currentParam.ToString());
-                    currentParam.Clear();
-                }
-                else
-                {
-                    currentParam.Append(p[i]);
-                    
-                    if (p[i] == '(')
-                        balance++;
-                    if (p[i] == ')')
-                        balance--;
-                }
-
-                i++;
-            }
-        }
+        public List<string> FunctionParamsList { get; set; }
     }
 
     public class FormulaConverter2
@@ -107,31 +72,6 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
 
         #region private methods
 
-        private int ProcessFunction(Statement item, int i, StringBuilder currentStatement, StringBuilder formula)
-        {
-            item.FunctionName = currentStatement.ToString().Trim().ToUpper();
-            currentStatement.Clear();
-            var balance = 0;
-            while (i < formula.Length)
-            {
-                currentStatement.Append(formula[i]);
-                
-                if (formula[i] == '(')
-                    balance++;
-                if (formula[i] == ')')
-                    balance--;
-
-                if (formula[i] == ')' && balance == 0)
-                    break;
-                i++;
-            }
-            
-            item.SetFunctionParameters(currentStatement);
-            i++;
-
-            return i;
-        }
-        
         public StringBuilder Process(StringBuilder formula)
         {
             // разбираем формулу
@@ -158,7 +98,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
                             break;
                         case ElementType.Address:
                         case ElementType.Numeric:
-                            item.OriginExpression = formula
+                            item.OriginStatement = formula
                                 .ToString(currentStart, i - currentStart)
                                 .Trim()
                                 .ToUpper();
@@ -170,7 +110,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
                     if (nextOperator != null)
                     {
                         statementTree.Add(nextOperator);
-                        i += nextOperator.OriginExpression.Length;
+                        i += nextOperator.OriginStatement.Length;
                         currentStart = i;
                         currentStatement.Clear();
                     }
@@ -191,13 +131,40 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
             foreach (var statement in statementTree)
             {
                 if (statement.Type == ElementType.Function)
-                    outFormula.Append($"{statement.FunctionName}({statement.FunctionParams}) ");
+                    outFormula.Append($"{statement.FunctionName}({statement.FunctionParamsList?.Aggregate((x, y) => $"{x}, {y}")}) ");
                 else
-                    outFormula.Append($"{statement.ProcessedExpression} ");
+                    outFormula.Append($"{statement.ProcessedStatement} ");
             }
 
             outFormula = outFormula.Remove(outFormula.Length - 1, 1);
             return outFormula;
+        }
+        
+        private int ProcessFunction(Statement item, int i, StringBuilder currentStatement, StringBuilder formula)
+        {
+            item.FunctionName = currentStatement.ToString().Trim().ToUpper();
+            currentStatement.Clear();
+            var balance = 0;
+            while (i < formula.Length)
+            {
+                currentStatement.Append(formula[i]);
+                
+                if (formula[i] == '(')
+                    balance++;
+                if (formula[i] == ')')
+                    balance--;
+
+                if (formula[i] == ')' && balance == 0)
+                    break;
+                i++;
+            }
+            
+            item.FunctionParamsList = GetParameters(currentStatement);
+            item.OriginStatement = $"{item.FunctionName}{currentStatement}";
+            
+            i++;
+
+            return i;
         }
 
         private Statement GetOperator(StringBuilder formula, int i)
@@ -210,7 +177,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
                 return new Statement
                 {
                     Type = ElementType.Operator,
-                    OriginExpression = formula[i].ToString()
+                    OriginStatement = formula[i].ToString()
                 };
             }
             else
@@ -218,7 +185,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
                 return new Statement
                 {
                     Type = ElementType.Operator,
-                    OriginExpression = $"{formula[i]}{formula[i + 1]}"
+                    OriginStatement = $"{formula[i]}{formula[i + 1]}"
                 };
             }
         }
@@ -233,6 +200,42 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
                 return ElementType.Numeric;
 
             return ElementType.Function;
+        }
+        
+        private List<string> GetParameters(StringBuilder parameters)
+        {
+            var p = parameters.ToString()
+                .Trim()
+                .TrimStart('(')
+                .TrimEnd(')')
+                .ToUpper();
+
+            var paramsList = new List<string>();
+            
+            var i = 0;
+            var balance = 0;
+            var currentParam = new StringBuilder();
+            while (i <= p.Length)
+            {
+                if (i == p.Length || (p[i] == ',' && balance == 0))
+                {
+                    paramsList.Add(currentParam.ToString());
+                    currentParam.Clear();
+                }
+                else
+                {
+                    currentParam.Append(p[i]);
+                    
+                    if (p[i] == '(')
+                        balance++;
+                    if (p[i] == ')')
+                        balance--;
+                }
+
+                i++;
+            }
+
+            return paramsList;
         }
 
         #endregion
