@@ -1,6 +1,8 @@
 ﻿using System.Data.Common;
 using System.Text;
 using BBComponents.Abstract;
+using BBComponents.Enums;
+using BBComponents.Models;
 using HubCloud.BlazorSheet.Core.Enums;
 using HubCloud.BlazorSheet.Core.Models;
 using HubCloud.BlazorSheet.Infrastructure;
@@ -13,8 +15,10 @@ namespace HubCloud.BlazorSheet.Components;
 public partial class SheetComponent : ComponentBase
 {
     private const int LeftSideCellWidth = 30;
+    private const string CellHiddenBackground = "#cccccc";
 
     private bool _multipleSelection;
+    private bool _showHiddenCells;
 
     private string _currentCellText;
     private bool _cellHasChanged;
@@ -188,6 +192,14 @@ public partial class SheetComponent : ComponentBase
             case ContextMenuBuilder.SheetSizeItemName:
                 _isSheetSizeModalOpen = true;
                 break;
+
+            case ContextMenuBuilder.ShowHideItemName:
+                _currentColumn.IsHidden = !_currentColumn.IsHidden;
+                break;
+
+            case ContextMenuBuilder.ShowHiddenHideHiddenItemName:
+                _showHiddenCells = !_showHiddenCells;
+                break;
         }
     }
 
@@ -228,6 +240,14 @@ public partial class SheetComponent : ComponentBase
 
             case ContextMenuBuilder.SheetSizeItemName:
                 _isSheetSizeModalOpen = true;
+                break;
+
+            case ContextMenuBuilder.ShowHideItemName:
+                _currentRow.IsHidden = !_currentRow.IsHidden;
+                break;
+
+            case ContextMenuBuilder.ShowHiddenHideHiddenItemName:
+                _showHiddenCells = !_showHiddenCells;
                 break;
         }
     }
@@ -387,10 +407,17 @@ public partial class SheetComponent : ComponentBase
                 }
             }
 
-            if (rowNumber == sheet.FreezedRows)
+            if (rowNumber == sheet.FreezedRows || NeedSetBorderBottom(sheet, rowIndex))
             {
                 sb.Append("border-bottom: 2px solid navy;");
             }
+        }
+
+        if (row.IsHidden && _showHiddenCells)
+        {
+            sb.Append("background:");
+            sb.Append(CellHiddenBackground);
+            sb.Append(";");
         }
 
         return sb.ToString();
@@ -437,16 +464,79 @@ public partial class SheetComponent : ComponentBase
                 }
             }
 
-            if (columnNumber == sheet.FreezedColumns)
+            if (columnNumber == sheet.FreezedColumns || NeedSetBorderRight(sheet, columnIndex))
             {
                 sb.Append("border-right: 2px solid navy;");
             }
         }
 
+        if (column.IsHidden && _showHiddenCells)
+        {
+            sb.Append("background:");
+            sb.Append(CellHiddenBackground);
+            sb.Append(";");
+        }
+
         return sb.ToString();
     }
 
-    public static string CellStyle(Sheet sheet, SheetRow row, SheetColumn column, SheetCell cell)
+    private bool NeedSetBorderRight(Sheet sheet, int columnIndex)
+    {
+        if (sheet.Columns.Any(x => x.IsHidden) && !_showHiddenCells)
+        {
+            var nextColumnIndex = ++columnIndex;
+            var nextColumnNumber = nextColumnIndex + 1;
+
+            if (nextColumnIndex < sheet.Columns.Count)
+            {
+                var nextColumn = sheet.Columns.ToArray()[nextColumnIndex];
+
+                if (nextColumn.IsHidden)
+                {
+                    if (nextColumnNumber == sheet.FreezedColumns)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return NeedSetBorderRight(sheet, nextColumnIndex);
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private bool NeedSetBorderBottom(Sheet sheet, int rowIndex)
+    {
+        if (sheet.Rows.Any(x => x.IsHidden) && !_showHiddenCells)
+        {
+            var nextRowIndex = ++rowIndex;
+            var nextRowNumber = nextRowIndex + 1;
+
+            if (nextRowIndex < sheet.Rows.Count)
+            {
+                var nextRow = sheet.Rows.ToArray()[nextRowIndex];
+
+                if (nextRow.IsHidden)
+                {
+                    if (nextRowNumber == sheet.FreezedRows)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return NeedSetBorderBottom(sheet, nextRowIndex);
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public string CellStyle(Sheet sheet, SheetRow row, SheetColumn column, SheetCell cell)
     {
         var cellStyle = sheet.GetStyle(cell);
 
@@ -466,11 +556,20 @@ public partial class SheetComponent : ComponentBase
         sb.Append(row.Height);
         sb.Append(";");
 
-        if (!string.IsNullOrEmpty(cellStyle.BackgroundColor))
+        if ((column.IsHidden || row.IsHidden) && _showHiddenCells)
         {
             sb.Append("background-color:");
-            sb.Append(cellStyle.BackgroundColor);
+            sb.Append(CellHiddenBackground);
             sb.Append(";");
+        }
+        else
+        {
+            if (!string.IsNullOrEmpty(cellStyle.BackgroundColor))
+            {
+                sb.Append("background-color:");
+                sb.Append(cellStyle.BackgroundColor);
+                sb.Append(";");
+            }
         }
 
         if (!string.IsNullOrEmpty(cellStyle.Color))
@@ -541,12 +640,14 @@ public partial class SheetComponent : ComponentBase
         return sb.ToString();
     }
 
-    private static void AddFreezedStyle(StringBuilder sb, Sheet sheet, SheetRow row, SheetColumn column)
+    private void AddFreezedStyle(StringBuilder sb, Sheet sheet, SheetRow row, SheetColumn column)
     {
         if (sheet.FreezedColumns == 0 && sheet.FreezedRows == 0)
             return;
 
-        var rowNumber = sheet.Rows.ToList().IndexOf(row) + 1;
+        var rowIndex = sheet.Rows.ToList().IndexOf(row);
+        var rowNumber = rowIndex + 1;
+
         var columnIndex = sheet.Columns.ToList().IndexOf(column);
         var columnNumber = columnIndex + 1;
 
@@ -587,12 +688,12 @@ public partial class SheetComponent : ComponentBase
             }
         }
 
-        if (rowNumber == sheet.FreezedRows)
+        if (rowNumber == sheet.FreezedRows || NeedSetBorderBottom(sheet, rowIndex))
         {
             sb.Append("border-bottom: 2px solid navy;");
         }
 
-        if (columnNumber == sheet.FreezedColumns)
+        if (columnNumber == sheet.FreezedColumns || NeedSetBorderRight(sheet, columnIndex))
         {
             sb.Append("border-right: 2px solid navy;");
         }
@@ -603,7 +704,7 @@ public partial class SheetComponent : ComponentBase
         return (rowNumber <= sheet.FreezedRows || columnNumber <= sheet.FreezedColumns) ? "sticky" : "";
     }
 
-    private static string LeftPosition(Sheet sheet, int columnNumber, int columnIndex)
+    private string LeftPosition(Sheet sheet, int columnNumber, int columnIndex)
     {
         double left = 0;
 
@@ -614,7 +715,7 @@ public partial class SheetComponent : ComponentBase
         {
             var column = sheet.Columns.ToArray()[i];
 
-            if (column.Hidden)
+            if (column.IsHidden && !_showHiddenCells)
                 continue;
 
             left += column.WidthValue;
@@ -625,15 +726,35 @@ public partial class SheetComponent : ComponentBase
         return htmlLeft;
     }
 
-    private static string TopPosition(Sheet sheet, int rowNumber)
+    private string TopPosition(Sheet sheet, int rowNumber)
     {
         double top = 0;
 
         for (int i = 0; i < rowNumber; i++)
         {
-            top += sheet.Rows.ToArray()[i].HeightValue + 6;
+            var row = sheet.Rows.ToArray()[i];
+
+            if (row.IsHidden && !_showHiddenCells) 
+                continue;
+
+            top += row.HeightValue + 6;
         }
 
         return rowNumber <= sheet.FreezedRows ? $"{(int)top}px" : "";
+    }
+
+    private bool CellHidden(SheetColumn column, SheetRow row)
+    {
+        return (column.IsHidden || row.IsHidden) && !_showHiddenCells;
+    }
+
+    private bool CellHidden(SheetColumn column)
+    {
+        return column.IsHidden && !_showHiddenCells;
+    }
+
+    private bool CellHidden(SheetRow row)
+    {
+        return row.IsHidden && !_showHiddenCells;
     }
 }
