@@ -1,10 +1,14 @@
-﻿using HubCloud.BlazorSheet.Core.Models;
+﻿using HubCloud.BlazorSheet.Core.Interfaces;
+using HubCloud.BlazorSheet.Core.Models;
+using HubCloud.BlazorSheet.ServerSideExamples.Infrastructure;
 using Microsoft.AspNetCore.Components;
 
 namespace HubCloud.BlazorSheet.ServerSideExamples.Pages;
 
 public partial class SheetEditPage: ComponentBase
 {
+    private IItemsSourceDataProvider _itemSourceDataProvider = new ItemsSourceProvider();
+    
     private Sheet _sheet;
     private SheetCommandPanelModel _commandPanelModel { get; set; } = new SheetCommandPanelModel();
     private SheetCell _selectedCell { get; set; }
