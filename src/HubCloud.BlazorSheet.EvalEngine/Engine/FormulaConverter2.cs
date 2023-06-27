@@ -15,10 +15,25 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
 
     public class Statement
     {
+        private List<string> _paramsList = new List<string>();
+        
         public ElementType Type { get; set; }
-        public string Expression { get; set; }
+        public string OriginExpression { get; set; }
+        public string ProcessedExpression { get; set; }
         public string FunctionName { get; set; }
-        public string FunctionParams { get; set; }
+        public string FunctionParams => _paramsList.Aggregate((x, y) => $"{x}, {y}");
+        public void SetFunctionParameters(StringBuilder parameters)
+        {
+            _paramsList.Clear();
+            var paramsArray = parameters.ToString()
+                .Trim()
+                .TrimStart('(')
+                .TrimEnd(')')
+                .ToUpper()
+                .Split(',');
+            
+            _paramsList.AddRange(paramsArray);
+        }
     }
 
     public class FormulaConverter2
@@ -56,7 +71,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
                 .Replace(" or ", " || ")
                 .Replace(" OR ", " || ");
 
-            sb = Foo(sb);
+            sb = Process(sb);
 
             return sb.ToString();
         }
@@ -71,7 +86,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
 
         #region private methods
 
-        private StringBuilder Foo(StringBuilder formula)
+        public StringBuilder Process(StringBuilder formula)
         {
             // разбираем формулу
             var currentStatement = new StringBuilder();
@@ -85,21 +100,48 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
                 if (i == formula.Length || _operatorChars.Contains(formula[i]))
                 {
                     var type = GetStatementType(currentStatement);
+                    var item = new Statement
+                    {
+                        Type = type
+                    };
+                    
                     switch (type)
                     {
                         case ElementType.Function:
-                            break;
-                        case ElementType.Address:
-                            var item = new Statement();
-                            item.Type = type;
-                            item.Expression = formula.ToString(currentStart, i - currentStart).Trim().ToUpper();
+                            item.FunctionName = currentStatement.ToString().Trim().ToUpper();
+                            currentStatement.Clear();
+                            while (i < formula.Length)
+                            {
+                                currentStatement.Append(formula[i]);
+                                if (formula[i] == ')')
+                                    break;
+                                i++;
+                            }
+                            item.SetFunctionParameters(currentStatement);
                             statementTree.Add(item);
-                            
+                            currentStatement.Clear();
+                            i++;
                             var op = GetOperator(formula, i);
                             if (op != null)
                             {
                                 statementTree.Add(op);
-                                i += op.Expression.Length;
+                                i += op.OriginExpression.Length;
+                                currentStart = i;
+                                currentStatement.Clear();
+                            }
+                            else
+                            {
+                                i++;
+                            }
+                            break;
+                        case ElementType.Address:
+                            item.OriginExpression = formula.ToString(currentStart, i - currentStart).Trim().ToUpper();
+                            statementTree.Add(item);
+                            var op1 = GetOperator(formula, i);
+                            if (op1 != null)
+                            {
+                                statementTree.Add(op1);
+                                i += op1.OriginExpression.Length;
                                 currentStart = i;
                                 currentStatement.Clear();
                             }
@@ -110,6 +152,20 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
 
                             break;
                         case ElementType.Numeric:
+                            item.OriginExpression = formula.ToString(currentStart, i - currentStart).Trim();
+                            statementTree.Add(item);
+                            var op2 = GetOperator(formula, i);
+                            if (op2 != null)
+                            {
+                                statementTree.Add(op2);
+                                i += op2.OriginExpression.Length;
+                                currentStart = i;
+                                currentStatement.Clear();
+                            }
+                            else
+                            {
+                                i++;
+                            }
                             break;
                     }
                 }
@@ -124,7 +180,10 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
             var outFormula = new StringBuilder();
             foreach (var statement in statementTree)
             {
-                outFormula.Append($"{statement.Expression} ");
+                if (statement.Type == ElementType.Function)
+                    outFormula.Append($"{statement.FunctionName}({statement.FunctionParams}) ");
+                else
+                    outFormula.Append($"{statement.OriginExpression} ");
             }
 
             outFormula = outFormula.Remove(outFormula.Length - 1, 1);
@@ -141,7 +200,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
                 return new Statement
                 {
                     Type = ElementType.Operator,
-                    Expression = formula[i].ToString()
+                    OriginExpression = formula[i].ToString()
                 };
             }
             else
@@ -149,7 +208,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
                 return new Statement
                 {
                     Type = ElementType.Operator,
-                    Expression = $"{formula[i]}{formula[i + 1]}"
+                    OriginExpression = $"{formula[i]}{formula[i + 1]}"
                 };
             }
         }
