@@ -83,40 +83,12 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
             return buildFormula;
         }
 
-        private StringBuilder BuildFormulaSimple(List<Statement> statementTree)
-        {
-            var outFormula = new StringBuilder();
-            foreach (var statement in statementTree)
-            {
-                if (statement.Type == ElementType.Function)
-                    outFormula.Append(
-                        $"{statement.FunctionName}({statement.FunctionParamsList?.Aggregate((x, y) => $"{x}, {y}")}) ");
-                else
-                    outFormula.Append($"{statement.ProcessedStatement} ");
-            }
-
-            outFormula = outFormula.Remove(outFormula.Length - 1, 1);
-            return outFormula;
-        }
-
         private StringBuilder BuildFormula(List<Statement> statementTree)
         {
             var outFormula = new StringBuilder();
             foreach (var statement in statementTree)
             {
-                if (statement.Type != ElementType.Function)
-                {
-                    switch (statement.Type)
-                    {
-                        case ElementType.Operator:
-                            outFormula.Append($" {statement.ProcessedStatement} ");
-                            break;
-                        default:
-                            outFormula.Append($"{statement.ProcessedStatement}");
-                            break;
-                    }
-                }
-                else
+                if (statement.Type == ElementType.Function)
                 {
                     outFormula.Append($"{statement.FunctionName}");
                     outFormula.Append("(");
@@ -127,16 +99,19 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
                         outFormula.Append(currentArg);
                         if (argIndex < statement.InnerStatements.Count)
                         {
-                            outFormula.Append(", ");
+                            outFormula.Append(",");
                             argIndex++;
                         }
                     }
-                    
+
                     outFormula.Append(")");
+                }
+                else
+                {
+                    outFormula.Append($"{statement.ProcessedStatement}");
                 }
             }
 
-            // outFormula = outFormula.Remove(outFormula.Length - 1, 1);
             return outFormula;
         }
 
@@ -223,7 +198,14 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
             var innerStatements = new List<Statement>();
             foreach (var p in item.FunctionParamsList)
             {
-                innerStatements.AddRange(GetStatementTree(new StringBuilder(p)));
+                var sb = new StringBuilder(p);
+                var st = new Statement
+                {
+                    OriginStatement = p,
+                    Type = GetStatementType(sb),
+                    InnerStatements = GetStatementTree(sb)
+                };
+                innerStatements.Add(st);
             }
 
             if (innerStatements.Any())
