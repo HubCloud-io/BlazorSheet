@@ -19,20 +19,41 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
         
         public ElementType Type { get; set; }
         public string OriginExpression { get; set; }
-        public string ProcessedExpression { get; set; }
+        public string ProcessedExpression => OriginExpression;
         public string FunctionName { get; set; }
         public string FunctionParams => _paramsList.Aggregate((x, y) => $"{x}, {y}");
         public void SetFunctionParameters(StringBuilder parameters)
         {
-            _paramsList.Clear();
-            var paramsArray = parameters.ToString()
+            var p = parameters.ToString()
                 .Trim()
                 .TrimStart('(')
                 .TrimEnd(')')
-                .ToUpper()
-                .Split(',');
+                .ToUpper();
             
-            _paramsList.AddRange(paramsArray);
+            _paramsList.Clear();
+            
+            var i = 0;
+            var balance = 0;
+            var currentParam = new StringBuilder();
+            while (i <= p.Length)
+            {
+                if (i == p.Length || (p[i] == ',' && balance == 0))
+                {
+                    _paramsList.Add(currentParam.ToString());
+                    currentParam.Clear();
+                }
+                else
+                {
+                    currentParam.Append(p[i]);
+                    
+                    if (p[i] == '(')
+                        balance++;
+                    if (p[i] == ')')
+                        balance--;
+                }
+
+                i++;
+            }
         }
     }
 
@@ -90,13 +111,21 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
         {
             item.FunctionName = currentStatement.ToString().Trim().ToUpper();
             currentStatement.Clear();
+            var balance = 0;
             while (i < formula.Length)
             {
                 currentStatement.Append(formula[i]);
+                
+                if (formula[i] == '(')
+                    balance++;
                 if (formula[i] == ')')
+                    balance--;
+
+                if (formula[i] == ')' && balance == 0)
                     break;
                 i++;
             }
+            
             item.SetFunctionParameters(currentStatement);
             i++;
 
@@ -128,15 +157,11 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
                             i = ProcessFunction(item, i, currentStatement, formula);
                             break;
                         case ElementType.Address:
+                        case ElementType.Numeric:
                             item.OriginExpression = formula
                                 .ToString(currentStart, i - currentStart)
                                 .Trim()
                                 .ToUpper();
-                            break;
-                        case ElementType.Numeric:
-                            item.OriginExpression = formula
-                                .ToString(currentStart, i - currentStart)
-                                .Trim();
                             break;
                     }
                     
@@ -168,7 +193,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
                 if (statement.Type == ElementType.Function)
                     outFormula.Append($"{statement.FunctionName}({statement.FunctionParams}) ");
                 else
-                    outFormula.Append($"{statement.OriginExpression} ");
+                    outFormula.Append($"{statement.ProcessedExpression} ");
             }
 
             outFormula = outFormula.Remove(outFormula.Length - 1, 1);
