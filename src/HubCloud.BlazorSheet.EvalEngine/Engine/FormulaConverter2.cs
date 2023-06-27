@@ -86,6 +86,23 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
 
         #region private methods
 
+        private int ProcessFunction(Statement item, int i, StringBuilder currentStatement, StringBuilder formula)
+        {
+            item.FunctionName = currentStatement.ToString().Trim().ToUpper();
+            currentStatement.Clear();
+            while (i < formula.Length)
+            {
+                currentStatement.Append(formula[i]);
+                if (formula[i] == ')')
+                    break;
+                i++;
+            }
+            item.SetFunctionParameters(currentStatement);
+            i++;
+
+            return i;
+        }
+        
         public StringBuilder Process(StringBuilder formula)
         {
             // разбираем формулу
@@ -108,65 +125,33 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
                     switch (type)
                     {
                         case ElementType.Function:
-                            item.FunctionName = currentStatement.ToString().Trim().ToUpper();
-                            currentStatement.Clear();
-                            while (i < formula.Length)
-                            {
-                                currentStatement.Append(formula[i]);
-                                if (formula[i] == ')')
-                                    break;
-                                i++;
-                            }
-                            item.SetFunctionParameters(currentStatement);
-                            statementTree.Add(item);
-                            currentStatement.Clear();
-                            i++;
-                            var op = GetOperator(formula, i);
-                            if (op != null)
-                            {
-                                statementTree.Add(op);
-                                i += op.OriginExpression.Length;
-                                currentStart = i;
-                                currentStatement.Clear();
-                            }
-                            else
-                            {
-                                i++;
-                            }
+                            i = ProcessFunction(item, i, currentStatement, formula);
                             break;
                         case ElementType.Address:
-                            item.OriginExpression = formula.ToString(currentStart, i - currentStart).Trim().ToUpper();
-                            statementTree.Add(item);
-                            var op1 = GetOperator(formula, i);
-                            if (op1 != null)
-                            {
-                                statementTree.Add(op1);
-                                i += op1.OriginExpression.Length;
-                                currentStart = i;
-                                currentStatement.Clear();
-                            }
-                            else
-                            {
-                                i++;
-                            }
-
+                            item.OriginExpression = formula
+                                .ToString(currentStart, i - currentStart)
+                                .Trim()
+                                .ToUpper();
                             break;
                         case ElementType.Numeric:
-                            item.OriginExpression = formula.ToString(currentStart, i - currentStart).Trim();
-                            statementTree.Add(item);
-                            var op2 = GetOperator(formula, i);
-                            if (op2 != null)
-                            {
-                                statementTree.Add(op2);
-                                i += op2.OriginExpression.Length;
-                                currentStart = i;
-                                currentStatement.Clear();
-                            }
-                            else
-                            {
-                                i++;
-                            }
+                            item.OriginExpression = formula
+                                .ToString(currentStart, i - currentStart)
+                                .Trim();
                             break;
+                    }
+                    
+                    statementTree.Add(item);
+                    var nextOperator = GetOperator(formula, i);
+                    if (nextOperator != null)
+                    {
+                        statementTree.Add(nextOperator);
+                        i += nextOperator.OriginExpression.Length;
+                        currentStart = i;
+                        currentStatement.Clear();
+                    }
+                    else
+                    {
+                        i++;
                     }
                 }
                 else
