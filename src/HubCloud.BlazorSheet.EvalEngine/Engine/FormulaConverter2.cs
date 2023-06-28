@@ -32,10 +32,10 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
             ValFunctionName
         };
 
-        private readonly List<string> _operators = new List<string>
-        {
-            "+", "-", "*", "/", "==", "!=", ">", "<", ">=", "<=", "&&", "||"
-        };
+        // private readonly List<string> _operators = new List<string>
+        // {
+        //     "+", "-", "*", "/", "==", "!=", ">", "<", ">=", "<=", "&&", "||"
+        // };
 
         private readonly List<char> _operatorChars = new List<char>
         {
@@ -44,8 +44,8 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
 
         public string PrepareFormula(string formulaIn, string contextName)
         {
-            var sb = new StringBuilder(formulaIn.Replace("$c", contextName));
-            sb = sb
+            var sb = new StringBuilder(formulaIn)
+                .Replace("$c", contextName)
                 .Replace("=", "==")
                 .Replace("====", "==")
                 .Replace("<>", "!=")
@@ -58,8 +58,15 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
                 .Replace(" or ", " || ")
                 .Replace(" OR ", " || ");
 
-            sb = Process(sb);
+            // formula to tree
+            var statementTree = GetStatementTree(sb);
+            
+            // process formula tree
+            statementTree = ProcessTree(statementTree);
 
+            // from processed tree to formula
+            sb = BuildFormula(statementTree);
+            
             return sb.ToString();
         }
 
@@ -70,17 +77,13 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
 
             _exceptionList.Add(functionName.ToUpper());
         }
+        
 
         #region private methods
 
-        public StringBuilder Process(StringBuilder formula)
+        private List<Statement> ProcessTree(List<Statement> statementTree)
         {
-            // разбираем формулу
-            var statementTree = GetStatementTree(formula);
-
-            // собираем формулу
-            var buildFormula = BuildFormula(statementTree);
-            return buildFormula;
+            return statementTree;
         }
 
         private StringBuilder BuildFormula(List<Statement> statementTree)
