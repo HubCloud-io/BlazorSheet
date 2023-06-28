@@ -145,4 +145,12 @@ public partial class SheetCommandPanel:ComponentBase
 
         await Changed.InvokeAsync(null);
     }
+
+    private void OpenCellLinkInputModal()
+    {
+        if (Model.ClientX != 0 && Model.ClientY != 0)
+            _isCellLinkInputModalOpen = true;
+        else
+            _isCellLinkInputModalOpen = false;
+    }
 }
