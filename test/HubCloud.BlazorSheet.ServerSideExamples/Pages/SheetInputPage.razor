@@ -16,6 +16,7 @@
 
         <HubCloud.BlazorSheet.Components.SheetComponent
             Sheet="@_workbook.FirstSheet"
+            ComboBoxDataProviderFactory="@_dataProviderFactory"
             Regime="SheetRegimes.Readonly"
             CellValueChanged="OnCellValueChanged">
         </HubCloud.BlazorSheet.Components.SheetComponent>
