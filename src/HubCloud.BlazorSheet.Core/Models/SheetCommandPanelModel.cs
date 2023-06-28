@@ -27,6 +27,7 @@ namespace HubCloud.BlazorSheet.Core.Models
         public int BorderWidth { get; set; } = 1;
         public string BorderColor { get; set; } = "#000000";
         
+        public string ItemsSource { get; set; }
         public CellControlKinds ControlKind { get; set; }
         public int NumberDigits { get; set; }
         

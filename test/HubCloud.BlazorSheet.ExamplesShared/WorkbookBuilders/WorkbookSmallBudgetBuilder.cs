@@ -27,6 +27,13 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
             };
             sheetSettings.EditSettings.Add(editSettingsDate);
 
+            var editSettingsDepartment = new SheetCellEditSettings()
+            {
+                ControlKind = CellControlKinds.ComboBox,
+                ItemsSource = "department"
+            };
+            sheetSettings.EditSettings.Add(editSettingsDepartment);
+
             var totalStyle = new SheetCellStyle()
             {
                 FontWeight = "bold",
@@ -39,6 +46,9 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
             sheet.Name = "budget";
 
             sheet.GetCell(1, 2).Value = "Department";
+            sheet.GetCell(2, 2).EditSettingsUid = editSettingsDepartment.Uid;
+            
+            
             sheet.GetCell(1, 3).Value = "Start date";
             sheet.GetCell(2, 3).EditSettingsUid = editSettingsDate.Uid;
 

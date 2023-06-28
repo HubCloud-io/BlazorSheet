@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="HubCloud.BBComponents" Version="6.0.29" />
+    <PackageReference Include="HubCloud.BBComponents" Version="6.0.34" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.5" />
   </ItemGroup>
 

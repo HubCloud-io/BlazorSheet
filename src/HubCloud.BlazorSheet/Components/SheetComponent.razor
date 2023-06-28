@@ -96,6 +96,24 @@
                                                   Changed="(e => OnCellValueChanged(cell))">
                                     </BbDatePicker>
                                 }
+                                else if (editSettings.ControlKind == CellControlKinds.CheckBox)
+                                {
+                                    <BbCheckBox @bind-Value="@cell.BoolValue" 
+                                                Changed="(e => OnCellValueChanged(cell))"></BbCheckBox>
+                                }
+                                else if (editSettings.ControlKind == CellControlKinds.ComboBox)
+                                {
+                                    <BbComboBox TValue="int"
+                                                DataProvider="@_fakeComboBoxDataProvider"
+                                                DropdownPosition="DropdownPositions.Fixed"
+                                                DropdownWidth="@((int)column.WidthValue)"
+                                                DataRegime="ComboBoxDataRegimes.Server"
+                                                Size="BootstrapElementSizes.Sm"
+                                                ValueName="Value"
+                                                TextName="Text"
+                                                @bind-Value="@cell.IntValue" 
+                                                Changed="(e => OnCellValueChanged(cell))"></BbComboBox>
+                                }
                                 else
                                 {
                                     <span style="color:red;">Unknown control</span>
@@ -155,6 +173,28 @@
                                                   Size="BootstrapElementSizes.Sm"
                                                   Changed="(e => OnCellValueChanged(cell))">
                                     </BbDatePicker>
+                                }
+                                else if (editSettings.ControlKind == CellControlKinds.CheckBox)
+                                {
+                                    <BbCheckBox @bind-Value="@cell.BoolValue" 
+                                                Changed="(e => OnCellValueChanged(cell))"></BbCheckBox>
+                                }
+                                else if (editSettings.ControlKind == CellControlKinds.ComboBox)
+                                {
+                                    @if (ComboBoxDataProviderFactory != null)
+                                    {
+                                        <BbComboBox TValue="int"
+                                                    DataProvider="@ComboBoxDataProviderFactory.Create(editSettings.ItemsSource)"
+                                                    DropdownPosition="DropdownPositions.Fixed"
+                                                    DropdownWidth="@((int)column.WidthValue)"
+                                                    DataRegime="ComboBoxDataRegimes.Server"
+                                                    Size="BootstrapElementSizes.Sm"
+                                                    ValueName="Value"
+                                                    TextName="Text"
+                                                    @bind-Value="@cell.IntValue" 
+                                                    Changed="(e => OnCellValueChanged(cell))"></BbComboBox>
+                                    }
+                                    
                                 }
                                 else
                                 {
