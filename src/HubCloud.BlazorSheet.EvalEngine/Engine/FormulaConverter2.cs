@@ -256,9 +256,14 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
         {
             var p = parameters.ToString()
                 .Trim()
-                .TrimStart('(')
-                .TrimEnd(')')
                 .ToUpper();
+
+            if (p.First() == '(')
+            {
+                p = p.Substring(1, p.Length - 1);
+                if (p.Last() == ')')
+                    p = p.Substring(0, p.Length - 1);
+            }
 
             var paramsList = new List<string>();
 
