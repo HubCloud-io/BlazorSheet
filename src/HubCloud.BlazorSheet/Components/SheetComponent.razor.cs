@@ -51,6 +51,9 @@ public partial class SheetComponent : ComponentBase
     [Parameter] public string MaxHeight { get; set; }
     [Parameter] public string MaxWidth { get; set; }
 
+    [Parameter]
+    public IComboBoxDataProviderFactory ComboBoxDataProviderFactory { get; set; }
+
     [Parameter] public EventCallback Changed { get; set; }
 
     [Parameter] public EventCallback<SheetCell> CellSelected { get; set; }
