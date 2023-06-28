@@ -57,6 +57,9 @@ public partial class SheetComponent : ComponentBase
     [Parameter] public EventCallback<SheetColumn> ColumnSelected { get; set; }
     [Parameter] public EventCallback<SheetCell> CellValueChanged { get; set; }
 
+    [Parameter] public EventCallback<double> CellClientXSelected { get; set; }
+    [Parameter] public EventCallback<double> CellClientYSelected { get; set; }
+
     [Inject] public IJSRuntime JsRuntime { get; set; }
 
 
@@ -88,7 +91,7 @@ public partial class SheetComponent : ComponentBase
         await Changed.InvokeAsync(null);
     }
 
-    private async Task OnCellClick(SheetRow row, SheetColumn column, SheetCell cell)
+    private async Task OnCellClick(MouseEventArgs e, SheetRow row, SheetColumn column, SheetCell cell)
     {
         _currentCell = cell;
 
@@ -105,6 +108,9 @@ public partial class SheetComponent : ComponentBase
         await CellsSelected.InvokeAsync(_selectedCells);
         await RowSelected.InvokeAsync(row);
         await ColumnSelected.InvokeAsync(column);
+
+        await CellClientXSelected.InvokeAsync(e.ClientX);
+        await CellClientYSelected.InvokeAsync(e.ClientY);
     }
 
     private void OnCellFocusOut(FocusEventArgs e, SheetCell cell)
