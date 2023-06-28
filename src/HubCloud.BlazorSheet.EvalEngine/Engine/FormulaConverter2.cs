@@ -18,10 +18,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
     public class Statement
     {
         public ElementType Type { get; set; }
-
         public string OriginStatement { get; set; }
-
-        // public string ProcessedStatement => OriginStatement;
         public string ProcessedStatement { get; set; }
         public string FunctionName { get; set; }
         public List<string> FunctionParamsList { get; set; }
@@ -256,14 +253,8 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
                 foreach (var p in item.FunctionParamsList)
                 {
                     var sb = new StringBuilder(p);
-                    // var st = new Statement
-                    // {
-                    //     OriginStatement = p,
-                    //     Type = GetStatementType(sb),
-                    //     InnerStatements = GetStatementTree(sb)
-                    // };
-                    var st = GetStatementTree(sb).First();
-                    innerStatements.Add(st);
+                    var statementTree = GetStatementTree(sb);
+                    innerStatements.AddRange(statementTree);
                 }
 
                 if (innerStatements.Any())
