@@ -123,6 +123,10 @@
             <button class="btn btn-outline-success mr-1" style="padding-top:2px; padding-bottom: 2px; margin-top: -5px;" @onclick="OnImport">
                 <span class="fa fa-file-import"></span>
             </button>
+
+            <button class="btn btn-outline-primary ml-1" style="padding-top:2px; padding-bottom: 2px; margin-top: -5px; margin-left: 3px;" @onclick="() => _isCellLinkInputModalOpen = !_isCellLinkInputModalOpen">
+                <span class="fa fa-regular fa-link"></span>
+            </button>
         </div>
     </div>
     <div class="row" style="margin-top:5px;">
@@ -142,3 +146,12 @@
 
     </div>
 </div>
+
+@if (_isCellLinkInputModalOpen) {
+    <CellLinkInputModal 
+        Link="@Model.LinkInputText" 
+        Text="@Model.TextLinkInputText" 
+        ClientX="@Model.ClientX" 
+        ClientY="@Model.ClientY" 
+        Closed="OnCellLinkInputModalClosed" />
+}

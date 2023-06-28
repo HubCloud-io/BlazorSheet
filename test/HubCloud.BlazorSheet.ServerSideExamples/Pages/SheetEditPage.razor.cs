@@ -27,6 +27,16 @@ public partial class SheetEditPage: ComponentBase
         _selectedSheetColumn = column;
     }
 
+    private void OnCellClientXSelected(double clientX)
+    {
+        _commandPanelModel.ClientX = clientX;
+    }
+
+    private void OnCellClientYSelected(double clientY)
+    {
+        _commandPanelModel.ClientY = clientY;
+    }
+
     private void OnCellSelected(SheetCell cell)
     {
         _selectedCell = cell;
@@ -36,6 +46,9 @@ public partial class SheetEditPage: ComponentBase
         var cellAddress = _sheet.CellAddress(cell);
         _commandPanelModel.SelectedCellAddress = $"R{cellAddress.Row}C{cellAddress.Column}";
         _commandPanelModel.InputText = cell.Formula;
+
+        _commandPanelModel.LinkInputText = cell.Link;
+        _commandPanelModel.TextLinkInputText = cell.StringValue;
 
         var editSettings = _sheet.GetEditSettings(cell);
         _commandPanelModel.SetEditSettings(editSettings);

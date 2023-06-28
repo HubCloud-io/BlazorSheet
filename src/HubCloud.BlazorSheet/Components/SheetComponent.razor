@@ -56,10 +56,10 @@
                     @if (Regime == SheetRegimes.Edit)
                     {
                         <td class="@CellClass(cell)"
-                            contenteditable="true"
+                            contenteditable="@(!cell.HasLink)"
                             style="@CellStyle(Sheet, row, column, cell)"
                             @oninput="(e => OnInput(e, cell))"
-                            @onclick="(e => OnCellClick(row, column, cell))"
+                            @onclick="(e => OnCellClick(e, row, column, cell))"
                             @onfocusout="(e => OnCellFocusOut(e, cell))">
                             
                             @if (cell.EditSettingsUid.HasValue)
@@ -105,7 +105,14 @@
                             }
                             else
                             {
-                                @cell.Text
+                                if (cell.HasLink)
+                                {
+                                    <a href="@cell.Link" target="_blank">@cell.StringValue</a>
+                                }
+                                else
+                                {
+                                    @cell.Text
+                                }
                             }
                            
                         </td>
@@ -156,7 +163,14 @@
                             }
                             else
                             {
-                                @cell.Text
+                                if (cell.HasLink)
+                                {
+                                    <a href="@cell.Link" target="_blank">@cell.StringValue</a>
+                                }
+                                else
+                                {
+                                    @cell.Text
+                                }
                             }
 
                         </td>

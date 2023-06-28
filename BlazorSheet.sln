@@ -15,9 +15,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HubCloud.BlazorSheet.Server
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HubCloud.BlazorSheet.UnitTests", "test\HubCloud.BlazorSheet.UnitTests\HubCloud.BlazorSheet.UnitTests.csproj", "{F1A04EB3-97CD-433C-B0FD-AAE8E51ACF99}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HubCloud.BlazorSheet.EvalEngine", "src\HubCloud.BlazorSheet.EvalEngine\HubCloud.BlazorSheet.EvalEngine.csproj", "{79C3F121-0E09-4FC5-B49C-BC6BCBB6E202}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HubCloud.BlazorSheet.EvalEngine", "src\HubCloud.BlazorSheet.EvalEngine\HubCloud.BlazorSheet.EvalEngine.csproj", "{79C3F121-0E09-4FC5-B49C-BC6BCBB6E202}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HubCloud.BlazorSheet.ExamplesShared", "test\HubCloud.BlazorSheet.ExamplesShared\HubCloud.BlazorSheet.ExamplesShared.csproj", "{335A0B33-057A-48CE-A091-174F22044207}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HubCloud.BlazorSheet.ExamplesShared", "test\HubCloud.BlazorSheet.ExamplesShared\HubCloud.BlazorSheet.ExamplesShared.csproj", "{335A0B33-057A-48CE-A091-174F22044207}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
