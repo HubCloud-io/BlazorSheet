@@ -13,10 +13,13 @@ namespace HubCloud.BlazorSheet.Core.Models
         public Guid? StyleUid { get; set; }
         public Guid? EditSettingsUid { get; set; }
         public string Name { get; set; }
+        public string Link { get; set; }
 
         [JsonIgnore] public string Text { get; set; }
         public object Value { get; set; }
         public string Formula { get; set; }
+
+        public bool HasLink => !string.IsNullOrEmpty(Link) && !string.IsNullOrWhiteSpace(Link);
 
         [JsonIgnore]
         public decimal DecimalValue
@@ -101,6 +104,7 @@ namespace HubCloud.BlazorSheet.Core.Models
                 RowUid = this.RowUid,
                 ColumnUid = this.ColumnUid,
                 Name = this.Name,
+                Link = this.Link,
 
                 Text = this.Text,
                 Value = this.Value

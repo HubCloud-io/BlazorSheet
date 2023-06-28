@@ -33,6 +33,11 @@ namespace HubCloud.BlazorSheet.Core.Models
         
         public string SelectedCellAddress { get; set; }
         public string InputText { get; set; }
+        public string LinkInputText { get; set; }
+        public string TextLinkInputText { get; set; }
+
+        public double ClientX { get; set; }
+        public double ClientY { get; set; }
 
         public void CopyFrom(SheetCommandPanelModel clone)
         {

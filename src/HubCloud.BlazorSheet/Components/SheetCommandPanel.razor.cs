@@ -9,6 +9,8 @@ namespace HubCloud.BlazorSheet.Components;
 
 public partial class SheetCommandPanel:ComponentBase
 {
+    private bool _isCellLinkInputModalOpen;
+
     private List<Tuple<string, string>> _textAlignSource;
     private List<Tuple<string, CellFormatTypes>> _cellFormatSource;
     private List<Tuple<CellBorderTypes, string>> _borderTypesSource;
@@ -141,5 +143,26 @@ public partial class SheetCommandPanel:ComponentBase
 
         Model.CustomFormat = string.Empty;
         await Changed.InvokeAsync(null);
+    }
+
+    private async void OnCellLinkInputModalClosed(CellLink cellLink)
+    {
+        _isCellLinkInputModalOpen = false;
+
+        if (cellLink == null) 
+            return;
+
+        Model.TextLinkInputText = cellLink.Text;
+        Model.LinkInputText = cellLink.Link;
+
+        await Changed.InvokeAsync(null);
+    }
+
+    private void OpenCellLinkInputModal()
+    {
+        if (Model.ClientX != 0 && Model.ClientY != 0)
+            _isCellLinkInputModalOpen = true;
+        else
+            _isCellLinkInputModalOpen = false;
     }
 }
