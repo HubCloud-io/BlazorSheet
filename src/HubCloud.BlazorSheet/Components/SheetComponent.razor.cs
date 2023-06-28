@@ -42,6 +42,8 @@ public partial class SheetComponent : ComponentBase
 
     private bool _isSheetSizeModalOpen;
 
+    private IComboBoxDataProvider<int> _fakeComboBoxDataProvider = new FakeComboBoxDataProvider();
+
     [Parameter] public Sheet Sheet { get; set; }
 
     [Parameter] public SheetRegimes Regime { get; set; }
