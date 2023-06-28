@@ -10,14 +10,19 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
         Numeric,
         Operator,
         Function,
-        Address
+        Address,
+        ValFunction,
+        ExceptionFunction
     }
 
     public class Statement
     {
         public ElementType Type { get; set; }
+
         public string OriginStatement { get; set; }
-        public string ProcessedStatement => OriginStatement;
+
+        // public string ProcessedStatement => OriginStatement;
+        public string ProcessedStatement { get; set; }
         public string FunctionName { get; set; }
         public List<string> FunctionParamsList { get; set; }
         public List<Statement> InnerStatements { get; set; }
@@ -60,13 +65,13 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
 
             // formula to tree
             var statementTree = GetStatementTree(sb);
-            
+
             // process formula tree
-            statementTree = ProcessTree(statementTree);
+            statementTree = ProcessTree(statementTree, contextName);
 
             // from processed tree to formula
             sb = BuildFormula(statementTree);
-            
+
             return sb.ToString();
         }
 
@@ -77,13 +82,58 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
 
             _exceptionList.Add(functionName.ToUpper());
         }
-        
+
 
         #region private methods
 
-        private List<Statement> ProcessTree(List<Statement> statementTree)
+        private List<Statement> ProcessTree(List<Statement> statementTree, string contextName)
         {
+            foreach (var statement in statementTree)
+            {
+                switch (statement.Type)
+                {
+                    case ElementType.Function:
+                        statement.ProcessedStatement = $"{statement.FunctionName}(";
+                        var argCnt = 1;
+                        foreach (var p in statement.InnerStatements)
+                        {
+                            var st = ProcessTree(new List<Statement> {p}, contextName);
+                            var processed = st.FirstOrDefault()?.ProcessedStatement;
+                            statement.ProcessedStatement += $"{processed}";
+                            if (argCnt++ < statement.InnerStatements.Count)
+                                statement.ProcessedStatement += ",";
+                        }
+                        statement.ProcessedStatement += ")";
+                        break;
+                    case ElementType.ValFunction:
+                        statement.ProcessedStatement = ProcessValFunction(statement, contextName);
+                        break;
+                    case ElementType.Address:
+                        statement.ProcessedStatement = ProcessAddress(statement.OriginStatement, contextName);
+                        break;
+                    case ElementType.ExceptionFunction:
+                        statement.ProcessedStatement = statement.OriginStatement;
+                        break;
+                    case ElementType.Numeric:
+                    case ElementType.Operator:
+                        statement.ProcessedStatement = statement.OriginStatement;
+                        break;
+                }
+            }
+
             return statementTree;
+        }
+
+        private string ProcessAddress(string arg, string contextName)
+            => $@"{contextName}.GetValue(""{arg.TrimStart('"').TrimEnd('"')}"")";
+
+        private string ProcessValFunction(Statement valStatement, string contextName)
+        {
+            // ToDo: exception
+            var arg = valStatement.FunctionParamsList.First();
+            var processedStatement = ProcessAddress(arg, contextName);
+
+            return processedStatement;
         }
 
         private StringBuilder BuildFormula(List<Statement> statementTree)
@@ -139,6 +189,8 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
                     switch (type)
                     {
                         case ElementType.Function:
+                        case ElementType.ValFunction:
+                        case ElementType.ExceptionFunction:
                             i = ProcessFunction(item, i, currentStatement, formula);
                             break;
                         case ElementType.Address:
@@ -198,21 +250,26 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
             }
 
             item.FunctionParamsList = GetParameters(currentStatement);
-            var innerStatements = new List<Statement>();
-            foreach (var p in item.FunctionParamsList)
+            if (item.Type != ElementType.ExceptionFunction)
             {
-                var sb = new StringBuilder(p);
-                var st = new Statement
+                var innerStatements = new List<Statement>();
+                foreach (var p in item.FunctionParamsList)
                 {
-                    OriginStatement = p,
-                    Type = GetStatementType(sb),
-                    InnerStatements = GetStatementTree(sb)
-                };
-                innerStatements.Add(st);
+                    var sb = new StringBuilder(p);
+                    // var st = new Statement
+                    // {
+                    //     OriginStatement = p,
+                    //     Type = GetStatementType(sb),
+                    //     InnerStatements = GetStatementTree(sb)
+                    // };
+                    var st = GetStatementTree(sb).First();
+                    innerStatements.Add(st);
+                }
+
+                if (innerStatements.Any())
+                    item.InnerStatements = innerStatements;
             }
 
-            if (innerStatements.Any())
-                item.InnerStatements = innerStatements;
             item.OriginStatement = $"{item.FunctionName}{currentStatement}";
 
             i++;
@@ -246,6 +303,12 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
         private ElementType GetStatementType(StringBuilder statement)
         {
             var st = statement.ToString().Trim();
+            if (st == ValFunctionName || st.Contains($"{ValFunctionName}("))
+                return ElementType.ValFunction;
+
+            if (st != ValFunctionName && _exceptionList.Contains(st))
+                return ElementType.ExceptionFunction;
+
             if (Regex.IsMatch(st, @"R-*\d*C-*\d*"))
                 return ElementType.Address;
 
