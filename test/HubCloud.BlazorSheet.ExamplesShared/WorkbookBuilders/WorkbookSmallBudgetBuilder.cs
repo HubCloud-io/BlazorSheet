@@ -78,6 +78,9 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
             sheet.GetCell(8, 6).Formula = $"Sum(\"R5C6:R-1C6\")";
             sheet.GetCell(8, 6).StyleUid = totalStyle.Uid;
 
+            sheet.GetCell(1, 6).Value = "About Blazor";
+            sheet.GetCell(1, 6).Link = "https://dotnet.microsoft.com/en-us/apps/aspnet/web-apps/blazor";
+
             sheet.PrepareCellText();
 
             var column = sheet.GetColumn(1);
