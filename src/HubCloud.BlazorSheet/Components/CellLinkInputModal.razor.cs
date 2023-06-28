@@ -26,6 +26,9 @@ namespace HubCloud.BlazorSheet.Components
         [Parameter]
         public double ClientY { get; set; }
 
+        [Parameter]
+        public string Width { get; set; }
+
         private async Task OnOkClick()
         {
             var cellLink = new CellLink 
@@ -50,7 +53,7 @@ namespace HubCloud.BlazorSheet.Components
             sb.Append("z-index: 1000; ");
             sb.Append("padding: 3px; ");
             sb.Append("border: 1px solid #b8b8b8; ");
-            sb.Append($"width: 150px; ");
+            sb.Append($"width: {Width}px; ");
 
             var topPx = $"{(int)ClientY}px";
             var leftPx = $"{(int)ClientX}px";
