@@ -28,6 +28,7 @@ public class FormulaConverterTests
     //     Assert.AreEqual(expected, formulaOut);
     // }
     
+    [TestCase("123", "123")]
     [TestCase("R4C5 + R4C6 && R4C7", "R4C5+R4C6&&R4C7")]
     [TestCase("R4C5 + 42 <= R4C7", "R4C5+42<=R4C7")]
     [TestCase("14 + 42 || 76", "14+42||76")]
@@ -36,11 +37,30 @@ public class FormulaConverterTests
     [TestCase(@"IIF(""R1C1"" > 10, 1, 2)", @"IIF(""R1C1"">10,1,2)")]
     [TestCase(@"IIF(""R1C1"" > 10, IIF(""R1C2"" = 0, 1, 2) + R4C5, 45)", @"IIF(""R1C1"">10,IIF(""R1C2""==0,1,2)+R4C5,45)")]
     [TestCase(@"FOO(FOO2(FOO3(""R1C1"") + FOO2(""R1C1"" + ""R1C1"")))", @"FOO(FOO2(FOO3(""R1C1"")+FOO2(""R1C1""+""R1C1"")))")]
-    public void PrepareFormula2_Process_Tests(string formulaIn, string expected)
+    public void PrepareFormula2_Convert_to_Tree_Tests(string formulaIn, string expected)
     {
         var converter = new FormulaConverter2();
         
         var formulaOut = converter.PrepareFormula(formulaIn, ContextName);
+        Assert.AreEqual(expected, formulaOut);
+    }
+    
+    // [TestCase("R8C10 + R-1C10", $@"{ContextName}.GetValue(""R8C10"")+{ContextName}.GetValue(""R-1C10"")")]
+    // [TestCase(@"SUM(""R8C10:R-1C10"")", @"SUM(""R8C10:R-1C10"")")]
+    // [TestCase(@"SUM(""R8C10:R-1C10"") + R8C10 + R-1C10 + SUM(""R8C10:R-1C10"") + SUM(""R8C11:R-1C10"")", $@"SUM(""R8C10:R-1C10"")+{ContextName}.GetValue(""R8C10"")+{ContextName}.GetValue(""R-1C10"")+SUM(""R8C10:R-1C10"")+SUM(""R8C11:R-1C10"")")]
+    // [TestCase(@"VAL(""R8C10"")", $@"{ContextName}.GetValue(""R8C10"")")]
+    // [TestCase(@"FOO(""R8C10"")", $@"FOO({ContextName}.GetValue(""R8C10""))")]
+    // [TestCase(@"IsEmpty(VAL(""R41C3""))", $@"IsEmpty({ContextName}.GetValue(""R41C3""))")]
+    // [TestCase(@"IIF(""R1C2"" = 0, ""R4C5"", 2)", $@"IIF({ContextName}.GetValue(""R1C2"")==0,{ContextName}.GetValue(""R4C5""),2)")]
+    // [TestCase(@"IIF(""R1C1"" > 10, IIF(""R1C2"" = 0, 1, 2) + ""R4C5"", 45)", $@"IIF({ContextName}.GetValue(""R1C1"")>10,IIF({ContextName}.GetValue(""R1C2"")==0,1,2)+{ContextName}.GetValue(""R4C5""),45)")]
+    // [TestCase(@"IIF(VAL(""R1C1"") + SUM(""R2C1:R5C1"" > 100, 4, 5)", $@"IIF({ContextName}.GetValue(""R1C1"")+SUM(""R2C1:R5C1""> 100,4,5)")]
+    public void PrepareFormula2_Tests(string formulaIn, string expected)
+    {
+        var converter = new FormulaConverter2();
+        
+        converter.AddToExceptionList("SUM");
+        var formulaOut = converter.PrepareFormula(formulaIn, ContextName);
+        
         Assert.AreEqual(expected, formulaOut);
     }
 }
