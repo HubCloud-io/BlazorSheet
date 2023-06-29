@@ -100,7 +100,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaHelpers
                     var argIndex = 1;
                     foreach (var param in statement.FunctionParams)
                     {
-                        var currentArg = BuildFormula(new List<Statement> {param.InnerStatements.First()});
+                        var currentArg = BuildFormula(param.InnerStatements);
                         outFormula.Append(currentArg);
                         if (argIndex < statement.FunctionParams.Count)
                         {
