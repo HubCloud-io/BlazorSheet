@@ -55,9 +55,15 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaHelpers
                         var argCnt = 1;
                         foreach (var p in statement.FunctionParams)
                         {
-                            var st = ProcessTree(new List<Statement> {p.InnerStatements.First()}, contextName);
-                            var processed = st.FirstOrDefault()?.ProcessedStatement;
-                            statement.ProcessedStatement += $"{processed}";
+                            foreach (var innerStatement in p.InnerStatements)
+                            {
+                                var st = ProcessTree(new List<Statement> {innerStatement}, contextName);
+                                statement.ProcessedStatement += $"{st.FirstOrDefault()?.ProcessedStatement}";
+                            }
+                            // var st = ProcessTree(new List<Statement> {p.InnerStatements.First()}, contextName);
+                            // var processed = st.FirstOrDefault()?.ProcessedStatement;
+                            // statement.ProcessedStatement += $"{processed}";
+                            
                             if (argCnt++ < statement.FunctionParams.Count)
                                 statement.ProcessedStatement += ",";
                         }
