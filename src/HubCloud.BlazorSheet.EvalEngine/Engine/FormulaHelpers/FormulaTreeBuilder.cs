@@ -59,8 +59,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaHelpers
                         case ElementType.Numeric:
                             item.OriginStatement = formula
                                 .ToString(currentStart, i - currentStart)
-                                .Trim()
-                                .ToUpper();
+                                .Trim();
                             break;
                     }
 
@@ -125,10 +124,10 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaHelpers
 
         public void AddToExceptionList(string functionName)
         {
-            if (_exceptionList.Any(x => x == functionName.ToUpper()))
+            if (_exceptionList.Any(x => x.Trim().ToUpper() == functionName.Trim().ToUpper()))
                 return;
 
-            _exceptionList.Add(functionName.ToUpper());
+            _exceptionList.Add(functionName);
         }
 
         #region private methods
@@ -181,8 +180,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaHelpers
         {
             item.FunctionName = currentArgStatement
                 .ToString()
-                .Trim()
-                .ToUpper();
+                .Trim();
 
             currentArgStatement.Clear();
             var balance = 0;
@@ -243,9 +241,8 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaHelpers
         private List<FunctionParam> GetParameters(StringBuilder parameters, Statement parentStatement)
         {
             var p = parameters.ToString()
-                .Trim()
-                .ToUpper();
-
+                .Trim();
+                
             if (p.First() == '(')
             {
                 p = p.Substring(1, p.Length - 1);

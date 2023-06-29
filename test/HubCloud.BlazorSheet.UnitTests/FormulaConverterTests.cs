@@ -24,6 +24,7 @@ public class FormulaConverterTests
     [TestCase(@"IIF(""R1C1"" > 10, 1, 2)", @"IIF(""R1C1"">10,1,2)")]
     [TestCase(@"IIF(""R1C1"" > 10, IIF(""R1C2"" = 0, 1, 2) + R4C5, 45)", @"IIF(""R1C1"">10,IIF(""R1C2""=0,1,2)+R4C5,45)")]
     [TestCase(@"FOO(FOO2(FOO3(""R1C1"") + FOO2(""R1C1"" + ""R1C1"")))", @"FOO(FOO2(FOO3(""R1C1"")+FOO2(""R1C1""+""R1C1"")))")]
+    [TestCase(@"PascalCaseName(""R1C1"", ""R1C2"")", @"PascalCaseName(""R1C1"",""R1C2"")")]
     public void FormulaTreeBuilder_Tests(string formulaIn, string expected)
     {
         var builder = new FormulaTreeBuilder();
