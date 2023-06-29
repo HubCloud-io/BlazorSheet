@@ -1,0 +1,116 @@
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
+
+namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaHelpers
+{
+    public class Statement
+    {
+        public ElementType Type { get; set; }
+        public string OriginStatement { get; set; }
+        public string ProcessedStatement { get; set; }
+        public string FunctionName { get; set; }
+        // public List<string> FunctionParamsList { get; set; }
+        public List<FunctionParam> FunctionParams { get; set; }
+        public List<Statement> InnerStatements { get; set; }
+    }
+
+    public class FunctionParam
+    {
+        public string Origin { get; set; }
+        public List<Statement> InnerStatements { get; set; }
+    }
+
+    public class FormulaConverter2
+    {
+        // private readonly List<string> _operators = new List<string>
+        // {
+        //     "+", "-", "*", "/", "==", "!=", ">", "<", ">=", "<=", "&&", "||"
+        // };
+
+        private FormulaTreeBuilder _treeBuilder;
+        
+        public string PrepareFormula(string formulaIn, string contextName, List<string> exceptionFunctionsList = null)
+        {
+            _treeBuilder = new FormulaTreeBuilder(exceptionFunctionsList);
+            
+            var sb = new StringBuilder(formulaIn)
+                .Replace("$c", contextName)
+                .Replace("=", "==")
+                .Replace("====", "==")
+                .Replace("<>", "!=")
+                .Replace("!==", "!=")
+                .Replace(">==", ">=")
+                .Replace("<==", "<=")
+                .Replace("==>", "=>")
+                .Replace(" and ", " && ")
+                .Replace(" AND ", " && ")
+                .Replace(" or ", " || ")
+                .Replace(" OR ", " || ");
+
+            var statementTree = _treeBuilder.BuildStatementTree(sb);
+
+            // process formula tree
+            statementTree = ProcessTree(statementTree, contextName);
+
+            sb = _treeBuilder.BuildFormula(statementTree);
+
+            return sb.ToString();
+        }
+
+        #region private methods
+
+        private List<Statement> ProcessTree(List<Statement> statementTree, string contextName)
+        {
+            foreach (var statement in statementTree)
+            {
+                switch (statement.Type)
+                {
+                    case ElementType.Function:
+                        statement.ProcessedStatement = $"{statement.FunctionName}(";
+                        var argCnt = 1;
+                        foreach (var p in statement.InnerStatements)
+                        {
+                            var st = ProcessTree(new List<Statement> {p}, contextName);
+                            var processed = st.FirstOrDefault()?.ProcessedStatement;
+                            statement.ProcessedStatement += $"{processed}";
+                            if (argCnt++ < statement.InnerStatements.Count)
+                                statement.ProcessedStatement += ",";
+                        }
+                        statement.ProcessedStatement += ")";
+                        break;
+                    case ElementType.ValFunction:
+                        statement.ProcessedStatement = ProcessValFunction(statement, contextName);
+                        break;
+                    case ElementType.Address:
+                        statement.ProcessedStatement = ProcessAddress(statement.OriginStatement, contextName);
+                        break;
+                    case ElementType.ExceptionFunction:
+                        statement.ProcessedStatement = statement.OriginStatement;
+                        break;
+                    case ElementType.Numeric:
+                    case ElementType.Operator:
+                        statement.ProcessedStatement = statement.OriginStatement;
+                        break;
+                }
+            }
+
+            return statementTree;
+        }
+
+        private string ProcessAddress(string arg, string contextName)
+            => $@"{contextName}.GetValue(""{arg.TrimStart('"').TrimEnd('"')}"")";
+
+        private string ProcessValFunction(Statement valStatement, string contextName)
+        {
+            // ToDo: exception
+            var arg = valStatement.FunctionParams.First();
+            var processedStatement = ProcessAddress(arg.Origin, contextName);
+
+            return processedStatement;
+        }
+
+        #endregion
+    }
+}
