@@ -47,9 +47,10 @@ public class FormulaConverterTests
     // [TestCase(@"IIF(""R1C2"" = 0, ""R4C5"", 2)", $@"IIF({ContextName}.GetValue(""R1C2"")==0,{ContextName}.GetValue(""R4C5""),2)")]
     // [TestCase(@"IIF((VAL(""R1C1"") + SUM(""R2C1:R5C1"")) > 100, 4, 5)", $@"IIF(({ContextName}.GetValue(""R1C1"")+SUM(""R2C1:R5C1""))>100,4,5)")]
     // [TestCase(@"IIF(""R1C1"" > 10, IIF(""R1C2"" = 0, 1, 2) + ""R4C5"", 45)", $@"IIF({ContextName}.GetValue(""R1C1"")>10,IIF({ContextName}.GetValue(""R1C2"")==0,1,2)+{ContextName}.GetValue(""R4C5""),45)")]
+    // [TestCase(@"VAL(""RC"") + VAL(""RC2"") + VAL(""R4C"")", $@"{ContextName}.GetValue(""RC"")+{ContextName}.GetValue(""RC2"")+{ContextName}.GetValue(""R4C"")")]
     
     // ToDo: проблемное выражение 'R-1C10'
-    // [TestCase("R8C10 + R-1C10", $@"{ContextName}.GetValue(""R8C10"")+{ContextName}.GetValue(""R-1C10"")")]
+    [TestCase("R8C10 + R-1C10", $@"{ContextName}.GetValue(""R8C10"")+{ContextName}.GetValue(""R-1C10"")")]
     public void PrepareFormula2_Tests(string formulaIn, string expected)
     {
         var converter = new FormulaConverter2();
