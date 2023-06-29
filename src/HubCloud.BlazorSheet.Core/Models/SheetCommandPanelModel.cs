@@ -130,6 +130,7 @@ namespace HubCloud.BlazorSheet.Core.Models
         {
             ControlKind = editSettings.ControlKind;
             NumberDigits = editSettings.NumberDigits;
+            ItemsSource = editSettings.ItemsSource;
         }
 
         private int ParseFontSize(string fontSizePx)
