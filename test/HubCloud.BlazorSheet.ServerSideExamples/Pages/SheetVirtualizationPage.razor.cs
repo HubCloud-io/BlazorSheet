@@ -11,18 +11,18 @@ namespace HubCloud.BlazorSheet.ServerSideExamples.Pages
         protected override void OnInitialized()
         {
 
-            _sheetSettings = BuildSheetSettingsWithCellNames(125, 25);
+            _sheetSettings = BuildSheetSettingsWithCellNames(125, 25, 4);
 
             _sheet = new Sheet(_sheetSettings);
         }
 
-        private SheetSettings BuildSheetSettingsWithCellNames(int rowsCount, int columnsCount)
+        private SheetSettings BuildSheetSettingsWithCellNames(int rowsCount, int columnsCount, int freezedRows)
         {
             var sheetSettings = new SheetSettings()
             {
                 RowsCount = rowsCount,
                 ColumnsCount = columnsCount,
-                FreezedRows = 3
+                FreezedRows = freezedRows
             };
 
             for (var r = 1; r <= rowsCount; r++)
