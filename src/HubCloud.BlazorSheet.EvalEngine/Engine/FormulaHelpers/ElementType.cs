@@ -7,6 +7,7 @@
         Function,
         Address,
         ValFunction,
-        ExceptionFunction
+        ExceptionFunction,
+        AddressRange,
     }
 }

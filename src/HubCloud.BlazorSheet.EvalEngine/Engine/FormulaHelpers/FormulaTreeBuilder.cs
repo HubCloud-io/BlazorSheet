@@ -8,7 +8,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaHelpers
     public class FormulaTreeBuilder
     {
         private const string ValFunctionName = "VAL";
-        
+
         private readonly List<char> _operatorChars = new List<char>
         {
             '+', '-', '*', '/', '=', '!', '>', '<', '&', '|', '(', ')'
@@ -29,7 +29,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaHelpers
                     _exceptionList.Add(funcName);
             }
         }
-        
+
         public List<Statement> BuildStatementTree(StringBuilder formula)
         {
             var currentStatement = new StringBuilder();
@@ -87,7 +87,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaHelpers
 
             return statementTree;
         }
-        
+
         public StringBuilder BuildFormula(List<Statement> statementTree)
         {
             var outFormula = new StringBuilder();
@@ -98,11 +98,11 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaHelpers
                     outFormula.Append($"{statement.FunctionName}");
                     outFormula.Append("(");
                     var argIndex = 1;
-                    foreach (var innerStatement in statement.InnerStatements)
+                    foreach (var param in statement.FunctionParams)
                     {
-                        var currentArg = BuildFormula(new List<Statement> {innerStatement});
+                        var currentArg = BuildFormula(new List<Statement> {param.InnerStatements.First()});
                         outFormula.Append(currentArg);
-                        if (argIndex < statement.InnerStatements.Count)
+                        if (argIndex < statement.FunctionParams.Count)
                         {
                             outFormula.Append(",");
                             argIndex++;
@@ -122,7 +122,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaHelpers
 
             return outFormula;
         }
-        
+
         public void AddToExceptionList(string functionName)
         {
             if (_exceptionList.Any(x => x == functionName.ToUpper()))
@@ -130,8 +130,9 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaHelpers
 
             _exceptionList.Add(functionName.ToUpper());
         }
-        
+
         #region private methods
+
         private ElementType GetStatementType(StringBuilder statement)
         {
             var st = statement.ToString().Trim();
@@ -141,6 +142,9 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaHelpers
             if (st != ValFunctionName && _exceptionList.Contains(st))
                 return ElementType.ExceptionFunction;
 
+            if (Regex.IsMatch(st, @"R-*\d*C-*\d*:R-*\d*C-*\d*"))
+                return ElementType.AddressRange;
+
             if (Regex.IsMatch(st, @"R-*\d*C-*\d*"))
                 return ElementType.Address;
 
@@ -149,7 +153,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaHelpers
 
             return ElementType.Function;
         }
-        
+
         private Statement GetOperator(StringBuilder formula, int i)
         {
             if (formula.Length == i)
@@ -172,19 +176,19 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaHelpers
                 };
             }
         }
-        
-        private int ProcessFunction(Statement item, int i, StringBuilder currentStatement, StringBuilder formula)
+
+        private int ProcessFunction(Statement item, int i, StringBuilder currentArgStatement, StringBuilder formula)
         {
-            item.FunctionName = currentStatement
+            item.FunctionName = currentArgStatement
                 .ToString()
                 .Trim()
                 .ToUpper();
 
-            currentStatement.Clear();
+            currentArgStatement.Clear();
             var balance = 0;
             while (i < formula.Length)
             {
-                currentStatement.Append(formula[i]);
+                currentArgStatement.Append(formula[i]);
 
                 if (formula[i] == '(')
                     balance++;
@@ -196,29 +200,47 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaHelpers
                 i++;
             }
 
-            item.FunctionParams = GetParameters(currentStatement);
-            if (item.Type != ElementType.ExceptionFunction)
+            item.FunctionParams = GetParameters(currentArgStatement, item);
+            foreach (var p in item.FunctionParams)
             {
-                var innerStatements = new List<Statement>();
-                foreach (var p in item.FunctionParams)
+                var sb = new StringBuilder(p.Origin);
+                if (GetStatementType(sb) == ElementType.AddressRange)
                 {
-                    var sb = new StringBuilder(p.Origin);
-                    var statementTree = BuildStatementTree(sb);
-                    innerStatements.AddRange(statementTree);
+                    p.InnerStatements = ProcessAddressRange(p.Origin);
                 }
-
-                if (innerStatements.Any())
-                    item.InnerStatements = innerStatements;
+                else
+                {
+                    var statementTree = BuildStatementTree(sb);
+                    p.InnerStatements.AddRange(statementTree);
+                }
             }
 
-            item.OriginStatement = $"{item.FunctionName}{currentStatement}";
+            item.OriginStatement = $"{item.FunctionName}{currentArgStatement}";
 
             i++;
 
             return i;
         }
-        
-        private List<FunctionParam> GetParameters(StringBuilder parameters)
+
+        private List<Statement> ProcessAddressRange(string address)
+        {
+            var addressArr = address.Split(':');
+            var st = new List<Statement>();
+            st.Add(new Statement
+            {
+                Type = ElementType.Address,
+                OriginStatement = addressArr[0]
+            });
+            st.Add(new Statement
+            {
+                Type = ElementType.Address,
+                OriginStatement = addressArr[1]
+            });
+
+            return st;
+        }
+
+        private List<FunctionParam> GetParameters(StringBuilder parameters, Statement parentStatement)
         {
             var p = parameters.ToString()
                 .Trim()
@@ -240,7 +262,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaHelpers
             {
                 if (i == p.Length || (p[i] == ',' && balance == 0))
                 {
-                    paramsList.Add(new FunctionParam
+                    paramsList.Add(new FunctionParam(parentStatement)
                     {
                         Origin = currentParam.ToString()
                     });
@@ -261,7 +283,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaHelpers
 
             return paramsList;
         }
-        
+
         #endregion
     }
 }

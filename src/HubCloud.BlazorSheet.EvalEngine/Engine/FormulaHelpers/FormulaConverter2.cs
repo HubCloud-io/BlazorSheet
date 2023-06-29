@@ -5,23 +5,6 @@ using System.Text.RegularExpressions;
 
 namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaHelpers
 {
-    public class Statement
-    {
-        public ElementType Type { get; set; }
-        public string OriginStatement { get; set; }
-        public string ProcessedStatement { get; set; }
-        public string FunctionName { get; set; }
-        // public List<string> FunctionParamsList { get; set; }
-        public List<FunctionParam> FunctionParams { get; set; }
-        public List<Statement> InnerStatements { get; set; }
-    }
-
-    public class FunctionParam
-    {
-        public string Origin { get; set; }
-        public List<Statement> InnerStatements { get; set; }
-    }
-
     public class FormulaConverter2
     {
         // private readonly List<string> _operators = new List<string>
@@ -70,12 +53,12 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaHelpers
                     case ElementType.Function:
                         statement.ProcessedStatement = $"{statement.FunctionName}(";
                         var argCnt = 1;
-                        foreach (var p in statement.InnerStatements)
+                        foreach (var p in statement.FunctionParams)
                         {
-                            var st = ProcessTree(new List<Statement> {p}, contextName);
+                            var st = ProcessTree(new List<Statement> {p.InnerStatements.First()}, contextName);
                             var processed = st.FirstOrDefault()?.ProcessedStatement;
                             statement.ProcessedStatement += $"{processed}";
-                            if (argCnt++ < statement.InnerStatements.Count)
+                            if (argCnt++ < statement.FunctionParams.Count)
                                 statement.ProcessedStatement += ",";
                         }
                         statement.ProcessedStatement += ")";
