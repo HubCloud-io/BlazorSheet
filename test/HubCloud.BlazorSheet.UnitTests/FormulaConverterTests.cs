@@ -12,7 +12,6 @@ public class FormulaConverterTests
 {
     private const string ContextName = "_cells";
     
-    // passed testcases
     [TestCase("123", "123")]
     [TestCase("R4C5 + R4C6 && R4C7", "R4C5+R4C6&&R4C7")]
     [TestCase("R4C5 + 42 <= R4C7", "R4C5+42<=R4C7")]
@@ -28,6 +27,7 @@ public class FormulaConverterTests
     [TestCase("R8C10 + R-1C-1", "R8C10+R-1C-1")]
     [TestCase("R-1C10 - R-1C11", "R-1C10-R-1C11")]
     [TestCase("(R8C10 + R-1C-1) - R8C10", "(R8C10+R-1C-1)-R8C10")]
+    [TestCase(@"VAL(""R8C10"").ToUpper()", @"VAL(""R8C10"").ToUpper()")]
     public void FormulaTreeBuilder_Tests(string formulaIn, string expected)
     {
         var builder = new FormulaTreeBuilder();
@@ -39,7 +39,6 @@ public class FormulaConverterTests
         Assert.AreEqual(expected, formulaOut?.ToString());
     }
     
-    // passed testcases
     [TestCase(@"VAL(""R8C10"")", $@"{ContextName}.GetValue(""R8C10"")")]
     [TestCase("R8C10", $@"{ContextName}.GetValue(""R8C10"")")]
     [TestCase(@"SUM(""R8C10:R-1C10"")", @"SUM(""R8C10:R-1C10"")")]
@@ -54,9 +53,10 @@ public class FormulaConverterTests
     [TestCase("R8C10 + R-1C10", $@"{ContextName}.GetValue(""R8C10"")+{ContextName}.GetValue(""R-1C10"")")]
     [TestCase("R-1C10 - R-1C11", $@"{ContextName}.GetValue(""R-1C10"")-{ContextName}.GetValue(""R-1C11"")")]
     [TestCase("(R8C10 + R-1C-1) - R8C10", $@"({ContextName}.GetValue(""R8C10"")+{ContextName}.GetValue(""R-1C-1""))-{ContextName}.GetValue(""R8C10"")")]
-    public void PrepareFormula2_Tests(string formulaIn, string expected)  
+    [TestCase(@"VAL(""R8C10"").ToUpper()", @$"{ContextName}.GetValue(""R8C10"").ToUpper()")]
+    public void FormulaProcessor_Tests(string formulaIn, string expected)
     {
-        var converter = new FormulaConverter2();
+        var converter = new FormulaProcessor();
         
         var exceptionList = new List<string> { "SUM" };
         var formulaOut = converter.PrepareFormula(formulaIn, ContextName, exceptionList);

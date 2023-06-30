@@ -209,7 +209,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaHelpers
             if (Regex.IsMatch(st, @"R-*\d*C-*\d*"))
                 return ElementType.Address;
 
-            if (decimal.TryParse(st, out _))
+            if (string.IsNullOrEmpty(st) || decimal.TryParse(st, out _))
                 return ElementType.Numeric;
 
             return ElementType.Function;

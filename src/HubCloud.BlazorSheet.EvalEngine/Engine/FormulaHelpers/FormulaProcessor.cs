@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 
 namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaHelpers
 {
-    public class FormulaConverter2
+    public class FormulaProcessor
     {
         // private readonly List<string> _operators = new List<string>
         // {
