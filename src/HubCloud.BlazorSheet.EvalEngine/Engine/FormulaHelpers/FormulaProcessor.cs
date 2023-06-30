@@ -75,7 +75,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaHelpers
                     case ElementType.ExceptionFunction:
                         statement.ProcessedStatement = statement.OriginStatement;
                         break;
-                    case ElementType.Numeric:
+                    case ElementType.NumericOrOther:
                     case ElementType.Operator:
                         statement.ProcessedStatement = statement.OriginStatement;
                         break;

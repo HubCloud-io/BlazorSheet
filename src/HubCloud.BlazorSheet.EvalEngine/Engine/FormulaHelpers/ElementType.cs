@@ -2,7 +2,7 @@
 {
     public enum ElementType
     {
-        Numeric,
+        NumericOrOther,
         Operator,
         Function,
         Address,

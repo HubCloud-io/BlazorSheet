@@ -118,7 +118,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaHelpers
                             i = ProcessFunction(item, i, currentStatement, formula);
                             break;
                         case ElementType.Address:
-                        case ElementType.Numeric:
+                        case ElementType.NumericOrOther:
                             item.OriginStatement = formula
                                 .ToString(currentStart, i - currentStart)
                                 .Trim();
@@ -209,8 +209,11 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaHelpers
             if (Regex.IsMatch(st, @"R-*\d*C-*\d*"))
                 return ElementType.Address;
 
+            if (st.First() == '"' && st.Last() == '"')
+                return ElementType.NumericOrOther;
+            
             if (string.IsNullOrEmpty(st) || decimal.TryParse(st, out _))
-                return ElementType.Numeric;
+                return ElementType.NumericOrOther;
 
             return ElementType.Function;
         }
