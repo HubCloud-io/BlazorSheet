@@ -11,7 +11,12 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaHelpers
 
         private readonly List<char> _operatorChars = new List<char>
         {
-            '+', '-', '*', '/', '=', '!', '>', '<', '&', '|', '(', ')'
+            '+', '-', '*', '/', '=', '!', '>', '<', '&', '|', '(', ')', '.'
+        };
+
+        private readonly List<string> _compoundOperators = new List<string>
+        {
+            "==", "!=", ">=", "<=", "&&", "||"
         };
 
         private List<string> _exceptionList = new List<string>
@@ -43,7 +48,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaHelpers
             {
                 if ((formula[index] == 'C' || formula[index] == 'c') && index < i - 1)
                     return false;
-                
+
                 st.Append(formula[index]);
                 if (formula[index] == 'R' || formula[index] == 'r')
                 {
@@ -57,15 +62,16 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaHelpers
             if (!isR) return true;
 
             st = Reverse(st);
-            
+
             // forward from minus
-            index = i+1;
+            index = i + 1;
             while (index != formula.Length)
             {
                 if (_operatorChars.Contains(formula[index]))
                 {
                     break;
                 }
+
                 st.Append(formula[index]);
                 index++;
             }
@@ -73,13 +79,13 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaHelpers
             var type = GetStatementType(st);
             return type == ElementType.Address;
         }
-        
+
         public StringBuilder Reverse(StringBuilder sb)
         {
             char t;
             var end = sb.Length - 1;
             var start = 0;
-    
+
             while (end - start > 0)
             {
                 t = sb[end];
@@ -91,7 +97,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaHelpers
 
             return sb;
         }
-        
+
         public List<Statement> BuildStatementTree(StringBuilder formula)
         {
             var currentStatement = new StringBuilder();
@@ -104,7 +110,8 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaHelpers
             {
                 if (i == formula.Length || (_operatorChars.Contains(formula[i]) && !IsAddressWithMinus(i, formula)))
                 {
-                    var type = GetStatementType(currentStatement);
+                    var nextSymbol = i != formula.Length ? formula[i].ToString() : null;
+                    var type = GetStatementType(currentStatement, nextSymbol);
                     var item = new Statement
                     {
                         Type = type
@@ -119,6 +126,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaHelpers
                             break;
                         case ElementType.Address:
                         case ElementType.NumericOrOther:
+                        case ElementType.Property:
                             item.OriginStatement = formula
                                 .ToString(currentStart, i - currentStart)
                                 .Trim();
@@ -194,7 +202,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaHelpers
 
         #region private methods
 
-        private ElementType GetStatementType(StringBuilder statement)
+        private ElementType GetStatementType(StringBuilder statement, string nextSymbol = null)
         {
             var st = statement.ToString().Trim();
             if (st == ValFunctionName || st.Contains($"{ValFunctionName}("))
@@ -211,11 +219,14 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaHelpers
 
             if (string.IsNullOrEmpty(st) || decimal.TryParse(st, out _))
                 return ElementType.NumericOrOther;
-            
+
             if (st.First() == '"' && st.Last() == '"')
                 return ElementType.NumericOrOther;
 
-            return ElementType.Function;
+            if (nextSymbol == "(")
+                return ElementType.Function;
+
+            return ElementType.Property;
         }
 
         private Statement GetOperator(StringBuilder formula, int i)
@@ -223,22 +234,27 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaHelpers
             if (formula.Length == i)
                 return null;
 
-            if (!_operatorChars.Contains(formula[i + 1]))
+            var currentSymbol = formula[i].ToString();
+            var nextSymbol = i + 1 < formula.Length ? formula[i + 1].ToString() : null;
+
+            if (nextSymbol != null && _operatorChars.Contains(nextSymbol.First()))
             {
-                return new Statement
+                var compoundOperator = $"{currentSymbol}{nextSymbol}";
+                if (_compoundOperators.Contains(compoundOperator))
                 {
-                    Type = ElementType.Operator,
-                    OriginStatement = formula[i].ToString()
-                };
+                    return new Statement
+                    {
+                        Type = ElementType.Operator,
+                        OriginStatement = compoundOperator
+                    };
+                }
             }
-            else
+
+            return new Statement
             {
-                return new Statement
-                {
-                    Type = ElementType.Operator,
-                    OriginStatement = $"{formula[i]}{formula[i + 1]}"
-                };
-            }
+                Type = ElementType.Operator,
+                OriginStatement = currentSymbol
+            };
         }
 
         private int ProcessFunction(Statement item, int i, StringBuilder currentArgStatement, StringBuilder formula)
@@ -307,7 +323,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaHelpers
         {
             var p = parameters.ToString()
                 .Trim();
-                
+
             if (p.First() == '(')
             {
                 p = p.Substring(1, p.Length - 1);

@@ -53,7 +53,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
             var converter = new FormulaProcessor();
             var exceptionList = new List<string> { "SUM" };
             
-            var formula = converter.PrepareFormula(expression, "_cells", exceptionList);
+            var formula = converter.PrepareFormula(expression, ContextName, exceptionList);
 
             try
             {

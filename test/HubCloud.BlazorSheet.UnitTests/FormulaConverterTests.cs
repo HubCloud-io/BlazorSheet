@@ -29,6 +29,9 @@ public class FormulaConverterTests
     [TestCase("(R8C10 + R-1C-1) - R8C10", "(R8C10+R-1C-1)-R8C10")]
     [TestCase(@"VAL(""R8C10"").ToUpper()", @"VAL(""R8C10"").ToUpper()")]
     [TestCase(@"VAL(""R8C10"").IndexOf(""w"")", @"VAL(""R8C10"").IndexOf(""w"")")]
+    [TestCase(@"VAL(""R34C3"").Day", @"VAL(""R34C3"").Day")]
+    [TestCase(@"VAL(""R57C3"") && VAL(""R57C4"")", @"VAL(""R57C3"")&&VAL(""R57C4"")")]
+    [TestCase(@"(VAL(""R55C3"") < 5) + (VAL(""R55C4"") > 10)", @"(VAL(""R55C3"")<5)+(VAL(""R55C4"")>10)")]
     public void FormulaTreeBuilder_Tests(string formulaIn, string expected)
     {
         var builder = new FormulaTreeBuilder();

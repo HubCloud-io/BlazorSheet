@@ -9,5 +9,6 @@
         ValFunction,
         ExceptionFunction,
         AddressRange,
+        Property
     }
 }
