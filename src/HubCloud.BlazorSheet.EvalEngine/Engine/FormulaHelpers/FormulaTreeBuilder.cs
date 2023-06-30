@@ -30,6 +30,68 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaHelpers
             }
         }
 
+        private bool IsAddressWithMinus(int i, StringBuilder formula)
+        {
+            if (formula[i] != '-')
+                return false;
+
+            // backward from minus
+            var index = i;
+            var st = new StringBuilder();
+            var isR = false;
+            while (index != 0)
+            {
+                if ((formula[index] == 'C' || formula[index] == 'c') && index < i - 1)
+                    return false;
+                
+                st.Append(formula[index]);
+                if (formula[index] == 'R' || formula[index] == 'r')
+                {
+                    isR = true;
+                    break;
+                }
+
+                index--;
+            }
+
+            if (!isR) return true;
+
+            st = Reverse(st);
+            
+            // forward from minus
+            index = i+1;
+            while (index != formula.Length)
+            {
+                if (_operatorChars.Contains(formula[index]))
+                {
+                    break;
+                }
+                st.Append(formula[index]);
+                index++;
+            }
+
+            var type = GetStatementType(st);
+            return type == ElementType.Address;
+        }
+        
+        public StringBuilder Reverse(StringBuilder sb)
+        {
+            char t;
+            var end = sb.Length - 1;
+            var start = 0;
+    
+            while (end - start > 0)
+            {
+                t = sb[end];
+                sb[end] = sb[start];
+                sb[start] = t;
+                start++;
+                end--;
+            }
+
+            return sb;
+        }
+        
         public List<Statement> BuildStatementTree(StringBuilder formula)
         {
             var currentStatement = new StringBuilder();
@@ -40,7 +102,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaHelpers
             var currentStart = 0;
             while (i <= formula.Length)
             {
-                if (i == formula.Length || _operatorChars.Contains(formula[i]))
+                if (i == formula.Length || (_operatorChars.Contains(formula[i]) && !IsAddressWithMinus(i, formula)))
                 {
                     var type = GetStatementType(currentStatement);
                     var item = new Statement
