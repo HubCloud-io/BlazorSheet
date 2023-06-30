@@ -15,6 +15,8 @@ public partial class SheetEditPage: ComponentBase
     private List<SheetCell> _selectedCells { get; set; }
     private SheetRow _selectedSheetRow { get; set; }
     private SheetColumn _selectedSheetColumn { get; set; }
+
+    private bool _canBeJoined;
     
     protected override void OnInitialized()
     {
@@ -61,6 +63,7 @@ public partial class SheetEditPage: ComponentBase
     private void OnCellsSelected(List<SheetCell> cells)
     {
        _selectedCells = cells;
+       _canBeJoined = _sheet.CanBeJoined(_selectedCells);
     }
 
     private async Task OnStyleChanged()

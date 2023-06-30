@@ -623,5 +623,64 @@ namespace HubCloud.BlazorSheet.Core.Models
             //_styles.Clear();
             //_editSettings.Clear();
         }
+
+        public bool CanBeJoined(List<SheetCell> cells)
+        {
+            if (cells.Count < 2)
+                return false;
+
+            var sheetCellAddressList = new List<SheetCellAddress>();
+
+            cells.ForEach(x => sheetCellAddressList.Add(CellAddress(x)));
+
+            var grouppedByColumn = sheetCellAddressList.GroupBy(x => x.Column).OrderBy(x => x.Key).ToList();
+            var grouppedByRow = sheetCellAddressList.GroupBy(x => x.Row).OrderBy(x => x.Key).ToList();
+
+            foreach (var group in grouppedByColumn)
+            {
+                var groupList = group.OrderBy(x => x.Row).ToList();
+
+                for (int i = 0; i < groupList.Count; i++)
+                {
+                    var nextItemIndex = i + 1;
+
+                    if (nextItemIndex == groupList.Count)
+                        break;
+
+                    if (groupList[i].Row + 1 != groupList[nextItemIndex].Row)
+                        return false;
+                }
+            }
+
+            foreach (var group in grouppedByRow)
+            {
+                var groupList = group.OrderBy(x => x.Column).ToList();
+
+                for (int i = 0; i < groupList.Count; i++)
+                {
+                    var nextItemIndex = i + 1;
+
+                    if (nextItemIndex == groupList.Count)
+                        break;
+
+                    if (groupList[i].Column + 1 != groupList[nextItemIndex].Column)
+                        return false;
+                }
+            }
+
+            var firstColumn = grouppedByColumn.First().Key;
+            var firstColumnsAllRows = grouppedByRow.Select(x => x.OrderBy(o => o.Column).First().Column);
+
+            if (firstColumnsAllRows.Any(x => x != firstColumn))
+                return false;
+
+            var lastColumn = grouppedByColumn.Last().Key;
+            var lastColumnsAllRows = grouppedByRow.Select(x => x.OrderBy(o => o.Column).Last().Column);
+
+            if (lastColumnsAllRows.Any(x => x != lastColumn))
+                return false;
+
+            return true;
+        }
     }
 }
