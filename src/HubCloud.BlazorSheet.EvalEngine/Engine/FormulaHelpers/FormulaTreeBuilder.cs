@@ -194,10 +194,10 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaHelpers
 
         public void AddToExceptionList(string functionName)
         {
-            if (_exceptionList.Any(x => x.Trim().ToUpper() == functionName.Trim().ToUpper()))
+            if (_exceptionList.Any(x => x == functionName.Trim().ToUpper()))
                 return;
 
-            _exceptionList.Add(functionName);
+            _exceptionList.Add(functionName.Trim().ToUpper());
         }
 
         #region private methods
@@ -205,10 +205,10 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaHelpers
         private ElementType GetStatementType(StringBuilder statement, string nextSymbol = null)
         {
             var st = statement.ToString().Trim();
-            if (st == ValFunctionName || st.Contains($"{ValFunctionName}("))
+            if (st.ToUpper() == ValFunctionName || st.ToUpper().Contains($"{ValFunctionName}("))
                 return ElementType.ValFunction;
 
-            if (st != ValFunctionName && _exceptionList.Contains(st))
+            if (st.ToUpper() != ValFunctionName && _exceptionList.Contains(st))
                 return ElementType.ExceptionFunction;
 
             if (Regex.IsMatch(st, @"R-*\d*C-*\d*:R-*\d*C-*\d*"))
