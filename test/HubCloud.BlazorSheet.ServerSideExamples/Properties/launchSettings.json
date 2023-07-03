@@ -13,6 +13,7 @@
       "dotnetRunMessages": true,
       "launchBrowser": true,
       "applicationUrl": "https://localhost:7107;http://localhost:5107",
+      "launchUrl": "https://localhost:7107/dependencycalc",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
