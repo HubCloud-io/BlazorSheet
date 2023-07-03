@@ -36,11 +36,18 @@ namespace HubCloud.BlazorSheet.Components
                 Text = Text,
                 Link = Link
             };
+
+            Text = null;
+            Link = null;
+
             await Closed.InvokeAsync(cellLink);
         }
 
         private async Task OnCancelClick()
         {
+            Text = null;
+            Link = null;
+
             await Closed.InvokeAsync(null);
         }
 
