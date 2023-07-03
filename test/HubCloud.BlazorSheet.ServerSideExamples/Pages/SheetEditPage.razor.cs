@@ -1,4 +1,5 @@
-﻿using HubCloud.BlazorSheet.Core.Interfaces;
+﻿using HubCloud.BlazorSheet.Components;
+using HubCloud.BlazorSheet.Core.Interfaces;
 using HubCloud.BlazorSheet.Core.Models;
 using HubCloud.BlazorSheet.ServerSideExamples.Infrastructure;
 using Microsoft.AspNetCore.Components;
@@ -8,7 +9,8 @@ namespace HubCloud.BlazorSheet.ServerSideExamples.Pages;
 public partial class SheetEditPage: ComponentBase
 {
     private IItemsSourceDataProvider _itemSourceDataProvider = new ItemsSourceProvider();
-    
+
+    private SheetComponent _sheetComponent;
     private Sheet _sheet;
     private SheetCommandPanelModel _commandPanelModel { get; set; } = new SheetCommandPanelModel();
     private SheetCell _selectedCell { get; set; }
@@ -33,16 +35,6 @@ public partial class SheetEditPage: ComponentBase
         _selectedSheetColumn = column;
     }
 
-    private void OnCellClientXSelected(double clientX)
-    {
-        _commandPanelModel.ClientX = clientX;
-    }
-
-    private void OnCellClientYSelected(double clientY)
-    {
-        _commandPanelModel.ClientY = clientY;
-    }
-
     private void OnCellSelected(SheetCell cell)
     {
         _selectedCell = cell;
@@ -52,9 +44,6 @@ public partial class SheetEditPage: ComponentBase
         var cellAddress = _sheet.CellAddress(cell);
         _commandPanelModel.SelectedCellAddress = $"R{cellAddress.Row}C{cellAddress.Column}";
         _commandPanelModel.InputText = cell.Formula;
-
-        _commandPanelModel.LinkInputText = cell.Link;
-        _commandPanelModel.TextLinkInputText = cell.StringValue;
 
         var editSettings = _sheet.GetEditSettings(cell);
         _commandPanelModel.SetEditSettings(editSettings);
@@ -75,5 +64,4 @@ public partial class SheetEditPage: ComponentBase
         
         _sheet.SetSettingsFromCommandPanel(_selectedCells, _selectedCell, _commandPanelModel);
     }
-    
 }

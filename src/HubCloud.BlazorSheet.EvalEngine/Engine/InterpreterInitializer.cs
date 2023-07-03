@@ -9,11 +9,10 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
 
         public static Interpreter CreateInterpreter(WorkbookData data)
         {
-            
             var interpreter = new Interpreter(InterpreterOptions.DefaultCaseInsensitive);
 
             interpreter.Reference(typeof(DateTime));
-            interpreter.Reference(typeof(System.MidpointRounding));
+            interpreter.Reference(typeof(MidpointRounding));
             interpreter.Reference(typeof(System.Linq.Enumerable));
 
             Func<string, UniversalValue> sumFunction = data.Sum;
@@ -48,8 +47,5 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
 
             return interpreter;
         }
-        
-    
-        
     }
 }

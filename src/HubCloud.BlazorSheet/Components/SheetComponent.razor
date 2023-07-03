@@ -104,7 +104,15 @@
                                 }
                                 else
                                 {
-                                    @cell.Text
+                                    @*@cell.Text*@
+                                    if (cell.HasLink)
+                                    {
+                                        <a href="@cell.Link" target="_blank">@cell.StringValue</a>
+                                    }
+                                    else
+                                    {
+                                        @cell.Text
+                                    }
                                 }
 
                             </td>
@@ -178,7 +186,15 @@
                             }
                             else
                             {
-                                @cell.Text
+                                @*@cell.Text*@
+                                if (cell.HasLink)
+                                {
+                                    <a href="@cell.Link" target="_blank">@cell.StringValue</a>
+                                }
+                                else
+                                {
+                                    @cell.Text
+                                }
                             }
 
                         </td>
@@ -209,141 +225,61 @@
                             continue;
                         }
 
-                    @if (Regime == SheetRegimes.Edit)
-                    {
-                        <td class="@CellClass(cell)"
-                            contenteditable="@(!cell.HasLink)"
-                            style="@CellStyle(Sheet, row, column, cell)"
-                            @oninput="(e => OnInput(e, cell))"
-                            @onclick="(e => OnCellClick(e, row, column, cell))"
-                            @onfocusout="(e => OnCellFocusOut(e, cell))" 
-                            hidden="@CellHidden(column, row)">
-                            
-                            @if (cell.EditSettingsUid.HasValue)
-                            {
-                                 var editSettings = Sheet.GetEditSettings(cell);
-                                if (editSettings.ControlKind == CellControlKinds.NumberInput)
+                        @if (Regime == SheetRegimes.Edit)
+                        {
+                            <td class="@CellClass(cell)"
+                                contenteditable="@(!cell.HasLink)"
+                                style="@CellStyle(Sheet, row, column, cell)"
+                                @oninput="(e => OnInput(e, cell))"
+                                @onclick="(e => OnCellClick(e, row, column, cell))"
+                                @onfocusout="(e => OnCellFocusOut(e, cell))" 
+                                hidden="@CellHidden(column, row)">
+                                
+                                @if (cell.EditSettingsUid.HasValue)
                                 {
-                                    <BbNumberInput TValue="decimal"
-                                                   HtmlStyle="width:100%; text-align:right;"
-                                                   Digits="@editSettings.NumberDigits"
-                                                   @bind-Value="@cell.DecimalValue"
-                                                   Changed="(e => OnCellValueChanged(cell))">
-                                    </BbNumberInput>
-                                }
-                                else if (editSettings.ControlKind == CellControlKinds.TextInput)
-                                {
-                                    <BbTextInput HtmlStyle="width:100%" 
-                                                 @bind-Value="@cell.StringValue" 
-                                                 Changed="(e => OnCellValueChanged(cell))">
-                                        
-                                    </BbTextInput>
-                                }
-                                else if (editSettings.ControlKind == CellControlKinds.DateInput)
-                                {
-                                    <BbDatePicker @bind-Value="@cell.DateTimeValue"
-                                                  DropdownPosition="DropdownPositions.Fixed"
-                                                  Size="BootstrapElementSizes.Sm"
-                                                  Changed="(e => OnCellValueChanged(cell))">
-                                    </BbDatePicker>
-                                }
-                                else if (editSettings.ControlKind == CellControlKinds.DateTimeInput)
-                                {
-                                    <BbDatePicker @bind-Value="@cell.DateTimeValue"
-                                                  DropdownPosition="DropdownPositions.Fixed"
-                                                  Size="BootstrapElementSizes.Sm"
-                                                  Changed="(e => OnCellValueChanged(cell))">
-                                    </BbDatePicker>
-                                }
-                                else if (editSettings.ControlKind == CellControlKinds.CheckBox)
-                                {
-                                    <BbCheckBox @bind-Value="@cell.BoolValue" 
-                                                Changed="(e => OnCellValueChanged(cell))"></BbCheckBox>
-                                }
-                                else if (editSettings.ControlKind == CellControlKinds.ComboBox)
-                                {
-                                    <BbComboBox TValue="int"
-                                                DataProvider="@_fakeComboBoxDataProvider"
-                                                DropdownPosition="DropdownPositions.Fixed"
-                                                DropdownWidth="@((int)column.WidthValue)"
-                                                DataRegime="ComboBoxDataRegimes.Server"
-                                                Size="BootstrapElementSizes.Sm"
-                                                ValueName="Value"
-                                                TextName="Text"
-                                                @bind-Value="@cell.IntValue" 
-                                                Changed="(e => OnCellValueChanged(cell))"></BbComboBox>
-                                }
-                                else
-                                {
-                                    <span style="color:red;">Unknown control</span>
-                                }
-                            }
-                            else
-                            {
-                                if (cell.HasLink)
-                                {
-                                    <a href="@cell.Link" target="_blank">@cell.StringValue</a>
-                                }
-                                else
-                                {
-                                    @cell.Text
-                                }
-                            }
-                           
-                        </td>
-                    }
-                    else
-                    {
-                        <td class="@CellClass(cell)" 
-                            style="@CellStyle(Sheet, row, column, cell)"
-                            hidden="@CellHidden(column, row)">
-                            @if (cell.EditSettingsUid.HasValue)
-                            {
-                                var editSettings = Sheet.GetEditSettings(cell);
-                                if (editSettings.ControlKind == CellControlKinds.NumberInput)
-                                {
-                                    <BbNumberInput TValue="decimal"
-                                                   HtmlStyle="width:100%; text-align:right;"
-                                                   Digits="@editSettings.NumberDigits"
-                                                   @bind-Value="@cell.DecimalValue"
-                                                   Changed="(e => OnCellValueChanged(cell))">
-                                    </BbNumberInput>
-                                }
-                                else if (editSettings.ControlKind == CellControlKinds.TextInput)
-                                {
-                                    <BbTextInput HtmlStyle="width:100%" 
-                                                 @bind-Value="@cell.StringValue" 
-                                                 Changed="(e => OnCellValueChanged(cell))">
-                                        
-                                    </BbTextInput>
-                                }
-                                else if (editSettings.ControlKind == CellControlKinds.DateInput)
-                                {
-                                    <BbDatePicker @bind-Value="@cell.DateTimeValue"
-                                                  DropdownPosition="DropdownPositions.Fixed"
-                                                  Size="BootstrapElementSizes.Sm"
-                                                  Changed="(e => OnCellValueChanged(cell))">
-                                    </BbDatePicker>
-                                }
-                                else if (editSettings.ControlKind == CellControlKinds.DateTimeInput)
-                                {
-                                    <BbDatePicker @bind-Value="@cell.DateTimeValue"
-                                                  DropdownPosition="DropdownPositions.Fixed"
-                                                  Size="BootstrapElementSizes.Sm"
-                                                  Changed="(e => OnCellValueChanged(cell))">
-                                    </BbDatePicker>
-                                }
-                                else if (editSettings.ControlKind == CellControlKinds.CheckBox)
-                                {
-                                    <BbCheckBox @bind-Value="@cell.BoolValue" 
-                                                Changed="(e => OnCellValueChanged(cell))"></BbCheckBox>
-                                }
-                                else if (editSettings.ControlKind == CellControlKinds.ComboBox)
-                                {
-                                    @if (ComboBoxDataProviderFactory != null)
+                                     var editSettings = Sheet.GetEditSettings(cell);
+                                    if (editSettings.ControlKind == CellControlKinds.NumberInput)
+                                    {
+                                        <BbNumberInput TValue="decimal"
+                                                       HtmlStyle="width:100%; text-align:right;"
+                                                       Digits="@editSettings.NumberDigits"
+                                                       @bind-Value="@cell.DecimalValue"
+                                                       Changed="(e => OnCellValueChanged(cell))">
+                                        </BbNumberInput>
+                                    }
+                                    else if (editSettings.ControlKind == CellControlKinds.TextInput)
+                                    {
+                                        <BbTextInput HtmlStyle="width:100%" 
+                                                     @bind-Value="@cell.StringValue" 
+                                                     Changed="(e => OnCellValueChanged(cell))">
+                                            
+                                        </BbTextInput>
+                                    }
+                                    else if (editSettings.ControlKind == CellControlKinds.DateInput)
+                                    {
+                                        <BbDatePicker @bind-Value="@cell.DateTimeValue"
+                                                      DropdownPosition="DropdownPositions.Fixed"
+                                                      Size="BootstrapElementSizes.Sm"
+                                                      Changed="(e => OnCellValueChanged(cell))">
+                                        </BbDatePicker>
+                                    }
+                                    else if (editSettings.ControlKind == CellControlKinds.DateTimeInput)
+                                    {
+                                        <BbDatePicker @bind-Value="@cell.DateTimeValue"
+                                                      DropdownPosition="DropdownPositions.Fixed"
+                                                      Size="BootstrapElementSizes.Sm"
+                                                      Changed="(e => OnCellValueChanged(cell))">
+                                        </BbDatePicker>
+                                    }
+                                    else if (editSettings.ControlKind == CellControlKinds.CheckBox)
+                                    {
+                                        <BbCheckBox @bind-Value="@cell.BoolValue" 
+                                                    Changed="(e => OnCellValueChanged(cell))"></BbCheckBox>
+                                    }
+                                    else if (editSettings.ControlKind == CellControlKinds.ComboBox)
                                     {
                                         <BbComboBox TValue="int"
-                                                    DataProvider="@ComboBoxDataProviderFactory.Create(editSettings.ItemsSource)"
+                                                    DataProvider="@_fakeComboBoxDataProvider"
                                                     DropdownPosition="DropdownPositions.Fixed"
                                                     DropdownWidth="@((int)column.WidthValue)"
                                                     DataRegime="ComboBoxDataRegimes.Server"
@@ -353,24 +289,104 @@
                                                     @bind-Value="@cell.IntValue" 
                                                     Changed="(e => OnCellValueChanged(cell))"></BbComboBox>
                                     }
-                                    
+                                    else
+                                    {
+                                        <span style="color:red;">Unknown control</span>
+                                    }
                                 }
                                 else
                                 {
-                                    <span style="color:red;">Unknown control</span>
+                                    if (cell.HasLink)
+                                    {
+                                        <a href="@cell.Link" target="_blank">@cell.StringValue</a>
+                                    }
+                                    else
+                                    {
+                                        @cell.Text
+                                    }
                                 }
-                            }
-                            else
-                            {
-                                if (cell.HasLink)
+                               
+                            </td>
+                        }
+                        else
+                        {
+                            <td class="@CellClass(cell)" 
+                                style="@CellStyle(Sheet, row, column, cell)"
+                                hidden="@CellHidden(column, row)">
+                                @if (cell.EditSettingsUid.HasValue)
                                 {
-                                    <a href="@cell.Link" target="_blank">@cell.StringValue</a>
+                                    var editSettings = Sheet.GetEditSettings(cell);
+                                    if (editSettings.ControlKind == CellControlKinds.NumberInput)
+                                    {
+                                        <BbNumberInput TValue="decimal"
+                                                       HtmlStyle="width:100%; text-align:right;"
+                                                       Digits="@editSettings.NumberDigits"
+                                                       @bind-Value="@cell.DecimalValue"
+                                                       Changed="(e => OnCellValueChanged(cell))">
+                                        </BbNumberInput>
+                                    }
+                                    else if (editSettings.ControlKind == CellControlKinds.TextInput)
+                                    {
+                                        <BbTextInput HtmlStyle="width:100%" 
+                                                     @bind-Value="@cell.StringValue" 
+                                                     Changed="(e => OnCellValueChanged(cell))">
+                                            
+                                        </BbTextInput>
+                                    }
+                                    else if (editSettings.ControlKind == CellControlKinds.DateInput)
+                                    {
+                                        <BbDatePicker @bind-Value="@cell.DateTimeValue"
+                                                      DropdownPosition="DropdownPositions.Fixed"
+                                                      Size="BootstrapElementSizes.Sm"
+                                                      Changed="(e => OnCellValueChanged(cell))">
+                                        </BbDatePicker>
+                                    }
+                                    else if (editSettings.ControlKind == CellControlKinds.DateTimeInput)
+                                    {
+                                        <BbDatePicker @bind-Value="@cell.DateTimeValue"
+                                                      DropdownPosition="DropdownPositions.Fixed"
+                                                      Size="BootstrapElementSizes.Sm"
+                                                      Changed="(e => OnCellValueChanged(cell))">
+                                        </BbDatePicker>
+                                    }
+                                    else if (editSettings.ControlKind == CellControlKinds.CheckBox)
+                                    {
+                                        <BbCheckBox @bind-Value="@cell.BoolValue" 
+                                                    Changed="(e => OnCellValueChanged(cell))"></BbCheckBox>
+                                    }
+                                    else if (editSettings.ControlKind == CellControlKinds.ComboBox)
+                                    {
+                                        @if (ComboBoxDataProviderFactory != null)
+                                        {
+                                            <BbComboBox TValue="int"
+                                                        DataProvider="@ComboBoxDataProviderFactory.Create(editSettings.ItemsSource)"
+                                                        DropdownPosition="DropdownPositions.Fixed"
+                                                        DropdownWidth="@((int)column.WidthValue)"
+                                                        DataRegime="ComboBoxDataRegimes.Server"
+                                                        Size="BootstrapElementSizes.Sm"
+                                                        ValueName="Value"
+                                                        TextName="Text"
+                                                        @bind-Value="@cell.IntValue" 
+                                                        Changed="(e => OnCellValueChanged(cell))"></BbComboBox>
+                                        }
+                                        
+                                    }
+                                    else
+                                    {
+                                        <span style="color:red;">Unknown control</span>
+                                    }
                                 }
                                 else
                                 {
-                                    @cell.Text
+                                    if (cell.HasLink)
+                                    {
+                                        <a href="@cell.Link" target="_blank">@cell.StringValue</a>
+                                    }
+                                    else
+                                    {
+                                        @cell.Text
+                                    }
                                 }
-                            }
 
                             </td>
                         }
@@ -431,4 +447,14 @@
                          Closed="OnSheetSizeModalClosed"
                          Columns="@Sheet.Columns.Count"
                          Rows="@Sheet.Rows.Count"/>
+}
+
+@if (_isCellLinkInputModalOpen)
+{
+    <CellLinkInputModal Link="@_currentCell.Link"
+                        Text="@_currentCell.StringValue"
+                        Width="250"
+                        ClientX="@_clientX"
+                        ClientY="@_clientY"
+                        Closed="OnCellLinkInputModalClosed" />
 }
