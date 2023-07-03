@@ -23,7 +23,7 @@ public partial class DependencyCalcPage : ComponentBase
     {
         var cellAddress = _workbook.FirstSheet.CellAddress(cell);
         _evaluator.SetValue(cellAddress.Row, cellAddress.Column, cell.Value);
-        _evaluator.EvalWorkbook();
+        _evaluator.EvalWorkbook(cellAddress);
     }
 
     private void OnClearLogClick()
@@ -53,11 +53,11 @@ public partial class DependencyCalcPage : ComponentBase
         var sheet = new Sheet(sheetSettings);
         sheet.Name = "main";
         
-        // Set test value
         sheet.GetCell(2, 1).Text = "Type value:";
         sheet.GetCell(2, 2).EditSettingsUid = numberInputSettings.Uid;
         
-        SetDependentFormulas(sheet);
+        // SetDependentFormulas(sheet);
+        SetDependentFormulas_CalcOrder(sheet);
         SetIndependentFormulas(sheet);
 
         var workbook = new Workbook();
@@ -73,6 +73,8 @@ public partial class DependencyCalcPage : ComponentBase
         
         sheet.GetCell(4, 1).Text = "VAL(\"R2C2\") + 40: ";
         sheet.GetCell(4, 2).Formula = "VAL(\"R2C2\") + 40";
+
+        sheet.GetCell(2, 3).Formula = "VAL(\"R2C-1\")";
     }
     
     private void SetDependentFormulas_CalcOrder(Sheet sheet)
