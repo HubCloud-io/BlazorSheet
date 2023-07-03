@@ -138,7 +138,7 @@
                 <span class="fa fa-file-import"></span>
             </button>
 
-            <button class="btn btn-outline-primary ml-1" style="padding-top:2px; padding-bottom: 2px; margin-top: -5px; margin-left: 3px;" @onclick="OpenCellLinkInputModal">
+            <button class="btn btn-outline-primary ml-1" style="padding-top:2px; padding-bottom: 2px; margin-top: -5px; margin-left: 3px;" @onclick="OnOpenCellLinkModal">
                 <span class="fa fa-solid fa-link"></span>
             </button>
         </div>
@@ -160,14 +160,3 @@
 
     </div>
 </div>
-
-@if (_isCellLinkInputModalOpen) 
-{
-    <CellLinkInputModal 
-        Link="@Model.LinkInputText" 
-        Text="@Model.TextLinkInputText" 
-        Width="250"
-        ClientX="@Model.ClientX" 
-        ClientY="@Model.ClientY" 
-        Closed="OnCellLinkInputModalClosed" />
-}

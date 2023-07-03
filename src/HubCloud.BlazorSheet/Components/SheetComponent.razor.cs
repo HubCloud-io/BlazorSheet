@@ -41,6 +41,7 @@ public partial class SheetComponent : ComponentBase
     private IEnumerable<IMenuItem> _columnMenuItems;
 
     private bool _isSheetSizeModalOpen;
+    private bool _isCellLinkInputModalOpen;
 
     private IComboBoxDataProvider<int> _fakeComboBoxDataProvider = new FakeComboBoxDataProvider();
 
@@ -61,9 +62,6 @@ public partial class SheetComponent : ComponentBase
     [Parameter] public EventCallback<SheetRow> RowSelected { get; set; }
     [Parameter] public EventCallback<SheetColumn> ColumnSelected { get; set; }
     [Parameter] public EventCallback<SheetCell> CellValueChanged { get; set; }
-
-    [Parameter] public EventCallback<double> CellClientXSelected { get; set; }
-    [Parameter] public EventCallback<double> CellClientYSelected { get; set; }
 
     [Inject] public IJSRuntime JsRuntime { get; set; }
 
@@ -100,6 +98,9 @@ public partial class SheetComponent : ComponentBase
     {
         _currentCell = cell;
 
+        _clientX = e.ClientX;
+        _clientY = e.ClientY;
+
         if (!_multipleSelection)
         {
             _selectedCells.Clear();
@@ -113,9 +114,6 @@ public partial class SheetComponent : ComponentBase
         await CellsSelected.InvokeAsync(_selectedCells);
         await RowSelected.InvokeAsync(row);
         await ColumnSelected.InvokeAsync(column);
-
-        await CellClientXSelected.InvokeAsync(e.ClientX);
-        await CellClientYSelected.InvokeAsync(e.ClientY);
     }
 
     private void OnCellFocusOut(FocusEventArgs e, SheetCell cell)
@@ -305,6 +303,19 @@ public partial class SheetComponent : ComponentBase
 
             await Changed.InvokeAsync(null);
         }
+    }
+
+    private async void OnCellLinkInputModalClosed(CellLink cellLink)
+    {
+        _isCellLinkInputModalOpen = false;
+
+        if (cellLink == null)
+            return;
+
+        _currentCell.Link = cellLink.Link;
+        _currentCell.Value = cellLink.Text;
+
+        await Changed.InvokeAsync(null);
     }
 
     private async Task OnCellValueChanged(SheetCell cell)
@@ -767,5 +778,13 @@ public partial class SheetComponent : ComponentBase
     private bool CellHidden(SheetRow row)
     {
         return row.IsHidden && !_showHiddenCells;
+    }
+
+    public void OpenCellLinkModal()
+    {
+        if (_clientX != 0 && _clientY != 0 && _currentCell != null)
+            _isCellLinkInputModalOpen = true;
+        else
+            _isCellLinkInputModalOpen = false;
     }
 }

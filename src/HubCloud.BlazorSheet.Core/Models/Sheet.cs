@@ -381,9 +381,6 @@ namespace HubCloud.BlazorSheet.Core.Models
             if (cell != null)
             {
                 cell.Formula = commandPanelModel.InputText;
-                cell.Link = commandPanelModel.LinkInputText;
-                cell.StringValue = commandPanelModel.TextLinkInputText;
-                cell.Text = cell.StringValue;
             }
 
             var newStyle = new SheetCellStyle(commandPanelModel);

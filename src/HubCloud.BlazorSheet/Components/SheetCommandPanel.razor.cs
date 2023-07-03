@@ -29,6 +29,9 @@ public partial class SheetCommandPanel:ComponentBase
     [Parameter]
     public EventCallback ImportClicked { get; set; }
 
+    [Parameter]
+    public EventCallback OpenCellLinkModal { get; set; }
+
     [Parameter] public IItemsSourceDataProvider ItemsSourceDataProvider { get; set; } 
     
     protected override void OnInitialized()
@@ -145,24 +148,8 @@ public partial class SheetCommandPanel:ComponentBase
         await Changed.InvokeAsync(null);
     }
 
-    private async void OnCellLinkInputModalClosed(CellLink cellLink)
+    private async void OnOpenCellLinkModal()
     {
-        _isCellLinkInputModalOpen = false;
-
-        if (cellLink == null) 
-            return;
-
-        Model.TextLinkInputText = cellLink.Text;
-        Model.LinkInputText = cellLink.Link;
-
-        await Changed.InvokeAsync(null);
-    }
-
-    private void OpenCellLinkInputModal()
-    {
-        if (Model.ClientX != 0 && Model.ClientY != 0)
-            _isCellLinkInputModalOpen = true;
-        else
-            _isCellLinkInputModalOpen = false;
+        await OpenCellLinkModal.InvokeAsync();
     }
 }
