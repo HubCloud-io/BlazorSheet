@@ -208,7 +208,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaHelpers
             if (st.ToUpper() == ValFunctionName || st.ToUpper().Contains($"{ValFunctionName}("))
                 return ElementType.ValFunction;
 
-            if (st.ToUpper() != ValFunctionName && _exceptionList.Contains(st))
+            if (st.ToUpper() != ValFunctionName && _exceptionList.Contains(st.ToUpper()))
                 return ElementType.ExceptionFunction;
 
             if (Regex.IsMatch(st, @"R-*\d*C-*\d*:R-*\d*C-*\d*"))

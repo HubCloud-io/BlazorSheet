@@ -59,6 +59,7 @@ public class FormulaConverterTests
     [TestCase("(R8C10 + R-1C-1) - R8C10", $@"({ContextName}.GetValue(""R8C10"")+{ContextName}.GetValue(""R-1C-1""))-{ContextName}.GetValue(""R8C10"")")]
     [TestCase(@"VAL(""R8C10"").ToUpper()", @$"VAL(""R8C10"").ToUpper()")]
     [TestCase(@"Val(""R2C3"").BeginYear()", @$"Val(""R2C3"").BeginYear()")]
+    [TestCase(@"Sum(""R5C3:R5C5"")", @$"Sum(""R5C3:R5C5"")")]
     public void FormulaProcessor_Tests(string formulaIn, string expected)
     {
         var converter = new FormulaProcessor();
