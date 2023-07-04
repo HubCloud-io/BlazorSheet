@@ -90,10 +90,11 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaHelpers
 
         private string ProcessValFunction(Statement valStatement, string contextName)
         {
-            var arg = valStatement.FunctionParams.First();
-            var processedStatement = ProcessAddress(arg.Origin, contextName);
-
-            return processedStatement;
+            // var arg = valStatement.FunctionParams.First();
+            // var processedStatement = ProcessAddress(arg.Origin, contextName);
+            //
+            // return processedStatement;
+            return valStatement.OriginStatement;
         }
 
         #endregion
