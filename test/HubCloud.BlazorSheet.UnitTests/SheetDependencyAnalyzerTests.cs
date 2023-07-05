@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Text.RegularExpressions;
+using HubCloud.BlazorSheet.Core.Enums;
 using HubCloud.BlazorSheet.Core.Models;
 using HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer;
 using NUnit.Framework;
@@ -9,6 +10,21 @@ namespace HubCloud.BlazorSheet.UnitTests;
 [TestFixture]
 public class SheetDependencyAnalyzerTests
 {
+    [Test]
+    public void DependencyCells_Order_Test()
+    {
+        var workbook = BuildTestWorkbook();
+        
+        var analyzer = new SheetDependencyAnalyzer(workbook.FirstSheet);
+        var dependencyCells = analyzer.GetDependencyCells(new SheetCellAddress(2, 2)).ToArray();
+        
+        Assert.AreEqual(dependencyCells.Count(), 4);
+        Assert.AreEqual(dependencyCells[0].Formula, @"VAL(""R2C2"") + 40");
+        Assert.AreEqual(dependencyCells[1].Formula, @"SUM(""R2C2:R2C2"")");
+        Assert.AreEqual(dependencyCells[2].Formula, @"VAL(""R5C2"")+VAL(""R2C2"")");
+        Assert.AreEqual(dependencyCells[3].Formula, @"VAL(""R2C2"")+VAL(""R4C2"")");
+    }
+
     [Test]
     public void NormalizeAddress_Simple_Test()
     {
@@ -80,4 +96,65 @@ public class SheetDependencyAnalyzerTests
         Assert.AreEqual(list[4], "R2C2");
         Assert.AreEqual(list[5], "R2C3");
     }
+    
+    #region private methods
+    private Workbook BuildTestWorkbook()
+    {
+        var sheetSettings = new SheetSettings();
+        sheetSettings.RowsCount = 100;
+        sheetSettings.ColumnsCount = 6;
+        
+        var numberInputSettings = new SheetCellEditSettings()
+        {
+            ControlKind = CellControlKinds.NumberInput,
+            NumberDigits = 2
+        };
+        
+        sheetSettings.EditSettings.Add(numberInputSettings);
+        
+        var sheet = new Sheet(sheetSettings);
+        sheet.Name = "main";
+        
+        sheet.GetCell(2, 1).Text = "Type value:";
+        sheet.GetCell(2, 2).EditSettingsUid = numberInputSettings.Uid;
+        sheet.GetCell(2, 2).Value = 1;
+        sheet.GetCell(2, 2).Text = "1";
+        
+        SetDependentFormulas_CalcOrder(sheet);
+        SetIndependentFormulas(sheet);
+
+        var workbook = new Workbook();
+        workbook.AddSheet(sheet);
+
+        return workbook;
+    }
+    
+    private void SetDependentFormulas_CalcOrder(Sheet sheet)
+    {
+        sheet.GetCell(3, 1).Text = @"VAL(""R2C2"")+VAL(""R4C2""):";
+        sheet.GetCell(3, 2).Formula = @"VAL(""R2C2"")+VAL(""R4C2"")";
+        
+        sheet.GetCell(4, 1).Text = @"VAL(""R5C2"")+VAL(""R2C2""):";
+        sheet.GetCell(4, 2).Formula = @"VAL(""R5C2"")+VAL(""R2C2"")";
+        
+        sheet.GetCell(5, 1).Text = @"VAL(""R2C2"") + 40:";
+        sheet.GetCell(5, 2).Formula = @"VAL(""R2C2"") + 40";
+        
+        sheet.GetCell(6, 1).Text = @"SUM(""R2C2:R2C2""):";
+        sheet.GetCell(6, 2).Formula = @"SUM(""R2C2:R2C2"")";
+    }
+
+    private void SetIndependentFormulas(Sheet sheet)
+    {
+        sheet.GetCell(2, 4).Text = "Other value:";
+        sheet.GetCell(2, 5).Text = "100";
+        sheet.GetCell(2, 5).Value = 100m;
+        
+        sheet.GetCell(3, 4).Text = "VAL(\"R2C5\")+VAL(\"R2C5\"): ";
+        sheet.GetCell(3, 5).Formula = "VAL(\"R2C5\")+VAL(\"R2C5\")";
+        
+        sheet.GetCell(4, 4).Text = "VAL(\"R2C5\") - 50: ";
+        sheet.GetCell(4, 5).Formula = "VAL(\"R2C5\")-50";
+    }
+    #endregion
 }
