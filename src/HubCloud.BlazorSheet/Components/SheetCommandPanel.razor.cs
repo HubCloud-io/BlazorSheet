@@ -32,6 +32,12 @@ public partial class SheetCommandPanel:ComponentBase
     [Parameter]
     public EventCallback OpenCellLinkModal { get; set; }
 
+    [Parameter]
+    public EventCallback JoinCells { get; set; }
+
+    [Parameter]
+    public bool JoinBtnEnabled { get; set; }
+
     [Parameter] public IItemsSourceDataProvider ItemsSourceDataProvider { get; set; } 
     
     protected override void OnInitialized()
@@ -151,5 +157,10 @@ public partial class SheetCommandPanel:ComponentBase
     private async void OnOpenCellLinkModal()
     {
         await OpenCellLinkModal.InvokeAsync();
+    }
+
+    private async void OnJoinCells()
+    {
+        await JoinCells.InvokeAsync();
     }
 }

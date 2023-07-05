@@ -52,16 +52,18 @@ public partial class SheetEditPage: ComponentBase
     private void OnCellsSelected(List<SheetCell> cells)
     {
        _selectedCells = cells;
-       _canBeJoined = _sheet.CanBeJoined(_selectedCells);
+
+        if (_selectedCells != null && _selectedCells.Count > 0)
+            _canBeJoined = _sheet.CanCellsBeJoined(_selectedCells);
+        else
+            _canBeJoined = false;
     }
 
-    private async Task OnStyleChanged()
+    private void OnStyleChanged()
     {
         if (_selectedCell == null)
-        {
             return;
-        }
-        
+
         _sheet.SetSettingsFromCommandPanel(_selectedCells, _selectedCell, _commandPanelModel);
     }
 }

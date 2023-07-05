@@ -14,6 +14,8 @@
 <SheetCommandPanel Model="@_commandPanelModel"
                    ItemsSourceDataProvider="@_itemSourceDataProvider"
                    OpenCellLinkModal="() => _sheetComponent.OpenCellLinkModal()"
+                   JoinCells="() => _sheetComponent.JoinCells()"
+                   JoinBtnEnabled="@_canBeJoined"
                    Changed="OnStyleChanged">
 </SheetCommandPanel>
 

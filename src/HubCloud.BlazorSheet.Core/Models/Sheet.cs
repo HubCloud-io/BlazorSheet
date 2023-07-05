@@ -621,63 +621,181 @@ namespace HubCloud.BlazorSheet.Core.Models
             //_editSettings.Clear();
         }
 
-        public bool CanBeJoined(List<SheetCell> cells)
+        public bool CanCellsBeJoined(List<SheetCell> cells)
         {
+            cells = cells.Distinct().ToList();
+
             if (cells.Count < 2)
                 return false;
 
-            var sheetCellAddressList = new List<SheetCellAddress>();
-
-            cells.ForEach(x => sheetCellAddressList.Add(CellAddress(x)));
-
-            var grouppedByColumn = sheetCellAddressList.GroupBy(x => x.Column).OrderBy(x => x.Key).ToList();
-            var grouppedByRow = sheetCellAddressList.GroupBy(x => x.Row).OrderBy(x => x.Key).ToList();
-
-            foreach (var group in grouppedByColumn)
+            var cellWithAddressList = cells.Select(cell => new CellWithAddress
             {
-                var groupList = group.OrderBy(x => x.Row).ToList();
+                Cell = cell,
+                Address = CellAddress(cell)
+            }).ToList();
 
-                for (int i = 0; i < groupList.Count; i++)
+            var grouppedByColumn = cellWithAddressList.GroupBy(x => x.Address.Column).OrderBy(x => x.Key).ToList();
+            var grouppedByRow = cellWithAddressList.GroupBy(x => x.Address.Row).OrderBy(x => x.Key).ToList();
+
+            // check can cells be joined by horizontal and vertical
+            if (grouppedByRow.Count() > 1 && grouppedByColumn.Count() > 1)
+            {
+                if (cells.All(cell => cell.Colspan == 1 && cell.Rowspan == 1))
                 {
-                    var nextItemIndex = i + 1;
+                    var columnCellRowspanSumList = grouppedByColumn.Select(column => column.Sum(item => item.Cell.Rowspan)).ToList();
+                    if (columnCellRowspanSumList.Distinct().Count() > 1)
+                        return false;
 
-                    if (nextItemIndex == groupList.Count)
-                        break;
-
-                    if (groupList[i].Row + 1 != groupList[nextItemIndex].Row)
+                    var rowCellColspanSumList = grouppedByRow.Select(row => row.Sum(item => item.Cell.Colspan)).ToList();
+                    if (rowCellColspanSumList.Distinct().Count() > 1)
                         return false;
                 }
-            }
-
-            foreach (var group in grouppedByRow)
-            {
-                var groupList = group.OrderBy(x => x.Column).ToList();
-
-                for (int i = 0; i < groupList.Count; i++)
+                else
                 {
-                    var nextItemIndex = i + 1;
-
-                    if (nextItemIndex == groupList.Count)
-                        break;
-
-                    if (groupList[i].Column + 1 != groupList[nextItemIndex].Column)
+                    if (IsGapsByHorizontal(grouppedByRow, false) || IsGapsByVertical(grouppedByColumn, false))
+                    {
                         return false;
+                    }
+                    else
+                    {
+                        var additionalCells = new List<SheetCell>();
+
+                        var cellsWithSpans = cellWithAddressList.Where(x => x.Cell.Colspan > 1 || x.Cell.Rowspan > 1);
+
+                        foreach (var cellWithSpans in cellsWithSpans)
+                        {
+                            if (cellWithSpans.Cell.Colspan > 1 && cellWithSpans.Cell.Rowspan > 1)
+                            {
+                                var rowNumber = cellWithSpans.Address.Row;
+
+                                for (int i = 0; i < cellWithSpans.Cell.Rowspan; i++)
+                                {
+                                    var columnNumber = cellWithSpans.Address.Column;
+
+                                    for (int j = 0; j < cellWithSpans.Cell.Colspan - 1; j++)
+                                        AddAdditionalCell(additionalCells, rowNumber, ++columnNumber);
+
+                                    if (i < cellWithSpans.Cell.Rowspan - 1)
+                                        AddAdditionalCell(additionalCells, ++rowNumber, cellWithSpans.Address.Column);
+                                }
+                            }
+                            else
+                            {
+                                if (cellWithSpans.Cell.Colspan > 1)
+                                {
+                                    var columnNumber = cellWithSpans.Address.Column;
+
+                                    for (int i = 0; i < cellWithSpans.Cell.Colspan - 1; i++)
+                                        AddAdditionalCell(additionalCells, cellWithSpans.Address.Row, ++columnNumber);
+                                }
+                                if (cellWithSpans.Cell.Rowspan > 1)
+                                {
+                                    var rowNumber = cellWithSpans.Address.Row;
+
+                                    for (int i = 0; i < cellWithSpans.Cell.Rowspan - 1; i++)
+                                        AddAdditionalCell(additionalCells, ++rowNumber, cellWithSpans.Address.Column);
+                                }
+                            }
+                        }
+
+                        var additionalCellWithAddressList = additionalCells.Select(cell => new CellWithAddress
+                        {
+                            Cell = cell,
+                            Address = CellAddress(cell)
+                        });
+
+                        cellWithAddressList.AddRange(additionalCellWithAddressList);
+
+                        grouppedByRow = cellWithAddressList.GroupBy(x => x.Address.Row).OrderBy(x => x.Key).ToList();
+                        grouppedByColumn = cellWithAddressList.GroupBy(x => x.Address.Column).OrderBy(x => x.Key).ToList();
+
+                        var rowCellCountMax = grouppedByRow.Select(row => row.Count()).Max();
+                        var columnCellCountMax = grouppedByColumn.Select(column => column.Count()).Max();
+
+                        if (grouppedByRow.Any(row => row.Count() != rowCellCountMax) || grouppedByColumn.Any(column => column.Count() != columnCellCountMax))
+                            return false;
+                    }
                 }
             }
-
-            var firstColumn = grouppedByColumn.First().Key;
-            var firstColumnsAllRows = grouppedByRow.Select(x => x.OrderBy(o => o.Column).First().Column);
-
-            if (firstColumnsAllRows.Any(x => x != firstColumn))
-                return false;
-
-            var lastColumn = grouppedByColumn.Last().Key;
-            var lastColumnsAllRows = grouppedByRow.Select(x => x.OrderBy(o => o.Column).Last().Column);
-
-            if (lastColumnsAllRows.Any(x => x != lastColumn))
-                return false;
+            // check can cells be joined by horizontal
+            else if (grouppedByRow.Count() == 1)
+            {
+                if (IsGapsByHorizontal(grouppedByRow, true)) 
+                    return false;
+            }
+            // check can cells be joined by vertical
+            else if (grouppedByColumn.Count() == 1)
+            {
+                if (IsGapsByVertical(grouppedByColumn, true)) 
+                    return false;
+            }
 
             return true;
+        }
+
+        private void AddAdditionalCell(List<SheetCell> additionalCells, int rowNumber, int columnNumber)
+        {
+            var cell = GetCell(rowNumber, columnNumber);
+            additionalCells.Add(cell);
+        }
+
+        private bool IsGapsByHorizontal(List<IGrouping<int, CellWithAddress>> grouppedByRow, bool enableCheckRowspans)
+        {
+            var groupOrderedByColumn = grouppedByRow.First().OrderBy(x => x.Address.Column);
+
+            if (enableCheckRowspans)
+            {
+                var firstCellRowspan = groupOrderedByColumn.First().Cell.Rowspan;
+                if (groupOrderedByColumn.Any(item => item.Cell.Rowspan != firstCellRowspan))
+                    return true;
+            }
+
+            for (int i = 0; i < groupOrderedByColumn.Count(); i++)
+            {
+                var currentItem = groupOrderedByColumn.ToArray()[i];
+
+                if (i == groupOrderedByColumn.Count() - 1)
+                    break;
+
+                var rowNumber = grouppedByRow.First().Key;
+                var nextColumnNumber = currentItem.Address.Column + currentItem.Cell.Colspan;
+
+                var nextCell = GetCell(rowNumber, nextColumnNumber);
+
+                if (!groupOrderedByColumn.Select(s => s.Cell).Contains(nextCell))
+                    return true;
+            }
+
+            return false;
+        }
+        private bool IsGapsByVertical(List<IGrouping<int, CellWithAddress>> grouppedByColumn, bool enableCheckColspans)
+        {
+            var groupOrderedByRow = grouppedByColumn.First().OrderBy(x => x.Address.Row);
+
+            if (enableCheckColspans)
+            {
+                var firstCellColspan = groupOrderedByRow.First().Cell.Colspan;
+                if (groupOrderedByRow.Any(item => item.Cell.Colspan != firstCellColspan))
+                    return true;
+            }
+
+            for (int i = 0; i < groupOrderedByRow.Count(); i++)
+            {
+                var currentItem = groupOrderedByRow.ToArray()[i];
+
+                if (i == groupOrderedByRow.Count() - 1)
+                    break;
+
+                var nextRowNumber = currentItem.Address.Row + currentItem.Cell.Rowspan;
+                var columnNumber = grouppedByColumn.First().Key;
+
+                var nextCell = GetCell(nextRowNumber, columnNumber);
+
+                if (!groupOrderedByRow.Select(s => s.Cell).Contains(nextCell))
+                    return true;
+            }
+
+            return false;
         }
     }
 }

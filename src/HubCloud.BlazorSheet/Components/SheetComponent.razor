@@ -230,14 +230,17 @@
                             <td class="@CellClass(cell)"
                                 contenteditable="@(!cell.HasLink)"
                                 style="@CellStyle(Sheet, row, column, cell)"
+                                hidden="@CellHidden(column, row, cell)"
+                                colspan="@cell.Colspan"
+                                rowspan="@cell.Rowspan"
                                 @oninput="(e => OnInput(e, cell))"
                                 @onclick="(e => OnCellClick(e, row, column, cell))"
-                                @onfocusout="(e => OnCellFocusOut(e, cell))" 
-                                hidden="@CellHidden(column, row)">
+                                @onfocusout="(e => OnCellFocusOut(e, cell))">
                                 
                                 @if (cell.EditSettingsUid.HasValue)
                                 {
-                                     var editSettings = Sheet.GetEditSettings(cell);
+                                    var editSettings = Sheet.GetEditSettings(cell);
+
                                     if (editSettings.ControlKind == CellControlKinds.NumberInput)
                                     {
                                         <BbNumberInput TValue="decimal"
