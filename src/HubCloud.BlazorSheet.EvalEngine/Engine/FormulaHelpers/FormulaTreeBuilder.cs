@@ -156,7 +156,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaHelpers
 
             return statementTree;
         }
-
+        
         public StringBuilder BuildFormula(List<Statement> statementTree)
         {
             var outFormula = new StringBuilder();

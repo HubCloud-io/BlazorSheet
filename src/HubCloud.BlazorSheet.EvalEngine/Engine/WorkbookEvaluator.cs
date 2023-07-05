@@ -99,8 +99,8 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
 
         private void EvalSheet(Sheet sheet, SheetData cells, SheetCellAddress cellAddress)
         {
-            var analyzer = new CellDependencyAnalyzer();
-            var dependencyCells = analyzer.GetDependencyCells(cellAddress, sheet);
+            var analyzer = new SheetDependencyAnalyzer(sheet);
+            var dependencyCells = analyzer.GetDependencyCells(cellAddress);
             
             foreach (var cell in dependencyCells)
             {
