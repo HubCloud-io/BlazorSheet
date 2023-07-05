@@ -36,6 +36,8 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
             {
                 currentCellAddress.ToUpper() 
             };
+            
+            processedCells.AddRange(GetNullValueCellAddresses(_sheet));
 
             var orderedCells = OrderCellsForCalc(processedCells, dependCellsDict);
             return orderedCells;
@@ -141,6 +143,15 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
 
 
         #region public static methods
+
+        public static List<string> GetNullValueCellAddresses(Sheet sheet)
+        {
+            return sheet.Cells
+                .Where(x => string.IsNullOrEmpty(x.Formula) && x.Value is null)
+                .Select(x => GetCellAddress(sheet.CellAddress(x)))
+                .ToList();
+        }
+        
         public static List<string> GetAddressListByRange(string range)
         {
             var list = new List<string>();
