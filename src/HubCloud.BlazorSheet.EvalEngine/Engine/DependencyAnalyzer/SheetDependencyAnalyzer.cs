@@ -17,24 +17,96 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
         
         public IEnumerable<SheetCell> GetDependencyCells(SheetCellAddress cellAddress)
         {
-            var dependCells = new List<SheetCell>();
-            foreach (var formulaCell in _sheet.Cells.Where(x => !string.IsNullOrEmpty(x.Formula)))
-            {
-                if (IsFormulaCellContainsAddress(formulaCell, cellAddress))
-                    dependCells.Add(formulaCell);
-            }
+            var currentCellAddress = GetCellAddress(cellAddress);
+            var formulaCells = _sheet.Cells
+                .Where(x => !string.IsNullOrEmpty(x.Formula))
+                .ToList();
 
-            return dependCells;
+            var dependCellsDict = new Dictionary<string, SheetCell>();
+            foreach (var formulaCell in formulaCells)
+            {
+                if (IsFormulaCellContainsAddress(formulaCell, currentCellAddress))
+                {
+                    var address = GetCellAddress(_sheet.CellAddress(formulaCell));
+                    dependCellsDict.Add(address, formulaCell);
+                }
+            }
+            
+            var processedCells = new List<string>
+            {
+                currentCellAddress.ToUpper()
+            };
+
+            var orderedCells = OrderCellsForCalc(processedCells, dependCellsDict);
+            return orderedCells;
         }
 
-        private bool IsFormulaCellContainsAddress(SheetCell formulaCell, SheetCellAddress currentCellAddress)
+        private List<SheetCell> OrderCellsForCalc(List<string> processedCells, Dictionary<string, SheetCell> dependCellsDict)
+        {
+            var list = new List<SheetCell>();
+            while (dependCellsDict.Count != 0)
+            {
+                foreach (var dependCell in dependCellsDict.ToArray())
+                {
+                    if (CanCalc(dependCell.Value, processedCells))
+                    {
+                        list.Add(dependCell.Value);
+                        processedCells.Add(NormalizeAddress(dependCell.Key, _sheet.CellAddress(dependCell.Value)));
+                        dependCellsDict.Remove(dependCell.Key);
+                    }
+                }
+            }
+
+            return list;
+        }
+
+        private bool CanCalc(SheetCell formulaCell, List<string> processedCells)
+        {
+            var formulaCellAddress = _sheet.CellAddress(formulaCell);
+            var formula = formulaCell.Formula.ToUpper();
+            
+            // check address ranges
+            var rangeRegex = new Regex(@"R-*\d*C-*\d*:R-*\d*C-*\d*");
+            var rangeMatches = rangeRegex.Matches(formula)
+                .Cast<Match>()
+                .Select(m => m.Value)
+                .Distinct()
+                .ToArray();
+
+            foreach (var rangeMatch in rangeMatches)
+            {
+                var rangeAddresses = GetAddressListByRange(rangeMatch);
+                foreach (var rangeAddress in rangeAddresses)
+                {
+                    if (!processedCells.Contains(rangeAddress))
+                        return false;
+                }
+            }
+            
+            // check simple addresses
+            var addressRegex = new Regex(@"R-*\d*C-*\d*");
+            var addressMatches = addressRegex.Matches(formula)
+                .Cast<Match>()
+                .Select(m => m.Value)
+                .Distinct()
+                .ToArray();
+            
+            foreach (var match in addressMatches)
+            {
+                if (!processedCells.Contains(NormalizeAddress(match.ToUpper(), formulaCellAddress)))
+                    return false;
+            }
+
+            return true;
+        }
+
+        private bool IsFormulaCellContainsAddress(SheetCell formulaCell, string cellAddress)
         {
             var formulaCellAddress = _sheet.CellAddress(formulaCell);
 
             var sb = new StringBuilder(formulaCell.Formula);
-            var cellAddress = GetCellAddress(currentCellAddress);
             
-            // address range
+            // check address ranges
             var rangeRegex = new Regex(@"R-*\d*C-*\d*:R-*\d*C-*\d*");
             var rangeMatches = rangeRegex.Matches(sb.ToString())
                 .Cast<Match>()
@@ -50,7 +122,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
                 sb.Replace(range, "{R}");
             }
             
-            // simple address
+            // check simple addresses
             var addressRegex = new Regex(@"R-*\d*C-*\d*");
             var addressMatches = addressRegex.Matches(sb.ToString())
                 .Cast<Match>()
@@ -69,6 +141,33 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
 
 
         #region public static methods
+        public static List<string> GetAddressListByRange(string range)
+        {
+            var list = new List<string>();
+            var arr = range.Split(':').ToArray();
+            if (arr.Length != 2)
+                return list;
+            
+            var startAddress = arr[0];
+            var endAddress = arr[1];
+
+            var startRow = int.Parse(GetRowValue(startAddress));
+            var startCol = int.Parse(GetColValue(startAddress));
+            
+            var endRow = int.Parse(GetRowValue(endAddress));
+            var endCol = int.Parse(GetColValue(endAddress));
+
+            for (var r = startRow; r <= endRow; r++)
+            {
+                for (var c = startCol; c <= endCol; c++)
+                {
+                    list.Add($"R{r}C{c}");
+                }
+            }
+
+            return list;
+        }
+        
         public static bool IsAddressInRange(string cellAddress, string addressRange)
         {
             var arr = addressRange.Split(':').ToArray();

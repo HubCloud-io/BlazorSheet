@@ -55,9 +55,11 @@ public partial class DependencyCalcPage : ComponentBase
         
         sheet.GetCell(2, 1).Text = "Type value:";
         sheet.GetCell(2, 2).EditSettingsUid = numberInputSettings.Uid;
+        sheet.GetCell(2, 2).Value = 1;
+        sheet.GetCell(2, 2).Text = "1";
         
-        SetDependentFormulas(sheet);
-        // SetDependentFormulas_CalcOrder(sheet);
+        // SetDependentFormulas(sheet);
+        SetDependentFormulas_CalcOrder(sheet);
         SetIndependentFormulas(sheet);
 
         var workbook = new Workbook();
@@ -82,14 +84,17 @@ public partial class DependencyCalcPage : ComponentBase
     
     private void SetDependentFormulas_CalcOrder(Sheet sheet)
     {
-        sheet.GetCell(3, 1).Text = "VAL(\"R2C2\")+VAL(\"R4C2\"): ";
-        sheet.GetCell(3, 2).Formula = "VAL(\"R2C2\")+VAL(\"R4C2\")";
+        sheet.GetCell(3, 1).Text = @"VAL(""R2C2"")+VAL(""R4C2""):";
+        sheet.GetCell(3, 2).Formula = @"VAL(""R2C2"")+VAL(""R4C2"")";
         
-        sheet.GetCell(4, 1).Text = "VAL(\"R5C2\")+VAL(\"R2C2\"): ";
-        sheet.GetCell(4, 2).Formula = "VAL(\"R5C2\")+VAL(\"R2C2\")";
+        sheet.GetCell(4, 1).Text = @"VAL(""R5C2"")+VAL(""R2C2""):";
+        sheet.GetCell(4, 2).Formula = @"VAL(""R5C2"")+VAL(""R2C2"")";
         
-        sheet.GetCell(5, 1).Text = "VAL(\"R2C2\") + 40: ";
-        sheet.GetCell(5, 2).Formula = "VAL(\"R2C2\") + 40";
+        sheet.GetCell(5, 1).Text = @"VAL(""R2C2"") + 40:";
+        sheet.GetCell(5, 2).Formula = @"VAL(""R2C2"") + 40";
+        
+        sheet.GetCell(6, 1).Text = @"SUM(""R2C2:R2C2""):";
+        sheet.GetCell(6, 2).Formula = @"SUM(""R2C2:R2C2"")";
     }
 
     private void SetIndependentFormulas(Sheet sheet)

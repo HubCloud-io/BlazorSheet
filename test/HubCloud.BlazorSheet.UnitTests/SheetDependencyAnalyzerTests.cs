@@ -66,4 +66,18 @@ public class SheetDependencyAnalyzerTests
         Assert.IsTrue(state1);
         Assert.IsFalse(state2);
     }
+
+    [Test]
+    public void GetAddressListByRange_Test()
+    {
+        var list = SheetDependencyAnalyzer.GetAddressListByRange("R1C1:R2C3");
+        
+        Assert.AreEqual(list.Count, 6);
+        Assert.AreEqual(list[0], "R1C1");
+        Assert.AreEqual(list[1], "R1C2");
+        Assert.AreEqual(list[2], "R1C3");
+        Assert.AreEqual(list[3], "R2C1");
+        Assert.AreEqual(list[4], "R2C2");
+        Assert.AreEqual(list[5], "R2C3");
+    }
 }
