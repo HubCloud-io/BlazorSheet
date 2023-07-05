@@ -34,14 +34,14 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
             
             var processedCells = new List<string>
             {
-                currentCellAddress.ToUpper()
+                currentCellAddress.ToUpper() 
             };
 
             var orderedCells = OrderCellsForCalc(processedCells, dependCellsDict);
             return orderedCells;
         }
 
-        private List<SheetCell> OrderCellsForCalc(List<string> processedCells, Dictionary<string, SheetCell> dependCellsDict)
+        public List<SheetCell> OrderCellsForCalc(List<string> processedCells, Dictionary<string, SheetCell> dependCellsDict)
         {
             var list = new List<SheetCell>();
             while (dependCellsDict.Count != 0)

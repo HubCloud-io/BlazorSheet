@@ -110,7 +110,22 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
         
         private void EvalSheet(Sheet sheet, SheetData cells)
         {
-            foreach (var cell in sheet.Cells.Where(x=>!string.IsNullOrWhiteSpace(x.Formula)))
+            var formulaCells = sheet.Cells
+                .Where(x => !string.IsNullOrWhiteSpace(x.Formula))
+                .ToList();
+
+            var valueCells = sheet.Cells
+                .Where(x => x.Value != null)
+                .Select(x => SheetDependencyAnalyzer.GetCellAddress(sheet.CellAddress(x)))
+                .ToList();
+            
+            var dict = formulaCells
+                .ToDictionary(k => SheetDependencyAnalyzer.GetCellAddress(sheet.CellAddress(k)), v => v);
+            
+            var analyzer = new SheetDependencyAnalyzer(sheet);
+            var dependencyCells = analyzer.OrderCellsForCalc(valueCells, dict);
+            
+            foreach (var cell in dependencyCells)
             {
                 EvalCell(cell, sheet, cells);
             }
