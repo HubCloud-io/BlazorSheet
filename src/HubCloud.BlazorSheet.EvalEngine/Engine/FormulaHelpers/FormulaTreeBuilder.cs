@@ -202,6 +202,9 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaHelpers
 
         #region private methods
 
+        private Regex _addressRangeRegex = new Regex(@"R-*\d*C-*\d*:R-*\d*C-*\d*", RegexOptions.Compiled);
+        private Regex _addressRegex = new Regex(@"R-*\d*C-*\d*", RegexOptions.Compiled);
+
         private ElementType GetStatementType(StringBuilder statement, string nextSymbol = null)
         {
             var st = statement.ToString().Trim();
@@ -211,10 +214,10 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaHelpers
             if (st != ValFunctionName && _exceptionList.Contains(st))
                 return ElementType.ExceptionFunction;
 
-            if (Regex.IsMatch(st, @"R-*\d*C-*\d*:R-*\d*C-*\d*"))
+            if (_addressRangeRegex.IsMatch(st))
                 return ElementType.AddressRange;
 
-            if (Regex.IsMatch(st, @"R-*\d*C-*\d*"))
+            if (_addressRegex.IsMatch(st))
                 return ElementType.Address;
 
             if (string.IsNullOrEmpty(st) || decimal.TryParse(st, out _))
