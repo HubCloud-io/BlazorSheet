@@ -71,13 +71,13 @@ public partial class DependencyCalcPage : ComponentBase
         sheet.GetCell(1, 2).Text = "100";
         sheet.GetCell(1, 2).Value = 100;
             
-        sheet.GetCell(3, 1).Text = "VAL(\"R2C2\") + 10: ";
-        sheet.GetCell(3, 2).Formula = "VAL(\"R2C2\") + 10";
+        sheet.GetCell(3, 1).Text = @"VAL(""R2C2"") + 10: ";
+        sheet.GetCell(3, 2).Formula = @"VAL(""R2C2"") + 10";
         
-        sheet.GetCell(4, 1).Text = @"SUM(""R1C2:R2C2""): ";
-        sheet.GetCell(4, 2).Formula = @"SUM(""R1C2:R2C2"")";
+        sheet.GetCell(4, 1).Text = @"SUM(""R1C2:R2C2"") + VAL(""R1C2""): ";
+        sheet.GetCell(4, 2).Formula = @"SUM(""R1C2:R2C2"") + VAL(""R1C2"")";
 
-        sheet.GetCell(2, 3).Formula = "VAL(\"R2C-1\")";
+        sheet.GetCell(2, 3).Formula = @"VAL(""R2C-1"")";
     }
     
     private void SetDependentFormulas_CalcOrder(Sheet sheet)

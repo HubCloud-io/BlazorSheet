@@ -30,24 +30,70 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
         private bool IsFormulaCellContainsAddress(SheetCell formulaCell, SheetCellAddress currentCellAddress)
         {
             var formulaCellAddress = _sheet.CellAddress(formulaCell);
+
+            var sb = new StringBuilder(formulaCell.Formula);
+            var cellAddress = GetCellAddress(currentCellAddress);
             
-            var regex = new Regex(@"R-*\d*C-*\d*");
-            var matches = regex.Matches(formulaCell.Formula)
+            // address range
+            var rangeRegex = new Regex(@"R-*\d*C-*\d*:R-*\d*C-*\d*");
+            var rangeMatches = rangeRegex.Matches(sb.ToString())
+                .Cast<Match>()
+                .Select(m => m.Value)
+                .Distinct()
+                .ToArray();
+
+            foreach (var range in rangeMatches)
+            {
+                if (IsAddressInRange(cellAddress, range))
+                    return true;
+                
+                sb.Replace(range, "{R}");
+            }
+            
+            // simple address
+            var addressRegex = new Regex(@"R-*\d*C-*\d*");
+            var addressMatches = addressRegex.Matches(sb.ToString())
                 .Cast<Match>()
                 .Select(m => m.Value)
                 .Distinct()
                 .ToArray();
             
-            foreach (var match in matches)
+            foreach (var match in addressMatches)
             {
-                if (NormalizeAddress(match.ToUpper(), formulaCellAddress) == GetCellAddress(currentCellAddress))
+                if (NormalizeAddress(match.ToUpper(), formulaCellAddress) == cellAddress)
                     return true;
             }
 
             return false;
         }
 
+
         #region public static methods
+        public static bool IsAddressInRange(string cellAddress, string addressRange)
+        {
+            var arr = addressRange.Split(':').ToArray();
+            if (arr.Length != 2)
+                return false;
+            
+            var startAddress = arr[0];
+            var endAddress = arr[1];
+
+            var startRow = int.Parse(GetRowValue(startAddress));
+            var startCol = int.Parse(GetColValue(startAddress));
+            
+            var endRow = int.Parse(GetRowValue(endAddress));
+            var endCol = int.Parse(GetColValue(endAddress));
+
+            var currentAddressRow = int.Parse(GetRowValue(cellAddress));
+            var currentAddressCol = int.Parse(GetColValue(cellAddress));
+
+            if (startRow <= currentAddressRow && endRow >= currentAddressRow &&
+                startCol <= currentAddressCol && endCol >= currentAddressCol)
+                return true;
+            
+            return false;
+        }
+        
         public static string NormalizeAddress(string address, SheetCellAddress formulaCellAddress)
         {
             var rowVal = GetRowValue(address);

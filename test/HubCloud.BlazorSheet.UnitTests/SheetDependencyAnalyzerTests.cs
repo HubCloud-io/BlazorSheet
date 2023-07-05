@@ -1,4 +1,6 @@
-﻿using HubCloud.BlazorSheet.Core.Models;
+﻿using System.Linq;
+using System.Text.RegularExpressions;
+using HubCloud.BlazorSheet.Core.Models;
 using HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer;
 using NUnit.Framework;
 
@@ -53,5 +55,15 @@ public class SheetDependencyAnalyzerTests
         
         Assert.AreEqual(normalizedAddress1, "R2C1");
         Assert.AreEqual(normalizedAddress2, "R1C2");
+    }
+
+    [Test]
+    public void IsAddressInRange_Test()
+    {
+        var state1 = SheetDependencyAnalyzer.IsAddressInRange("R2C2", "R1C1:R3C3");
+        var state2 = SheetDependencyAnalyzer.IsAddressInRange("R2C2", "R3C3:R5C5");
+        
+        Assert.IsTrue(state1);
+        Assert.IsFalse(state2);
     }
 }
