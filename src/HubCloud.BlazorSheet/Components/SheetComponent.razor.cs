@@ -861,4 +861,42 @@ public partial class SheetComponent : ComponentBase
         _selectedCells.Clear();
         _selectedCells.Add(firstTopLeftCell);
     }
+
+    public void SplitCells()
+    {
+        var currentCellAddress = Sheet.CellAddress(_currentCell);
+
+        var rowNumber = currentCellAddress.Row;
+        var columnNumber = currentCellAddress.Column;
+
+        for (int i = 0; i < _currentCell.Rowspan; i++)
+        {
+            for (int j = 0; j < _currentCell.Colspan; j++)
+            {
+                var cell = Sheet.GetCell(rowNumber, columnNumber);
+                cell.HiddenByJoin = false;
+
+                columnNumber++;
+            }
+
+            rowNumber++;
+            columnNumber = currentCellAddress.Column;
+        }
+
+        _currentCell.Colspan = 1;
+        _currentCell.Rowspan = 1;
+    }
+
+    public void SplitJoinCells()
+    {
+        if (_selectedCells.Count > 1)
+        {
+            if (Sheet.CanCellsBeJoined(_selectedCells))
+                JoinCells();
+        }
+        else
+        {
+            SplitCells();
+        }
+    }
 }

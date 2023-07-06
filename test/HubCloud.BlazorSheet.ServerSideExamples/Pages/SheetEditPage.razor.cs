@@ -18,8 +18,10 @@ public partial class SheetEditPage: ComponentBase
     private SheetRow _selectedSheetRow { get; set; }
     private SheetColumn _selectedSheetColumn { get; set; }
 
-    private bool _canBeJoined;
-    
+    private bool _cellsCanBeJoined;
+
+    public int SelectedCellsCount => _selectedCells == null ? 0 : _selectedCells.Count;
+
     protected override void OnInitialized()
     {
         _sheet = new Sheet(25, 25);
@@ -54,9 +56,9 @@ public partial class SheetEditPage: ComponentBase
        _selectedCells = cells;
 
         if (_selectedCells != null && _selectedCells.Count > 0)
-            _canBeJoined = _sheet.CanCellsBeJoined(_selectedCells);
+            _cellsCanBeJoined = _sheet.CanCellsBeJoined(_selectedCells);
         else
-            _canBeJoined = false;
+            _cellsCanBeJoined = false;
     }
 
     private void OnStyleChanged()
@@ -65,5 +67,5 @@ public partial class SheetEditPage: ComponentBase
             return;
 
         _sheet.SetSettingsFromCommandPanel(_selectedCells, _selectedCell, _commandPanelModel);
-    }
+    }    
 }

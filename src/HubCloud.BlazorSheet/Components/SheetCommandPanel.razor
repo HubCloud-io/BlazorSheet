@@ -142,8 +142,15 @@
                 <span class="fa fa-solid fa-link"></span>
             </button>
 
-            <button class="btn btn-outline-primary ml-1" disabled="@(!JoinBtnEnabled)" style="padding-top:2px; padding-bottom: 2px; margin-top: -5px; margin-left: 3px;" @onclick="OnJoinCells">
-                Join
+            <button class="btn btn-outline-primary ml-1" disabled="@IsButtonSplitJoinDisabled()" style="padding-top:2px; padding-bottom: 2px; margin-top: -5px; margin-left: 3px;" @onclick="OnSplitJoinCells">
+                @if (SelectedCellsCount > 1)
+                {
+                    <span>Join</span>
+                }
+                else
+                {
+                    <span>Split</span>
+                }
             </button>
         </div>
     </div>

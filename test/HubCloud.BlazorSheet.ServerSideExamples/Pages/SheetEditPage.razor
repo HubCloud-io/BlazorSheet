@@ -7,15 +7,12 @@
 
 <hr/>
 
-<span>Selected cells can be joined: @_canBeJoined</span>
-
-<hr />
-
 <SheetCommandPanel Model="@_commandPanelModel"
                    ItemsSourceDataProvider="@_itemSourceDataProvider"
+                   SelectedCellsCount="@SelectedCellsCount"
+                   CellsCanBeJoined="@_cellsCanBeJoined"
                    OpenCellLinkModal="() => _sheetComponent.OpenCellLinkModal()"
-                   JoinCells="() => _sheetComponent.JoinCells()"
-                   JoinBtnEnabled="@_canBeJoined"
+                   SplitJoinCells="() => _sheetComponent.SplitJoinCells()"
                    Changed="OnStyleChanged">
 </SheetCommandPanel>
 
