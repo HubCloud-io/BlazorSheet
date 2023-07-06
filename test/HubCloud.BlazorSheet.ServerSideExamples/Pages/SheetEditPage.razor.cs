@@ -1,4 +1,5 @@
-﻿using HubCloud.BlazorSheet.Components;
+﻿using BBComponents.Services;
+using HubCloud.BlazorSheet.Components;
 using HubCloud.BlazorSheet.Core.Interfaces;
 using HubCloud.BlazorSheet.Core.Models;
 using HubCloud.BlazorSheet.ServerSideExamples.Infrastructure;
@@ -21,6 +22,9 @@ public partial class SheetEditPage: ComponentBase
     private bool _cellsCanBeJoined;
 
     public int SelectedCellsCount => _selectedCells == null ? 0 : _selectedCells.Count;
+
+    [Inject]
+    public IAlertService AlertService { get; set; }
 
     protected override void OnInitialized()
     {
@@ -66,6 +70,16 @@ public partial class SheetEditPage: ComponentBase
         if (_selectedCell == null)
             return;
 
+        var result = _sheet.CheckFreezedRowsAndColumns(_commandPanelModel);
+
+        if (!result)
+        {
+            _commandPanelModel.FreezedColumns = _sheet.FreezedColumns;
+            _commandPanelModel.FreezedRows = _sheet.FreezedRows;
+
+            AlertService.Add("Rows or columns can't be freezed", BBComponents.Enums.BootstrapColors.Warning);
+        }
+
         _sheet.SetSettingsFromCommandPanel(_selectedCells, _selectedCell, _commandPanelModel);
-    }    
+    }
 }

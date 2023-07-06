@@ -628,7 +628,7 @@ namespace HubCloud.BlazorSheet.Core.Models
             if (cells.Count <= 1)
                 return null;
 
-            var cellWithAddressList = cells.Select(cell => new
+            var cellWithAddressList = cells.Select(cell => new CellWithAddress
             {
                 Cell = cell,
                 Address = CellAddress(cell)
@@ -844,6 +844,7 @@ namespace HubCloud.BlazorSheet.Core.Models
 
             return false;
         }
+
         private bool IsGapsByVertical(List<IGrouping<int, CellWithAddress>> grouppedByColumn)
         {
             var groupOrderedByRow = grouppedByColumn.First().OrderBy(x => x.Address.Row);
@@ -865,6 +866,66 @@ namespace HubCloud.BlazorSheet.Core.Models
             }
 
             return false;
+        }
+
+        private bool CanFreezedRowsBeSet(int freezedRows, List<CellWithAddress> cellWithAddressList)
+        {
+            foreach (var cell in cellWithAddressList)
+            {
+                var joinedCellsCount = cell.Address.Row + cell.Cell.Rowspan - 1;
+
+                if (cell.Address.Row <= freezedRows && joinedCellsCount > freezedRows)
+                    return false;
+            }
+
+            return true;
+        }
+
+        private bool CanFreezedColumnsBeSet(int freezedColumns, List<CellWithAddress> cellWithAddressList)
+        {
+            foreach (var cell in cellWithAddressList)
+            {
+                var joinedCellsCount = cell.Address.Column + cell.Cell.Colspan - 1;
+
+                if (cell.Address.Column <= freezedColumns && joinedCellsCount > freezedColumns)
+                    return false;
+            }
+
+            return true;
+        }
+
+        public bool CheckFreezedRowsAndColumns(SheetCommandPanelModel commandPanelModel)
+        {
+            if (commandPanelModel.FreezedRows > 0)
+            {
+                var cellWithAddressList = Cells
+                    .Where(cell => cell.Rowspan > 1)
+                    .Select(cell => new CellWithAddress
+                    {
+                        Cell = cell,
+                        Address = CellAddress(cell)
+                    })
+                    .ToList();
+
+                if (!CanFreezedRowsBeSet(commandPanelModel.FreezedRows, cellWithAddressList))
+                    return false;
+            }
+            if (commandPanelModel.FreezedColumns > 0)
+            {
+                var cellWithAddressList = Cells
+                    .Where(cell => cell.Colspan > 1)
+                    .Select(cell => new CellWithAddress
+                    {
+                        Cell = cell,
+                        Address = CellAddress(cell)
+                    })
+                    .ToList();
+
+                if (!CanFreezedColumnsBeSet(commandPanelModel.FreezedColumns, cellWithAddressList))
+                    return false;
+            }
+
+            return true;
         }
     }
 }
