@@ -59,9 +59,9 @@ public partial class DependencyCalcPage : ComponentBase
         sheet.GetCell(2, 2).Text = "1";
         
         // SetDependentFormulas(sheet);
-        // SetDependentFormulas_CalcOrder(sheet);
-        // SetIndependentFormulas(sheet);
-        SetCycleDependency(sheet);
+        SetDependentFormulas_CalcOrder(sheet);
+        SetIndependentFormulas(sheet);
+        //SetCycleDependency(sheet);
 
         var workbook = new Workbook();
         workbook.AddSheet(sheet);
