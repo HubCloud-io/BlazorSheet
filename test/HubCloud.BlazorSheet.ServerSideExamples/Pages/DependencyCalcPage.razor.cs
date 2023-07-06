@@ -59,8 +59,9 @@ public partial class DependencyCalcPage : ComponentBase
         sheet.GetCell(2, 2).Text = "1";
         
         // SetDependentFormulas(sheet);
-        SetDependentFormulas_CalcOrder(sheet);
-        SetIndependentFormulas(sheet);
+        // SetDependentFormulas_CalcOrder(sheet);
+        // SetIndependentFormulas(sheet);
+        SetCycleDependency(sheet);
 
         var workbook = new Workbook();
         workbook.AddSheet(sheet);
@@ -68,6 +69,15 @@ public partial class DependencyCalcPage : ComponentBase
         return workbook;
     }
 
+    private void SetCycleDependency(Sheet sheet)
+    {
+        sheet.GetCell(3, 1).Text = @"VAL(""R2C2"") + VAL(""R4C2""): ";
+        sheet.GetCell(3, 2).Formula = @"VAL(""R2C2"") + VAL(""R4C2"")";
+        
+        sheet.GetCell(4, 1).Text = @"VAL(""R2C2"") + VAL(""R3C2""): ";
+        sheet.GetCell(4, 2).Formula = @"VAL(""R2C2"") + VAL(""R3C2"")";
+    }
+    
     private void SetDependentFormulas(Sheet sheet)
     {
         sheet.GetCell(1, 2).Text = "100";
