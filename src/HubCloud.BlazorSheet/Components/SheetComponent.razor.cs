@@ -874,7 +874,14 @@ public partial class SheetComponent : ComponentBase
             for (int j = 0; j < _currentCell.Colspan; j++)
             {
                 var cell = Sheet.GetCell(rowNumber, columnNumber);
-                cell.HiddenByJoin = false;
+                var cellAddress = Sheet.CellAddress(cell);
+
+                if (cellAddress.Row != currentCellAddress.Row || cellAddress.Column != currentCellAddress.Column)
+                {
+                    cell.Colspan = 1;
+                    cell.Rowspan = 1;
+                    cell.HiddenByJoin = false;
+                }
 
                 columnNumber++;
             }
