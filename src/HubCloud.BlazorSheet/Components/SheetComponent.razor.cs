@@ -793,117 +793,24 @@ public partial class SheetComponent : ComponentBase
             _isCellLinkInputModalOpen = false;
     }
 
-    public void JoinCells()
-    {
-        var cells = _selectedCells.Distinct().ToList();
-
-        if (cells.Count <= 1)
-            return;
-
-        var cellWithAddressList = cells.Select(cell => new
-        {
-            Cell = cell,
-            Address = Sheet.CellAddress(cell)
-        });
-
-        var grouppedByRow = cellWithAddressList.GroupBy(x => x.Address.Row).OrderBy(x => x.Key);
-        var grouppedByColumn = cellWithAddressList.GroupBy(x => x.Address.Column).OrderBy(x => x.Key);
-
-        var firstTopLeftCell = grouppedByRow
-                .First()
-                .OrderBy(x => x.Address.Column)
-                .First()
-                .Cell;
-
-        // join cells by horizontal and vertical
-        if (grouppedByRow.Count() > 1 && grouppedByColumn.Count() > 1)
-        {
-            var colspanMax = grouppedByRow.Select(group => group.Sum(item => item.Cell.Colspan)).Max();
-            var rowspanMax = grouppedByColumn.Select(group => group.Sum(item => item.Cell.Rowspan)).Max();
-
-            firstTopLeftCell.Colspan = colspanMax;
-            firstTopLeftCell.Rowspan = rowspanMax;
-
-            foreach (var cell in cells)
-            {
-                if (cell.Uid != firstTopLeftCell.Uid)
-                    cell.HiddenByJoin = true;
-            }
-        }
-        // join cells by horizontal
-        else if (grouppedByRow.Count() == 1)
-        {
-            var groupOrderedByColumn = grouppedByRow.First().OrderBy(x => x.Address.Column);
-
-            var firstItem = groupOrderedByColumn.First();
-            firstItem.Cell.Colspan = groupOrderedByColumn.Sum(x => x.Cell.Colspan);
-
-            foreach (var item in groupOrderedByColumn.Skip(1))
-            {
-                item.Cell.HiddenByJoin = true;
-            }
-        }
-        // join cells by vertical
-        else if (grouppedByColumn.Count() == 1)
-        {
-            var groupOrderedByRow = grouppedByColumn.First().OrderBy(x => x.Address.Row);
-
-            var firstItem = groupOrderedByRow.First();
-            firstItem.Cell.Rowspan = groupOrderedByRow.Sum(x => x.Cell.Rowspan);
-
-            foreach (var item in groupOrderedByRow.Skip(1))
-            {
-                item.Cell.HiddenByJoin = true;
-            }
-        }
-
-        _currentCell = firstTopLeftCell;
-        _selectedCells.Clear();
-        _selectedCells.Add(firstTopLeftCell);
-    }
-
-    public void SplitCells()
-    {
-        var currentCellAddress = Sheet.CellAddress(_currentCell);
-
-        var rowNumber = currentCellAddress.Row;
-        var columnNumber = currentCellAddress.Column;
-
-        for (int i = 0; i < _currentCell.Rowspan; i++)
-        {
-            for (int j = 0; j < _currentCell.Colspan; j++)
-            {
-                var cell = Sheet.GetCell(rowNumber, columnNumber);
-                var cellAddress = Sheet.CellAddress(cell);
-
-                if (cellAddress.Row != currentCellAddress.Row || cellAddress.Column != currentCellAddress.Column)
-                {
-                    cell.Colspan = 1;
-                    cell.Rowspan = 1;
-                    cell.HiddenByJoin = false;
-                }
-
-                columnNumber++;
-            }
-
-            rowNumber++;
-            columnNumber = currentCellAddress.Column;
-        }
-
-        _currentCell.Colspan = 1;
-        _currentCell.Rowspan = 1;
-    }
-
     public void SplitJoinCells()
     {
         if (_selectedCells.Count > 1)
         {
             if (Sheet.CanCellsBeJoined(_selectedCells))
-                JoinCells();
+            {
+                var topLeftCell = Sheet.JoinCells(_selectedCells);
+                if (topLeftCell != null)
+                {
+                    _currentCell = topLeftCell;
+                    _selectedCells.Clear();
+                    _selectedCells.Add(topLeftCell);
+                }
+            }
         }
         else
         {
-            SplitCells();
+            Sheet.SplitCells(_currentCell);
         }
     }
 }
