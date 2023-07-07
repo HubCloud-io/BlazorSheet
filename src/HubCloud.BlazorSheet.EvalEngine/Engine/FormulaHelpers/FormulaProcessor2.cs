@@ -15,7 +15,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaHelpers
 
         private List<string> _exceptionList = new List<string>
         {
-            // "VAL"
+            "VAL"
         };
 
         public FormulaProcessor2(List<string> exceptionFunctionsList = null)
@@ -30,31 +30,45 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaHelpers
             }
         }
 
-        public StringBuilder Process(StringBuilder formula)
+        public string PrepareFormula(string formulaIn, string contextName)
         {
+            var formula = new StringBuilder(formulaIn)
+                .Replace("$c", contextName)
+                .Replace("=", "==")
+                .Replace("====", "==")
+                .Replace("<>", "!=")
+                .Replace("!==", "!=")
+                .Replace(">==", ">=")
+                .Replace("<==", "<=")
+                .Replace("==>", "=>")
+                .Replace(" and ", " && ")
+                .Replace(" AND ", " && ")
+                .Replace(" or ", " || ")
+                .Replace(" OR ", " || ");
+            
+            // prepare formula
             var exceptionDict = GetExceptionDict(formula);
             var addressRangeDict = GetAddressRangeDict(formula);
             var addressDict = GetAddressDict(formula);
             
             // process
-            // ...
-
-            foreach (var item in addressDict)
+            foreach (var address in addressDict)
             {
-                formula.Replace(item.Key, item.Value);
+                addressDict[address.Key] = $@"VAL(""{address.Value.Trim('\"')}"")";
             }
 
-            foreach (var item in addressRangeDict)
-            {
-                formula.Replace(item.Key, item.Value);
-            }
+            // build formula
+            ReplaceFromDict(formula, addressDict);
+            ReplaceFromDict(formula, addressRangeDict);
+            ReplaceFromDict(formula, exceptionDict);
 
-            foreach (var item in exceptionDict)
-            {
-                formula.Replace(item.Key, item.Value);
-            }
+            return formula.ToString();
+        }
 
-            return formula;
+        private void ReplaceFromDict(StringBuilder formula, Dictionary<string, string> dict)
+        {
+            foreach (var item in dict)
+                formula.Replace(item.Key, item.Value);
         }
 
         private Dictionary<string, string> GetAddressRangeDict(StringBuilder formula)
@@ -131,7 +145,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaHelpers
 
         private Dictionary<string, string> GetAddressDict(StringBuilder formula)
         {
-            var regex = new Regex(@"R-*\d*C-*\d*");
+            var regex = new Regex(@"""*R-*\d*C-*\d*""*");
             var matches = regex.Matches(formula.ToString())
                 .Cast<Match>()
                 .Select(x => x.Value)

@@ -7,11 +7,6 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaHelpers
 {
     public class FormulaProcessor
     {
-        // private readonly List<string> _operators = new List<string>
-        // {
-        //     "+", "-", "*", "/", "==", "!=", ">", "<", ">=", "<=", "&&", "||"
-        // };
-
         private FormulaTreeBuilder _treeBuilder;
         
         public string PrepareFormula(string formulaIn, string contextName, List<string> exceptionFunctionsList = null)

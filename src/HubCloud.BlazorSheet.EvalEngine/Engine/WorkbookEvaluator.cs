@@ -50,10 +50,15 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
             _data.CurrentRow = row;
             _data.CurrentColumn = column;
 
-            var converter = new FormulaProcessor();
-            var exceptionList = new List<string> { "SUM" };
+            // var formulaProcessor = new FormulaProcessor();
+            // var exceptionList = new List<string> { "SUM" };
+            //
+            // var formula = formulaProcessor.PrepareFormula(expression, ContextName, exceptionList);
             
-            var formula = converter.PrepareFormula(expression, ContextName, exceptionList);
+            var exceptionList = new List<string> { "SUM" };
+            var formulaProcessor = new FormulaProcessor2(exceptionList);
+            var formula = formulaProcessor.PrepareFormula(expression, ContextName);
+            
 
             try
             {
