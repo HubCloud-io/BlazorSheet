@@ -36,7 +36,7 @@ public partial class SheetCommandPanel:ComponentBase
     public EventCallback SplitJoinCells { get; set; }
 
     [Parameter]
-    public bool CellsCanBeJoined { get; set; }
+    public bool CanCellsBeJoined { get; set; }
 
     [Parameter]
     public int SelectedCellsCount { get; set; }
@@ -175,7 +175,7 @@ public partial class SheetCommandPanel:ComponentBase
         if (SelectedCellsCount == 1)
             return false;
 
-        if (SelectedCellsCount > 1 && !CellsCanBeJoined)
+        if (SelectedCellsCount > 1 && !CanCellsBeJoined)
             return true;
 
         return false;

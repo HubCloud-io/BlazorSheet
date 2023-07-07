@@ -19,7 +19,7 @@ public partial class SheetEditPage: ComponentBase
     private SheetRow _selectedSheetRow { get; set; }
     private SheetColumn _selectedSheetColumn { get; set; }
 
-    private bool _cellsCanBeJoined;
+    private bool _canCellsBeJoined;
 
     public int SelectedCellsCount => _selectedCells == null ? 0 : _selectedCells.Count;
 
@@ -60,9 +60,9 @@ public partial class SheetEditPage: ComponentBase
        _selectedCells = cells;
 
         if (_selectedCells != null && _selectedCells.Count > 0)
-            _cellsCanBeJoined = _sheet.CanCellsBeJoined(_selectedCells);
+            _canCellsBeJoined = _sheet.CanCellsBeJoined(_selectedCells);
         else
-            _cellsCanBeJoined = false;
+            _canCellsBeJoined = false;
     }
 
     private void OnStyleChanged()
