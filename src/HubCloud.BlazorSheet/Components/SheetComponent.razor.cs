@@ -765,6 +765,11 @@ public partial class SheetComponent : ComponentBase
         return rowNumber <= sheet.FreezedRows ? $"{(int)top}px" : "";
     }
 
+    private bool CellHidden(SheetColumn column, SheetRow row, SheetCell cell)
+    {
+        return ((column.IsHidden || row.IsHidden) && !_showHiddenCells) || cell.HiddenByJoin;
+    }
+
     private bool CellHidden(SheetColumn column, SheetRow row)
     {
         return (column.IsHidden || row.IsHidden) && !_showHiddenCells;
@@ -786,5 +791,26 @@ public partial class SheetComponent : ComponentBase
             _isCellLinkInputModalOpen = true;
         else
             _isCellLinkInputModalOpen = false;
+    }
+
+    public void SplitJoinCells()
+    {
+        if (_selectedCells.Count > 1)
+        {
+            if (Sheet.CanCellsBeJoined(_selectedCells))
+            {
+                var topLeftCell = Sheet.JoinCells(_selectedCells);
+                if (topLeftCell != null)
+                {
+                    _currentCell = topLeftCell;
+                    _selectedCells.Clear();
+                    _selectedCells.Add(topLeftCell);
+                }
+            }
+        }
+        else
+        {
+            Sheet.SplitCells(_currentCell);
+        }
     }
 }

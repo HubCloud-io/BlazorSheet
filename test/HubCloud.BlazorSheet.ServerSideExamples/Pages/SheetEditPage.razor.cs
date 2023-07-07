@@ -1,4 +1,5 @@
-﻿using HubCloud.BlazorSheet.Components;
+﻿using BBComponents.Services;
+using HubCloud.BlazorSheet.Components;
 using HubCloud.BlazorSheet.Core.Interfaces;
 using HubCloud.BlazorSheet.Core.Models;
 using HubCloud.BlazorSheet.ServerSideExamples.Infrastructure;
@@ -17,7 +18,14 @@ public partial class SheetEditPage: ComponentBase
     private List<SheetCell> _selectedCells { get; set; }
     private SheetRow _selectedSheetRow { get; set; }
     private SheetColumn _selectedSheetColumn { get; set; }
-    
+
+    private bool _canCellsBeJoined;
+
+    public int SelectedCellsCount => _selectedCells == null ? 0 : _selectedCells.Count;
+
+    [Inject]
+    public IAlertService AlertService { get; set; }
+
     protected override void OnInitialized()
     {
         _sheet = new Sheet(25, 25);
@@ -50,15 +58,28 @@ public partial class SheetEditPage: ComponentBase
     private void OnCellsSelected(List<SheetCell> cells)
     {
        _selectedCells = cells;
+
+        if (_selectedCells != null && _selectedCells.Count > 0)
+            _canCellsBeJoined = _sheet.CanCellsBeJoined(_selectedCells);
+        else
+            _canCellsBeJoined = false;
     }
 
-    private async Task OnStyleChanged()
+    private void OnStyleChanged()
     {
         if (_selectedCell == null)
-        {
             return;
+
+        var result = _sheet.CheckFreezedRowsAndColumns(_commandPanelModel);
+
+        if (!result)
+        {
+            _commandPanelModel.FreezedColumns = _sheet.FreezedColumns;
+            _commandPanelModel.FreezedRows = _sheet.FreezedRows;
+
+            AlertService.Add("Rows or columns can't be freezed", BBComponents.Enums.BootstrapColors.Warning);
         }
-        
+
         _sheet.SetSettingsFromCommandPanel(_selectedCells, _selectedCell, _commandPanelModel);
     }
 }

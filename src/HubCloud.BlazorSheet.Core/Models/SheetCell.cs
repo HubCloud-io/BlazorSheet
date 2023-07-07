@@ -14,6 +14,9 @@ namespace HubCloud.BlazorSheet.Core.Models
         public Guid? EditSettingsUid { get; set; }
         public string Name { get; set; }
         public string Link { get; set; }
+        public int Colspan { get; set; } = 1;
+        public int Rowspan { get; set; } = 1;
+        public bool HiddenByJoin { get; set; }
 
         [JsonIgnore] public string Text { get; set; }
         public object Value { get; set; }
