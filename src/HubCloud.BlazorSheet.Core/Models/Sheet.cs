@@ -730,216 +730,39 @@ namespace HubCloud.BlazorSheet.Core.Models
             if (cells.Count < 2)
                 return false;
 
-            var cellWithAddressList = cells.Select(cell => new CellWithAddress
-            {
-                Cell = cell,
-                Address = CellAddress(cell)
-            }).ToList();
+            var joinedCellRangeList = new List<SheetJoinedCellRange>();
 
-            var grouppedByColumn = cellWithAddressList.GroupBy(x => x.Address.Column).OrderBy(x => x.Key).ToList();
-            var grouppedByRow = cellWithAddressList.GroupBy(x => x.Address.Row).OrderBy(x => x.Key).ToList();
-
-            // check can cells be joined by horizontal and vertical
-            if (grouppedByRow.Count() > 1 && grouppedByColumn.Count() > 1)
+            foreach (var cell in cells)
             {
-                if (cells.All(cell => cell.Colspan == 1 && cell.Rowspan == 1))
+                var newCellCustom = new SheetJoinedCellRange
                 {
-                    var result = CheckCorners(
-                        grouppedByRow.First().Key, 
-                        grouppedByRow.Last().Key, 
-                        grouppedByColumn.First().Key, 
-                        grouppedByColumn.Last().Key, 
-                        cells);
+                    Cell = cell,
+                    Address = CellAddress(cell)
+                };
 
-                    if (!result)
-                        return false;
+                joinedCellRangeList.Add(newCellCustom);
+            }
 
-                    var columnCellRowspanSumList = grouppedByColumn.Select(column => column.Sum(item => item.Cell.Rowspan)).ToList();
-                    if (columnCellRowspanSumList.Distinct().Count() > 1)
-                        return false;
+            var addresses = new List<SheetCellAddress>();
+            joinedCellRangeList.ForEach(cell => addresses.AddRange(cell.Range));
 
-                    var rowCellColspanSumList = grouppedByRow.Select(row => row.Sum(item => item.Cell.Colspan)).ToList();
-                    if (rowCellColspanSumList.Distinct().Count() > 1)
+            var firstColumnNumber = addresses.Select(s => s.Column).Min();
+            var lastColumnNumber = addresses.Select(s => s.Column).Max();
+            var firstRowNumber = addresses.Select(s => s.Row).Min();
+            var lastRowNumber = addresses.Select(s => s.Row).Max();
+
+            for (int i = firstRowNumber; i <= lastRowNumber; i++)
+            {
+                for (int j = firstColumnNumber; j <= lastColumnNumber; j++)
+                {
+                    var cellAddress = addresses.FirstOrDefault(address => address.Row == i && address.Column == j);
+
+                    if (cellAddress == null)
                         return false;
                 }
-                else
-                {
-                    if (IsGapsByHorizontal(grouppedByRow, false) || IsGapsByVertical(grouppedByColumn, false))
-                    {
-                        return false;
-                    }
-                    else
-                    {
-                        var additionalCells = new List<SheetCell>();
-
-                        var cellsWithSpans = cellWithAddressList.Where(x => x.Cell.Colspan > 1 || x.Cell.Rowspan > 1);
-
-                        foreach (var cellWithSpans in cellsWithSpans)
-                        {
-                            if (cellWithSpans.Cell.Colspan > 1 && cellWithSpans.Cell.Rowspan > 1)
-                            {
-                                var rowNumber = cellWithSpans.Address.Row;
-
-                                for (int i = 0; i < cellWithSpans.Cell.Rowspan; i++)
-                                {
-                                    var columnNumber = cellWithSpans.Address.Column;
-
-                                    for (int j = 0; j < cellWithSpans.Cell.Colspan - 1; j++)
-                                        AddAdditionalCell(additionalCells, rowNumber, ++columnNumber);
-
-                                    if (i < cellWithSpans.Cell.Rowspan - 1)
-                                        AddAdditionalCell(additionalCells, ++rowNumber, cellWithSpans.Address.Column);
-                                }
-                            }
-                            else
-                            {
-                                if (cellWithSpans.Cell.Colspan > 1)
-                                {
-                                    var columnNumber = cellWithSpans.Address.Column;
-
-                                    for (int i = 0; i < cellWithSpans.Cell.Colspan - 1; i++)
-                                        AddAdditionalCell(additionalCells, cellWithSpans.Address.Row, ++columnNumber);
-                                }
-                                if (cellWithSpans.Cell.Rowspan > 1)
-                                {
-                                    var rowNumber = cellWithSpans.Address.Row;
-
-                                    for (int i = 0; i < cellWithSpans.Cell.Rowspan - 1; i++)
-                                        AddAdditionalCell(additionalCells, ++rowNumber, cellWithSpans.Address.Column);
-                                }
-                            }
-                        }
-
-                        var additionalCellWithAddressList = additionalCells.Select(cell => new CellWithAddress
-                        {
-                            Cell = cell,
-                            Address = CellAddress(cell)
-                        });
-
-                        cellWithAddressList.AddRange(additionalCellWithAddressList);
-
-                        grouppedByRow = cellWithAddressList.GroupBy(x => x.Address.Row).OrderBy(x => x.Key).ToList();
-                        grouppedByColumn = cellWithAddressList.GroupBy(x => x.Address.Column).OrderBy(x => x.Key).ToList();
-
-                        var result = CheckCorners(
-                            grouppedByRow.First().Key,
-                            grouppedByRow.Last().Key,
-                            grouppedByColumn.First().Key,
-                            grouppedByColumn.Last().Key,
-                            cellWithAddressList.Select(s => s.Cell).ToList());
-
-                        if (!result)
-                            return false;
-
-                        var rowCellCountMax = grouppedByRow.Select(row => row.Count()).Max();
-                        var columnCellCountMax = grouppedByColumn.Select(column => column.Count()).Max();
-
-                        if (grouppedByRow.Any(row => row.Count() != rowCellCountMax) || grouppedByColumn.Any(column => column.Count() != columnCellCountMax))
-                            return false;
-                    }
-                }
-            }
-            // check can cells be joined by horizontal
-            else if (grouppedByRow.Count() == 1)
-            {
-                if (IsGapsByHorizontal(grouppedByRow, true))
-                    return false;
-            }
-            // check can cells be joined by vertical
-            else if (grouppedByColumn.Count() == 1)
-            {
-                if (IsGapsByVertical(grouppedByColumn, true))
-                    return false;
             }
 
             return true;
-        }
-
-        private bool CheckCorners(int firstRowNumber, int lastRowNumber, int firstColNumber, int lastColNumber, List<SheetCell> cells)
-        {
-            var topLeftCell = GetCell(firstRowNumber, firstColNumber);
-            if (!cells.Contains(topLeftCell))
-                return false;
-
-            var topRightCell = GetCell(firstRowNumber, lastColNumber);
-            if (!cells.Contains(topRightCell))
-                return false;
-
-            var bottomLeftCell = GetCell(lastRowNumber, firstColNumber);
-            if (!cells.Contains(bottomLeftCell))
-                return false;
-
-            var bottomRightCell = GetCell(lastRowNumber, lastColNumber);
-            if (!cells.Contains(bottomRightCell))
-                return false;
-
-            return true;
-        }
-
-        private void AddAdditionalCell(List<SheetCell> additionalCells, int rowNumber, int columnNumber)
-        {
-            var cell = GetCell(rowNumber, columnNumber);
-            additionalCells.Add(cell);
-        }
-
-        private bool IsGapsByHorizontal(List<IGrouping<int, CellWithAddress>> grouppedByRow, bool enableCheckRowspans)
-        {
-            var groupOrderedByColumn = grouppedByRow.First().OrderBy(x => x.Address.Column);
-
-            if (enableCheckRowspans)
-            {
-                var firstCellRowspan = groupOrderedByColumn.First().Cell.Rowspan;
-                if (groupOrderedByColumn.Any(item => item.Cell.Rowspan != firstCellRowspan))
-                    return true;
-            }
-
-            for (int i = 0; i < groupOrderedByColumn.Count(); i++)
-            {
-                var currentItem = groupOrderedByColumn.ToArray()[i];
-
-                if (i == groupOrderedByColumn.Count() - 1)
-                    break;
-
-                var rowNumber = grouppedByRow.First().Key;
-                var nextColumnNumber = currentItem.Address.Column + currentItem.Cell.Colspan;
-
-                var nextCell = GetCell(rowNumber, nextColumnNumber);
-
-                if (!groupOrderedByColumn.Select(s => s.Cell).Contains(nextCell))
-                    return true;
-            }
-
-            return false;
-        }
-
-        private bool IsGapsByVertical(List<IGrouping<int, CellWithAddress>> grouppedByColumn, bool enableCheckColspans)
-        {
-            var groupOrderedByRow = grouppedByColumn.First().OrderBy(x => x.Address.Row);
-
-            if (enableCheckColspans)
-            {
-                var firstCellColspan = groupOrderedByRow.First().Cell.Colspan;
-                if (groupOrderedByRow.Any(item => item.Cell.Colspan != firstCellColspan))
-                    return true;
-            }
-
-            for (int i = 0; i < groupOrderedByRow.Count(); i++)
-            {
-                var currentItem = groupOrderedByRow.ToArray()[i];
-
-                if (i == groupOrderedByRow.Count() - 1)
-                    break;
-
-                var nextRowNumber = currentItem.Address.Row + currentItem.Cell.Rowspan;
-                var columnNumber = grouppedByColumn.First().Key;
-
-                var nextCell = GetCell(nextRowNumber, columnNumber);
-
-                if (!groupOrderedByRow.Select(s => s.Cell).Contains(nextCell))
-                    return true;
-            }
-
-            return false;
         }
 
         private bool CanFreezedRowsBeSet(int freezedRows, List<CellWithAddress> cellWithAddressList)
