@@ -693,34 +693,25 @@ namespace HubCloud.BlazorSheet.Core.Models
 
         public void SplitCells(SheetCell currentCell)
         {
-            var currentCellAddress = CellAddress(currentCell);
-
-            var rowNumber = currentCellAddress.Row;
-            var columnNumber = currentCellAddress.Column;
-
-            for (int i = 0; i < currentCell.Rowspan; i++)
+            var joinedCellRange = new SheetJoinedCellRange
             {
-                for (int j = 0; j < currentCell.Colspan; j++)
+                Cell = currentCell,
+                Address = CellAddress(currentCell)
+            };
+
+            var range = joinedCellRange.Range;
+
+            foreach (var item in range)
+            {
+                var cell = GetCell(item);
+
+                if (cell != null)
                 {
-                    var cell = GetCell(rowNumber, columnNumber);
-                    var cellAddress = CellAddress(cell);
-
-                    if (cellAddress.Row != currentCellAddress.Row || cellAddress.Column != currentCellAddress.Column)
-                    {
-                        cell.Colspan = 1;
-                        cell.Rowspan = 1;
-                        cell.HiddenByJoin = false;
-                    }
-
-                    columnNumber++;
+                    cell.Colspan = 1;
+                    cell.Rowspan = 1;
+                    cell.HiddenByJoin = false;
                 }
-
-                rowNumber++;
-                columnNumber = currentCellAddress.Column;
             }
-
-            currentCell.Colspan = 1;
-            currentCell.Rowspan = 1;
         }
 
         public bool CanCellsBeJoined(List<SheetCell> cells)
@@ -734,13 +725,13 @@ namespace HubCloud.BlazorSheet.Core.Models
 
             foreach (var cell in cells)
             {
-                var newCellCustom = new SheetJoinedCellRange
+                var joinedCellRange = new SheetJoinedCellRange
                 {
                     Cell = cell,
                     Address = CellAddress(cell)
                 };
 
-                joinedCellRangeList.Add(newCellCustom);
+                joinedCellRangeList.Add(joinedCellRange);
             }
 
             var addresses = new List<SheetCellAddress>();
