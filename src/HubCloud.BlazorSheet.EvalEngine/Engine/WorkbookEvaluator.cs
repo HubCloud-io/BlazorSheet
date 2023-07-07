@@ -4,6 +4,7 @@ using System.Linq;
 using DynamicExpresso;
 using HubCloud.BlazorSheet.Core.Models;
 using HubCloud.BlazorSheet.EvalEngine.Abstract;
+using HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer;
 using HubCloud.BlazorSheet.EvalEngine.Engine.FormulaHelpers;
 using Microsoft.Extensions.Logging;
 
@@ -88,28 +89,62 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
                 EvalSheet(sheet, cells);
             }
         }
-        
+
+        public void EvalWorkbook(SheetCellAddress cellAddress)
+        {
+            var sheet = _workbook.FirstSheet;
+            var cells = _data.GetSheetByName(sheet.Name);
+            EvalSheet(sheet, cells, cellAddress);
+        }
+
+        private void EvalSheet(Sheet sheet, SheetData cells, SheetCellAddress cellAddress)
+        {
+            var analyzer = new SheetDependencyAnalyzer(sheet);
+            var dependencyCells = analyzer.GetDependencyCells(cellAddress);
+            
+            foreach (var cell in dependencyCells)
+            {
+                EvalCell(cell, sheet, cells);
+            }
+        }
+
         private void EvalSheet(Sheet sheet, SheetData cells)
         {
-            foreach (var cell in sheet.Cells.Where(x=>!string.IsNullOrWhiteSpace(x.Formula)))
-            {
-                var cellAddress = sheet.CellAddress(cell);
-                
-                var evalResult = Eval(cell.Formula, cellAddress.Row, cellAddress.Column);
+            var formulaCells = sheet.Cells
+                .Where(x => !string.IsNullOrWhiteSpace(x.Formula))
+                .ToList();
 
-                if (evalResult is UniversalValue uValue)
-                {
-                    cell.Value = uValue.Value;
-                }
-                else
-                {
-                    cell.Value = evalResult;
-                }
-               
-                cell.Text = cell.Value?.ToString();
-                
-                cells[cellAddress.Row, cellAddress.Column] = cell.Value;
+            var valueCells = SheetDependencyAnalyzer.GetNullValueCellAddresses(sheet);
+            var nonNullValueCells = sheet.Cells
+                .Where(x => x.Value != null)
+                .Select(x => SheetDependencyAnalyzer.GetCellAddress(sheet.CellAddress(x)));
+            
+            valueCells.AddRange(nonNullValueCells);
+
+            var dict = formulaCells
+                .ToDictionary(k => SheetDependencyAnalyzer.GetCellAddress(sheet.CellAddress(k)), v => v);
+            
+            var analyzer = new SheetDependencyAnalyzer(sheet);
+            var dependencyCells = analyzer.OrderCellsForCalc(valueCells, dict);
+            
+            foreach (var cell in dependencyCells)
+            {
+                EvalCell(cell, sheet, cells);
             }
+        }
+
+        private void EvalCell(SheetCell cell, Sheet sheet, SheetData cells)
+        {
+            var cellAddress = sheet.CellAddress(cell);
+            var evalResult = Eval(cell.Formula, cellAddress.Row, cellAddress.Column);
+            
+            if (evalResult is UniversalValue uValue)
+                cell.Value = uValue.Value;
+            else
+                cell.Value = evalResult;
+               
+            cell.Text = cell.Value?.ToString();
+            cells[cellAddress.Row, cellAddress.Column] = cell.Value;
         }
         
         public void SetValue(int row, int column, object value)

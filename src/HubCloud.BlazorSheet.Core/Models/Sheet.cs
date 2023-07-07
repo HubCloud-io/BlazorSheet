@@ -152,6 +152,9 @@ namespace HubCloud.BlazorSheet.Core.Models
             return cell;
         }
 
+        public SheetCell GetCell(SheetCellAddress cellAddress)
+            => GetCell(cellAddress.Row, cellAddress.Column);
+        
         public SheetCell GetCell(int rowNumber, int columnNumber)
         {
             if (rowNumber > _rowsCount || rowNumber <= 0)
