@@ -1,3 +1,4 @@
+using BBComponents.Services;
 using HubCloud.BlazorSheet.ServerSideExamples.Data;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
@@ -14,6 +15,9 @@ namespace Company.WebApplication1
             builder.Services.AddRazorPages();
             builder.Services.AddServerSideBlazor();
             builder.Services.AddSingleton<WeatherForecastService>();
+
+            // Service to show alert.
+            builder.Services.AddScoped<IAlertService, AlertService>();
 
             var app = builder.Build();
 

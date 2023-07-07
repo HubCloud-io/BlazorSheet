@@ -32,6 +32,15 @@ public partial class SheetCommandPanel:ComponentBase
     [Parameter]
     public EventCallback OpenCellLinkModal { get; set; }
 
+    [Parameter]
+    public EventCallback SplitJoinCells { get; set; }
+
+    [Parameter]
+    public bool CanCellsBeJoined { get; set; }
+
+    [Parameter]
+    public int SelectedCellsCount { get; set; }
+
     [Parameter] public IItemsSourceDataProvider ItemsSourceDataProvider { get; set; } 
     
     protected override void OnInitialized()
@@ -151,5 +160,24 @@ public partial class SheetCommandPanel:ComponentBase
     private async void OnOpenCellLinkModal()
     {
         await OpenCellLinkModal.InvokeAsync();
+    }
+
+    private async void OnSplitJoinCells()
+    {
+        await SplitJoinCells.InvokeAsync();
+    }
+
+    private bool IsButtonSplitJoinDisabled()
+    {
+        if (SelectedCellsCount == 0) 
+            return true;
+
+        if (SelectedCellsCount == 1)
+            return false;
+
+        if (SelectedCellsCount > 1 && !CanCellsBeJoined)
+            return true;
+
+        return false;
     }
 }
