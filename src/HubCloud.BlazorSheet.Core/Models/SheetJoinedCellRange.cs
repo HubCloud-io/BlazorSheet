@@ -20,7 +20,7 @@ namespace HubCloud.BlazorSheet.Core.Models
             }
         }
 
-        public List<SheetCellAddress> GetRange()
+        private List<SheetCellAddress> GetRange()
         {
             var range = new List<SheetCellAddress>();
 
