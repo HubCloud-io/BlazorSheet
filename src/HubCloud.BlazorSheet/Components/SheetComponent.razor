@@ -9,14 +9,13 @@
 
     <table class="hc-sheet"
            tabindex="0"
-           style="width:100%"
            @onkeydown="(e => OnTableKeyDown(e))"
            @onkeyup="(e => OnTableKeyUp(e))">
 
         @*Sheet rows*@
         <tr>
 
-            <td class="hc-grid-cell" style="width: 30px; top: 0; left: 0; position: sticky; z-index: 20;"></td>
+            <td class="hc-grid-cell" style="width: @(LeftSideCellWidth)px; min-width: @(LeftSideCellWidth)px; max-width: @(LeftSideCellWidth)px; top: 0; left: 0; position: sticky; z-index: 20;"></td>
 
             @foreach (var column in Sheet.Columns)
             {

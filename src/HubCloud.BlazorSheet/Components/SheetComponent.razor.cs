@@ -408,6 +408,18 @@ public partial class SheetComponent : ComponentBase
         sb.Append("sticky");
         sb.Append(";");
 
+        sb.Append("width:");
+        sb.Append($"{LeftSideCellWidth}px");
+        sb.Append(";");
+
+        sb.Append("max-width:");
+        sb.Append($"{LeftSideCellWidth}px");
+        sb.Append(";");
+
+        sb.Append("min-width:");
+        sb.Append($"{LeftSideCellWidth}px");
+        sb.Append(";");
+
         if (sheet.FreezedRows > 0)
         {
             var rowIndex = sheet.Rows.ToList().IndexOf(row);
@@ -454,6 +466,10 @@ public partial class SheetComponent : ComponentBase
         sb.Append(";");
 
         sb.Append("max-width:");
+        sb.Append(column.Width);
+        sb.Append(";");
+
+        sb.Append("min-width:");
         sb.Append(column.Width);
         sb.Append(";");
 
@@ -571,6 +587,10 @@ public partial class SheetComponent : ComponentBase
         sb.Append(";");
 
         sb.Append("max-width:");
+        sb.Append(column.Width);
+        sb.Append(";");
+
+        sb.Append("min-width:");
         sb.Append(column.Width);
         sb.Append(";");
 
