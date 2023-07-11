@@ -15,6 +15,7 @@ namespace HubCloud.BlazorSheet.Components;
 public partial class SheetComponent : ComponentBase
 {
     private const int LeftSideCellWidth = 30;
+    private const int TopSideCellWidth = 30;
     private const string CellHiddenBackground = "#cccccc";
 
     private bool _multipleSelection;
@@ -396,6 +397,53 @@ public partial class SheetComponent : ComponentBase
         return result;
     }
 
+    public string TopLeftEmptyCellStyle()
+    {
+        var sb = new StringBuilder();
+
+        sb.Append("width:");
+        sb.Append($"{LeftSideCellWidth}px");
+        sb.Append(";");
+
+        sb.Append("max-width:");
+        sb.Append($"{LeftSideCellWidth}px");
+        sb.Append(";");
+
+        sb.Append("min-width:");
+        sb.Append($"{LeftSideCellWidth}px");
+        sb.Append(";");
+
+        sb.Append("height:");
+        sb.Append($"{TopSideCellWidth}px");
+        sb.Append(";");
+
+        sb.Append("max-height:");
+        sb.Append($"{TopSideCellWidth}px");
+        sb.Append(";");
+
+        sb.Append("min-height:");
+        sb.Append($"{TopSideCellWidth}px");
+        sb.Append(";");
+
+        sb.Append("top:");
+        sb.Append(0);
+        sb.Append(";");
+
+        sb.Append("left:");
+        sb.Append(0);
+        sb.Append(";");
+
+        sb.Append("position:");
+        sb.Append("sticky");
+        sb.Append(";");
+
+        sb.Append("z-index:");
+        sb.Append(20);
+        sb.Append(";");
+
+        return sb.ToString();
+    }
+
     public string LeftSideCellStyle(Sheet sheet, SheetRow row)
     {
         var sb = new StringBuilder();
@@ -420,6 +468,18 @@ public partial class SheetComponent : ComponentBase
         sb.Append($"{LeftSideCellWidth}px");
         sb.Append(";");
 
+        sb.Append("height:");
+        sb.Append(row.Height);
+        sb.Append(";");
+
+        sb.Append("max-height:");
+        sb.Append(row.Height);
+        sb.Append(";");
+
+        sb.Append("min-height:");
+        sb.Append(row.Height);
+        sb.Append(";");
+
         if (sheet.FreezedRows > 0)
         {
             var rowIndex = sheet.Rows.ToList().IndexOf(row);
@@ -431,7 +491,7 @@ public partial class SheetComponent : ComponentBase
                 sb.Append(10);
                 sb.Append(";");
 
-                var topPosition = TopPosition(sheet, rowNumber);
+                var topPosition = TopPosition(sheet, rowNumber, rowIndex);
 
                 if (!string.IsNullOrEmpty(topPosition))
                 {
@@ -457,7 +517,7 @@ public partial class SheetComponent : ComponentBase
         return sb.ToString();
     }
 
-    public string HeaderCellStyle(Sheet sheet, SheetColumn column)
+    public string TopSideCellStyle(Sheet sheet, SheetColumn column)
     {
         var sb = new StringBuilder();
 
@@ -471,6 +531,18 @@ public partial class SheetComponent : ComponentBase
 
         sb.Append("min-width:");
         sb.Append(column.Width);
+        sb.Append(";");
+
+        sb.Append("height:");
+        sb.Append($"{TopSideCellWidth}px");
+        sb.Append(";");
+
+        sb.Append("max-height:");
+        sb.Append($"{TopSideCellWidth}px");
+        sb.Append(";");
+
+        sb.Append("min-height:");
+        sb.Append($"{TopSideCellWidth}px");
         sb.Append(";");
 
         sb.Append("position: ");
@@ -598,6 +670,14 @@ public partial class SheetComponent : ComponentBase
         sb.Append(row.Height);
         sb.Append(";");
 
+        sb.Append("max-height:");
+        sb.Append(row.Height);
+        sb.Append(";");
+
+        sb.Append("min-height:");
+        sb.Append(row.Height);
+        sb.Append(";");
+
         if ((column.IsHidden || row.IsHidden) && _showHiddenCells)
         {
             sb.Append("background-color:");
@@ -702,7 +782,7 @@ public partial class SheetComponent : ComponentBase
             sb.Append(";");
 
             var leftPosition = LeftPosition(sheet, columnNumber, columnIndex);
-            var topPosition = TopPosition(sheet, rowNumber);
+            var topPosition = TopPosition(sheet, rowNumber, rowIndex);
 
             if (!string.IsNullOrEmpty(topPosition))
             {
@@ -751,7 +831,7 @@ public partial class SheetComponent : ComponentBase
         double left = 0;
 
         if (columnNumber > 0)
-            left += LeftSideCellWidth;
+            left = LeftSideCellWidth;
 
         for (int i = 0; i < columnIndex; i++)
         {
@@ -763,23 +843,27 @@ public partial class SheetComponent : ComponentBase
             left += column.WidthValue;
         }
 
-        var htmlLeft = columnNumber <= sheet.FreezedColumns ? $"{(int)left}px" : "";
-
-        return htmlLeft;
+        return columnNumber <= sheet.FreezedColumns ? $"{(int)left}px" : "";
     }
 
-    private string TopPosition(Sheet sheet, int rowNumber)
+    private string TopPosition(Sheet sheet, int rowNumber, int rowIndex)
     {
         double top = 0;
 
-        for (int i = 0; i < rowNumber; i++)
+        if (rowNumber > 0)
+            top = TopSideCellWidth;
+
+        for (int i = 0; i < rowIndex; i++)
         {
             var row = sheet.Rows.ToArray()[i];
 
             if (row.IsHidden && !_showHiddenCells) 
                 continue;
 
-            top += row.HeightValue + 6;
+            if (row.HeightValue < 26)
+                top += 26;
+            else
+                top += row.HeightValue;
         }
 
         return rowNumber <= sheet.FreezedRows ? $"{(int)top}px" : "";
