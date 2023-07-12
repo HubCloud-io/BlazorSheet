@@ -19,14 +19,27 @@
 
             @foreach (var column in Sheet.Columns)
             {
-                <td class="hc-grid-cell text-center"
-                    @onclick="(e => OnColumnNumberCellClick(column))"
-                    @oncontextmenu="(e => OnColumnContextMenu(e, column))"
-                    @oncontextmenu:preventDefault
-                    style="@TopSideCellStyle(Sheet, column)"
-                    hidden="@CellHidden(column)">
-                    @Sheet.ColumnNumber(column)
-                </td>
+                if (Regime == SheetRegimes.Readonly)
+                {
+                    <td class="hc-grid-cell text-center"
+                        @oncontextmenu="(e => OnColumnContextMenu(e, column))"
+                        @oncontextmenu:preventDefault
+                        style="@TopSideCellStyle(Sheet, column)"
+                        hidden="@CellHidden(column)">
+                        @Sheet.ColumnNumber(column)
+                    </td>
+                }
+                else
+                {
+                    <td class="hc-grid-cell text-center"
+                        @onclick="(e => OnColumnNumberCellClick(column))"
+                        @oncontextmenu="(e => OnColumnContextMenu(e, column))"
+                        @oncontextmenu:preventDefault
+                        style="@TopSideCellStyle(Sheet, column)"
+                        hidden="@CellHidden(column)">
+                        @Sheet.ColumnNumber(column)
+                    </td>
+                }
             }
 
         </tr>
@@ -41,7 +54,6 @@
                     <tr>
                         <td class="hc-grid-cell"
                             style="@LeftSideCellStyle(Sheet, row)"
-                            @onclick="(e => OnRowNumberCellClick(row))"
                             @oncontextmenu="(e => OnRowContextMenu(e, row))"
                             @oncontextmenu:preventDefault
                             hidden="@CellHidden(row)">
@@ -123,7 +135,6 @@
                 <tr>
                     <td class="hc-grid-cell"
                         style="@LeftSideCellStyle(Sheet, row)"
-                        @onclick="(e => OnRowNumberCellClick(row))"
                         @oncontextmenu="(e => OnRowContextMenu(e, row))"
                         @oncontextmenu:preventDefault
                         hidden="@CellHidden(row)">
@@ -206,14 +217,28 @@
             @foreach (var row in Sheet.Rows)
             {
                 <tr>
-                    <td class="hc-grid-cell"
-                        style="@LeftSideCellStyle(Sheet, row)"
-                        @onclick="(e => OnRowNumberCellClick(row))"
-                        @oncontextmenu="(e => OnRowContextMenu(e, row))"
-                        @oncontextmenu:preventDefault
-                        hidden="@CellHidden(row)">
-                        <span>@(Sheet.RowNumber(row))</span>
-                    </td>
+
+                    @if (Regime == SheetRegimes.Readonly) 
+                    {
+                        <td class="hc-grid-cell"
+                            style="@LeftSideCellStyle(Sheet, row)"
+                            @oncontextmenu="(e => OnRowContextMenu(e, row))"
+                            @oncontextmenu:preventDefault
+                            hidden="@CellHidden(row)">
+                            <span>@(Sheet.RowNumber(row))</span>
+                        </td>
+                    }
+                    else
+                    {
+                        <td class="hc-grid-cell"
+                            style="@LeftSideCellStyle(Sheet, row)"
+                            @onclick="(e => OnRowNumberCellClick(row))"
+                            @oncontextmenu="(e => OnRowContextMenu(e, row))"
+                            @oncontextmenu:preventDefault
+                            hidden="@CellHidden(row)">
+                            <span>@(Sheet.RowNumber(row))</span>
+                        </td>
+                    }
 
                     @foreach (var column in Sheet.Columns)
                     {
