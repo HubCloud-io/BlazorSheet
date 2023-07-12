@@ -9,14 +9,13 @@
 
     <table class="hc-sheet"
            tabindex="0"
-           style="width:100%"
            @onkeydown="(e => OnTableKeyDown(e))"
            @onkeyup="(e => OnTableKeyUp(e))">
 
         @*Sheet rows*@
         <tr>
 
-            <td class="hc-grid-cell" style="width: 30px; top: 0; left: 0; position: sticky; z-index: 20;"></td>
+            <td class="hc-grid-cell" style="@TopLeftEmptyCellStyle()"></td>
 
             @foreach (var column in Sheet.Columns)
             {
@@ -25,7 +24,7 @@
                     <td class="hc-grid-cell text-center"
                         @oncontextmenu="(e => OnColumnContextMenu(e, column))"
                         @oncontextmenu:preventDefault
-                        style="@HeaderCellStyle(Sheet, column)"
+                        style="@TopSideCellStyle(Sheet, column)"
                         hidden="@CellHidden(column)">
                         @Sheet.ColumnNumber(column)
                     </td>
@@ -36,7 +35,7 @@
                         @onclick="(e => OnColumnNumberCellClick(column))"
                         @oncontextmenu="(e => OnColumnContextMenu(e, column))"
                         @oncontextmenu:preventDefault
-                        style="@HeaderCellStyle(Sheet, column)"
+                        style="@TopSideCellStyle(Sheet, column)"
                         hidden="@CellHidden(column)">
                         @Sheet.ColumnNumber(column)
                     </td>
