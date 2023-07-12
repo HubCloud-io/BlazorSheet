@@ -19,8 +19,6 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaProcessors
         {
             "==", "!=", ">=", "<=", "&&", "||"
         };
-        
-        
 
         private List<string> _exceptionList = new List<string>
         {
@@ -101,7 +99,9 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaProcessors
             return sb;
         }
 
-       
+
+        public List<Statement> BuildStatementTree(string formula)
+            => BuildStatementTree(new StringBuilder(formula));
 
         public List<Statement> BuildStatementTree(StringBuilder formula)
         {
@@ -130,6 +130,8 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaProcessors
                             i = ProcessFunction(item, i, currentStatement, formula);
                             break;
                         case ElementType.Address:
+                        case ElementType.ExcelAddress:
+                        case ElementType.ExcelAddressRange:
                         case ElementType.NumericOrOther:
                         case ElementType.Property:
                             item.OriginStatement = formula
@@ -161,7 +163,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaProcessors
 
             return statementTree;
         }
-        
+
         public StringBuilder BuildFormula(List<Statement> statementTree)
         {
             var outFormula = new StringBuilder();
@@ -174,13 +176,18 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaProcessors
                     var argIndex = 1;
                     foreach (var param in statement.FunctionParams)
                     {
+                        var isAddressParam = param.InnerStatements.All(x => x.Type != ElementType.Function);
+                        if (isAddressParam)
+                            outFormula.Append('"');
+
                         var currentArg = BuildFormula(param.InnerStatements);
                         outFormula.Append(currentArg);
-                        if (argIndex < statement.FunctionParams.Count)
-                        {
-                            outFormula.Append(",");
-                            argIndex++;
-                        }
+                        
+                        if (isAddressParam)
+                            outFormula.Append('"');
+                        
+                        if (argIndex++ < statement.FunctionParams.Count)
+                            statement.ProcessedStatement += ",";
                     }
 
                     outFormula.Append(")");
@@ -209,8 +216,10 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaProcessors
 
         private Regex _addressRangeRegex = new Regex(@"R-*\d*C-*\d*:R-*\d*C-*\d*", RegexOptions.Compiled);
         private Regex _addressRegex = new Regex(@"R-*\d*C-*\d*", RegexOptions.Compiled);
+        private Regex _excelAddressRegex = new Regex(@"\$?[A-Z]+\$?\d+", RegexOptions.Compiled);
+        private Regex _excelAddressRangeRegex = new Regex(@"\$?[A-Z]+\$?\d+:\$?[A-Z]+\$?\d+", RegexOptions.Compiled);
 
-        private ElementType GetStatementType(StringBuilder statement, string nextSymbol = null)
+        protected ElementType GetStatementType(StringBuilder statement, string nextSymbol = null)
         {
             var st = statement.ToString().Trim();
             if (st.ToUpper() == ValFunctionName || st.ToUpper().Contains($"{ValFunctionName}("))
@@ -233,6 +242,12 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaProcessors
 
             if (nextSymbol == "(")
                 return ElementType.Function;
+
+            if (_excelAddressRangeRegex.IsMatch(st))
+                return ElementType.ExcelAddressRange;
+
+            if (_excelAddressRegex.IsMatch(st))
+                return ElementType.ExcelAddress;
 
             return ElementType.Property;
         }

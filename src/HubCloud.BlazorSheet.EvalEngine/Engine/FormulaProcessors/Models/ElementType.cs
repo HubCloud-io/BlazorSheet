@@ -9,6 +9,8 @@
         ValFunction,
         ExceptionFunction,
         AddressRange,
-        Property
+        Property,
+        ExcelAddress,
+        ExcelAddressRange
     }
 }

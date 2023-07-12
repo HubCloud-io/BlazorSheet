@@ -1,10 +1,12 @@
 ﻿using System.Text;
 using HubCloud.BlazorSheet.EvalEngine.Engine.FormulaProcessors;
+using HubCloud.BlazorSheet.EvalEngine.Engine.FormulaProcessors.Models;
 using NUnit.Framework;
 
 namespace HubCloud.BlazorSheet.UnitTests;
 
-public class FormulaTreeBuilderTests
+[TestFixture]
+public class FormulaTreeBuilderTests : FormulaTreeBuilder
 {
     [TestCase("123", "123")]
     [TestCase("R4C5 + R4C6 && R4C7", "R4C5+R4C6&&R4C7")]
@@ -31,9 +33,22 @@ public class FormulaTreeBuilderTests
         var builder = new FormulaTreeBuilder();
         builder.AddToExceptionList("SUM");
         
-        var formulaTree = builder.BuildStatementTree(new StringBuilder(formulaIn));
+        var formulaTree = builder.BuildStatementTree(formulaIn);
         var formulaOut = builder.BuildFormula(formulaTree);
         
         Assert.AreEqual(expected, formulaOut?.ToString());
+    }
+
+    [TestCase(@"FOO", "(", ElementType.Function)]
+    [TestCase(@"R57C3", null, ElementType.Address)]
+    [TestCase(@"B4", null, ElementType.ExcelAddress)]
+    [TestCase(@"AO54", null, ElementType.ExcelAddress)]
+    [TestCase(@"A4:B6", null, ElementType.ExcelAddressRange)]
+    [TestCase(@"$B$4", null, ElementType.ExcelAddress)]
+    public void GetStatementType_Tests(string statement, string nextSymbol, ElementType expectedType)
+    {
+        var statementType = GetStatementType(new StringBuilder(statement), nextSymbol);
+        
+        Assert.AreEqual(statementType, expectedType);
     }
 }
