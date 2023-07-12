@@ -4,21 +4,16 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaHelpers
+namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaProcessors
 {
-    public class FormulaProcessor2
+    public class SimpleFormulaProcessor
     {
-        private readonly string[] _separators =
-        {
-            "+", "-", "*", "/", ">", "<", "==", "!=", ">=", "<=", "&&", "||", ","
-        };
-
         private List<string> _exceptionList = new List<string>
         {
             "VAL"
         };
 
-        public FormulaProcessor2(List<string> exceptionFunctionsList = null)
+        public SimpleFormulaProcessor(List<string> exceptionFunctionsList = null)
         {
             if (exceptionFunctionsList is null)
                 return;

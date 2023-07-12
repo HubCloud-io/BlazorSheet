@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
+using HubCloud.BlazorSheet.EvalEngine.Engine.FormulaProcessors.Models;
 
-namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaHelpers
+namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaProcessors
 {
-    public class FormulaProcessor
+    public class TreeFormulaProcessor
     {
         private FormulaTreeBuilder _treeBuilder;
         

@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
-using System.Text;
-using HubCloud.BlazorSheet.EvalEngine.Engine.FormulaHelpers;
+using HubCloud.BlazorSheet.EvalEngine.Engine.FormulaProcessors;
 using NUnit.Framework;
 
 namespace HubCloud.BlazorSheet.UnitTests;
 
 [TestFixture]
-public class FormulaProcessor2Tests
+public class SimpleFormulaProcessorTests
 {
     private const string ContextName = "_cells";
     
@@ -39,7 +38,7 @@ public class FormulaProcessor2Tests
     {
         var exceptionList = new List<string> { "SUM" };
         
-        var builder = new FormulaProcessor2(exceptionList);
+        var builder = new SimpleFormulaProcessor(exceptionList);
         var formulaOut = builder.PrepareFormula(formulaIn, ContextName);
         
         Assert.AreEqual(expected, formulaOut);
