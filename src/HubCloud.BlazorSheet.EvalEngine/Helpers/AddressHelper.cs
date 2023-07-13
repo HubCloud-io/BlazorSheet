@@ -37,7 +37,11 @@ namespace HubCloud.BlazorSheet.EvalEngine.Helpers
             if (string.IsNullOrEmpty(sheetAddress) || !_addressRegex.IsMatch(sheetAddress))
                 return sheetAddress;
             
-            var arr = sheetAddress.Split(new[] {'R', 'C', 'r', 'c'}, StringSplitOptions.RemoveEmptyEntries);
+            var arr = sheetAddress
+                .TrimStart('"')
+                .TrimEnd('"')
+                .Split(new[] {'R', 'C', 'r', 'c'}, StringSplitOptions.RemoveEmptyEntries);
+            
             if (arr.Length != 2)
                 return sheetAddress;
 

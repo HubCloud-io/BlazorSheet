@@ -61,7 +61,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.ExcelFormulaConverters
         private string ProcessExcelAddressRange(string excelAddressRange, out ConvertException exception)
         {
             exception = null;
-            var arr = excelAddressRange.Split(':').ToArray();
+            var arr = excelAddressRange.Split(':');
             if (arr.Length != 2)
             {
                 exception = new ConvertException

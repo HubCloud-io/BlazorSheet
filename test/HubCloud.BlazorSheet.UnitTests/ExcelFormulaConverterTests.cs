@@ -23,8 +23,9 @@ public class ExcelFormulaConverterTests
         Assert.AreEqual(result.ConvertExceptions.Count(), expectedExceptionCount);
     }
 
-    [TestCase(@"R1C1:R1C3", "A1:C1")]
-    [TestCase(@"R1C1:R1C3", "R1C1:R1C3", 0, CellAddressFormat.RowCellFormat)]
+    [TestCase(@"R1C3", "=C1")]
+    [TestCase(@"R1C1:R1C3", "=A1:C1")]
+    [TestCase(@"R1C1:R1C3", "=R1C1:R1C3", 0, CellAddressFormat.RowCellFormat)]
     [TestCase(@"SUM(""R1C1:R1C3"")", "=SUM(A1:C1)")]
     [TestCase(@"IIF(1>2,0,1)", "=IF(1>2,0,1)")]
     [TestCase(@"R1C7+(SUM(""R1C1:R1C3"")*2)", "=G1+(SUM(A1:C1)*2)")]
@@ -34,7 +35,7 @@ public class ExcelFormulaConverterTests
         CellAddressFormat addressFormat = CellAddressFormat.DefaultExcelFormat)
     {
         var converter = new SheetFormulaConverter();
-        var result = converter.Convert(sheetFormula);
+        var result = converter.Convert(sheetFormula, addressFormat);
         
         Assert.AreEqual(result.Formula, expectedFormula);
         Assert.AreEqual(result.ConvertExceptions.Count(), expectedExceptionCount);

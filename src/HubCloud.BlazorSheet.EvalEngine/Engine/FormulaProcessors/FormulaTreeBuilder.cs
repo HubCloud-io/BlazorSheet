@@ -130,6 +130,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaProcessors
                             i = ProcessFunction(item, i, currentStatement, formula);
                             break;
                         case ElementType.Address:
+                        case ElementType.AddressRange:
                         case ElementType.ExcelAddress:
                         case ElementType.ExcelAddressRange:
                         case ElementType.NumericOrOther:
