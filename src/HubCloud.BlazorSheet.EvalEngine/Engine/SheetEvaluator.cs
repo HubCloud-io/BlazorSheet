@@ -4,7 +4,7 @@ using System.Linq;
 using DynamicExpresso;
 using HubCloud.BlazorSheet.Core.Models;
 using HubCloud.BlazorSheet.EvalEngine.Abstract;
-using HubCloud.BlazorSheet.EvalEngine.Engine.FormulaHelpers;
+using HubCloud.BlazorSheet.EvalEngine.Engine.FormulaProcessors;
 using Microsoft.Extensions.Logging;
 
 namespace HubCloud.BlazorSheet.EvalEngine.Engine
@@ -51,7 +51,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
             _interpreter.SetVariable("_currentRow", row);
             _interpreter.SetVariable("_currentColumn", column);
 
-            var converter = new FormulaProcessor();
+            var converter = new TreeFormulaProcessor();
             var exceptionList = new List<string> { "SUM" };
             
             var formula = converter.PrepareFormula(expression, "_cells", exceptionList);

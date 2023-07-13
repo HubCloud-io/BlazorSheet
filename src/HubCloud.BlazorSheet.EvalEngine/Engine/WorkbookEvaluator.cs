@@ -5,7 +5,7 @@ using DynamicExpresso;
 using HubCloud.BlazorSheet.Core.Models;
 using HubCloud.BlazorSheet.EvalEngine.Abstract;
 using HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer;
-using HubCloud.BlazorSheet.EvalEngine.Engine.FormulaHelpers;
+using HubCloud.BlazorSheet.EvalEngine.Engine.FormulaProcessors;
 using Microsoft.Extensions.Logging;
 
 namespace HubCloud.BlazorSheet.EvalEngine.Engine
@@ -57,7 +57,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
             // var formula = formulaProcessor.PrepareFormula(expression, ContextName, exceptionList);
             
             var exceptionList = new List<string> { "SUM" };
-            var formulaProcessor = new FormulaProcessor2(exceptionList);
+            var formulaProcessor = new SimpleFormulaProcessor(exceptionList);
             var formula = formulaProcessor.PrepareFormula(expression, ContextName);
             
 

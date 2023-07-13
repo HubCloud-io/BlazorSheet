@@ -13,6 +13,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Helpers
             if (string.IsNullOrEmpty(excelAddress) || _addressRegex.IsMatch(excelAddress))
                 return excelAddress;
 
+            excelAddress = excelAddress.Replace("$", "");
             var resultAddress = new StringBuilder();
             var i = 0;
             var colAddress = new StringBuilder();

@@ -1,4 +1,4 @@
-﻿namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaHelpers
+﻿namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaProcessors.Models
 {
     public enum ElementType
     {
@@ -9,6 +9,8 @@
         ValFunction,
         ExceptionFunction,
         AddressRange,
-        Property
+        Property,
+        ExcelAddress,
+        ExcelAddressRange
     }
 }
