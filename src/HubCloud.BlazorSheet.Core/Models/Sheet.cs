@@ -658,33 +658,45 @@ namespace HubCloud.BlazorSheet.Core.Models
                 foreach (var cell in cells)
                 {
                     if (cell.Uid != topLeftCell.Uid)
+                    {
                         cell.HiddenByJoin = true;
+                        cell.Colspan = 1;
+                        cell.Rowspan = 1;
+                    }
                 }
             }
             // join cells by horizontal
             else if (grouppedByRow.Count() == 1)
             {
-                var groupOrderedByColumn = grouppedByRow.First().OrderBy(x => x.Address.Column);
+                topLeftCell.Colspan = grouppedByRow
+                    .First()
+                    .Sum(x => x.Cell.Colspan);
 
-                var firstItem = groupOrderedByColumn.First();
-                firstItem.Cell.Colspan = groupOrderedByColumn.Sum(x => x.Cell.Colspan);
-
-                foreach (var item in groupOrderedByColumn.Skip(1))
+                foreach (var cell in cells)
                 {
-                    item.Cell.HiddenByJoin = true;
+                    if (cell.Uid != topLeftCell.Uid)
+                    {
+                        cell.HiddenByJoin = true;
+                        cell.Colspan = 1;
+                        cell.Rowspan = 1;
+                    }
                 }
             }
             // join cells by vertical
             else if (grouppedByColumn.Count() == 1)
             {
-                var groupOrderedByRow = grouppedByColumn.First().OrderBy(x => x.Address.Row);
+                topLeftCell.Rowspan = grouppedByColumn
+                    .First()
+                    .Sum(x => x.Cell.Rowspan);
 
-                var firstItem = groupOrderedByRow.First();
-                firstItem.Cell.Rowspan = groupOrderedByRow.Sum(x => x.Cell.Rowspan);
-
-                foreach (var item in groupOrderedByRow.Skip(1))
+                foreach (var cell in cells)
                 {
-                    item.Cell.HiddenByJoin = true;
+                    if (cell.Uid != topLeftCell.Uid)
+                    {
+                        cell.HiddenByJoin = true;
+                        cell.Colspan = 1;
+                        cell.Rowspan = 1;
+                    }
                 }
             }
 
