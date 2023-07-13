@@ -1,4 +1,5 @@
-﻿using HubCloud.BlazorSheet.EvalEngine.Helpers;
+﻿using HubCloud.BlazorSheet.EvalEngine.Engine.ExcelFormulaConverters.Models;
+using HubCloud.BlazorSheet.EvalEngine.Helpers;
 using NUnit.Framework;
 
 namespace HubCloud.BlazorSheet.UnitTests;
@@ -11,9 +12,19 @@ public class AddressHelperTests
     [TestCase("R1C3", "R1C3")]
     [TestCase("F5", "R5C6")]
     [TestCase("AO3", "R3C41")]
-    public void Tests(string inputAddress, string expected)
+    public void ExcelToRowCellAddress_Tests(string inputAddress, string expected)
     {
-        var outputAddress = AddressHelper.ConvertAddress(inputAddress);
+        var outputAddress = AddressHelper.ConvertExcelToRowCellAddress(inputAddress);
+        Assert.AreEqual(outputAddress, expected);
+    }
+
+    [TestCase("123", "123")]
+    [TestCase("Foobar", "Foobar")]
+    [TestCase("R5C6", "F5")]
+    [TestCase("R3C41", "AO3")]
+    public void RowCellToExcelAddress_Tests(string inputAddress, string expected)
+    {
+        var outputAddress = AddressHelper.ConvertRowCellToExcelAddress(inputAddress);
         Assert.AreEqual(outputAddress, expected);
     }
 }

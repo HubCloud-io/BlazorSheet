@@ -1,12 +1,10 @@
 ﻿using HubCloud.BlazorSheet.EvalEngine.Engine.ExcelFormulaConverter.Models;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using HubCloud.BlazorSheet.EvalEngine.Engine.ExcelFormulaConverters.Models;
 
-namespace HubCloud.BlazorSheet.EvalEngine.Engine.ExcelFormulaConverter.Abstractions
+namespace HubCloud.BlazorSheet.EvalEngine.Engine.ExcelFormulaConverters.Abstractions
 {
     public interface ISheetToExcelConverter
     {
-        ConvertResult Convert(string excelFormula);
+        ConvertResult Convert(string excelFormula, CellAddressFormat cellAddressFormat = CellAddressFormat.DefaultExcelFormat);
     }
 }
