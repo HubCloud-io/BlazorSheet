@@ -163,7 +163,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaProcessors
 
             return statementTree;
         }
-
+        
         public StringBuilder BuildFormula(List<Statement> statementTree)
         {
             var outFormula = new StringBuilder();
@@ -171,26 +171,32 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaProcessors
             {
                 if (statement.Type == ElementType.Function)
                 {
-                    outFormula.Append($"{statement.FunctionName}");
-                    outFormula.Append("(");
-                    var argIndex = 1;
-                    foreach (var param in statement.FunctionParams)
+                    if (string.IsNullOrEmpty(statement.ProcessedStatement))
                     {
-                        var isAddressParam = param.InnerStatements.All(x => x.Type != ElementType.Function);
-                        if (isAddressParam)
-                            outFormula.Append('"');
+                        outFormula.Append($"{statement.FunctionName}(");
+                        var argIndex = 1;
+                        foreach (var param in statement.FunctionParams)
+                        {
+                            var isAddressParam = IsAddressParams(param.InnerStatements);
+                            if (isAddressParam)
+                                outFormula.Append('"');
 
-                        var currentArg = BuildFormula(param.InnerStatements);
-                        outFormula.Append(currentArg);
-                        
-                        if (isAddressParam)
-                            outFormula.Append('"');
-                        
-                        if (argIndex++ < statement.FunctionParams.Count)
-                            statement.ProcessedStatement += ",";
+                            var currentArg = BuildFormula(param.InnerStatements);
+                            outFormula.Append(currentArg);
+
+                            if (isAddressParam)
+                                outFormula.Append('"');
+
+                            if (argIndex++ < statement.FunctionParams.Count)
+                                outFormula.Append(',');
+                        }
+
+                        outFormula.Append(")");
                     }
-
-                    outFormula.Append(")");
+                    else
+                    {
+                        outFormula.Append(statement.ProcessedStatement);
+                    }
                 }
                 else
                 {
@@ -383,6 +389,14 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaProcessors
             }
 
             return paramsList;
+        }
+        
+        private bool IsAddressParams(List<Statement> innerStatements)
+        {
+            return innerStatements.All(x => x.Type == ElementType.Address ||
+                                            x.Type == ElementType.AddressRange ||
+                                            x.Type == ElementType.ExcelAddress ||
+                                            x.Type == ElementType.ExcelAddressRange);
         }
 
         #endregion

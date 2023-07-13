@@ -13,7 +13,8 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.ExcelFormulaConverters
     {
         private readonly Dictionary<string, string> _functionDict = new Dictionary<string, string>
         {
-            { "SUM", "SUM" }
+            { "SUM", "SUM" },
+            { "IF", "IIF" }
         };
         
         public ConvertResult Convert(string excelFormula)
@@ -84,28 +85,52 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.ExcelFormulaConverters
             var processedStatement = new StringBuilder();
             
             if (_functionDict.TryGetValue(statement.FunctionName.ToUpper(), out var convertedName))
-                processedStatement.Append($"{convertedName}(");
+                processedStatement.Append($"{convertedName}");
             else
-                processedStatement.Append($"{statement.FunctionName}(");
-            
+            {
+                processedStatement.Append($"{statement.FunctionName}");
+                exceptionList.Add(new ConvertException
+                {
+                    Statement = statement.FunctionName,
+                    ExceptionDescription = "Can't find analog function"
+                });
+            }
+
+            processedStatement.Append('(');
+
             var argCnt = 1;
             foreach (var p in statement.FunctionParams)
             {
+                var isAddressParam = IsAddressParams(p.InnerStatements);
+                if (isAddressParam)
+                    processedStatement.Append('"');
+                
                 foreach (var innerStatement in p.InnerStatements)
                 {
                     var st = ProcessTree(new List<Statement> {innerStatement}, out var innerExceptionList);
                     if (innerExceptionList?.Any() == true)
                         exceptionList.AddRange(innerExceptionList);
-
+            
                     processedStatement.Append($"{st.FirstOrDefault()?.ProcessedStatement}");
                 }
-
+            
+                if (isAddressParam)
+                    processedStatement.Append('"');
+                
                 if (argCnt++ < statement.FunctionParams.Count)
                     processedStatement.Append(",");
             }
-
+            
             processedStatement.Append(')');
             return processedStatement.ToString();
+        }
+        
+        private bool IsAddressParams(List<Statement> innerStatements)
+        {
+            return innerStatements.All(x => x.Type == ElementType.Address ||
+                                            x.Type == ElementType.AddressRange ||
+                                            x.Type == ElementType.ExcelAddress ||
+                                            x.Type == ElementType.ExcelAddressRange);
         }
     }
 }
