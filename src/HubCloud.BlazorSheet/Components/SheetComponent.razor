@@ -78,7 +78,7 @@
                                     var editSettings = Sheet.GetEditSettings(cell);
                                     <CellEditControl EditSettings="@editSettings" 
                                                      Cell="@cell" 
-                                                     Readonly="@Readonly" 
+                                                     IsDisabled="@IsDisabled" 
                                                      ColumnWidth="@((int)column.WidthValue)"
                                                      ComboBoxDataProvider="@ComboBoxDataProviderFactory.Create(editSettings.ItemsSource)"
                                                      Changed="(e=>OnCellValueChanged(cell))"></CellEditControl>
@@ -129,7 +129,7 @@
                                 var editSettings = Sheet.GetEditSettings(cell);
                                 <CellEditControl EditSettings="@editSettings" 
                                                  Cell="@cell" 
-                                                 Readonly="@Readonly"
+                                                 IsDisabled="@IsDisabled"
                                                  ColumnWidth="@((int)column.WidthValue)"
                                                  ComboBoxDataProvider="@ComboBoxDataProviderFactory.Create(editSettings.ItemsSource)"
                                                  Changed="(e=>OnCellValueChanged(cell))"></CellEditControl>
@@ -206,7 +206,7 @@
                                     var editSettings = Sheet.GetEditSettings(cell);
                                     <CellEditControl EditSettings="@editSettings" 
                                                      Cell="@cell" 
-                                                     Readonly="@Readonly"
+                                                     IsDisabled="@IsDisabled"
                                                      ColumnWidth="@((int)column.WidthValue)"
                                                      ComboBoxDataProvider="@_fakeComboBoxDataProvider"
                                                      Changed="(e=>OnCellValueChanged(cell))"></CellEditControl>
@@ -236,7 +236,7 @@
                                     
                                     <CellEditControl EditSettings="@editSettings"
                                                      Cell="@cell"
-                                                     Readonly="@Readonly"
+                                                     IsDisabled="@IsDisabled"
                                                      ColumnWidth="@((int)column.WidthValue)"
                                                      ComboBoxDataProvider="@ComboBoxDataProviderFactory?.Create(editSettings.ItemsSource)"
                                                      Changed="(e=>OnCellValueChanged(cell))"></CellEditControl>

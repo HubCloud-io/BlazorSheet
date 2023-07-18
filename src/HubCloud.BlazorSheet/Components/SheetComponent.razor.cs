@@ -50,7 +50,7 @@ public partial class SheetComponent : ComponentBase
 
     [Parameter] public SheetRegimes Regime { get; set; }
     
-    [Parameter] public bool Readonly { get; set; }
+    [Parameter] public bool IsDisabled { get; set; }
     [Parameter] public string MaxHeight { get; set; }
     [Parameter] public string MaxWidth { get; set; }
 

@@ -13,7 +13,7 @@ public partial class CellEditControl: ComponentBase
     public SheetCell Cell { get; set; }
     
     [Parameter]
-    public bool Readonly { get; set; }
+    public bool IsDisabled { get; set; }
     
     [Parameter]
     public int ColumnWidth { get; set; }

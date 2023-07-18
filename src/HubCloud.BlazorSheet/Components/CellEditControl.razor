@@ -10,7 +10,7 @@
 
             <BbNumberInput TValue="decimal"
                            HtmlStyle="width:100%; text-align:right;"
-                           IsDisabled="Readonly"
+                           IsDisabled="IsDisabled"
                            Digits="@EditSettings.NumberDigits"
                            @bind-Value="@Cell.DecimalValue"
                            Changed="@OnChanged">
@@ -28,7 +28,7 @@
         case CellControlKinds.DateInput:
 
             <BbDatePicker @bind-Value="@Cell.DateTimeValue"
-                          IsDisabled="Readonly"
+                          IsDisabled="IsDisabled"
                           DropdownPosition="@DropdownPositions.Fixed"
                           Size="@BootstrapElementSizes.Sm"
                           Changed="@OnChanged">
@@ -38,7 +38,7 @@
         case CellControlKinds.DateTimeInput:
 
             <BbDatePicker @bind-Value="@Cell.DateTimeValue"
-                          IsDisabled="Readonly"
+                          IsDisabled="IsDisabled"
                           DropdownPosition="@DropdownPositions.Fixed"
                           Size="@BootstrapElementSizes.Sm"
                           Changed="@OnChanged">
@@ -48,6 +48,7 @@
         case CellControlKinds.CheckBox:
 
             <BbCheckBox @bind-Value="@Cell.BoolValue"
+                        IsDisabled="IsDisabled"
                         Changed="@OnChanged">
             </BbCheckBox>
 
@@ -63,6 +64,7 @@
                             DropdownWidth="@ColumnWidth"
                             DataRegime="ComboBoxDataRegimes.Server"
                             Size="BootstrapElementSizes.Sm"
+                            IsDisabled="IsDisabled"
                             ValueName="Value"
                             TextName="Text"
                             @bind-Value="@Cell.IntValue"
