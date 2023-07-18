@@ -19,7 +19,7 @@
 
             @foreach (var column in Sheet.Columns)
             {
-                if (Regime == SheetRegimes.Readonly)
+                if (Regime == SheetRegimes.InputForm)
                 {
                     <td class="hc-grid-cell text-center"
                         @oncontextmenu="(e => OnColumnContextMenu(e, column))"
@@ -45,7 +45,7 @@
         </tr>
 
         @*Sheet body*@
-        @if (Sheet.UseVirtualization && Regime == SheetRegimes.Readonly)
+        @if (Sheet.UseVirtualization && Regime == SheetRegimes.InputForm)
         {
             if (Sheet.FreezedRows > 0)
             {
@@ -218,7 +218,7 @@
             {
                 <tr>
 
-                    @if (Regime == SheetRegimes.Readonly) 
+                    @if (Regime == SheetRegimes.InputForm) 
                     {
                         <td class="hc-grid-cell"
                             style="@LeftSideCellStyle(Sheet, row)"
@@ -249,7 +249,7 @@
                             continue;
                         }
 
-                        @if (Regime == SheetRegimes.Edit)
+                        @if (Regime == SheetRegimes.Design)
                         {
                             <td class="@CellClass(cell)"
                                 contenteditable="@(!cell.HasLink)"
