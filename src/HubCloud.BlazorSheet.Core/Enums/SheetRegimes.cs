@@ -2,7 +2,7 @@
 {
     public enum SheetRegimes
     {
-        Readonly = 0,
-        Edit = 1
+        InputForm = 0,
+        Design = 1
     }
 }

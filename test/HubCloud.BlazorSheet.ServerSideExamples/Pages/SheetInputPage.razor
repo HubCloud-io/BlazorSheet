@@ -1,11 +1,16 @@
 ﻿@page "/sheetinput"
 @using HubCloud.BlazorSheet.Core.Enums
+@using BBComponents.Components
 
 <h3>Sheet Input</h3>
 <hr/>
 <div class="row">
     <div class="col-sm-12">
         <button class="btn btn-sm btn-outline-primary" @onclick="OnClearLogClick">Clear log</button>
+        
+        <span>&nbsp;</span>
+        <BbCheckBox @bind-Value="@_isDisabled"></BbCheckBox>
+        <label>Is disabled</label>
     </div>
 </div>
 <hr/>
@@ -17,7 +22,8 @@
         <HubCloud.BlazorSheet.Components.SheetComponent
             Sheet="@_workbook.FirstSheet"
             ComboBoxDataProviderFactory="@_dataProviderFactory"
-            Regime="SheetRegimes.Readonly"
+            Regime="SheetRegimes.InputForm"
+            IsDisabled="@_isDisabled"
             CellValueChanged="OnCellValueChanged">
         </HubCloud.BlazorSheet.Components.SheetComponent>
 

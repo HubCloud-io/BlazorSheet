@@ -12,6 +12,7 @@ public partial class SheetInputPage : ComponentBase
     private Workbook _workbook;
     private WorkbookEvaluator _evaluator;
     private IComboBoxDataProviderFactory _dataProviderFactory;
+    private bool _isDisabled;
 
     protected override void OnInitialized()
     {
