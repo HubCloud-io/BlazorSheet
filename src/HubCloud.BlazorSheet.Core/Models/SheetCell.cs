@@ -17,6 +17,7 @@ namespace HubCloud.BlazorSheet.Core.Models
         public int Colspan { get; set; } = 1;
         public int Rowspan { get; set; } = 1;
         public bool HiddenByJoin { get; set; }
+        public bool Locked { get; set; }
 
         [JsonIgnore] public string Text { get; set; }
         public object Value { get; set; }
