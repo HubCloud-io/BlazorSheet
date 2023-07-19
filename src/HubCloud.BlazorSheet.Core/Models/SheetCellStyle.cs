@@ -23,6 +23,8 @@ namespace HubCloud.BlazorSheet.Core.Models
 
         public string Format { get; set; } = string.Empty;
 
+        public bool Locked { get; set; }
+
         public SheetCellStyle()
         {
             
