@@ -400,6 +400,7 @@ namespace HubCloud.BlazorSheet.Core.Models
 
             FreezedRows = commandPanelModel.FreezedRows;
             FreezedColumns = commandPanelModel.FreezedColumns;
+            IsProtected = commandPanelModel.SheetProtected;
         }
 
         public void SetStyle(SheetCell cell, SheetCellStyle newStyle)
