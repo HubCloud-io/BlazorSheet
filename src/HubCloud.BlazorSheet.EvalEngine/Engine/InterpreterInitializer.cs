@@ -18,6 +18,9 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
             Func<string, UniversalValue> sumFunction = data.Sum;
             interpreter.SetFunction("SUM", sumFunction);
             
+            Func<string[], UniversalValue> sumFunction2 = data.Sum;
+            interpreter.SetFunction("SUM", sumFunction2);
+            
             Func<string, UniversalValue> valFunction = data.GetValue;
             interpreter.SetFunction("VAL", valFunction);
             
