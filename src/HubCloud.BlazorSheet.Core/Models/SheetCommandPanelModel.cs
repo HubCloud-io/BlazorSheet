@@ -33,6 +33,8 @@ namespace HubCloud.BlazorSheet.Core.Models
         
         public string SelectedCellAddress { get; set; }
         public string InputText { get; set; }
+        public bool CellLocked { get; set; } = true;
+        public bool SheetProtected { get; set; }
 
         public void CopyFrom(SheetCommandPanelModel clone)
         {
@@ -51,6 +53,8 @@ namespace HubCloud.BlazorSheet.Core.Models
             this.BorderColor = clone.BorderColor;
             this.FormatType = clone.FormatType;
             this.CustomFormat = clone.CustomFormat;
+            this.CellLocked = clone.CellLocked;
+            this.SheetProtected = clone.SheetProtected;
         }
         
         public void CopyFrom(SheetCellStyle cellStyle)
@@ -119,6 +123,8 @@ namespace HubCloud.BlazorSheet.Core.Models
                     this.CustomFormat = cellStyle.Format;
                     break;
             }
+
+            this.CellLocked = cellStyle.Locked;
         }
 
         public void SetEditSettings(SheetCellEditSettings editSettings)
