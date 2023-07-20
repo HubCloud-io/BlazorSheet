@@ -833,7 +833,7 @@ namespace HubCloud.BlazorSheet.Core.Models
             return true;
         }
 
-        private Sheet Copy()
+        public Sheet Copy()
         {
             var output = JsonConvert.SerializeObject(this);
             return JsonConvert.DeserializeObject<Sheet>(output);
