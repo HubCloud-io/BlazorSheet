@@ -14,6 +14,8 @@ public class ExcelFormulaConverterTests
     [TestCase("=SUM(A1:C1)", @"SUM(""R1C1:R1C3"")")]
     [TestCase("=SIN(100)", @"SIN(100)", 1)]
     [TestCase("=IF(1>2,0,1)", @"IIF(1>2,0,1)")]
+    [TestCase("=SUM(A1)", @"SUM(""R1C1"")")]
+    [TestCase("=SUM(A1,C1,A1:C1)", @"SUM(""R1C1"",""R1C3"",""R1C1:R1C3"")")]
     public void ExcelFormulaConverterTests_Tests(string excelFormula, string expectedFormula, int expectedExceptionCount = 0)
     {
         var converter = new ExcelFormulaConverter();

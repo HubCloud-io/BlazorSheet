@@ -55,9 +55,9 @@ public partial class DependencyCalcPage : ComponentBase
         
         sheet.GetCell(2, 1).Text = "Type value:";
         sheet.GetCell(2, 2).EditSettingsUid = numberInputSettings.Uid;
-        sheet.GetCell(2, 2).Value = 1;
-        sheet.GetCell(2, 2).Text = "1";
-        
+        sheet.GetCell(2, 2).Value = 0;
+        sheet.GetCell(2, 2).Text = "0";
+
         // SetDependentFormulas(sheet);
         SetDependentFormulas_CalcOrder(sheet);
         SetIndependentFormulas(sheet);
@@ -67,6 +67,27 @@ public partial class DependencyCalcPage : ComponentBase
         workbook.AddSheet(sheet);
 
         return workbook;
+    }
+
+    private void SetSumCases(Sheet sheet)
+    {
+        sheet.GetCell(2, 1).Value = 10;
+        sheet.GetCell(2, 1).Text = "10";
+        sheet.GetCell(2, 2).Value = 5;
+        sheet.GetCell(2, 2).Text = "5";
+        sheet.GetCell(2, 3).Value = 1;
+        sheet.GetCell(2, 3).Text = "1";
+        sheet.GetCell(2, 4).Value = 8;
+        sheet.GetCell(2, 4).Text = "8";
+        
+        sheet.GetCell(4, 1).Text = @"SUM(""R2C2:R2C3""):";
+        sheet.GetCell(4, 2).Formula = @"SUM(""R2C2:R2C3"")";
+        
+        sheet.GetCell(5, 1).Text = @"SUM(""R2C4""):";
+        sheet.GetCell(5, 2).Formula = @"SUM(""R2C4"")";
+        
+        sheet.GetCell(6, 1).Text = @"SUM(""R2C1"", ""R2C2"", ""R2C3:R2C4""):";
+        sheet.GetCell(6, 2).Formula = @"SUM(""R2C1"", ""R2C2"", ""R2C3:R2C4"")";
     }
 
     private void SetCycleDependency(Sheet sheet)

@@ -20,6 +20,16 @@ public class WorkbookDataTests
     }
     
     [Test]
+    public void Sum_Params_OneSheet_ReturnValue()
+    {
+        var workbookData = BuildWorkbookData();
+
+        var result = workbookData.Sum("R1C1","R1C1:R1C3");
+        
+        Assert.AreEqual(7, result.Value);
+    }
+    
+    [Test]
     public void GetValue_OneSheet_ReturnValue()
     {
         var workbookData = BuildWorkbookData();
