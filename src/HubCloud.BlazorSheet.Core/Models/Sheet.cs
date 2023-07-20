@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -67,6 +68,7 @@ namespace HubCloud.BlazorSheet.Core.Models
             ColumnsCount = settings.ColumnsCount;
             FreezedColumns = settings.FreezedColumns;
             FreezedRows = settings.FreezedRows;
+            IsProtected = settings.IsProtected;
 
             _rows.AddRange(settings.Rows);
             _columns.AddRange(settings.Columns);
@@ -565,7 +567,8 @@ namespace HubCloud.BlazorSheet.Core.Models
                 RowsCount = RowsCount,
                 ColumnsCount = ColumnsCount,
                 FreezedColumns = FreezedColumns,
-                FreezedRows = FreezedRows
+                FreezedRows = FreezedRows,
+                IsProtected = IsProtected
             };
 
             settings.Rows.AddRange(_rows);
@@ -827,6 +830,12 @@ namespace HubCloud.BlazorSheet.Core.Models
             }
 
             return true;
+        }
+
+        private Sheet Copy()
+        {
+            var output = JsonConvert.SerializeObject(this);
+            return JsonConvert.DeserializeObject<Sheet>(output);
         }
     }
 }

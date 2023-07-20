@@ -23,7 +23,7 @@ namespace HubCloud.BlazorSheet.Core.Models
 
         public string Format { get; set; } = string.Empty;
 
-        public bool Locked { get; set; }
+        public bool Locked { get; set; } = true;
 
         public SheetCellStyle()
         {
@@ -45,6 +45,7 @@ namespace HubCloud.BlazorSheet.Core.Models
             this.FontFamily = style.FontFamily;
             this.FontSize = $"{style.FontSize}px";
             this.TextAlign = style.TextAlign;
+            this.Locked = style.CellLocked;
 
             switch (style.BorderType)
             {
@@ -120,7 +121,8 @@ namespace HubCloud.BlazorSheet.Core.Models
                 string.Equals(BorderTop, other.BorderTop, StringComparison.OrdinalIgnoreCase) &&
                 string.Equals(BorderBottom, other.BorderBottom, StringComparison.OrdinalIgnoreCase) &&
                 string.Equals(TextAlign, other.TextAlign, StringComparison.OrdinalIgnoreCase) &&
-                string.Equals(Format, other.TextAlign, StringComparison.OrdinalIgnoreCase);
+                string.Equals(Format, other.TextAlign, StringComparison.OrdinalIgnoreCase) &&
+                Locked == other.Locked;
 
             return isEqual;
         }
