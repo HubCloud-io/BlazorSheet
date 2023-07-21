@@ -1,3 +1,4 @@
+using BBComponents.Services;
 using HubCloud.BlazorSheet.WasmExamples.Client;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
@@ -13,6 +14,9 @@ namespace Company.WebApplication1
             builder.RootComponents.Add<HeadOutlet>("head::after");
 
             builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+            
+            // Service to show alert.
+            builder.Services.AddScoped<IAlertService, AlertService>();
 
             await builder.Build().RunAsync();
         }

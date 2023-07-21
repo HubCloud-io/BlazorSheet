@@ -1,5 +1,41 @@
 ﻿@page "/sheetedit"
 
-<h3>SheetEditPage</h3>
+
+@using HubCloud.BlazorSheet.Core.Enums
+@using HubCloud.BlazorSheet.Components
+
+<h3>Sheet Edit</h3>
+
+<hr/>
+
+<SheetCommandPanel Model="@_commandPanelModel"
+                   ItemsSourceDataProvider="@_itemSourceDataProvider"
+                   SelectedCellsCount="@SelectedCellsCount"
+                   CanCellsBeJoined="@_canCellsBeJoined"
+                   OpenCellLinkModal="() => _sheetComponent.OpenCellLinkModal()"
+                   SplitJoinCells="() => _sheetComponent.SplitJoinCells()"
+                   Changed="OnStyleChanged">
+</SheetCommandPanel>
+
+<hr/>
+
+<div class="row">
+
+    <div class="col-sm-12">
+
+        <SheetComponent @ref="_sheetComponent" 
+                        Sheet="@_sheet"
+                        MaxHeight="500px"
+                        MaxWidth="1000px"
+                        Regime="@SheetRegimes.Design"
+                        CellSelected="OnCellSelected"
+                        CellsSelected="OnCellsSelected"
+                        RowSelected="OnRowSelected"
+                        ColumnSelected="OnColumnSelected">
+        </SheetComponent>
+
+    </div>
+
+</div>
 
 
