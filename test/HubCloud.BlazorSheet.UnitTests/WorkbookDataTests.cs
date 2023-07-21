@@ -30,6 +30,16 @@ public class WorkbookDataTests
     }
     
     [Test]
+    public void Sum_Params_AnyCells_OneSheet_ReturnValue()
+    {
+        var workbookData = BuildWorkbookData();
+
+        var result = workbookData.Sum("R1C1","R1C1:R1C3", "R3C1", "R3C2");
+        
+        Assert.AreEqual(7, result.Value);
+    }
+    
+    [Test]
     public void GetValue_OneSheet_ReturnValue()
     {
         var workbookData = BuildWorkbookData();
@@ -166,6 +176,9 @@ public class WorkbookDataTests
         sheetData[2, 1] = 4;
         sheetData[2, 2] = 5;
         sheetData[2, 3] = 6;
+
+        sheetData[3, 1] = null;
+        sheetData[3, 2] = "";
 
         return workbookData;
     }
