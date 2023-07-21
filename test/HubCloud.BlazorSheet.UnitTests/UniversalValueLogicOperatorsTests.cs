@@ -78,5 +78,21 @@ namespace HubCloud.BlazorSheet.UnitTests
 
             Assert.AreEqual(expected, result);
         }
+
+        [TestCase(true, true)]
+        [TestCase(false, false)]
+        [TestCase(0, false)]
+        [TestCase(1, true)]
+        [TestCase(-1, true)]
+        [TestCase("", false)]
+        [TestCase("some text", true)]
+        [TestCase(null, false)]
+        public void ToBool_ReturnBoolValue(object value, bool expected)
+        {
+            var uValue = new UniversalValue(value);
+            var result = uValue.ToBool();
+
+            Assert.AreEqual(result, expected);
+        }
     }
 }

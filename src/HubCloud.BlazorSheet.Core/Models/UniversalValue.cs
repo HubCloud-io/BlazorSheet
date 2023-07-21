@@ -390,6 +390,17 @@ namespace HubCloud.BlazorSheet.Core.Models
             return DateTime.MinValue;
         }
 
+        public bool ToBool()
+        {
+            if(Value is bool boolValue)
+            {
+                return boolValue;
+            }
+
+            return IsNotEmptyFunction.Eval(Value);
+
+        }
+
         public UniversalValue AddQuarters(int quarter)
         {
             var dateTime = ToDate();
