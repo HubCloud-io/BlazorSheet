@@ -71,7 +71,9 @@
 
                             <td class="@CellClass(cell)"
                                 style="@CellStyle(Sheet, row, column, cell)"
-                                hidden="@CellHidden(column, row)">
+                                hidden="@CellHidden(column, row)"
+                                colspan="@cell.Colspan"
+                                rowspan="@cell.Rowspan">
 
                                 @if (cell.EditSettingsUid.HasValue)
                                 {
@@ -122,7 +124,9 @@
 
                         <td class="@CellClass(cell)"
                             style="@CellStyle(Sheet, row, column, cell)"
-                            hidden="@CellHidden(column, row)">
+                            hidden="@CellHidden(column, row)"
+                            colspan="@cell.Colspan"
+                            rowspan="@cell.Rowspan">
                             
                             @if (cell.EditSettingsUid.HasValue)
                             {
@@ -229,7 +233,10 @@
                         {
                             <td class="@CellClass(cell)" 
                                 style="@CellStyle(Sheet, row, column, cell)"
-                                hidden="@CellHidden(column, row)">
+                                hidden="@CellHidden(column, row)"
+                                colspan="@cell.Colspan"
+                                rowspan="@cell.Rowspan">
+
                                 @if (cell.EditSettingsUid.HasValue)
                                 {
                                     var editSettings = Sheet.GetEditSettings(cell);
