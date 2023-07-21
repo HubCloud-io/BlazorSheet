@@ -83,14 +83,13 @@ namespace HubCloud.BlazorSheet.Core.Models
 
         public UniversalValue Sum(params string[] addresses)
         {
-            var sum = 0m;
+            var total = new UniversalValue(0M);
             foreach (var address in addresses)
             {
                 var result = Sum(address);
-                sum += (decimal)result.Value;
+                total += result;
             }
-            
-            var total = new UniversalValue(sum);
+
             return total;
         }
 
