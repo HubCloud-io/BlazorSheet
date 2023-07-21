@@ -51,7 +51,29 @@ public class UniversalValueArithmeticsOperatorsTests
         
         Assert.AreEqual(3M, result.Value);
     }
-    
+
+    [Test]
+    public void Plus_UvDecimalAndUvEmptyString_SumValue()
+    {
+        var uValue1 = new UniversalValue(1M);
+        var uValue2 = new UniversalValue("");
+
+        var result = uValue1 + uValue2;
+
+        Assert.AreEqual(1M, result.Value);
+    }
+
+    [Test]
+    public void Plus_UvDecimalAndUvNull_SumValue()
+    {
+        var uValue1 = new UniversalValue(1M);
+        var uValue2 = new UniversalValue(null);
+
+        var result = uValue1 + uValue2;
+
+        Assert.AreEqual(1M, result.Value);
+    }
+
     [Test]
     public void Plus_UvIntAndInt_SumValue()
     {

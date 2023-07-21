@@ -493,12 +493,13 @@ namespace HubCloud.BlazorSheet.Core.Models
             Func<decimal, decimal, object> decimalOperation,
             Func<int, int, object> intOperation)
         {
-            if (v1.Value == null)
+          
+            if (string.IsNullOrEmpty(v1.Value?.ToString()))
             {
                 return v2;
             }
 
-            if (v2.Value == null)
+            if (string.IsNullOrEmpty(v2.Value?.ToString()))
             {
                 return v1;
             }
