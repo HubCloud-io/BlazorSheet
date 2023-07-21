@@ -109,8 +109,15 @@ public partial class SheetComponent : ComponentBase
             _selectedIdentifiers.Clear();
         }
 
-        _selectedCells.Add(_currentCell);
-        _selectedIdentifiers.Add(_currentCell.Uid);
+        if (!_selectedCells.Contains(_currentCell))
+            _selectedCells.Add(_currentCell);
+        else
+            _selectedCells.Remove(_currentCell);
+
+        if (!_selectedIdentifiers.Contains(_currentCell.Uid))
+            _selectedIdentifiers.Add(_currentCell.Uid);
+        else
+            _selectedIdentifiers.Remove(_currentCell.Uid);
 
         await CellSelected.InvokeAsync(cell);
         await CellsSelected.InvokeAsync(_selectedCells);
@@ -343,9 +350,8 @@ public partial class SheetComponent : ComponentBase
             if (!_selectedCells.Contains(cell))
                 _selectedCells.Add(cell);
 
-            _selectedIdentifiers.Add(cell.Uid);
-
-         
+            if (!_selectedIdentifiers.Contains(cell.Uid))
+                _selectedIdentifiers.Add(cell.Uid);
         }
 
         var firstCell = cells.FirstOrDefault();
@@ -353,6 +359,7 @@ public partial class SheetComponent : ComponentBase
         {
             await CellSelected.InvokeAsync(firstCell);
         }
+
         await CellsSelected.InvokeAsync(_selectedCells);
         await ColumnSelected.InvokeAsync(column);
     }
@@ -375,8 +382,8 @@ public partial class SheetComponent : ComponentBase
             if (!_selectedCells.Contains(cell))
                 _selectedCells.Add(cell);
 
-            _selectedIdentifiers.Add(cell.Uid);
-
+            if (!_selectedIdentifiers.Contains(cell.Uid))
+                _selectedIdentifiers.Add(cell.Uid);
         }
 
         var firstCell = cells.FirstOrDefault();
@@ -384,6 +391,7 @@ public partial class SheetComponent : ComponentBase
         {
             await CellSelected.InvokeAsync(firstCell);
         }
+
         await CellsSelected.InvokeAsync(_selectedCells);
         await RowSelected.InvokeAsync(row);
     }
