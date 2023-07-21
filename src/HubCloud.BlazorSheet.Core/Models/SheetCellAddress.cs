@@ -79,5 +79,10 @@ namespace HubCloud.BlazorSheet.Core.Models
             Row = row;
             Column = col;
         }
+        
+        public override string ToString()
+        {
+            return $"{SheetName}!R{Row}C{Column}";
+        }
     }
 }
