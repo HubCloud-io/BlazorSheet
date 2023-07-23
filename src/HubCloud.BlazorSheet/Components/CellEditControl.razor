@@ -29,6 +29,7 @@
 
             <BbDatePicker @bind-Value="@Cell.DateTimeValue"
                           IsDisabled="IsDisabled"
+                          DropdownWidth="@DropdownWidth"
                           DropdownPosition="@DropdownPositions.Fixed"
                           Size="@BootstrapElementSizes.Sm"
                           Changed="@OnChanged">
@@ -39,6 +40,7 @@
 
             <BbDatePicker @bind-Value="@Cell.DateTimeValue"
                           IsDisabled="IsDisabled"
+                          DropdownWidth="@DropdownWidth"
                           DropdownPosition="@DropdownPositions.Fixed"
                           Size="@BootstrapElementSizes.Sm"
                           Changed="@OnChanged">
@@ -61,7 +63,7 @@
                 <BbComboBox TValue="int"
                             DataProvider="@ComboBoxDataProvider"
                             DropdownPosition="DropdownPositions.Fixed"
-                            DropdownWidth="@ColumnWidth"
+                            DropdownWidth="@DropdownWidth"
                             DataRegime="ComboBoxDataRegimes.Server"
                             Size="BootstrapElementSizes.Sm"
                             IsDisabled="IsDisabled"

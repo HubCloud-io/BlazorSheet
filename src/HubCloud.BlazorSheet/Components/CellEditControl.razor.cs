@@ -6,6 +6,8 @@ namespace HubCloud.BlazorSheet.Components;
 
 public partial class CellEditControl: ComponentBase
 {
+    private const int MinDropdownWidth = 200;
+    
     [Parameter]
     public SheetCellEditSettings EditSettings { get; set; }
     
@@ -23,6 +25,8 @@ public partial class CellEditControl: ComponentBase
 
     [Parameter]
     public EventCallback<SheetCell> Changed { get; set; }
+
+    public int DropdownWidth => ColumnWidth < MinDropdownWidth ? MinDropdownWidth : ColumnWidth;
 
     public async Task OnChanged()
     {
