@@ -15,6 +15,7 @@ namespace HubCloud.BlazorSheet.Core.Models
         private readonly List<SheetRow> _rows = new List<SheetRow>();
         private readonly List<SheetColumn> _columns = new List<SheetColumn>();
         private readonly List<SheetCell> _cells = new List<SheetCell>();
+        private readonly Dictionary<CellKey, SheetCell> _cellsIndex = new Dictionary<CellKey, SheetCell>();
         private readonly List<SheetCellStyle> _styles = new List<SheetCellStyle>();
         private readonly List<SheetCellEditSettings> _editSettings = new List<SheetCellEditSettings>();
 
@@ -72,7 +73,12 @@ namespace HubCloud.BlazorSheet.Core.Models
 
             _rows.AddRange(settings.Rows);
             _columns.AddRange(settings.Columns);
-            _cells.AddRange(settings.Cells);
+
+            foreach (var cell in settings.Cells)
+            {
+                AddCell(cell);
+            }
+           
             _styles.AddRange(settings.Styles);
             _editSettings.AddRange(settings.EditSettings);
 
@@ -126,7 +132,7 @@ namespace HubCloud.BlazorSheet.Core.Models
                     cell.RowUid = row.Uid;
                     cell.ColumnUid = column.Uid;
 
-                    _cells.Add(cell);
+                    AddCell(cell);
                 }
 
                 _rows.Add(row);
@@ -150,9 +156,14 @@ namespace HubCloud.BlazorSheet.Core.Models
 
         public SheetCell GetCell(SheetRow row, SheetColumn column)
         {
-            var cell = Cells.FirstOrDefault(x => x.RowUid == row.Uid && x.ColumnUid == column.Uid);
+            //var cell = Cells.FirstOrDefault(x => x.RowUid == row.Uid && x.ColumnUid == column.Uid);
+            var key = new CellKey(row.Uid, column.Uid);
+            if (_cellsIndex.TryGetValue(key, out var cell))
+            {
+                return cell;
+            }
 
-            return cell;
+            return null;
         }
 
         public SheetCell GetCell(SheetCellAddress cellAddress)
@@ -253,7 +264,7 @@ namespace HubCloud.BlazorSheet.Core.Models
                     ColumnUid = column.Uid
                 };
 
-                _cells.Add(newCell);
+                AddCell(newCell);
             }
 
             if (position == -1)
@@ -302,7 +313,7 @@ namespace HubCloud.BlazorSheet.Core.Models
                     ColumnUid = newColumn.Uid
                 };
 
-                _cells.Add(newCell);
+                AddCell(newCell);
             }
 
             if (position == -1)
@@ -343,7 +354,7 @@ namespace HubCloud.BlazorSheet.Core.Models
             for (var i = cellsToDelete.Count() - 1; i >= 0; i--)
             {
                 var cell = cellsToDelete[i];
-                _cells.Remove(cell);
+                RemoveCell(cell);
             }
 
             if (_rows.Remove(row))
@@ -363,7 +374,7 @@ namespace HubCloud.BlazorSheet.Core.Models
             for (var i = cellsToDelete.Count() - 1; i >= 0; i--)
             {
                 var cell = cellsToDelete[i];
-                _cells.Remove(cell);
+                RemoveCell(cell);
             }
 
             if (_columns.Remove(column))
@@ -625,6 +636,7 @@ namespace HubCloud.BlazorSheet.Core.Models
             _rows.Clear();
             _columns.Clear();
             _cells.Clear();
+            _cellsIndex.Clear();
             //_styles.Clear();
             //_editSettings.Clear();
         }
@@ -837,6 +849,32 @@ namespace HubCloud.BlazorSheet.Core.Models
         {
             var output = JsonConvert.SerializeObject(this);
             return JsonConvert.DeserializeObject<Sheet>(output);
+        }
+
+        public void AddCell(SheetCell cell)
+        {
+            var key = cell.GetKey();
+
+            if (_cellsIndex.ContainsKey(key))
+            {
+                // Do nothing
+            }
+            else
+            {
+                _cells.Add(cell);
+                _cellsIndex.Add(key, cell);
+            }
+        }
+
+        public void RemoveCell(SheetCell cell)
+        {
+            var key = cell.GetKey();
+
+            if (_cellsIndex.ContainsKey(key))
+            {
+                _cellsIndex.Remove(key);
+            }
+            _cells.Remove(cell);
         }
     }
 }
