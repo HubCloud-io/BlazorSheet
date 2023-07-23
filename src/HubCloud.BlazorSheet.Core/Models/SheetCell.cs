@@ -24,6 +24,11 @@ namespace HubCloud.BlazorSheet.Core.Models
 
         public bool HasLink => !string.IsNullOrEmpty(Link) && !string.IsNullOrWhiteSpace(Link);
 
+        public CellKey GetKey()
+        {
+            return new CellKey(RowUid, ColumnUid);
+        }
+
         [JsonIgnore]
         public decimal DecimalValue
         {
