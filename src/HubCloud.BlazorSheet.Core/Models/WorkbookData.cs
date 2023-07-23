@@ -1,5 +1,8 @@
-﻿using System;
+﻿using HubCloud.BlazorSheet.Core.Enums;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace HubCloud.BlazorSheet.Core.Models
@@ -76,6 +79,67 @@ namespace HubCloud.BlazorSheet.Core.Models
             total = sheet.Sum(address);
 
             return total;
+        }
+
+        public UniversalValue Sum(params string[] addresses)
+        {
+            var total = new UniversalValue(0M);
+            foreach (var address in addresses)
+            {
+                var result = Sum(address);
+                total += result;
+            }
+
+            return total;
+        }
+
+        public UniversalValue Row()
+        {
+            return new UniversalValue(CurrentRow);
+        }
+
+        public UniversalValue Column()
+        {
+            return new UniversalValue(CurrentColumn);
+        }
+
+        public UniversalValue IsEmpty(UniversalValue universalValue)
+        {
+
+            var result = ExpressoFunctions.FunctionLibrary.IsEmptyFunction.Eval(universalValue.Value);
+            return new UniversalValue(result);
+        }
+
+        public UniversalValue IsNotEmpty(UniversalValue universalValue)
+        {
+            var result = ExpressoFunctions.FunctionLibrary.IsNotEmptyFunction.Eval(universalValue.Value);
+            return new UniversalValue(result);
+        }
+
+        public UniversalValue Now()
+        {
+            return new UniversalValue(DateTime.Now);
+        }
+        
+        public UniversalValue DateDiff(string datePartName, UniversalValue universalValueStart, UniversalValue universalValueEnd)
+        {
+            var dateStart = universalValueStart.ToDate();
+            var dateFinish = universalValueEnd.ToDate();
+            
+            var result = ExpressoFunctions.FunctionLibrary.DateDiffFunction.Eval(datePartName, dateStart, dateFinish);
+            return new UniversalValue(result);
+        }
+
+        public UniversalValue Iif(bool logicResult, object valueTrue, object valueFalse)
+        {
+            var result = ExpressoFunctions.FunctionLibrary.IifFunction.Eval(logicResult, valueTrue, valueFalse);
+            return new UniversalValue(result);
+        }
+
+        public UniversalValue Ifs(params object[] args)
+        {
+            var result = ExpressoFunctions.FunctionLibrary.IfsFunction.Eval(args);
+            return new UniversalValue(result);
         }
 
         private SheetData GetSheet(string address)

@@ -5,6 +5,7 @@ namespace HubCloud.BlazorSheet.Core.Models
     public class SheetRow: ICloneable
     {
         public Guid Uid { get; set; } = Guid.NewGuid();
+        public bool IsHidden { get; set; }
         public double HeightValue { get; set; } = 20;
 
         public string Height => (HeightValue.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)) + "px";
@@ -24,8 +25,8 @@ namespace HubCloud.BlazorSheet.Core.Models
             var clone = new SheetRow()
             {
                 Uid = this.Uid,
-                HeightValue = this.HeightValue
-
+                HeightValue = this.HeightValue,
+                IsHidden = this.IsHidden
             };
 
             return clone;

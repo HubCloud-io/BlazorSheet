@@ -6,6 +6,20 @@
 
         <div class="col-sm-12">
 
+            <span class="fa fa-light fa-snowflake text-primary"></span>
+            <span class="text-primary">R</span>
+            <BbNumberInput TValue="int"
+                           @bind-Value="@Model.FreezedRows"
+                           Changed="OnSettingsChanged"
+                           HtmlStyle="width:30px;margin-left:5px; text-align:right;">
+            </BbNumberInput>
+            <span class="text-primary">С</span>
+            <BbNumberInput TValue="int"
+                           @bind-Value="@Model.FreezedColumns"
+                           Changed="OnSettingsChanged"
+                           HtmlStyle="width:30px;margin-left:5px; text-align:right;">
+            </BbNumberInput>
+
             <span class="fa fa-font text-primary" style="margin-left: 3px;"></span>
             <BbNumberInput TValue="int"
                            @bind-Value="@Model.FontSize"
@@ -83,6 +97,7 @@
             {
                 <BbTextInput @bind-Value="@Model.CustomFormat" Changed="OnCustomFormatInputChanged" HtmlStyle="width:150px;margin-right:5px;height:25px;"/>
             }
+            
 
             <BbSelect TValue="CellControlKinds"
                       ItemsSource="@_controlKindSource"
@@ -102,6 +117,19 @@
 
                 </BbNumberInput>
             }
+            
+            @if (Model.ControlKind == CellControlKinds.ComboBox 
+                 && _itemsSourceSource != null)
+            {
+                <BbSelect TValue="string"
+                          ItemsSource="@_itemsSourceSource"
+                          ValueName="Item1"
+                          TextName="Item2"
+                          HtmlStyle="height:25px; margin-left:5px;"
+                          @bind-Value="@Model.ItemsSource"
+                          Changed="OnSettingsChanged">
+                </BbSelect>
+            }
 
             <button class="btn btn-outline-success ml-1" style="padding-top:2px; padding-bottom: 2px; margin-top: -5px; margin-left: 3px;" @onclick="OnExport">
                 <span class="fa fa-file-export"></span>
@@ -109,13 +137,28 @@
             <button class="btn btn-outline-success mr-1" style="padding-top:2px; padding-bottom: 2px; margin-top: -5px;" @onclick="OnImport">
                 <span class="fa fa-file-import"></span>
             </button>
+
+            <button class="btn btn-outline-primary ml-1" style="padding-top:2px; padding-bottom: 2px; margin-top: -5px; margin-left: 3px;" @onclick="OnOpenCellLinkModal">
+                <span class="fa fa-solid fa-link"></span>
+            </button>
+
+            <button class="btn btn-outline-primary ml-1" disabled="@IsButtonSplitJoinDisabled()" style="padding-top:2px; padding-bottom: 2px; margin-top: -5px; margin-left: 3px;" @onclick="OnSplitJoinCells">
+                @if (SelectedCellsCount > 1)
+                {
+                    <span>Join</span>
+                }
+                else
+                {
+                    <span>Split</span>
+                }
+            </button>
         </div>
     </div>
     <div class="row" style="margin-top:5px;">
 
         <div class="col-sm-1">
             <span class="text-primary" style="line-height: 30px;">
-                @( string.IsNullOrWhiteSpace(Model.SelectedCellAddress) ? "RC":  @Model.SelectedCellAddress)
+                @(string.IsNullOrWhiteSpace(Model.SelectedCellAddress) ? "RC" : @Model.SelectedCellAddress)
             </span>
         </div>
         <div class="col-sm-11">

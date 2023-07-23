@@ -8,9 +8,15 @@ namespace HubCloud.BlazorSheet.Core.Models
     {
         public Guid Uid { get; set; }
         public string Name { get; set; }
+        public bool UseVirtualization { get; set; }
+        public bool IsProtected { get; set; }
+
         public int RowsCount { get; set; }
         public int ColumnsCount { get; set; }
-        
+
+        public int FreezedRows { get; set; }
+        public int FreezedColumns { get; set; }
+
         public List<SheetRow> Rows { get; set; } = new List<SheetRow>();
         public List<SheetColumn> Columns { get; set; } = new List<SheetColumn>();
 

@@ -1,167 +1,270 @@
 ﻿@using HubCloud.BlazorSheet.Core.Enums
 @using HubCloud.BlazorSheet.Components
+@using HubCloud.BlazorSheet.Core.Models
 @using BBComponents.Components
 @using BBComponents.Enums
+@using Microsoft.AspNetCore.Components.Web.Virtualization
 
-<div style="overflow-y: auto; overflow-x: auto; max-height: @MaxHeight;">
+<div style="overflow-y: auto; overflow-x: auto; max-height: @MaxHeight; max-width:@MaxWidth">
 
     <table class="hc-sheet"
            tabindex="0"
-           style="width:100%"
            @onkeydown="(e => OnTableKeyDown(e))"
            @onkeyup="(e => OnTableKeyUp(e))">
 
         @*Sheet rows*@
         <tr>
 
-            <td class="hc-grid-cell" style="width: 30px;"></td>
+            <td class="hc-grid-cell" style="@TopLeftEmptyCellStyle()"></td>
 
             @foreach (var column in Sheet.Columns)
             {
-                @if (column.Hidden)
+                if (Regime == SheetRegimes.InputForm)
                 {
-                    continue;
+                    <td class="hc-grid-cell text-center"
+                        @oncontextmenu="(e => OnColumnContextMenu(e, column))"
+                        @oncontextmenu:preventDefault
+                        style="@TopSideCellStyle(Sheet, column)"
+                        hidden="@CellHidden(column)">
+                        @Sheet.ColumnNumber(column)
+                    </td>
                 }
-
-                <td class="hc-grid-cell text-center"
-                    @onclick="(e => OnColumnNumberCellClick(column))"
-                    @oncontextmenu="(e => OnColumnContextMenu(e, column))"
-                    @oncontextmenu:preventDefault
-                    style="width:@column.Width; max-width: @column.Width;">
-                    @Sheet.ColumnNumber(column)
-                </td>
+                else
+                {
+                    <td class="hc-grid-cell text-center"
+                        @onclick="(e => OnColumnNumberCellClick(column))"
+                        @oncontextmenu="(e => OnColumnContextMenu(e, column))"
+                        @oncontextmenu:preventDefault
+                        style="@TopSideCellStyle(Sheet, column)"
+                        hidden="@CellHidden(column)">
+                        @Sheet.ColumnNumber(column)
+                    </td>
+                }
             }
 
         </tr>
 
         @*Sheet body*@
-        @foreach (var row in Sheet.Rows)
+        @if (Sheet.UseVirtualization && Regime == SheetRegimes.InputForm)
         {
-            <tr>
-                <td class="hc-grid-cell"
-                    @onclick="(e => OnRowNumberCellClick(row))"
-                    @oncontextmenu="(e => OnRowContextMenu(e, row))"
-                    @oncontextmenu:preventDefault>
-                    <span>@(Sheet.RowNumber(row))</span>
-                </td>
-                @foreach (var column in Sheet.Columns)
+            if (Sheet.FreezedRows > 0)
+            {
+                foreach (var row in Sheet.Rows.Take(Sheet.FreezedRows))
                 {
-                    var cell = Sheet.GetCell(row, column);
-                    if (cell == null)
-                    {
-                        continue;
-                    }
+                    <tr>
+                        <td class="hc-grid-cell"
+                            style="@LeftSideCellStyle(Sheet, row)"
+                            @oncontextmenu="(e => OnRowContextMenu(e, row))"
+                            @oncontextmenu:preventDefault
+                            hidden="@CellHidden(row)">
+                            <span>@(Sheet.RowNumber(row))</span>
+                        </td>
 
-                    @if (Regime == SheetRegimes.Edit)
-                    {
-                        <td class="@CellClass(cell)"
-                            contenteditable="true"
-                            style="@CellStyle(Sheet, row, column, cell)"
-                            @oninput="(e => OnInput(e, cell))"
-                            @onclick="(e => OnCellClick(row, column, cell))"
-                            @onfocusout="(e => OnCellFocusOut(e, cell))">
-                            
-                            @if (cell.EditSettingsUid.HasValue)
+                        @foreach (var column in Sheet.Columns) 
+                        {
+                            var cell = Sheet.GetCell(row, column);
+
+                            if (cell == null)
                             {
-                                 var editSettings = Sheet.GetEditSettings(cell);
-                                if (editSettings.ControlKind == CellControlKinds.NumberInput)
+                                continue;
+                            }
+
+                            <td class="@CellClass(cell)"
+                                style="@CellStyle(Sheet, row, column, cell)"
+                                hidden="@CellHidden(column, row)"
+                                colspan="@cell.Colspan"
+                                rowspan="@cell.Rowspan">
+
+                                @if (cell.EditSettingsUid.HasValue)
                                 {
-                                    <BbNumberInput TValue="decimal"
-                                                   HtmlStyle="width:100%; text-align:right;"
-                                                   Digits="@editSettings.NumberDigits"
-                                                   @bind-Value="@cell.DecimalValue"
-                                                   Changed="(e => OnCellValueChanged(cell))">
-                                    </BbNumberInput>
-                                }
-                                else if (editSettings.ControlKind == CellControlKinds.TextInput)
-                                {
-                                    <BbTextInput HtmlStyle="width:100%" 
-                                                 @bind-Value="@cell.StringValue" 
-                                                 Changed="(e => OnCellValueChanged(cell))">
-                                        
-                                    </BbTextInput>
-                                }
-                                else if (editSettings.ControlKind == CellControlKinds.DateInput)
-                                {
-                                    <BbDatePicker @bind-Value="@cell.DateTimeValue"
-                                                  DropdownPosition="DropdownPositions.Fixed"
-                                                  Size="BootstrapElementSizes.Sm"
-                                                  Changed="(e => OnCellValueChanged(cell))">
-                                    </BbDatePicker>
-                                }
-                                else if (editSettings.ControlKind == CellControlKinds.DateTimeInput)
-                                {
-                                    <BbDatePicker @bind-Value="@cell.DateTimeValue"
-                                                  DropdownPosition="DropdownPositions.Fixed"
-                                                  Size="BootstrapElementSizes.Sm"
-                                                  Changed="(e => OnCellValueChanged(cell))">
-                                    </BbDatePicker>
+                                    var editSettings = Sheet.GetEditSettings(cell);
+                                    <CellEditControl EditSettings="@editSettings" 
+                                                     Cell="@cell" 
+                                                     IsDisabled="@IsDisabled" 
+                                                     ColumnWidth="@((int)column.WidthValue)"
+                                                     ComboBoxDataProvider="@ComboBoxDataProviderFactory.Create(editSettings.ItemsSource)"
+                                                     Changed="(e=>OnCellValueChanged(cell))"></CellEditControl>
                                 }
                                 else
                                 {
-                                    <span style="color:red;">Unknown control</span>
+                                    @*@cell.Text*@
+                                    if (cell.HasLink)
+                                    {
+                                        <a href="@cell.Link" target="_blank">@cell.StringValue</a>
+                                    }
+                                    else
+                                    {
+                                        @cell.Text
+                                    }
                                 }
+
+                            </td>
+                        }
+                    </tr>
+                }
+            }
+            <Virtualize Items="@Sheet.Rows.Skip(Sheet.FreezedRows).ToList()" TItem="SheetRow" Context="row" OverscanCount="10" ItemSize="26">
+                <tr>
+                    <td class="hc-grid-cell"
+                        style="@LeftSideCellStyle(Sheet, row)"
+                        @oncontextmenu="(e => OnRowContextMenu(e, row))"
+                        @oncontextmenu:preventDefault
+                        hidden="@CellHidden(row)">
+                        <span>@(Sheet.RowNumber(row))</span>
+                    </td>
+
+                    @foreach (var column in Sheet.Columns)
+                    {
+                        var cell = Sheet.GetCell(row, column);
+
+                        if (cell == null)
+                        {
+                            continue;
+                        }
+
+                        <td class="@CellClass(cell)"
+                            style="@CellStyle(Sheet, row, column, cell)"
+                            hidden="@CellHidden(column, row)"
+                            colspan="@cell.Colspan"
+                            rowspan="@cell.Rowspan">
+                            
+                            @if (cell.EditSettingsUid.HasValue)
+                            {
+                                var editSettings = Sheet.GetEditSettings(cell);
+                                <CellEditControl EditSettings="@editSettings" 
+                                                 Cell="@cell" 
+                                                 IsDisabled="@IsDisabled"
+                                                 ColumnWidth="@((int)column.WidthValue)"
+                                                 ComboBoxDataProvider="@ComboBoxDataProviderFactory.Create(editSettings.ItemsSource)"
+                                                 Changed="(e=>OnCellValueChanged(cell))"></CellEditControl>
                             }
                             else
                             {
-                                @cell.Text
+                                @*@cell.Text*@
+                                if (cell.HasLink)
+                                {
+                                    <a href="@cell.Link" target="_blank">@cell.StringValue</a>
+                                }
+                                else
+                                {
+                                    @cell.Text
+                                }
                             }
-                           
+
+                        </td>
+                    }
+                </tr>
+            </Virtualize>
+        }
+        else
+        {
+            @foreach (var row in Sheet.Rows)
+            {
+                <tr>
+
+                    @if (Regime == SheetRegimes.InputForm) 
+                    {
+                        <td class="hc-grid-cell"
+                            style="@LeftSideCellStyle(Sheet, row)"
+                            @oncontextmenu="(e => OnRowContextMenu(e, row))"
+                            @oncontextmenu:preventDefault
+                            hidden="@CellHidden(row)">
+                            <span>@(Sheet.RowNumber(row))</span>
                         </td>
                     }
                     else
                     {
-                        <td class="@CellClass(cell)" style="@CellStyle(Sheet, row, column, cell)">
-                            @if (cell.EditSettingsUid.HasValue)
-                            {
-                                var editSettings = Sheet.GetEditSettings(cell);
-                                if (editSettings.ControlKind == CellControlKinds.NumberInput)
+                        <td class="hc-grid-cell"
+                            style="@LeftSideCellStyle(Sheet, row)"
+                            @onclick="(e => OnRowNumberCellClick(row))"
+                            @oncontextmenu="(e => OnRowContextMenu(e, row))"
+                            @oncontextmenu:preventDefault
+                            hidden="@CellHidden(row)">
+                            <span>@(Sheet.RowNumber(row))</span>
+                        </td>
+                    }
+
+                    @foreach (var column in Sheet.Columns)
+                    {
+                        var cell = Sheet.GetCell(row, column);
+
+                        if (cell == null)
+                        {
+                            continue;
+                        }
+
+                        @if (Regime == SheetRegimes.Design)
+                        {
+                            <td class="@CellClass(cell)"
+                                contenteditable="@(!cell.HasLink)"
+                                style="@CellStyle(Sheet, row, column, cell)"
+                                hidden="@CellHidden(column, row, cell)"
+                                colspan="@cell.Colspan"
+                                rowspan="@cell.Rowspan"
+                                @oninput="(e => OnInput(e, cell))"
+                                @onclick="(e => OnCellClick(e, row, column, cell))"
+                                @onfocusout="(e => OnCellFocusOut(e, cell))">
+                                
+                                @if (cell.EditSettingsUid.HasValue)
                                 {
-                                    <BbNumberInput TValue="decimal"
-                                                   HtmlStyle="width:100%; text-align:right;"
-                                                   Digits="@editSettings.NumberDigits"
-                                                   @bind-Value="@cell.DecimalValue"
-                                                   Changed="(e => OnCellValueChanged(cell))">
-                                    </BbNumberInput>
-                                }
-                                else if (editSettings.ControlKind == CellControlKinds.TextInput)
-                                {
-                                    <BbTextInput HtmlStyle="width:100%" 
-                                                 @bind-Value="@cell.StringValue" 
-                                                 Changed="(e => OnCellValueChanged(cell))">
-                                        
-                                    </BbTextInput>
-                                }
-                                else if (editSettings.ControlKind == CellControlKinds.DateInput)
-                                {
-                                    <BbDatePicker @bind-Value="@cell.DateTimeValue"
-                                                  DropdownPosition="DropdownPositions.Fixed"
-                                                  Size="BootstrapElementSizes.Sm"
-                                                  Changed="(e => OnCellValueChanged(cell))">
-                                    </BbDatePicker>
-                                }
-                                else if (editSettings.ControlKind == CellControlKinds.DateTimeInput)
-                                {
-                                    <BbDatePicker @bind-Value="@cell.DateTimeValue"
-                                                  DropdownPosition="DropdownPositions.Fixed"
-                                                  Size="BootstrapElementSizes.Sm"
-                                                  Changed="(e => OnCellValueChanged(cell))">
-                                    </BbDatePicker>
+                                    var editSettings = Sheet.GetEditSettings(cell);
+                                    <CellEditControl EditSettings="@editSettings" 
+                                                     Cell="@cell" 
+                                                     IsDisabled="@IsDisabled"
+                                                     ColumnWidth="@((int)column.WidthValue)"
+                                                     ComboBoxDataProvider="@_fakeComboBoxDataProvider"
+                                                     Changed="(e=>OnCellValueChanged(cell))"></CellEditControl>
                                 }
                                 else
                                 {
-                                    <span style="color:red;">Unknown control</span>
+                                    if (cell.HasLink)
+                                    {
+                                        <a href="@cell.Link" target="_blank">@cell.StringValue</a>
+                                    }
+                                    else
+                                    {
+                                        @cell.Text
+                                    }
                                 }
-                            }
-                            else
-                            {
-                                @cell.Text
-                            }
+                               
+                            </td>
+                        }
+                        else
+                        {
+                            <td class="@CellClass(cell)" 
+                                style="@CellStyle(Sheet, row, column, cell)"
+                                hidden="@CellHidden(column, row)"
+                                colspan="@cell.Colspan"
+                                rowspan="@cell.Rowspan">
 
-                        </td>
+                                @if (cell.EditSettingsUid.HasValue)
+                                {
+                                    var editSettings = Sheet.GetEditSettings(cell);
+                                    
+                                    <CellEditControl EditSettings="@editSettings"
+                                                     Cell="@cell"
+                                                     IsDisabled="@IsDisabled"
+                                                     ColumnWidth="@((int)column.WidthValue)"
+                                                     ComboBoxDataProvider="@ComboBoxDataProviderFactory?.Create(editSettings.ItemsSource)"
+                                                     Changed="(e=>OnCellValueChanged(cell))"></CellEditControl>
+                                }
+                                else
+                                {
+                                    if (cell.HasLink)
+                                    {
+                                        <a href="@cell.Link" target="_blank">@cell.StringValue</a>
+                                    }
+                                    else
+                                    {
+                                        @cell.Text
+                                    }
+                                }
+
+                            </td>
+                        }
                     }
-                }
-            </tr>
+                </tr>
+            }
         }
 
     </table>
@@ -216,4 +319,14 @@
                          Closed="OnSheetSizeModalClosed"
                          Columns="@Sheet.Columns.Count"
                          Rows="@Sheet.Rows.Count"/>
+}
+
+@if (_isCellLinkInputModalOpen)
+{
+    <CellLinkInputModal Link="@_currentCell.Link"
+                        Text="@_currentCell.StringValue"
+                        Width="250"
+                        ClientX="@_clientX"
+                        ClientY="@_clientY"
+                        Closed="OnCellLinkInputModalClosed" />
 }

@@ -1,6 +1,8 @@
 ﻿using HubCloud.BlazorSheet.Core.Models;
 using HubCloud.BlazorSheet.EvalEngine.Engine;
 using HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders;
+using HubCloud.BlazorSheet.Infrastructure;
+using HubCloud.BlazorSheet.ServerSideExamples.Infrastructure;
 using Microsoft.AspNetCore.Components;
 
 namespace HubCloud.BlazorSheet.ServerSideExamples.Pages;
@@ -9,9 +11,13 @@ public partial class SheetInputPage : ComponentBase
 {
     private Workbook _workbook;
     private WorkbookEvaluator _evaluator;
+    private IComboBoxDataProviderFactory _dataProviderFactory;
+    private bool _isDisabled;
 
     protected override void OnInitialized()
     {
+        _dataProviderFactory = new ComboBoxDataProviderFactory();
+        
         var builder = new WorkbookSmallBudgetBuilder();
         _workbook = builder.Build();
         

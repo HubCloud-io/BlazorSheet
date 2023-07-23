@@ -16,6 +16,8 @@ namespace HubCloud.BlazorSheet.Core.Models
         public bool IsBold { get; set; }
         public bool IsItalic { get; set; }
         public int FontSize { get; set; }
+        public int FreezedRows { get; set; }
+        public int FreezedColumns { get; set; }
         public string FontFamily { get; set; }
         public string TextAlign { get; set; } = DefaultTextAlign;
         public string CustomFormat { get; set; }
@@ -25,11 +27,14 @@ namespace HubCloud.BlazorSheet.Core.Models
         public int BorderWidth { get; set; } = 1;
         public string BorderColor { get; set; } = "#000000";
         
+        public string ItemsSource { get; set; }
         public CellControlKinds ControlKind { get; set; }
         public int NumberDigits { get; set; }
         
         public string SelectedCellAddress { get; set; }
         public string InputText { get; set; }
+        public bool CellLocked { get; set; } = true;
+        public bool SheetProtected { get; set; }
 
         public void CopyFrom(SheetCommandPanelModel clone)
         {
@@ -48,6 +53,8 @@ namespace HubCloud.BlazorSheet.Core.Models
             this.BorderColor = clone.BorderColor;
             this.FormatType = clone.FormatType;
             this.CustomFormat = clone.CustomFormat;
+            this.CellLocked = clone.CellLocked;
+            this.SheetProtected = clone.SheetProtected;
         }
         
         public void CopyFrom(SheetCellStyle cellStyle)
@@ -116,12 +123,15 @@ namespace HubCloud.BlazorSheet.Core.Models
                     this.CustomFormat = cellStyle.Format;
                     break;
             }
+
+            this.CellLocked = cellStyle.Locked;
         }
 
         public void SetEditSettings(SheetCellEditSettings editSettings)
         {
             ControlKind = editSettings.ControlKind;
             NumberDigits = editSettings.NumberDigits;
+            ItemsSource = editSettings.ItemsSource;
         }
 
         private int ParseFontSize(string fontSizePx)

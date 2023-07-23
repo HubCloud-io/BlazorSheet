@@ -44,6 +44,11 @@ namespace HubCloud.BlazorSheet.Core.Models
             _sheets.Add(sheet);
         }
 
+        public void ClearSheets()
+        {
+            _sheets.Clear();
+        }
+
         public WorkbookSettings ToSettings()
         {
             var settings = new WorkbookSettings();

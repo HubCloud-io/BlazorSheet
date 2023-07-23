@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Security.Cryptography.X509Certificates;
 using Newtonsoft.Json;
 
@@ -12,10 +13,21 @@ namespace HubCloud.BlazorSheet.Core.Models
         public Guid? StyleUid { get; set; }
         public Guid? EditSettingsUid { get; set; }
         public string Name { get; set; }
+        public string Link { get; set; }
+        public int Colspan { get; set; } = 1;
+        public int Rowspan { get; set; } = 1;
+        public bool HiddenByJoin { get; set; }
 
         [JsonIgnore] public string Text { get; set; }
         public object Value { get; set; }
         public string Formula { get; set; }
+
+        public bool HasLink => !string.IsNullOrEmpty(Link) && !string.IsNullOrWhiteSpace(Link);
+
+        public CellKey GetKey()
+        {
+            return new CellKey(RowUid, ColumnUid);
+        }
 
         [JsonIgnore]
         public decimal DecimalValue
@@ -29,6 +41,40 @@ namespace HubCloud.BlazorSheet.Core.Models
                 else
                 {
                     return 0M;
+                }
+            }
+            set => Value = value;
+        }
+        
+        [JsonIgnore]
+        public int IntValue
+        {
+            get
+            {
+                if (Value is int intValue)
+                {
+                    return intValue;
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+            set => Value = value;
+        }
+        
+        [JsonIgnore]
+        public bool BoolValue
+        {
+            get
+            {
+                if (Value is bool boolValue)
+                {
+                    return boolValue;
+                }
+                else
+                {
+                    return false;
                 }
             }
             set => Value = value;
@@ -66,6 +112,7 @@ namespace HubCloud.BlazorSheet.Core.Models
                 RowUid = this.RowUid,
                 ColumnUid = this.ColumnUid,
                 Name = this.Name,
+                Link = this.Link,
 
                 Text = this.Text,
                 Value = this.Value
@@ -92,8 +139,12 @@ namespace HubCloud.BlazorSheet.Core.Models
 
             if (DateTime.TryParse(text, out var date))
                 Text = date.ToString(format);
-            else if (decimal.TryParse(text, out var decimalValue))
-                Text = decimalValue.ToString(format);
+            else if (decimal.TryParse(
+                text.Replace(',', '.'),
+                NumberStyles.AllowDecimalPoint,
+                new NumberFormatInfo { NumberDecimalSeparator = "." },
+                out var decimalValue))
+                Text = decimalValue.ToString(format, CultureInfo.InvariantCulture);
         }
     }
 }

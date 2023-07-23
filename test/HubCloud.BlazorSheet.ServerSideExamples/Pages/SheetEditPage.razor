@@ -1,4 +1,5 @@
 ﻿@page "/sheetedit"
+
 @using HubCloud.BlazorSheet.Core.Enums
 @using HubCloud.BlazorSheet.Components
 
@@ -6,8 +7,14 @@
 
 <hr/>
 
-<SheetCommandPanel Model="@_commandPanelModel" 
-                           Changed="OnStyleChanged"></SheetCommandPanel>
+<SheetCommandPanel Model="@_commandPanelModel"
+                   ItemsSourceDataProvider="@_itemSourceDataProvider"
+                   SelectedCellsCount="@SelectedCellsCount"
+                   CanCellsBeJoined="@_canCellsBeJoined"
+                   OpenCellLinkModal="() => _sheetComponent.OpenCellLinkModal()"
+                   SplitJoinCells="() => _sheetComponent.SplitJoinCells()"
+                   Changed="OnStyleChanged">
+</SheetCommandPanel>
 
 <hr/>
 
@@ -15,12 +22,15 @@
 
     <div class="col-sm-12">
 
-        <SheetComponent Sheet="@_sheet"
-                                Regime="@SheetRegimes.Edit"
-                                CellSelected="OnCellSelected"
-                                CellsSelected="OnCellsSelected"
-                                RowSelected="OnRowSelected"
-                                ColumnSelected="OnColumnSelected">
+        <SheetComponent @ref="_sheetComponent" 
+                        Sheet="@_sheet"
+                        MaxHeight="500px"
+                        MaxWidth="1000px"
+                        Regime="@SheetRegimes.Design"
+                        CellSelected="OnCellSelected"
+                        CellsSelected="OnCellsSelected"
+                        RowSelected="OnRowSelected"
+                        ColumnSelected="OnColumnSelected">
         </SheetComponent>
 
     </div>

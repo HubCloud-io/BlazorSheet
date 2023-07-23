@@ -10,7 +10,7 @@ public partial class SheetRenderPage: ComponentBase
 
     protected override void OnInitialized()
     {
-        _sheetSettings = BuildSheetSettingsWithCellNames(3, 3);
+        _sheetSettings = BuildSheetSettingsWithCellNames(25, 25);
 
         _sheet = new Sheet(_sheetSettings);
     }
@@ -20,7 +20,9 @@ public partial class SheetRenderPage: ComponentBase
         var sheetSettings = new SheetSettings()
         {
             RowsCount = rowsCount,
-            ColumnsCount = columnsCount
+            ColumnsCount = columnsCount,
+            FreezedColumns = 3,
+            FreezedRows = 3
         };
 
         for (var r = 1; r <= rowsCount; r++)

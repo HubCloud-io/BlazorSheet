@@ -27,6 +27,13 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
             };
             sheetSettings.EditSettings.Add(editSettingsDate);
 
+            var editSettingsDepartment = new SheetCellEditSettings()
+            {
+                ControlKind = CellControlKinds.ComboBox,
+                ItemsSource = "department"
+            };
+            sheetSettings.EditSettings.Add(editSettingsDepartment);
+
             var totalStyle = new SheetCellStyle()
             {
                 FontWeight = "bold",
@@ -39,14 +46,17 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
             sheet.Name = "budget";
 
             sheet.GetCell(1, 2).Value = "Department";
+            sheet.GetCell(2, 2).EditSettingsUid = editSettingsDepartment.Uid;
+            
+            
             sheet.GetCell(1, 3).Value = "Start date";
             sheet.GetCell(2, 3).EditSettingsUid = editSettingsDate.Uid;
 
             sheet.GetCell(4, 2).Value = "Budget item / Period";
 
-            sheet.GetCell(4, 3).Value = "January";
-            sheet.GetCell(4, 4).Value = "February";
-            sheet.GetCell(4, 5).Value = "March";
+            sheet.GetCell(4, 3).Formula = $"Val(\"R2C3\").BeginYear()";
+            sheet.GetCell(4, 4).Formula = $"Val(\"R2C3\").BeginYear().AddMonths(1)";
+            sheet.GetCell(4, 5).Formula = $"Val(\"R2C3\").BeginYear().AddMonths(2)";
 
             sheet.GetCell(5, 2).Value = "Rent";
             sheet.GetCell(6, 2).Value = "Tax";
@@ -77,6 +87,9 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
 
             sheet.GetCell(8, 6).Formula = $"Sum(\"R5C6:R-1C6\")";
             sheet.GetCell(8, 6).StyleUid = totalStyle.Uid;
+
+            sheet.GetCell(1, 6).Value = "About Blazor";
+            sheet.GetCell(1, 6).Link = "https://dotnet.microsoft.com/en-us/apps/aspnet/web-apps/blazor";
 
             sheet.PrepareCellText();
 

@@ -6,39 +6,49 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
 {
     public class InterpreterInitializer
     {
-        
-        private static WorkbookData _data;
-        
+
         public static Interpreter CreateInterpreter(WorkbookData data)
         {
-            _data = data;
-            
             var interpreter = new Interpreter(InterpreterOptions.DefaultCaseInsensitive);
 
             interpreter.Reference(typeof(DateTime));
-            interpreter.Reference(typeof(System.MidpointRounding));
+            interpreter.Reference(typeof(MidpointRounding));
             interpreter.Reference(typeof(System.Linq.Enumerable));
 
-            Func<string, UniversalValue> sumFunction = Sum;
+            Func<string, UniversalValue> sumFunction = data.Sum;
             interpreter.SetFunction("SUM", sumFunction);
             
-            Func<string, UniversalValue> valFunction = Val;
+            Func<string[], UniversalValue> sumFunction2 = data.Sum;
+            interpreter.SetFunction("SUM", sumFunction2);
+            
+            Func<string, UniversalValue> valFunction = data.GetValue;
             interpreter.SetFunction("VAL", valFunction);
             
+            Func<UniversalValue> rowFunction = data.Row;
+            interpreter.SetFunction("ROW", rowFunction);
+            
+            Func<UniversalValue> columnFunction = data.Column;
+            interpreter.SetFunction("COLUMN", columnFunction);
+
+            Func<UniversalValue, UniversalValue> isEmptyFunction = data.IsEmpty;
+            interpreter.SetFunction("IsEmpty", isEmptyFunction);
+
+            Func<UniversalValue, UniversalValue> isNotEmptyFunction = data.IsNotEmpty;
+            interpreter.SetFunction("IsNotEmpty", isNotEmptyFunction);
+
+            Func<UniversalValue> nowFunction = data.Now;
+            interpreter.SetFunction("NOW", nowFunction);
+            
+            Func<string, UniversalValue, UniversalValue, UniversalValue> dateDiffFunction = data.DateDiff;
+            interpreter.SetFunction("DateDiff", dateDiffFunction);
+
+            Func<bool, object, object, UniversalValue> iifFunction = data.Iif;
+            interpreter.SetFunction("iif", iifFunction);
+
+            Func<object[], UniversalValue> ifsFunction = data.Ifs;
+            interpreter.SetFunction("ifs", ifsFunction);
+
             return interpreter;
         }
-        
-        private static UniversalValue Sum(string address)
-        {
-            var result = _data.Sum(address);
-            return result;
-        }
-        
-        private static UniversalValue Val(string address)
-        {
-            var result = _data.GetValue(address);
-            return result;
-        }
-        
     }
 }

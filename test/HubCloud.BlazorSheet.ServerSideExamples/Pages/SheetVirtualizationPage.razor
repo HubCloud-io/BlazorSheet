@@ -1,0 +1,26 @@
+﻿@page "/sheetvirtualization"
+
+@using BlazorSheet.Components
+@using HubCloud.BlazorSheet.Core.Enums
+
+<h3>SheetVirtualization</h3>
+<hr />
+
+<div class="row">
+    <div class="form-check">
+        <input class="form-check-input" type="checkbox" value="" id="checkVirtualisation" @onchange="(e) => CheckboxClicked(e)">
+        <label class="form-check-label" for="checkVirtualisation">
+            Virtualisation enabled
+        </label>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12 mt-2">
+        
+        <HubCloud.BlazorSheet.Components.SheetComponent Sheet="@_sheet"
+                                                        MaxHeight="500px"
+                                                        MaxWidth="1000px"
+                                                        Regime="SheetRegimes.InputForm"></HubCloud.BlazorSheet.Components.SheetComponent>
+
+    </div>
+</div>

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -14,11 +15,14 @@ namespace HubCloud.BlazorSheet.Core.Models
         private readonly List<SheetRow> _rows = new List<SheetRow>();
         private readonly List<SheetColumn> _columns = new List<SheetColumn>();
         private readonly List<SheetCell> _cells = new List<SheetCell>();
+        private readonly Dictionary<CellKey, SheetCell> _cellsIndex = new Dictionary<CellKey, SheetCell>();
         private readonly List<SheetCellStyle> _styles = new List<SheetCellStyle>();
         private readonly List<SheetCellEditSettings> _editSettings = new List<SheetCellEditSettings>();
 
         public Guid Uid { get; set; } = Guid.NewGuid();
         public string Name { get; set; }
+        public bool UseVirtualization { get; set; }
+        public bool IsProtected { get; set; }
         public int RowsCount
         {
             get => _rowsCount;
@@ -43,6 +47,9 @@ namespace HubCloud.BlazorSheet.Core.Models
             }
         }
 
+        public int FreezedRows { get; set; }
+        public int FreezedColumns { get; set; }
+
         public IReadOnlyCollection<SheetRow> Rows => _rows;
         public IReadOnlyCollection<SheetColumn> Columns => _columns;
         public IReadOnlyCollection<SheetCell> Cells => _cells;
@@ -57,12 +64,21 @@ namespace HubCloud.BlazorSheet.Core.Models
         {
             Uid = settings.Uid;
             Name = settings.Name;
+            UseVirtualization = settings.UseVirtualization;
             RowsCount = settings.RowsCount;
             ColumnsCount = settings.ColumnsCount;
+            FreezedColumns = settings.FreezedColumns;
+            FreezedRows = settings.FreezedRows;
+            IsProtected = settings.IsProtected;
 
             _rows.AddRange(settings.Rows);
             _columns.AddRange(settings.Columns);
-            _cells.AddRange(settings.Cells);
+
+            foreach (var cell in settings.Cells)
+            {
+                AddCell(cell);
+            }
+           
             _styles.AddRange(settings.Styles);
             _editSettings.AddRange(settings.EditSettings);
 
@@ -116,7 +132,7 @@ namespace HubCloud.BlazorSheet.Core.Models
                     cell.RowUid = row.Uid;
                     cell.ColumnUid = column.Uid;
 
-                    _cells.Add(cell);
+                    AddCell(cell);
                 }
 
                 _rows.Add(row);
@@ -140,11 +156,19 @@ namespace HubCloud.BlazorSheet.Core.Models
 
         public SheetCell GetCell(SheetRow row, SheetColumn column)
         {
-            var cell = Cells.FirstOrDefault(x => x.RowUid == row.Uid && x.ColumnUid == column.Uid);
+            //var cell = Cells.FirstOrDefault(x => x.RowUid == row.Uid && x.ColumnUid == column.Uid);
+            var key = new CellKey(row.Uid, column.Uid);
+            if (_cellsIndex.TryGetValue(key, out var cell))
+            {
+                return cell;
+            }
 
-            return cell;
+            return null;
         }
 
+        public SheetCell GetCell(SheetCellAddress cellAddress)
+            => GetCell(cellAddress.Row, cellAddress.Column);
+        
         public SheetCell GetCell(int rowNumber, int columnNumber)
         {
             if (rowNumber > _rowsCount || rowNumber <= 0)
@@ -240,7 +264,7 @@ namespace HubCloud.BlazorSheet.Core.Models
                     ColumnUid = column.Uid
                 };
 
-                _cells.Add(newCell);
+                AddCell(newCell);
             }
 
             if (position == -1)
@@ -289,7 +313,7 @@ namespace HubCloud.BlazorSheet.Core.Models
                     ColumnUid = newColumn.Uid
                 };
 
-                _cells.Add(newCell);
+                AddCell(newCell);
             }
 
             if (position == -1)
@@ -330,7 +354,7 @@ namespace HubCloud.BlazorSheet.Core.Models
             for (var i = cellsToDelete.Count() - 1; i >= 0; i--)
             {
                 var cell = cellsToDelete[i];
-                _cells.Remove(cell);
+                RemoveCell(cell);
             }
 
             if (_rows.Remove(row))
@@ -350,7 +374,7 @@ namespace HubCloud.BlazorSheet.Core.Models
             for (var i = cellsToDelete.Count() - 1; i >= 0; i--)
             {
                 var cell = cellsToDelete[i];
-                _cells.Remove(cell);
+                RemoveCell(cell);
             }
 
             if (_columns.Remove(column))
@@ -384,6 +408,10 @@ namespace HubCloud.BlazorSheet.Core.Models
             {
                 SetEditSettings(cells, newEditSettings);
             }
+
+            FreezedRows = commandPanelModel.FreezedRows;
+            FreezedColumns = commandPanelModel.FreezedColumns;
+            IsProtected = commandPanelModel.SheetProtected;
         }
 
         public void SetStyle(SheetCell cell, SheetCellStyle newStyle)
@@ -547,8 +575,12 @@ namespace HubCloud.BlazorSheet.Core.Models
             {
                 Uid = Uid,
                 Name = Name,
+                UseVirtualization = UseVirtualization,
                 RowsCount = RowsCount,
                 ColumnsCount = ColumnsCount,
+                FreezedColumns = FreezedColumns,
+                FreezedRows = FreezedRows,
+                IsProtected = IsProtected
             };
 
             settings.Rows.AddRange(_rows);
@@ -604,8 +636,245 @@ namespace HubCloud.BlazorSheet.Core.Models
             _rows.Clear();
             _columns.Clear();
             _cells.Clear();
+            _cellsIndex.Clear();
             //_styles.Clear();
             //_editSettings.Clear();
+        }
+
+        public SheetCell JoinCells(List<SheetCell> selectedCells)
+        {
+            var cells = selectedCells.Distinct().ToList();
+
+            if (cells.Count <= 1)
+                return null;
+
+            var cellWithAddressList = cells.Select(cell => new CellWithAddress
+            {
+                Cell = cell,
+                Address = CellAddress(cell)
+            });
+
+            var grouppedByRow = cellWithAddressList.GroupBy(x => x.Address.Row).OrderBy(x => x.Key);
+            var grouppedByColumn = cellWithAddressList.GroupBy(x => x.Address.Column).OrderBy(x => x.Key);
+
+            var topLeftCell = grouppedByRow
+                    .First()
+                    .OrderBy(x => x.Address.Column)
+                    .First()
+                    .Cell;
+
+            // join cells by horizontal and vertical
+            if (grouppedByRow.Count() > 1 && grouppedByColumn.Count() > 1)
+            {
+                var colspanMax = grouppedByRow.Select(group => group.Sum(item => item.Cell.Colspan)).Max();
+                var rowspanMax = grouppedByColumn.Select(group => group.Sum(item => item.Cell.Rowspan)).Max();
+
+                topLeftCell.Colspan = colspanMax;
+                topLeftCell.Rowspan = rowspanMax;
+
+                foreach (var cell in cells)
+                {
+                    if (cell.Uid != topLeftCell.Uid)
+                    {
+                        cell.HiddenByJoin = true;
+                        cell.Colspan = 1;
+                        cell.Rowspan = 1;
+                    }
+                }
+            }
+            // join cells by horizontal
+            else if (grouppedByRow.Count() == 1)
+            {
+                topLeftCell.Colspan = grouppedByRow
+                    .First()
+                    .Sum(x => x.Cell.Colspan);
+
+                foreach (var cell in cells)
+                {
+                    if (cell.Uid != topLeftCell.Uid)
+                    {
+                        cell.HiddenByJoin = true;
+                        cell.Colspan = 1;
+                        cell.Rowspan = 1;
+                    }
+                }
+            }
+            // join cells by vertical
+            else if (grouppedByColumn.Count() == 1)
+            {
+                topLeftCell.Rowspan = grouppedByColumn
+                    .First()
+                    .Sum(x => x.Cell.Rowspan);
+
+                foreach (var cell in cells)
+                {
+                    if (cell.Uid != topLeftCell.Uid)
+                    {
+                        cell.HiddenByJoin = true;
+                        cell.Colspan = 1;
+                        cell.Rowspan = 1;
+                    }
+                }
+            }
+
+            return topLeftCell;
+        }
+
+        public void SplitCells(SheetCell currentCell)
+        {
+            var joinedCellRange = new SheetJoinedCellRange
+            {
+                Cell = currentCell,
+                Address = CellAddress(currentCell)
+            };
+
+            var range = joinedCellRange.Range;
+
+            foreach (var item in range)
+            {
+                var cell = GetCell(item);
+
+                if (cell != null)
+                {
+                    cell.Colspan = 1;
+                    cell.Rowspan = 1;
+                    cell.HiddenByJoin = false;
+                }
+            }
+        }
+
+        public bool CanCellsBeJoined(List<SheetCell> cells)
+        {
+            cells = cells.Distinct().ToList();
+
+            if (cells.Count < 2)
+                return false;
+
+            var joinedCellRangeList = new List<SheetJoinedCellRange>();
+
+            foreach (var cell in cells)
+            {
+                var joinedCellRange = new SheetJoinedCellRange
+                {
+                    Cell = cell,
+                    Address = CellAddress(cell)
+                };
+
+                joinedCellRangeList.Add(joinedCellRange);
+            }
+
+            var addresses = new List<SheetCellAddress>();
+            joinedCellRangeList.ForEach(cell => addresses.AddRange(cell.Range));
+
+            var firstColumnNumber = addresses.Select(s => s.Column).Min();
+            var lastColumnNumber = addresses.Select(s => s.Column).Max();
+            var firstRowNumber = addresses.Select(s => s.Row).Min();
+            var lastRowNumber = addresses.Select(s => s.Row).Max();
+
+            for (int i = firstRowNumber; i <= lastRowNumber; i++)
+            {
+                for (int j = firstColumnNumber; j <= lastColumnNumber; j++)
+                {
+                    var cellAddress = addresses.FirstOrDefault(address => address.Row == i && address.Column == j);
+
+                    if (cellAddress == null)
+                        return false;
+                }
+            }
+
+            return true;
+        }
+
+        private bool CanFreezedRowsBeSet(int freezedRows, List<CellWithAddress> cellWithAddressList)
+        {
+            foreach (var cell in cellWithAddressList)
+            {
+                var joinedCellsCount = cell.Address.Row + cell.Cell.Rowspan - 1;
+
+                if (cell.Address.Row <= freezedRows && joinedCellsCount > freezedRows)
+                    return false;
+            }
+
+            return true;
+        }
+
+        private bool CanFreezedColumnsBeSet(int freezedColumns, List<CellWithAddress> cellWithAddressList)
+        {
+            foreach (var cell in cellWithAddressList)
+            {
+                var joinedCellsCount = cell.Address.Column + cell.Cell.Colspan - 1;
+
+                if (cell.Address.Column <= freezedColumns && joinedCellsCount > freezedColumns)
+                    return false;
+            }
+
+            return true;
+        }
+
+        public bool CheckFreezedRowsAndColumns(SheetCommandPanelModel commandPanelModel)
+        {
+            if (commandPanelModel.FreezedRows > 0)
+            {
+                var cellWithAddressList = Cells
+                    .Where(cell => cell.Rowspan > 1)
+                    .Select(cell => new CellWithAddress
+                    {
+                        Cell = cell,
+                        Address = CellAddress(cell)
+                    })
+                    .ToList();
+
+                if (!CanFreezedRowsBeSet(commandPanelModel.FreezedRows, cellWithAddressList))
+                    return false;
+            }
+            if (commandPanelModel.FreezedColumns > 0)
+            {
+                var cellWithAddressList = Cells
+                    .Where(cell => cell.Colspan > 1)
+                    .Select(cell => new CellWithAddress
+                    {
+                        Cell = cell,
+                        Address = CellAddress(cell)
+                    })
+                    .ToList();
+
+                if (!CanFreezedColumnsBeSet(commandPanelModel.FreezedColumns, cellWithAddressList))
+                    return false;
+            }
+
+            return true;
+        }
+
+        public Sheet Copy()
+        {
+            var output = JsonConvert.SerializeObject(this);
+            return JsonConvert.DeserializeObject<Sheet>(output);
+        }
+
+        public void AddCell(SheetCell cell)
+        {
+            var key = cell.GetKey();
+
+            if (_cellsIndex.ContainsKey(key))
+            {
+                // Do nothing
+            }
+            else
+            {
+                _cells.Add(cell);
+                _cellsIndex.Add(key, cell);
+            }
+        }
+
+        public void RemoveCell(SheetCell cell)
+        {
+            var key = cell.GetKey();
+
+            if (_cellsIndex.ContainsKey(key))
+            {
+                _cellsIndex.Remove(key);
+            }
+            _cells.Remove(cell);
         }
     }
 }
