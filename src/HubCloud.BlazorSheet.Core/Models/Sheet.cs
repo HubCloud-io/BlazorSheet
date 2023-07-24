@@ -15,7 +15,6 @@ namespace HubCloud.BlazorSheet.Core.Models
         private readonly List<SheetRow> _rows = new List<SheetRow>();
         private readonly List<SheetColumn> _columns = new List<SheetColumn>();
         private readonly List<SheetCell> _cells = new List<SheetCell>();
-        private readonly Dictionary<CellKey, SheetCell> _cellsIndex = new Dictionary<CellKey, SheetCell>();
         private readonly List<SheetCellStyle> _styles = new List<SheetCellStyle>();
         private readonly List<SheetCellEditSettings> _editSettings = new List<SheetCellEditSettings>();
 
@@ -23,6 +22,7 @@ namespace HubCloud.BlazorSheet.Core.Models
         public string Name { get; set; }
         public bool UseVirtualization { get; set; }
         public bool IsProtected { get; set; }
+
         public int RowsCount
         {
             get => _rowsCount;
@@ -78,7 +78,7 @@ namespace HubCloud.BlazorSheet.Core.Models
             {
                 AddCell(cell);
             }
-           
+
             _styles.AddRange(settings.Styles);
             _editSettings.AddRange(settings.EditSettings);
 
@@ -156,19 +156,14 @@ namespace HubCloud.BlazorSheet.Core.Models
 
         public SheetCell GetCell(SheetRow row, SheetColumn column)
         {
-            //var cell = Cells.FirstOrDefault(x => x.RowUid == row.Uid && x.ColumnUid == column.Uid);
-            var key = new CellKey(row.Uid, column.Uid);
-            if (_cellsIndex.TryGetValue(key, out var cell))
-            {
-                return cell;
-            }
+            var cell = Cells.FirstOrDefault(x => x.RowUid == row.Uid && x.ColumnUid == column.Uid);
 
-            return null;
+            return cell;
         }
 
         public SheetCell GetCell(SheetCellAddress cellAddress)
             => GetCell(cellAddress.Row, cellAddress.Column);
-        
+
         public SheetCell GetCell(int rowNumber, int columnNumber)
         {
             if (rowNumber > _rowsCount || rowNumber <= 0)
@@ -219,7 +214,7 @@ namespace HubCloud.BlazorSheet.Core.Models
             {
                 editSettings = new SheetCellEditSettings();
             }
-            
+
             return editSettings;
         }
 
@@ -295,7 +290,7 @@ namespace HubCloud.BlazorSheet.Core.Models
 
         public SheetColumn GetColumn(int c)
         {
-            return _columns[c-1];
+            return _columns[c - 1];
         }
 
         public void AddColumn(SheetColumn baseColumn, int position)
@@ -383,7 +378,8 @@ namespace HubCloud.BlazorSheet.Core.Models
             }
         }
 
-        public void SetSettingsFromCommandPanel(List<SheetCell> cells, SheetCell cell, SheetCommandPanelModel commandPanelModel)
+        public void SetSettingsFromCommandPanel(List<SheetCell> cells, SheetCell cell,
+            SheetCommandPanelModel commandPanelModel)
         {
             if (cells == null)
             {
@@ -402,7 +398,7 @@ namespace HubCloud.BlazorSheet.Core.Models
 
             var newStyle = new SheetCellStyle(commandPanelModel);
             SetStyle(cells, newStyle);
-            
+
             var newEditSettings = new SheetCellEditSettings(commandPanelModel);
             if (!newEditSettings.IsStandard())
             {
@@ -460,7 +456,7 @@ namespace HubCloud.BlazorSheet.Core.Models
                 cell.StyleUid = styleUid;
             }
         }
-        
+
         public void SetEditSettings(SheetCell cell, SheetCellEditSettings newEditSettings)
         {
             if (cell == null)
@@ -476,7 +472,7 @@ namespace HubCloud.BlazorSheet.Core.Models
             var collection = new SheetCell[] {cell};
             SetEditSettings(collection, newEditSettings);
         }
-        
+
         public void SetEditSettings(IEnumerable<SheetCell> cells, SheetCellEditSettings newEditSettings)
         {
             if (cells == null)
@@ -518,7 +514,7 @@ namespace HubCloud.BlazorSheet.Core.Models
 
             return null;
         }
-        
+
         public SheetCellEditSettings FindExistingEditSettings(SheetCellEditSettings newEditSettings)
         {
             foreach (var item in _editSettings)
@@ -607,7 +603,8 @@ namespace HubCloud.BlazorSheet.Core.Models
                 ChangeSize<SheetRow>(rowsAddRemoveCount, Rows, RemoveRow, AddRow);
         }
 
-        private void ChangeSize<T>(int addRemoveCount, IReadOnlyCollection<T> collection, Action<T> removeAction, Action<T, int> addAction) where T : class
+        private void ChangeSize<T>(int addRemoveCount, IReadOnlyCollection<T> collection, Action<T> removeAction,
+            Action<T, int> addAction) where T : class
         {
             if (addRemoveCount > 0)
             {
@@ -636,7 +633,6 @@ namespace HubCloud.BlazorSheet.Core.Models
             _rows.Clear();
             _columns.Clear();
             _cells.Clear();
-            _cellsIndex.Clear();
             //_styles.Clear();
             //_editSettings.Clear();
         }
@@ -658,10 +654,10 @@ namespace HubCloud.BlazorSheet.Core.Models
             var grouppedByColumn = cellWithAddressList.GroupBy(x => x.Address.Column).OrderBy(x => x.Key);
 
             var topLeftCell = grouppedByRow
-                    .First()
-                    .OrderBy(x => x.Address.Column)
-                    .First()
-                    .Cell;
+                .First()
+                .OrderBy(x => x.Address.Column)
+                .First()
+                .Cell;
 
             // join cells by horizontal and vertical
             if (grouppedByRow.Count() > 1 && grouppedByColumn.Count() > 1)
@@ -827,6 +823,7 @@ namespace HubCloud.BlazorSheet.Core.Models
                 if (!CanFreezedRowsBeSet(commandPanelModel.FreezedRows, cellWithAddressList))
                     return false;
             }
+
             if (commandPanelModel.FreezedColumns > 0)
             {
                 var cellWithAddressList = Cells
@@ -853,27 +850,11 @@ namespace HubCloud.BlazorSheet.Core.Models
 
         public void AddCell(SheetCell cell)
         {
-            var key = cell.GetKey();
-
-            if (_cellsIndex.ContainsKey(key))
-            {
-                // Do nothing
-            }
-            else
-            {
-                _cells.Add(cell);
-                _cellsIndex.Add(key, cell);
-            }
+            _cells.Add(cell);
         }
 
         public void RemoveCell(SheetCell cell)
         {
-            var key = cell.GetKey();
-
-            if (_cellsIndex.ContainsKey(key))
-            {
-                _cellsIndex.Remove(key);
-            }
             _cells.Remove(cell);
         }
     }
