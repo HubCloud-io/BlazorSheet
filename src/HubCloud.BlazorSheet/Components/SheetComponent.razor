@@ -132,7 +132,11 @@
         </tr>
     }
 }
-<Virtualize Items="@Sheet.Rows.Skip(Sheet.FreezedRows).ToList()" TItem="SheetRow" Context="row" OverscanCount="10" ItemSize="26">
+<Virtualize Items="@Sheet.Rows.Skip(Sheet.FreezedRows).ToList()" 
+            TItem="SheetRow" 
+            Context="row" 
+            OverscanCount="1" 
+            ItemSize="26">
     <ItemContent>
 
         <tr @key="@row.Uid">
