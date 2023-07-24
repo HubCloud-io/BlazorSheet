@@ -1,0 +1,310 @@
+﻿@using HubCloud.BlazorSheet.Core.Enums
+@using HubCloud.BlazorSheet.Components
+@using HubCloud.BlazorSheet.Core.Models
+@using BBComponents.Components
+@using BBComponents.Enums
+@using Microsoft.AspNetCore.Components.Web.Virtualization
+
+<div style="overflow-y: auto; overflow-x: auto; max-height: @MaxHeight; max-width:@MaxWidth">
+
+<table class="hc-sheet"
+       tabindex="0"
+       @onkeydown="(e => OnTableKeyDown(e))"
+       @onkeyup="(e => OnTableKeyUp(e))">
+
+@*Sheet rows*@
+<tr>
+
+    <td class="hc-grid-cell" style="@TopLeftEmptyCellStyle()"></td>
+
+    @foreach (var column in Sheet.Columns)
+    {
+        <td class="hc-grid-cell text-center"
+            @onclick="(e => OnColumnNumberCellClick(column))"
+            @oncontextmenu="(e => OnColumnContextMenu(e, column))"
+            @oncontextmenu:preventDefault
+            style="@TopSideCellStyle(Sheet, column)"
+            hidden="@CellHidden(column)">
+            @Sheet.ColumnNumber(column)
+        </td>
+    }
+
+</tr>
+
+@*Sheet body*@
+@if (Sheet.UseVirtualization && Regime == SheetRegimes.InputForm)
+{
+    if (Sheet.FreezedRows > 0)
+    {
+        foreach (var row in Sheet.Rows.Take(Sheet.FreezedRows))
+        {
+            <tr>
+                <td class="hc-grid-cell"
+                    style="@LeftSideCellStyle(Sheet, row)"
+                    @oncontextmenu="(e => OnRowContextMenu(e, row))"
+                    @oncontextmenu:preventDefault
+                    hidden="@CellHidden(row)">
+                    <span>@(Sheet.RowNumber(row))</span>
+                </td>
+
+                @foreach (var column in Sheet.Columns)
+                {
+                    var cell = Sheet.GetCell(row, column);
+
+                    if (cell == null)
+                    {
+                        continue;
+                    }
+
+                    <td class="@CellClass(cell)"
+                        style="@CellStyle(Sheet, row, column, cell)"
+                        hidden="@CellHidden(column, row)"
+                        colspan="@cell.Colspan"
+                        rowspan="@cell.Rowspan">
+
+                        @if (cell.EditSettingsUid.HasValue)
+                        {
+                            var editSettings = Sheet.GetEditSettings(cell);
+                            <CellEditControl EditSettings="@editSettings"
+                                             Cell="@cell"
+                                             IsDisabled="@IsDisabled"
+                                             ColumnWidth="@((int) column.WidthValue)"
+                                             ComboBoxDataProvider="@ComboBoxDataProviderFactory.Create(editSettings.ItemsSource)"
+                                             Changed="(e => OnCellValueChanged(cell))">
+                            </CellEditControl>
+                        }
+                        else
+                        {
+                                    @*@cell.Text*@
+                            if (cell.HasLink)
+                            {
+                                <a href="@cell.Link" target="_blank">@cell.StringValue</a>
+                            }
+                            else
+                            {
+                                @cell.Text
+                            }
+                        }
+
+                    </td>
+                }
+            </tr>
+        }
+    }
+    <Virtualize Items="@Sheet.Rows.Skip(Sheet.FreezedRows).ToList()" TItem="SheetRow" Context="row" OverscanCount="10" ItemSize="26">
+        <tr>
+            <td class="hc-grid-cell"
+                style="@LeftSideCellStyle(Sheet, row)"
+                @oncontextmenu="(e => OnRowContextMenu(e, row))"
+                @oncontextmenu:preventDefault
+                hidden="@CellHidden(row)">
+                <span>@(Sheet.RowNumber(row))</span>
+            </td>
+
+            @foreach (var column in Sheet.Columns)
+            {
+                var cell = Sheet.GetCell(row, column);
+
+                if (cell == null)
+                {
+                    continue;
+                }
+
+                <td class="@CellClass(cell)"
+                    style="@CellStyle(Sheet, row, column, cell)"
+                    hidden="@CellHidden(column, row)"
+                    colspan="@cell.Colspan"
+                    rowspan="@cell.Rowspan">
+
+                    @if (cell.EditSettingsUid.HasValue)
+                    {
+                        var editSettings = Sheet.GetEditSettings(cell);
+                        <CellEditControl EditSettings="@editSettings"
+                                         Cell="@cell"
+                                         IsDisabled="@IsDisabled"
+                                         ColumnWidth="@((int) column.WidthValue)"
+                                         ComboBoxDataProvider="@ComboBoxDataProviderFactory.Create(editSettings.ItemsSource)"
+                                         Changed="(e => OnCellValueChanged(cell))">
+                        </CellEditControl>
+                    }
+                    else
+                    {
+                                @*@cell.Text*@
+                        if (cell.HasLink)
+                        {
+                            <a href="@cell.Link" target="_blank">@cell.StringValue</a>
+                        }
+                        else
+                        {
+                            @cell.Text
+                        }
+                    }
+
+                </td>
+            }
+        </tr>
+    </Virtualize>
+}
+else
+{
+    @foreach (var row in Sheet.Rows)
+    {
+        <tr>
+            <td class="hc-grid-cell"
+                style="@LeftSideCellStyle(Sheet, row)"
+                @onclick="(e => OnRowNumberCellClick(row))"
+                @oncontextmenu="(e => OnRowContextMenu(e, row))"
+                @oncontextmenu:preventDefault
+                hidden="@CellHidden(row)">
+                <span>@(Sheet.RowNumber(row))</span>
+            </td>
+
+
+            @foreach (var column in Sheet.Columns)
+            {
+                var cell = Sheet.GetCell(row, column);
+
+                if (cell == null)
+                {
+                    continue;
+                }
+
+                @if (Regime == SheetRegimes.Design)
+                {
+                    <td class="@CellClass(cell)"
+                        contenteditable="@(!cell.HasLink)"
+                        style="@CellStyle(Sheet, row, column, cell)"
+                        hidden="@CellHidden(column, row, cell)"
+                        colspan="@cell.Colspan"
+                        rowspan="@cell.Rowspan"
+                        @oninput="(e => OnInput(e, cell))"
+                        @onclick="(e => OnCellClick(e, row, column, cell))"
+                        @onfocusout="(e => OnCellFocusOut(e, cell))">
+
+                        @if (cell.EditSettingsUid.HasValue)
+                        {
+                            var editSettings = Sheet.GetEditSettings(cell);
+                            <CellEditControl EditSettings="@editSettings"
+                                             Cell="@cell"
+                                             IsDisabled="@IsDisabled"
+                                             ColumnWidth="@((int) column.WidthValue)"
+                                             ComboBoxDataProvider="@_fakeComboBoxDataProvider"
+                                             Changed="(e => OnCellValueChanged(cell))">
+                            </CellEditControl>
+                        }
+                        else
+                        {
+                            if (cell.HasLink)
+                            {
+                                <a href="@cell.Link" target="_blank">@cell.StringValue</a>
+                            }
+                            else
+                            {
+                                @cell.Text
+                            }
+                        }
+
+                    </td>
+                }
+                else
+                {
+                    <td class="@CellClass(cell)"
+                        style="@CellStyle(Sheet, row, column, cell)"
+                        hidden="@CellHidden(column, row)"
+                        colspan="@cell.Colspan"
+                        rowspan="@cell.Rowspan">
+
+                        @if (cell.EditSettingsUid.HasValue)
+                        {
+                            var editSettings = Sheet.GetEditSettings(cell);
+
+                            <CellEditControl EditSettings="@editSettings"
+                                             Cell="@cell"
+                                             IsDisabled="@IsDisabled"
+                                             ColumnWidth="@((int) column.WidthValue)"
+                                             ComboBoxDataProvider="@ComboBoxDataProviderFactory?.Create(editSettings.ItemsSource)"
+                                             Changed="(e => OnCellValueChanged(cell))">
+                            </CellEditControl>
+                        }
+                        else
+                        {
+                            if (cell.HasLink)
+                            {
+                                <a href="@cell.Link" target="_blank">@cell.StringValue</a>
+                            }
+                            else
+                            {
+                                @cell.Text
+                            }
+                        }
+
+                    </td>
+                }
+            }
+        </tr>
+    }
+}
+
+</table>
+
+</div>
+
+@if (_isColumnContextMenuOpen)
+{
+    <BbContextMenu ClientX="@_clientX"
+                   ClientY="@_clientY"
+                   Items="@_columnMenuItems"
+                   Closed="OnColumnMenuClosed">
+    </BbContextMenu>
+}
+
+@if (_isColumnWidthModalOpen)
+{
+    <ValueInputModal ClientX="@_clientX"
+                     ClientY="@_clientY"
+                     Width="150"
+                     Value="@_currentColumn.WidthValue"
+                     Closed="OnColumnWidthValueModalClosed"
+                     Title="Column width">
+    </ValueInputModal>
+}
+
+@if (_isRowContextMenuOpen)
+{
+    <BbContextMenu ClientX="@_clientX"
+                   ClientY="@_clientY"
+                   Items="@_rowMenuItems"
+                   Closed="OnRowMenuClosed">
+    </BbContextMenu>
+}
+
+@if (_isRowHeightModalOpen)
+{
+    <ValueInputModal ClientX="@_clientX"
+                     ClientY="@_clientY"
+                     Width="150"
+                     Value="@_currentRow.HeightValue"
+                     Closed="OnRowHeightValueModalClosed"
+                     Title="Row height">
+    </ValueInputModal>
+}
+
+@if (_isSheetSizeModalOpen)
+{
+    <SheetSizeInputModal ClientX="@_clientX"
+                         ClientY="@_clientY"
+                         Width="150"
+                         Closed="OnSheetSizeModalClosed"
+                         Columns="@Sheet.Columns.Count"
+                         Rows="@Sheet.Rows.Count"/>
+}
+
+@if (_isCellLinkInputModalOpen)
+{
+    <CellLinkInputModal Link="@_currentCell.Link"
+                        Text="@_currentCell.StringValue"
+                        Width="250"
+                        ClientX="@_clientX"
+                        ClientY="@_clientY"
+                        Closed="OnCellLinkInputModalClosed"/>
+}
