@@ -50,11 +50,11 @@ namespace HubCloud.BlazorSheet.Core.Models
         public int FreezedRows { get; set; }
         public int FreezedColumns { get; set; }
 
-        public IReadOnlyCollection<SheetRow> Rows => _rows;
-        public IReadOnlyCollection<SheetColumn> Columns => _columns;
-        public IReadOnlyCollection<SheetCell> Cells => _cells;
-        public IReadOnlyCollection<SheetCellStyle> Styles => _styles;
-        public IReadOnlyCollection<SheetCellEditSettings> EditSettings => _editSettings;
+        public List<SheetRow> Rows => _rows;
+        public List<SheetColumn> Columns => _columns;
+        public List<SheetCell> Cells => _cells;
+        public List<SheetCellStyle> Styles => _styles;
+        public List<SheetCellEditSettings> EditSettings => _editSettings;
 
         public Sheet()
         {
