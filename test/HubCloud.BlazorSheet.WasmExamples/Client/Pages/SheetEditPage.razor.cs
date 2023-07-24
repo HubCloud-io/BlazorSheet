@@ -28,7 +28,7 @@ namespace HubCloud.BlazorSheet.WasmExamples.Client.Pages
 
     protected override void OnInitialized()
     {
-        _sheet = new Sheet(25, 25);
+        _sheet = new Sheet(50, 15);
     }
     
     private void OnRowSelected(SheetRow row)

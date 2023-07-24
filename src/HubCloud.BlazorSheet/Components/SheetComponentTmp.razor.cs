@@ -12,7 +12,7 @@ using Microsoft.JSInterop;
 
 namespace HubCloud.BlazorSheet.Components;
 
-public partial class SheetComponent : ComponentBase
+public partial class SheetComponentTmp : ComponentBase
 {
     private const int LeftSideCellWidth = 30;
     private const int TopSideCellWidth = 30;
