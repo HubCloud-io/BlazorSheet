@@ -334,6 +334,11 @@ public partial class SheetComponent : ComponentBase
 
     private async Task OnColumnNumberCellClick(SheetColumn column)
     {
+        if (Regime == SheetRegimes.InputForm)
+        {
+            return;
+        }
+        
         if (!_multipleSelection)
         {
             _selectedCells.Clear();
@@ -366,6 +371,11 @@ public partial class SheetComponent : ComponentBase
 
     private async Task OnRowNumberCellClick(SheetRow row)
     {
+        if (Regime == SheetRegimes.InputForm)
+        {
+            return;
+        }
+        
         if (!_multipleSelection)
         {
             _selectedCells.Clear();
