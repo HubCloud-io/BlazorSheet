@@ -152,7 +152,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
         public static List<string> GetNullValueCellAddresses(Sheet sheet)
         {
             return sheet.Cells
-                .Where(x => string.IsNullOrEmpty(x.Formula) && x.Value is null)
+                .Where(x => string.IsNullOrEmpty(x.Formula) || x.Value is null)
                 .Select(x => GetCellAddress(sheet.CellAddress(x)))
                 .ToList();
         }
