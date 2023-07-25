@@ -144,6 +144,10 @@ namespace HubCloud.BlazorSheet.Core.Models
             foreach (var cell in Cells)
             {
                 cell.Text = cell.Value?.ToString();
+
+                var style = GetStyle(cell);
+                if (style != null)
+                    cell.ApplyFormat(style.Format);
             }
         }
 

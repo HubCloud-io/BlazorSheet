@@ -144,6 +144,11 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
                 cell.Value = evalResult;
                
             cell.Text = cell.Value?.ToString();
+
+            var style = sheet.GetStyle(cell);
+            if (style != null)
+                cell.ApplyFormat(style.Format);
+
             cells[cellAddress.Row, cellAddress.Column] = cell.Value;
         }
         

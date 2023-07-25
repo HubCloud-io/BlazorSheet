@@ -131,16 +131,14 @@ namespace HubCloud.BlazorSheet.Core.Models
             if (Value == null)
                 return;
 
-            var text = Value as string;
-
-            if (string.IsNullOrEmpty(text) ||
+            if (string.IsNullOrEmpty(StringValue) ||
                 string.IsNullOrEmpty(format))
                 return;
 
-            if (DateTime.TryParse(text, out var date))
+            if (DateTime.TryParse(StringValue, out var date))
                 Text = date.ToString(format);
             else if (decimal.TryParse(
-                text.Replace(',', '.'),
+                StringValue.Replace(',', '.'),
                 NumberStyles.AllowDecimalPoint,
                 new NumberFormatInfo { NumberDecimalSeparator = "." },
                 out var decimalValue))
