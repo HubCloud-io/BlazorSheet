@@ -31,10 +31,22 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
                     dependCellsDict.Add(address, formulaCell);
                 }
             }
+
+            foreach (var cell in dependCellsDict.ToArray())
+            {
+                var address = _sheet.CellAddress(cell.Value);
+                var dependencyCells = GetDependencyCells(address);
+                foreach (var dependencyCell in dependencyCells)
+                {
+                    var strAddress = GetCellAddress(_sheet.CellAddress(dependencyCell));
+                    if (!dependCellsDict.ContainsKey(strAddress))
+                        dependCellsDict.Add(strAddress, dependencyCell);
+                }
+            }
             
             var processedCells = new List<string>
             {
-                currentCellAddress.ToUpper() 
+                currentCellAddress.ToUpper()
             };
             
             processedCells.AddRange(GetNullValueCellAddresses(_sheet));
