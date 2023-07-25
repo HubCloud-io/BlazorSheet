@@ -53,11 +53,11 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
 
             var exceptionList = new List<string> { "SUM" };
             var formulaProcessor = new SimpleFormulaProcessor(exceptionList);
-            var formula = formulaProcessor.PrepareFormula(expression, ContextName);
             
-
+            var formula = string.Empty;
             try
             {
+                formula = formulaProcessor.PrepareFormula(expression, ContextName);
                 result = _interpreter.Eval(formula);
                 
                 _logger.LogDebug("Cell:R{0}C{1}. Formula: {2}. Result: {3}."
