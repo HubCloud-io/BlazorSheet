@@ -65,14 +65,14 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
                 var canCalc = false;
                 foreach (var dependCell in dependCellsDict.ToArray())
                 {
-                    if (CanCalc(dependCell.Value, processedCells))
-                    {
-                        processedCells.Add(NormalizeAddress(dependCell.Key, _sheet.CellAddress(dependCell.Value)));
+                    // if (CanCalc(dependCell.Value, processedCells))
+                    // {
+                    //     processedCells.Add(NormalizeAddress(dependCell.Key, _sheet.CellAddress(dependCell.Value)));
                         canCalc = true;
                         
                         list.Add(dependCell.Value);
                         dependCellsDict.Remove(dependCell.Key);
-                    }
+                    // }
                 }
 
                 if (!canCalc)
