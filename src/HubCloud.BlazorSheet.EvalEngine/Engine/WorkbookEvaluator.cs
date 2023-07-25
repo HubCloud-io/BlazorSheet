@@ -114,7 +114,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
                 .Where(x => !string.IsNullOrWhiteSpace(x.Formula))
                 .ToList();
 
-            var valueCells = SheetDependencyAnalyzer.GetNullValueCellAddresses(sheet);
+            var valueCells = SheetDependencyAnalyzer.GetNoFormulaCells(sheet);
             var nonNullValueCells = sheet.Cells
                 .Where(x => x.Value != null)
                 .Select(x => SheetDependencyAnalyzer.GetCellAddress(sheet.CellAddress(x)));
@@ -126,7 +126,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
             
             var analyzer = new SheetDependencyAnalyzer(sheet);
             var dependencyCells = analyzer.OrderCellsForCalc(valueCells, dict);
-            
+
             foreach (var cell in dependencyCells)
             {
                 EvalCell(cell, sheet, cells);

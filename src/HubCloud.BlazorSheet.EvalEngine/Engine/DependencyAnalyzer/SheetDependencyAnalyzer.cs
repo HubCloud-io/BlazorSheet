@@ -10,13 +10,32 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
     public class SheetDependencyAnalyzer
     {
         private readonly Sheet _sheet;
+        private List<string> _processedCells;
 
         public SheetDependencyAnalyzer(Sheet sheet)
         {
             _sheet = sheet;
         }
 
-        public IEnumerable<SheetCell> GetDependencyCells(SheetCellAddress cellAddress, List<string> prevProcessedCells = null)
+        public IEnumerable<SheetCell> GetDependencyCells(SheetCellAddress cellAddress)
+        {
+            _processedCells = new List<string>(GetNoFormulaCells(_sheet));
+            var dependCellsDict = GetDependencyCellsInner(cellAddress);
+
+            _processedCells.AddRange(GetNotDependedFormulaCells(_sheet, dependCellsDict));
+
+            var orderedCells = OrderCellsForCalc(_processedCells, dependCellsDict);
+            return orderedCells;
+        }
+
+        private IEnumerable<string> GetNotDependedFormulaCells(Sheet sheet, Dictionary<string, SheetCell> dependCellsDict)
+            => sheet.Cells
+                .Where(x => !string.IsNullOrEmpty(x.Formula))
+                .Select(x => GetCellAddress(sheet.CellAddress(x)))
+                .Where(x => !dependCellsDict.Select(s => s.Key).Contains(x));
+
+
+        private Dictionary<string, SheetCell> GetDependencyCellsInner(SheetCellAddress cellAddress)
         {
             var currentCellAddress = GetCellAddress(cellAddress);
             var formulaCells = _sheet.Cells
@@ -33,27 +52,27 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
                 }
             }
 
-            var processedCells = new List<string>();
-            processedCells.Add(currentCellAddress.ToUpper());
-            if (prevProcessedCells != null)
-                processedCells.AddRange(prevProcessedCells);
+            if (!_processedCells.Contains(currentCellAddress.ToUpper()))
+                _processedCells.Add(currentCellAddress.ToUpper());
+            foreach (var item in dependCellsDict.Select(x => x.Key))
+            {
+                if (!_processedCells.Contains(item))
+                    _processedCells.Add(item);
+            }
 
             foreach (var cell in dependCellsDict.ToArray())
             {
                 var address = _sheet.CellAddress(cell.Value);
-                var dependencyCells = GetDependencyCells(address, processedCells);
+                var dependencyCells = GetDependencyCellsInner(address);
                 foreach (var dependencyCell in dependencyCells)
                 {
-                    var strAddress = GetCellAddress(_sheet.CellAddress(dependencyCell));
+                    var strAddress = GetCellAddress(_sheet.CellAddress(dependencyCell.Value));
                     if (!dependCellsDict.ContainsKey(strAddress))
-                        dependCellsDict.Add(strAddress, dependencyCell);
+                        dependCellsDict.Add(strAddress, dependencyCell.Value);
                 }
             }
-            
-            processedCells.AddRange(GetNullValueCellAddresses(_sheet));
 
-            var orderedCells = OrderCellsForCalc(processedCells, dependCellsDict);
-            return orderedCells;
+            return dependCellsDict;
         }
 
         public List<SheetCell> OrderCellsForCalc(List<string> processedCells,
@@ -65,14 +84,17 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
                 var canCalc = false;
                 foreach (var dependCell in dependCellsDict.ToArray())
                 {
-                    // if (CanCalc(dependCell.Value, processedCells))
-                    // {
-                    //     processedCells.Add(NormalizeAddress(dependCell.Key, _sheet.CellAddress(dependCell.Value)));
+                    if (CanCalc(dependCell.Value, processedCells))
+                    {
+                        var normalizedAddress = NormalizeAddress(dependCell.Key, _sheet.CellAddress(dependCell.Value));
+                        if (!processedCells.Contains(normalizedAddress))
+                            processedCells.Add(normalizedAddress);
+
                         canCalc = true;
-                        
+
                         list.Add(dependCell.Value);
                         dependCellsDict.Remove(dependCell.Key);
-                    // }
+                    }
                 }
 
                 if (!canCalc)
@@ -164,13 +186,12 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
 
         #region public static methods
 
-        public static List<string> GetNullValueCellAddresses(Sheet sheet)
-        {
-            return sheet.Cells
-                .Where(x => string.IsNullOrEmpty(x.Formula) && x.Value is null)
+        public static List<string> GetNoFormulaCells(Sheet sheet)
+            => sheet.Cells
+                .Where(x => string.IsNullOrEmpty(x.Formula))
                 .Select(x => GetCellAddress(sheet.CellAddress(x)))
                 .ToList();
-        }
+
 
         public static List<string> GetAddressListByRange(string range)
         {
