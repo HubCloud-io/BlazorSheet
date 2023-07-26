@@ -15,7 +15,7 @@ namespace HubCloud.BlazorSheet.Components;
 public partial class SheetComponent : ComponentBase
 {
     private const int LeftSideCellWidth = 30;
-    private const int TopSideCellWidth = 30;
+    private const int TopSideCellHeight = 30;
     private const string CellHiddenBackground = "#cccccc";
 
     private bool _multipleSelection;
@@ -77,7 +77,7 @@ public partial class SheetComponent : ComponentBase
         _cellStyleBuilder = new CellStyleBuilder
         {
             LeftSideCellWidth = LeftSideCellWidth,
-            TopSideCellWidth = TopSideCellWidth
+            TopSideCellHeight = TopSideCellHeight
         };
 
         try
@@ -439,15 +439,15 @@ public partial class SheetComponent : ComponentBase
         sb.Append(";");
 
         sb.Append("height:");
-        sb.Append($"{TopSideCellWidth}px");
+        sb.Append($"{TopSideCellHeight}px");
         sb.Append(";");
 
         sb.Append("max-height:");
-        sb.Append($"{TopSideCellWidth}px");
+        sb.Append($"{TopSideCellHeight}px");
         sb.Append(";");
 
         sb.Append("min-height:");
-        sb.Append($"{TopSideCellWidth}px");
+        sb.Append($"{TopSideCellHeight}px");
         sb.Append(";");
 
         sb.Append("top:");
@@ -534,15 +534,15 @@ public partial class SheetComponent : ComponentBase
         sb.Append(";");
 
         sb.Append("height:");
-        sb.Append($"{TopSideCellWidth}px");
+        sb.Append($"{TopSideCellHeight}px");
         sb.Append(";");
 
         sb.Append("max-height:");
-        sb.Append($"{TopSideCellWidth}px");
+        sb.Append($"{TopSideCellHeight}px");
         sb.Append(";");
 
         sb.Append("min-height:");
-        sb.Append($"{TopSideCellWidth}px");
+        sb.Append($"{TopSideCellHeight}px");
         sb.Append(";");
 
         sb.Append("position: ");
