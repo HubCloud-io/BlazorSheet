@@ -98,7 +98,7 @@
                     <td @key="@cell.Uid"
                         class="@CellClass(cell)"
                         style="@CellStyle(Sheet, row, column, cell)"
-                        hidden="@CellHidden(column, row)"
+                        hidden="@CellHidden(column, row, cell)"
                         colspan="@cell.Colspan"
                         rowspan="@cell.Rowspan">
 
@@ -202,7 +202,7 @@
                     <td @key="@cell.Uid"
                         class="@CellClass(cell)"
                         style="@CellStyle(Sheet, row, column, cell)"
-                        hidden="@CellHidden(column, row)"
+                        hidden="@CellHidden(column, row, cell)"
                         colspan="@cell.Colspan"
                         rowspan="@cell.Rowspan">
 
