@@ -10,12 +10,32 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
     public class SheetDependencyAnalyzer
     {
         private readonly Sheet _sheet;
+        private List<string> _processedCells;
+
         public SheetDependencyAnalyzer(Sheet sheet)
         {
             _sheet = sheet;
         }
-        
+
         public IEnumerable<SheetCell> GetDependencyCells(SheetCellAddress cellAddress)
+        {
+            _processedCells = new List<string>(GetNoFormulaCells(_sheet));
+            var dependCellsDict = GetDependencyCellsInner(cellAddress);
+
+            _processedCells.AddRange(GetNotDependedFormulaCells(_sheet, dependCellsDict));
+
+            var orderedCells = OrderCellsForCalc(_processedCells, dependCellsDict);
+            return orderedCells;
+        }
+
+        private IEnumerable<string> GetNotDependedFormulaCells(Sheet sheet, Dictionary<string, SheetCell> dependCellsDict)
+            => sheet.Cells
+                .Where(x => !string.IsNullOrEmpty(x.Formula))
+                .Select(x => GetCellAddress(sheet.CellAddress(x)))
+                .Where(x => !dependCellsDict.Select(s => s.Key).Contains(x));
+
+
+        private Dictionary<string, SheetCell> GetDependencyCellsInner(SheetCellAddress cellAddress)
         {
             var currentCellAddress = GetCellAddress(cellAddress);
             var formulaCells = _sheet.Cells
@@ -31,19 +51,32 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
                     dependCellsDict.Add(address, formulaCell);
                 }
             }
-            
-            var processedCells = new List<string>
-            {
-                currentCellAddress.ToUpper() 
-            };
-            
-            processedCells.AddRange(GetNullValueCellAddresses(_sheet));
 
-            var orderedCells = OrderCellsForCalc(processedCells, dependCellsDict);
-            return orderedCells;
+            if (!_processedCells.Contains(currentCellAddress.ToUpper()))
+                _processedCells.Add(currentCellAddress.ToUpper());
+            foreach (var item in dependCellsDict.Select(x => x.Key))
+            {
+                if (!_processedCells.Contains(item))
+                    _processedCells.Add(item);
+            }
+
+            foreach (var cell in dependCellsDict.ToArray())
+            {
+                var address = _sheet.CellAddress(cell.Value);
+                var dependencyCells = GetDependencyCellsInner(address);
+                foreach (var dependencyCell in dependencyCells)
+                {
+                    var strAddress = GetCellAddress(_sheet.CellAddress(dependencyCell.Value));
+                    if (!dependCellsDict.ContainsKey(strAddress))
+                        dependCellsDict.Add(strAddress, dependencyCell.Value);
+                }
+            }
+
+            return dependCellsDict;
         }
 
-        public List<SheetCell> OrderCellsForCalc(List<string> processedCells, Dictionary<string, SheetCell> dependCellsDict)
+        public List<SheetCell> OrderCellsForCalc(List<string> processedCells,
+            Dictionary<string, SheetCell> dependCellsDict)
         {
             var list = new List<SheetCell>();
             while (dependCellsDict.Count != 0)
@@ -53,9 +86,13 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
                 {
                     if (CanCalc(dependCell.Value, processedCells))
                     {
+                        var normalizedAddress = NormalizeAddress(dependCell.Key, _sheet.CellAddress(dependCell.Value));
+                        if (!processedCells.Contains(normalizedAddress))
+                            processedCells.Add(normalizedAddress);
+
                         canCalc = true;
+
                         list.Add(dependCell.Value);
-                        processedCells.Add(NormalizeAddress(dependCell.Key, _sheet.CellAddress(dependCell.Value)));
                         dependCellsDict.Remove(dependCell.Key);
                     }
                 }
@@ -71,7 +108,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
         {
             var formulaCellAddress = _sheet.CellAddress(formulaCell);
             var formula = formulaCell.Formula.ToUpper();
-            
+
             // check address ranges
             var rangeRegex = new Regex(@"R-*\d*C-*\d*:R-*\d*C-*\d*");
             var rangeMatches = rangeRegex.Matches(formula)
@@ -89,7 +126,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
                         return false;
                 }
             }
-            
+
             // check simple addresses
             var addressRegex = new Regex(@"R-*\d*C-*\d*");
             var addressMatches = addressRegex.Matches(formula)
@@ -97,7 +134,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
                 .Select(m => m.Value)
                 .Distinct()
                 .ToArray();
-            
+
             foreach (var match in addressMatches)
             {
                 if (!processedCells.Contains(NormalizeAddress(match.ToUpper(), formulaCellAddress)))
@@ -112,7 +149,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
             var formulaCellAddress = _sheet.CellAddress(formulaCell);
 
             var sb = new StringBuilder(formulaCell.Formula);
-            
+
             // check address ranges
             var rangeRegex = new Regex(@"R-*\d*C-*\d*:R-*\d*C-*\d*");
             var rangeMatches = rangeRegex.Matches(sb.ToString())
@@ -125,10 +162,10 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
             {
                 if (IsAddressInRange(cellAddress, range))
                     return true;
-                
+
                 sb.Replace(range, "{R}");
             }
-            
+
             // check simple addresses
             var addressRegex = new Regex(@"R-*\d*C-*\d*");
             var addressMatches = addressRegex.Matches(sb.ToString())
@@ -136,7 +173,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
                 .Select(m => m.Value)
                 .Distinct()
                 .ToArray();
-            
+
             foreach (var match in addressMatches)
             {
                 if (NormalizeAddress(match.ToUpper(), formulaCellAddress) == cellAddress)
@@ -149,27 +186,26 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
 
         #region public static methods
 
-        public static List<string> GetNullValueCellAddresses(Sheet sheet)
-        {
-            return sheet.Cells
-                .Where(x => string.IsNullOrEmpty(x.Formula) && x.Value is null)
+        public static List<string> GetNoFormulaCells(Sheet sheet)
+            => sheet.Cells
+                .Where(x => string.IsNullOrEmpty(x.Formula))
                 .Select(x => GetCellAddress(sheet.CellAddress(x)))
                 .ToList();
-        }
-        
+
+
         public static List<string> GetAddressListByRange(string range)
         {
             var list = new List<string>();
             var arr = range.Split(':').ToArray();
             if (arr.Length != 2)
                 return list;
-            
+
             var startAddress = arr[0];
             var endAddress = arr[1];
 
             var startRow = int.Parse(GetRowValue(startAddress));
             var startCol = int.Parse(GetColValue(startAddress));
-            
+
             var endRow = int.Parse(GetRowValue(endAddress));
             var endCol = int.Parse(GetColValue(endAddress));
 
@@ -183,19 +219,19 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
 
             return list;
         }
-        
+
         public static bool IsAddressInRange(string cellAddress, string addressRange)
         {
             var arr = addressRange.Split(':').ToArray();
             if (arr.Length != 2)
                 return false;
-            
+
             var startAddress = arr[0];
             var endAddress = arr[1];
 
             var startRow = int.Parse(GetRowValue(startAddress));
             var startCol = int.Parse(GetColValue(startAddress));
-            
+
             var endRow = int.Parse(GetRowValue(endAddress));
             var endCol = int.Parse(GetColValue(endAddress));
 
@@ -205,10 +241,10 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
             if (startRow <= currentAddressRow && endRow >= currentAddressRow &&
                 startCol <= currentAddressCol && endCol >= currentAddressCol)
                 return true;
-            
+
             return false;
         }
-        
+
         public static string NormalizeAddress(string address, SheetCellAddress formulaCellAddress)
         {
             var rowVal = GetRowValue(address);
@@ -216,9 +252,9 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
 
             if (rowVal is null || colVal is null)
                 return null;
-            
+
             var normalizedAddress = new StringBuilder("R");
-            
+
             // row
             if (rowVal == string.Empty)
                 normalizedAddress.Append(formulaCellAddress.Row);
@@ -231,7 +267,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
                 normalizedAddress.Append(rowVal);
 
             normalizedAddress.Append("C");
-            
+
             // col
             if (colVal == string.Empty)
                 normalizedAddress.Append(formulaCellAddress.Column);
@@ -250,7 +286,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
         {
             if (string.IsNullOrEmpty(address))
                 return null;
-            
+
             address = address.ToUpper();
             var index = address.IndexOf("R", StringComparison.InvariantCulture);
             if (index == -1)
@@ -266,12 +302,12 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
 
             return sb.ToString();
         }
-        
+
         private static string GetColValue(string address)
         {
             if (string.IsNullOrEmpty(address))
                 return null;
-            
+
             address = address.ToUpper();
             var index = address.IndexOf("C", StringComparison.InvariantCulture);
             if (index == -1)
@@ -290,6 +326,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
 
         public static string GetCellAddress(SheetCellAddress cellAddress)
             => $"R{cellAddress.Row}C{cellAddress.Column}";
+
         #endregion
     }
 }
