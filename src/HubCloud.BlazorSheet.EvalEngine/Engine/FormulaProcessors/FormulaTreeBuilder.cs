@@ -178,14 +178,15 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaProcessors
                         var argIndex = 1;
                         foreach (var param in statement.FunctionParams)
                         {
-                            var isAddressParam = IsAddressParams(param.InnerStatements);
-                            if (isAddressParam)
-                                outFormula.Append('"');
-
                             var currentArg = BuildFormula(param.InnerStatements);
+                                
+                            var isAddressParam = IsAddressParams(param.InnerStatements);
+                            if (isAddressParam && currentArg[0] != '"')
+                                outFormula.Append('"');
+                           
                             outFormula.Append(currentArg);
 
-                            if (isAddressParam)
+                            if (isAddressParam && currentArg[currentArg.Length - 1] != '"')
                                 outFormula.Append('"');
 
                             if (argIndex++ < statement.FunctionParams.Count)
