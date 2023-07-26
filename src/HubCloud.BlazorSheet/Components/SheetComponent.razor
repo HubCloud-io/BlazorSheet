@@ -60,7 +60,7 @@
                     <td @key="@cell.Uid"
                         class="@CellClass(cell)"
                         contenteditable="@(!cell.HasLink)"
-                        style="@CellStyle(Sheet, row, column, cell)"
+                        style="@CellStyle(row, column, cell)"
                         hidden="@CellHidden(column, row, cell)"
                         colspan="@cell.Colspan"
                         rowspan="@cell.Rowspan"
@@ -97,7 +97,7 @@
                 {
                     <td @key="@cell.Uid"
                         class="@CellClass(cell)"
-                        style="@CellStyle(Sheet, row, column, cell)"
+                        style="@CellStyle(row, column, cell)"
                         hidden="@CellHidden(column, row)"
                         colspan="@cell.Colspan"
                         rowspan="@cell.Rowspan">
@@ -164,7 +164,7 @@
                     <td @key="@cell.Uid"
                         class="@CellClass(cell)"
                         contenteditable="@(!cell.HasLink)"
-                        style="@CellStyle(Sheet, row, column, cell)"
+                        style="@CellStyle(row, column, cell)"
                         hidden="@CellHidden(column, row, cell)"
                         colspan="@cell.Colspan"
                         rowspan="@cell.Rowspan"
@@ -201,7 +201,7 @@
                 {
                     <td @key="@cell.Uid"
                         class="@CellClass(cell)"
-                        style="@CellStyle(Sheet, row, column, cell)"
+                        style="@CellStyle(row, column, cell)"
                         hidden="@CellHidden(column, row)"
                         colspan="@cell.Colspan"
                         rowspan="@cell.Rowspan">
