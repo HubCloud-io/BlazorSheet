@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.Security.Cryptography.X509Certificates;
+using System.Xml.Serialization;
 using Newtonsoft.Json;
 
 namespace HubCloud.BlazorSheet.Core.Models
@@ -29,6 +30,7 @@ namespace HubCloud.BlazorSheet.Core.Models
             return new CellKey(RowUid, ColumnUid);
         }
 
+        [XmlIgnore]
         [JsonIgnore]
         public decimal DecimalValue
         {
@@ -46,6 +48,7 @@ namespace HubCloud.BlazorSheet.Core.Models
             set => Value = value;
         }
         
+        [XmlIgnore]
         [JsonIgnore]
         public int IntValue
         {
@@ -63,6 +66,7 @@ namespace HubCloud.BlazorSheet.Core.Models
             set => Value = value;
         }
         
+        [XmlIgnore]
         [JsonIgnore]
         public bool BoolValue
         {
@@ -80,6 +84,7 @@ namespace HubCloud.BlazorSheet.Core.Models
             set => Value = value;
         }
         
+        [XmlIgnore]
         [JsonIgnore]
         public string StringValue
         {
@@ -87,6 +92,7 @@ namespace HubCloud.BlazorSheet.Core.Models
             set => Value = value;
         }
 
+        [XmlIgnore]
         [JsonIgnore]
         public DateTime DateTimeValue
         {
