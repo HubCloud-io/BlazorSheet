@@ -3,7 +3,9 @@ using System.Linq;
 using System.Text;
 using HubCloud.BlazorSheet.EvalEngine.Engine.ExcelFormulaConverter.Models;
 using HubCloud.BlazorSheet.EvalEngine.Engine.ExcelFormulaConverters.Abstractions;
+using HubCloud.BlazorSheet.EvalEngine.Engine.ExcelFormulaConverters.Helpers;
 using HubCloud.BlazorSheet.EvalEngine.Engine.FormulaProcessors;
+using HubCloud.BlazorSheet.EvalEngine.Engine.FormulaProcessors.Helpers;
 using HubCloud.BlazorSheet.EvalEngine.Engine.FormulaProcessors.Models;
 using HubCloud.BlazorSheet.EvalEngine.Helpers;
 
@@ -41,7 +43,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.ExcelFormulaConverters
                             exceptionList.AddRange(functionExceptionList);
                         break;
                     case ElementType.ExcelAddress:
-                        statement.ProcessedStatement = AddressHelper.ConvertExcelToRowCellAddress(statement.OriginStatement);
+                        statement.ProcessedStatement = EvalEngine.Helpers.AddressHelper.ConvertExcelToRowCellAddress(statement.OriginStatement);
                         break;
                     case ElementType.ExcelAddressRange:
                         statement.ProcessedStatement =
@@ -72,7 +74,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.ExcelFormulaConverters
                 return excelAddressRange;
             }
 
-            return $"{AddressHelper.ConvertExcelToRowCellAddress(arr.First())}:{AddressHelper.ConvertExcelToRowCellAddress(arr.Last())}";
+            return $"{EvalEngine.Helpers.AddressHelper.ConvertExcelToRowCellAddress(arr.First())}:{EvalEngine.Helpers.AddressHelper.ConvertExcelToRowCellAddress(arr.Last())}";
         }
 
         private string ProcessFunction(Statement statement, out List<ConvertException> exceptionList)

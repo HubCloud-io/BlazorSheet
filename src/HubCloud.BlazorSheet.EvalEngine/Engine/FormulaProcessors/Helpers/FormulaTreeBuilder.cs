@@ -4,7 +4,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using HubCloud.BlazorSheet.EvalEngine.Engine.FormulaProcessors.Models;
 
-namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaProcessors
+namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaProcessors.Helpers
 {
     public class FormulaTreeBuilder
     {

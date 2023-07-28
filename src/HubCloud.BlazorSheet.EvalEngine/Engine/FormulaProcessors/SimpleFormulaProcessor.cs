@@ -8,7 +8,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaProcessors
 {
     public class SimpleFormulaProcessor
     {
-        private List<string> _exceptionList = new List<string>
+        private readonly List<string> _exceptionList = new List<string>
         {
             "VAL"
         };
@@ -20,12 +20,13 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaProcessors
 
             foreach (var funcName in exceptionFunctionsList)
             {
-                if (!_exceptionList.Any(x => x.Trim().ToUpper() == funcName.Trim().ToUpper()))
+                if (_exceptionList.All(x => x.Trim().ToUpper() != funcName.Trim().ToUpper()))
                     _exceptionList.Add(funcName);
             }
         }
 
-        public string PrepareFormula(string formulaIn, string contextName)
+        public string PrepareFormula(string formulaIn,
+            string contextName)
         {
             var formula = new StringBuilder(formulaIn)
                 .Replace("$c", contextName)
@@ -40,7 +41,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaProcessors
                 .Replace(" AND ", " && ")
                 .Replace(" or ", " || ")
                 .Replace(" OR ", " || ");
-            
+
             // prepare formula
             var exceptionDict = GetExceptionDict(formula);
             var addressRangeDict = GetAddressRangeDict(formula);
@@ -60,6 +61,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaProcessors
             return formula.ToString();
         }
 
+        #region private methods
         private void ReplaceFromDict(StringBuilder formula, Dictionary<string, string> dict)
         {
             foreach (var item in dict)
@@ -69,8 +71,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaProcessors
         private Dictionary<string, string> GetAddressRangeDict(StringBuilder formula)
         {
             var dict = new Dictionary<string, string>();
-            var regex = new Regex(@"R-*\d*C-*\d*:R-*\d*C-*\d*");
-            var matches = regex.Matches(formula.ToString())
+            var matches = AddressHelper.AddressRangeRegex.Matches(formula.ToString())
                 .Cast<Match>()
                 .Select(x => x.Value)
                 .Distinct();
@@ -140,8 +141,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaProcessors
 
         private Dictionary<string, string> GetAddressDict(StringBuilder formula)
         {
-            var regex = new Regex(@"""*R-*\d*C-*\d*""*");
-            var matches = regex.Matches(formula.ToString())
+            var matches = AddressHelper.AddressRegex.Matches(formula.ToString())
                 .Cast<Match>()
                 .Select(x => x.Value)
                 .Distinct();
@@ -157,5 +157,6 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaProcessors
 
             return addressDict;
         }
+        #endregion
     }
 }
