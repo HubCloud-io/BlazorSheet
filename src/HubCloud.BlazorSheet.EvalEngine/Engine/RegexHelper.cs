@@ -5,7 +5,6 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
 {
     public static class RegexHelper
     {
-        // = new Regex(@"""*R\[*-*\d*\]*C\[*-*\d*\]*""*", RegexOptions.Compiled);
         public static readonly Regex AddressRegex
             = new Regex(@"R\[*-*\d*\]*C\[*-*\d*\]*", RegexOptions.Compiled);
         

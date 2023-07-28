@@ -8,7 +8,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Helpers
 {
     public static class AddressHelper
     {
-        private static readonly Regex AddressRegex = RegexHelper.AddressRegex; //new Regex(@"R-*\d*C-*\d*", RegexOptions.Compiled);
+        private static readonly Regex AddressRegex = RegexHelper.AddressRegex;
         
         public static string ConvertExcelToRowCellAddress(string excelAddress)
         {
