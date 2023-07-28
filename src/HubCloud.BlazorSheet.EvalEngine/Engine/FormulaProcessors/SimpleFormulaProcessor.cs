@@ -46,7 +46,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaProcessors
             var exceptionDict = GetExceptionDict(formula);
             var addressRangeDict = GetAddressRangeDict(formula);
             var addressDict = GetAddressDict(formula);
-            
+
             // process
             foreach (var address in addressDict)
             {
@@ -62,6 +62,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaProcessors
         }
 
         #region private methods
+
         private void ReplaceFromDict(StringBuilder formula, Dictionary<string, string> dict)
         {
             foreach (var item in dict)
@@ -108,7 +109,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaProcessors
                     {
                         index++;
                     }
-                    
+
                     var balance = 0;
                     while (index < formula.Length)
                     {
@@ -119,7 +120,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaProcessors
 
                         if (formula[index] == ')' && balance == 0)
                             break;
-                        
+
                         index++;
                     }
 
@@ -128,14 +129,13 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaProcessors
                     var key = "{EX" + i + "}";
                     var exceptionStatement = formula.ToString().Substring(startIndex, endIndex - startIndex + 1);
                     formula.Replace(exceptionStatement, key, startIndex, endIndex - startIndex + 1);
-                    
-                    dict.Add(key, exceptionStatement);
-                    
-                    i++;
 
+                    dict.Add(key, exceptionStatement);
+
+                    i++;
                 } while (true);
             }
-            
+
             return dict;
         }
 
@@ -153,10 +153,15 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaProcessors
                 var key = "{" + i++ + "}";
                 addressDict.Add(key, match);
                 formula.Replace(match, key);
+                RemoveQuotas(formula, key);
             }
 
             return addressDict;
         }
+
+        private void RemoveQuotas(StringBuilder formula, string key)
+            => formula.Replace($@"""{key}""", key);
+
         #endregion
     }
 }

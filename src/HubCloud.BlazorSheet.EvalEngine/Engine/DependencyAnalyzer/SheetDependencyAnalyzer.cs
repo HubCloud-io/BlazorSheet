@@ -130,7 +130,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
             }
 
             // check simple addresses
-            var addressRegex = new Regex(@"R\[*-*\d*\]*C\[*-*\d*\]*");
+            var addressRegex = AddressHelper.AddressRegex; // new Regex(@"R\[*-*\d*\]*C\[*-*\d*\]*");
             var addressMatches = addressRegex.Matches(formula)
                 .Cast<Match>()
                 .Select(m => m.Value)
