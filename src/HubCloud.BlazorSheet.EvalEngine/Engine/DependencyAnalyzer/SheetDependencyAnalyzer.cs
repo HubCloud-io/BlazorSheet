@@ -20,11 +20,11 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
         public IEnumerable<SheetCell> GetDependencyCells(SheetCellAddress cellAddress)
         {
             _processedCells = new List<string>(GetNoFormulaCells(_sheet));
-            var processedCellsForOrder = new List<string>(GetNoFormulaCells(_sheet));
-            
+
             var dependCellsDict = GetDependencyCellsInner(cellAddress);
 
-            _processedCells.AddRange(GetNotDependedFormulaCells(_sheet, dependCellsDict));
+            var notDependedFormulas = GetNotDependedFormulaCells(_sheet, dependCellsDict);
+            _processedCells.AddRange(notDependedFormulas);
 
             var orderedCells = OrderCellsForCalc(_processedCells, dependCellsDict);
             return orderedCells;
@@ -54,13 +54,13 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
                 }
             }
 
-            if (!_processedCells.Contains(currentCellAddress.ToUpper()))
-                _processedCells.Add(currentCellAddress.ToUpper());
-            foreach (var item in dependCellsDict.Select(x => x.Key))
-            {
-                if (!_processedCells.Contains(item))
-                    _processedCells.Add(item);
-            }
+            // if (!_processedCells.Contains(currentCellAddress.ToUpper()))
+            //     _processedCells.Add(currentCellAddress.ToUpper());
+            // foreach (var item in dependCellsDict.Select(x => x.Key))
+            // {
+            //     if (!_processedCells.Contains(item))
+            //         _processedCells.Add(item);
+            // }
 
             foreach (var cell in dependCellsDict.ToArray())
             {
