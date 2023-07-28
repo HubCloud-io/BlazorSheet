@@ -24,7 +24,7 @@ public class AddressHelperTests
     [TestCase("R3C41", "AO3")]
     public void RowCellToExcelAddress_Tests(string inputAddress, string expected)
     {
-        var outputAddress = AddressHelper.ConvertRowCellToExcelAddress(inputAddress);
+        var outputAddress = AddressHelper.ConvertR1C1ToA1Address(inputAddress);
         Assert.AreEqual(outputAddress, expected);
     }
 }

@@ -72,7 +72,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaProcessors
         private Dictionary<string, string> GetAddressRangeDict(StringBuilder formula)
         {
             var dict = new Dictionary<string, string>();
-            var matches = AddressHelper.AddressRangeRegex.Matches(formula.ToString())
+            var matches = RegexHelper.AddressRangeRegex.Matches(formula.ToString())
                 .Cast<Match>()
                 .Select(x => x.Value)
                 .Distinct();
@@ -141,7 +141,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaProcessors
 
         private Dictionary<string, string> GetAddressDict(StringBuilder formula)
         {
-            var matches = AddressHelper.AddressRegex.Matches(formula.ToString())
+            var matches = RegexHelper.AddressRegex.Matches(formula.ToString())
                 .Cast<Match>()
                 .Select(x => x.Value)
                 .Distinct();

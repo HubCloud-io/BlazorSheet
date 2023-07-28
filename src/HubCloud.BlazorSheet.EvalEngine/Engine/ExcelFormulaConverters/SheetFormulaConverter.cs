@@ -15,7 +15,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.ExcelFormulaConverters
     public class SheetFormulaConverter : ISheetToExcelConverter
     {
         public ConvertResult Convert(string excelFormula,
-            CellAddressFormat cellAddressFormat = CellAddressFormat.DefaultExcelFormat)
+            CellAddressFormat cellAddressFormat = CellAddressFormat.A1Format)
         {
             var treeBuilder = new FormulaTreeBuilder();
             var statementTree = treeBuilder.BuildStatementTree(excelFormula.Trim());
@@ -34,7 +34,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.ExcelFormulaConverters
 
         #region private methods
         private List<Statement> ProcessTree(List<Statement> statementTree,
-            CellAddressFormat cellAddressFormat,
+            CellAddressFormat excelAddressFormat,
             out List<ConvertException> exceptionList)
         {
             exceptionList = new List<ConvertException>();
@@ -43,14 +43,14 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.ExcelFormulaConverters
                 switch (statement.Type)
                 {
                     case ElementType.Function:
-                        statement.ProcessedStatement = ProcessFunction(statement, cellAddressFormat, out var functionExceptionList);
+                        statement.ProcessedStatement = ProcessFunction(statement, excelAddressFormat, out var functionExceptionList);
                         if (functionExceptionList?.Any() == true)
                             exceptionList.AddRange(functionExceptionList);
                         break;
-                    case ElementType.Address when cellAddressFormat == CellAddressFormat.DefaultExcelFormat:
-                        statement.ProcessedStatement = EvalEngine.Helpers.AddressHelper.ConvertRowCellToExcelAddress(statement.OriginStatement);
+                    case ElementType.Address when excelAddressFormat == CellAddressFormat.A1Format:
+                        statement.ProcessedStatement = AddressHelper.ConvertR1C1ToA1Address(statement.OriginStatement);
                         break;
-                    case ElementType.AddressRange when cellAddressFormat == CellAddressFormat.DefaultExcelFormat:
+                    case ElementType.AddressRange when excelAddressFormat == CellAddressFormat.A1Format:
                         statement.ProcessedStatement = ProcessAddressRange(statement.OriginStatement, out var convertException);
                         if (convertException != null)
                             exceptionList.Add(convertException);
@@ -78,7 +78,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.ExcelFormulaConverters
                 return addressRange;
             }
 
-            return $"{EvalEngine.Helpers.AddressHelper.ConvertRowCellToExcelAddress(arr.First())}:{EvalEngine.Helpers.AddressHelper.ConvertRowCellToExcelAddress(arr.Last())}";
+            return $"{AddressHelper.ConvertR1C1ToA1Address(arr.First())}:{AddressHelper.ConvertR1C1ToA1Address(arr.Last())}";
         }
 
         private string ProcessFunction(Statement statement,

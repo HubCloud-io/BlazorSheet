@@ -222,10 +222,10 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaProcessors.Helpers
 
         #region private methods
 
-        private Regex _addressRangeRegex = new Regex(@"R-*\d*C-*\d*:R-*\d*C-*\d*", RegexOptions.Compiled);
-        private Regex _addressRegex = new Regex(@"R-*\d*C-*\d*", RegexOptions.Compiled);
-        private Regex _excelAddressRegex = new Regex(@"\$?[A-Z]+\$?\d+", RegexOptions.Compiled);
-        private Regex _excelAddressRangeRegex = new Regex(@"\$?[A-Z]+\$?\d+:\$?[A-Z]+\$?\d+", RegexOptions.Compiled);
+        private readonly Regex _addressRangeRegex = RegexHelper.AddressRangeRegex; // new Regex(@"R-*\d*C-*\d*:R-*\d*C-*\d*", RegexOptions.Compiled);
+        private readonly Regex _addressRegex = RegexHelper.AddressRegex; // new Regex(@"R-*\d*C-*\d*", RegexOptions.Compiled);
+        private readonly Regex _excelAddressRegex = RegexHelper.ExcelAddressRegex; //new Regex(@"\$?[A-Z]+\$?\d+", RegexOptions.Compiled);
+        private readonly Regex _excelAddressRangeRegex = RegexHelper.ExcelAddressRangeRegex; //new Regex(@"\$?[A-Z]+\$?\d+:\$?[A-Z]+\$?\d+", RegexOptions.Compiled);
 
         protected ElementType GetStatementType(StringBuilder statement, string nextSymbol = null)
         {

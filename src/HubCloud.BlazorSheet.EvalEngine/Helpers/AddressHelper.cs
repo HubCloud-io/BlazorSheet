@@ -2,16 +2,17 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
+using HubCloud.BlazorSheet.EvalEngine.Engine;
 
 namespace HubCloud.BlazorSheet.EvalEngine.Helpers
 {
-    public class AddressHelper
+    public static class AddressHelper
     {
-        private static Regex _addressRegex = new Regex(@"R-*\d*C-*\d*", RegexOptions.Compiled);
+        private static readonly Regex AddressRegex = RegexHelper.AddressRegex; //new Regex(@"R-*\d*C-*\d*", RegexOptions.Compiled);
         
         public static string ConvertExcelToRowCellAddress(string excelAddress)
         {
-            if (string.IsNullOrEmpty(excelAddress) || _addressRegex.IsMatch(excelAddress))
+            if (string.IsNullOrEmpty(excelAddress) || AddressRegex.IsMatch(excelAddress))
                 return excelAddress;
 
             excelAddress = excelAddress.Replace("$", "");
@@ -32,9 +33,9 @@ namespace HubCloud.BlazorSheet.EvalEngine.Helpers
             return resultAddress.ToString();
         }
 
-        public static string ConvertRowCellToExcelAddress(string sheetAddress)
+        public static string ConvertR1C1ToA1Address(string sheetAddress)
         {
-            if (string.IsNullOrEmpty(sheetAddress) || !_addressRegex.IsMatch(sheetAddress))
+            if (string.IsNullOrEmpty(sheetAddress) || !AddressRegex.IsMatch(sheetAddress))
                 return sheetAddress;
             
             var arr = sheetAddress
