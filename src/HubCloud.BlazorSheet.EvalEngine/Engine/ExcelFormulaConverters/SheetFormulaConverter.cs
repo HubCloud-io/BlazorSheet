@@ -14,7 +14,8 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.ExcelFormulaConverters
 {
     public class SheetFormulaConverter : ISheetToExcelConverter
     {
-        public ConvertResult Convert(string excelFormula, CellAddressFormat cellAddressFormat = CellAddressFormat.DefaultExcelFormat)
+        public ConvertResult Convert(string excelFormula,
+            CellAddressFormat cellAddressFormat = CellAddressFormat.DefaultExcelFormat)
         {
             var treeBuilder = new FormulaTreeBuilder();
             var statementTree = treeBuilder.BuildStatementTree(excelFormula.Trim());
@@ -112,7 +113,11 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.ExcelFormulaConverters
                     if (innerExceptionList?.Any() == true)
                         exceptionList.AddRange(innerExceptionList);
 
-                    processedStatement.Append($"{st.FirstOrDefault()?.ProcessedStatement}");
+                    var arg = st.FirstOrDefault();
+                    if (arg?.Type == ElementType.Address)
+                        arg.ProcessedStatement = arg.ProcessedStatement.Trim('"');
+                    
+                    processedStatement.Append($"{arg?.ProcessedStatement}");
 
                     if (isAddressRange)
                     {

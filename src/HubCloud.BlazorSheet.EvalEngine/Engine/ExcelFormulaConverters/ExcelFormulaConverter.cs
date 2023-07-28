@@ -30,6 +30,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.ExcelFormulaConverters
         }
 
         #region private methods
+
         private List<Statement> ProcessTree(List<Statement> statementTree, out List<ConvertException> exceptionList)
         {
             exceptionList = new List<ConvertException>();
@@ -43,7 +44,8 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.ExcelFormulaConverters
                             exceptionList.AddRange(functionExceptionList);
                         break;
                     case ElementType.ExcelAddress:
-                        statement.ProcessedStatement = EvalEngine.Helpers.AddressHelper.ConvertExcelToRowCellAddress(statement.OriginStatement);
+                        statement.ProcessedStatement =
+                            EvalEngine.Helpers.AddressHelper.ConvertExcelToRowCellAddress(statement.OriginStatement);
                         break;
                     case ElementType.ExcelAddressRange:
                         statement.ProcessedStatement =
@@ -74,7 +76,8 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.ExcelFormulaConverters
                 return excelAddressRange;
             }
 
-            return $"{EvalEngine.Helpers.AddressHelper.ConvertExcelToRowCellAddress(arr.First())}:{EvalEngine.Helpers.AddressHelper.ConvertExcelToRowCellAddress(arr.Last())}";
+            return
+                $"{EvalEngine.Helpers.AddressHelper.ConvertExcelToRowCellAddress(arr.First())}:{EvalEngine.Helpers.AddressHelper.ConvertExcelToRowCellAddress(arr.Last())}";
         }
 
         private string ProcessFunction(Statement statement, out List<ConvertException> exceptionList)
@@ -82,7 +85,8 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.ExcelFormulaConverters
             exceptionList = new List<ConvertException>();
             var processedStatement = new StringBuilder();
 
-            if (FunctionMatchingHelper.ExcelToSheetDict.TryGetValue(statement.FunctionName.ToUpper(), out var convertedName))
+            if (FunctionMatchingHelper.ExcelToSheetDict.TryGetValue(statement.FunctionName.ToUpper(),
+                    out var convertedName))
                 processedStatement.Append($"{convertedName}");
             else
             {
@@ -103,13 +107,17 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.ExcelFormulaConverters
                 if (isAddressParam)
                     processedStatement.Append('"');
 
-                foreach (var innerStatement in p.InnerStatements)
+                for (var i = 0; i < p.InnerStatements.Count; i++)
                 {
+                    var innerStatement = p.InnerStatements[i];
                     var st = ProcessTree(new List<Statement> {innerStatement}, out var innerExceptionList);
                     if (innerExceptionList?.Any() == true)
                         exceptionList.AddRange(innerExceptionList);
 
                     processedStatement.Append($"{st.FirstOrDefault()?.ProcessedStatement}");
+
+                    if (i == 0 && IsAddressRangeParam(p.InnerStatements))
+                        processedStatement.Append(":");
                 }
 
                 if (isAddressParam)
@@ -122,6 +130,11 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.ExcelFormulaConverters
             processedStatement.Append(')');
             return processedStatement.ToString();
         }
+
+        private bool IsAddressRangeParam(List<Statement> innerStatements)
+            => innerStatements.Count == 2 &&
+               innerStatements.All(x => x.Type == ElementType.Address ||
+                                        x.Type == ElementType.ExcelAddress);
 
         private bool IsAddressParams(List<Statement> innerStatements)
             => innerStatements.All(x => x.Type == ElementType.Address ||
