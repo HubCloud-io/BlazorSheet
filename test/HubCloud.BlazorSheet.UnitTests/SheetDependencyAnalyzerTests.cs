@@ -100,10 +100,12 @@ public class SheetDependencyAnalyzerTests
     #region private methods
     private Workbook BuildTestWorkbook()
     {
-        var sheetSettings = new SheetSettings();
-        sheetSettings.RowsCount = 100;
-        sheetSettings.ColumnsCount = 6;
-        
+        var sheetSettings = new SheetSettings
+        {
+            RowsCount = 10,
+            ColumnsCount = 6
+        };
+
         var numberInputSettings = new SheetCellEditSettings()
         {
             ControlKind = CellControlKinds.NumberInput,
@@ -112,9 +114,11 @@ public class SheetDependencyAnalyzerTests
         
         sheetSettings.EditSettings.Add(numberInputSettings);
         
-        var sheet = new Sheet(sheetSettings);
-        sheet.Name = "main";
-        
+        var sheet = new Sheet(sheetSettings)
+        {
+            Name = "main"
+        };
+
         sheet.GetCell(2, 1).Text = "Type value:";
         sheet.GetCell(2, 2).EditSettingsUid = numberInputSettings.Uid;
         sheet.GetCell(2, 2).Value = 1;
