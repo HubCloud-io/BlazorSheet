@@ -30,7 +30,6 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
             _workbook = workbook;
             
             _interpreter = InterpreterInitializer.CreateInterpreter(_data);
-            
             _interpreter.SetVariable("_data", _data);
         }
 
@@ -40,8 +39,6 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
             _data = data;
             
             _interpreter = InterpreterInitializer.CreateInterpreter(_data);
-            
-          
             _interpreter.SetVariable(ContextName, _data);
         }
         

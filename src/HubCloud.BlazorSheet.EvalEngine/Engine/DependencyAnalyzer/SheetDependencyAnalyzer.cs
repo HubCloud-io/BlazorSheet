@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using HubCloud.BlazorSheet.Core.Models;
+using HubCloud.BlazorSheet.EvalEngine.Helpers;
 
 namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
 {
@@ -29,7 +30,38 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
             var orderedCells = OrderCellsForCalc(_processedCells, dependCellsDict);
             return orderedCells;
         }
+        
+        public List<SheetCell> OrderCellsForCalc(List<string> processedCells,
+            Dictionary<string, SheetCell> dependCellsDict)
+        {
+            var list = new List<SheetCell>();
+            while (dependCellsDict.Count != 0)
+            {
+                var canCalc = false;
+                foreach (var dependCell in dependCellsDict.ToArray())
+                {
+                    if (CanCalc(dependCell.Value, processedCells))
+                    {
+                        var normalizedAddress = NormalizeAddress(dependCell.Key, _sheet.CellAddress(dependCell.Value));
+                        if (!processedCells.Contains(normalizedAddress))
+                            processedCells.Add(normalizedAddress);
 
+                        canCalc = true;
+
+                        list.Add(dependCell.Value);
+                        dependCellsDict.Remove(dependCell.Key);
+                    }
+                }
+
+                if (!canCalc)
+                    break;
+            }
+
+            return list;
+        }
+
+        #region private methods
+        
         private IEnumerable<string> GetNotDependedFormulaCells(Sheet sheet, Dictionary<string, SheetCell> dependCellsDict)
             => sheet.Cells
                 .Where(x => !string.IsNullOrEmpty(x.Formula))
@@ -75,35 +107,6 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
             }
 
             return dependCellsDict;
-        }
-
-        public List<SheetCell> OrderCellsForCalc(List<string> processedCells,
-            Dictionary<string, SheetCell> dependCellsDict)
-        {
-            var list = new List<SheetCell>();
-            while (dependCellsDict.Count != 0)
-            {
-                var canCalc = false;
-                foreach (var dependCell in dependCellsDict.ToArray())
-                {
-                    if (CanCalc(dependCell.Value, processedCells))
-                    {
-                        var normalizedAddress = NormalizeAddress(dependCell.Key, _sheet.CellAddress(dependCell.Value));
-                        if (!processedCells.Contains(normalizedAddress))
-                            processedCells.Add(normalizedAddress);
-
-                        canCalc = true;
-
-                        list.Add(dependCell.Value);
-                        dependCellsDict.Remove(dependCell.Key);
-                    }
-                }
-
-                if (!canCalc)
-                    break;
-            }
-
-            return list;
         }
 
         private bool CanCalc(SheetCell formulaCell, List<string> processedCells)
@@ -185,7 +188,8 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
 
             return false;
         }
-
+        
+        #endregion
 
         #region public static methods
 
