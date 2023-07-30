@@ -4,15 +4,26 @@ namespace HubCloud.BlazorSheet.Core.Models
 {
     public class SheetRange
     {
+        private bool _rStartIsRelative;
+        private bool _rEndIsRelative;
+        private bool _cStartIsRelative;
+        private bool _cEndIsRelative;
         public string SheetName { get; set; } = string.Empty;
         public int RowStart { get; set; }
         public int RowEnd { get; set; }
         public int ColumnStart { get; set; }
         public int ColumnEnd { get; set; }
+        
+        public bool RowStartIsRelative => _rStartIsRelative;
+        public bool RowEndIsRelative => _rEndIsRelative;
+        public bool ColumnStartIsRelative => _cStartIsRelative;
+        public bool ColumnEndIsRelative => _cEndIsRelative;
+        
+        public SheetCellAddress StartAddress { get; set; }
+        public SheetCellAddress EndAddress { get; set; }
 
         public SheetRange()
         {
-            
         }
 
         public SheetRange(int rowStart, int columnStart, int rowEnd, int columnEnd)
@@ -56,19 +67,25 @@ namespace HubCloud.BlazorSheet.Core.Models
             var parts = rangeStr.Split(':');
             if (parts.Length > 0)
             {
-                var startAddress = new SheetCellAddress(parts[0], currentRow, currentColumn);
+                StartAddress = new SheetCellAddress(parts[0], currentRow, currentColumn);
 
-                SheetName = startAddress.SheetName;
-                RowStart = startAddress.Row;
-                ColumnStart = startAddress.Column;
+                _rStartIsRelative = StartAddress.RowIsRelative;
+                _cStartIsRelative = StartAddress.ColumnIsRelative;
+
+                SheetName = StartAddress.SheetName;
+                RowStart = StartAddress.Row;
+                ColumnStart = StartAddress.Column;
             }
 
             if (parts.Length > 1)
             {
-                var endAddress = new SheetCellAddress(parts[1], currentRow, currentColumn);
+                EndAddress = new SheetCellAddress(parts[1], currentRow, currentColumn);
                 
-                RowEnd = endAddress.Row;
-                ColumnEnd = endAddress.Column;
+                _rEndIsRelative = EndAddress.RowIsRelative;
+                _cEndIsRelative = EndAddress.ColumnIsRelative;
+                
+                RowEnd = EndAddress.Row;
+                ColumnEnd = EndAddress.Column;
             }
             else
             {

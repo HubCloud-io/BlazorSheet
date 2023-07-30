@@ -8,6 +8,15 @@ using HubCloud.BlazorSheet.EvalEngine.Helpers;
 
 namespace HubCloud.BlazorSheet.EvalEngine.Engine.CellShiftFormulaHelper
 {
+    public class ShiftAddressModel
+    {
+        public string Placeholder { get; set; }
+        public string Address { get; set; }
+        public bool IsRange { get; set; }
+        public SheetCellAddress SheetCellAddress { get; set; }
+        public SheetRange SheetRange { get; set; }
+    }
+    
     public class CellShiftFormulaHelper
     {
         private readonly Sheet _sheet;
@@ -41,20 +50,39 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.CellShiftFormulaHelper
             var formula = formulaCell.Formula;
             var formulaRow = cellAddress.Column;
             var formulaColumn = cellAddress.Row;
+
+            var addressList = new List<ShiftAddressModel>();
             
             // check address ranges
             var rangeRegex = RegexHelper.AddressRangeRegex;
-            var rangeMatchesDict= rangeRegex.Matches(formula)
+            var rangeMatchesList = rangeRegex.Matches(formula)
                 .Cast<Match>()
                 .Distinct()
-                .ToDictionary(k => k.Value, v => new SheetRange(v.Value, formulaRow, formulaColumn));
+                .Select((x, i) => new ShiftAddressModel
+                {
+                    Placeholder = $"RNG{i}",
+                    IsRange = true,
+                    Address = x.Value,
+                    SheetRange = new SheetRange(x.Value, formulaRow, formulaColumn)
+                });
 
             // check simple addresses
             var addressRegex = RegexHelper.AddressRegex;
-            var addressMatchesDict = addressRegex.Matches(formula)
+            var addressMatchesList = addressRegex.Matches(formula)
                 .Cast<Match>()
                 .Distinct()
-                .ToDictionary(k => k.Value, v => new SheetCellAddress(v.Value, formulaRow, formulaColumn));
+                .Select((x, i) => new ShiftAddressModel
+                {
+                    Placeholder = $"ADR{i}",
+                    IsRange = false,
+                    Address = x.Value,
+                    SheetCellAddress = new SheetCellAddress(x.Value, formulaRow, formulaColumn)
+                });
+            
+            addressList.AddRange(rangeMatchesList);
+            addressList.AddRange(addressMatchesList);
+            
+            //...
 
             return null;
         }

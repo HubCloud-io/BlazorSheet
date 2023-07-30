@@ -1,12 +1,19 @@
 ﻿using System;
+using System.Text;
 
 namespace HubCloud.BlazorSheet.Core.Models
 {
     public class SheetCellAddress
     {
+        private bool _rIsRelative;
+        private bool _cIsRelative;
+        
         public string SheetName { get; set; } = string.Empty;
         public int Row { get; set; }
         public int Column { get; set; }
+
+        public bool RowIsRelative => _rIsRelative;
+        public bool ColumnIsRelative => _cIsRelative;
 
         public SheetCellAddress()
         {
@@ -23,8 +30,6 @@ namespace HubCloud.BlazorSheet.Core.Models
             Parse(address);
         }
 
-        private bool _rIsRelative;
-        private bool _cIsRelative;
         public SheetCellAddress(string address, int currentRow, int currentColumn)
         {
             Parse(address);
@@ -84,6 +89,6 @@ namespace HubCloud.BlazorSheet.Core.Models
             Column = col;
         }
 
-        public override string ToString() => "{SheetName}!R{Row}C{Column}";
+        public override string ToString() => $"{SheetName}!R{Row}C{Column}";
     }
 }
