@@ -5,12 +5,13 @@ using System.Security;
 using System.Text;
 using System.Text.RegularExpressions;
 using HubCloud.BlazorSheet.Core.Models;
+using HubCloud.BlazorSheet.EvalEngine.Engine.CellShiftFormulaHelper.Abstractions;
 using HubCloud.BlazorSheet.EvalEngine.Engine.CellShiftFormulaHelper.Models;
 using HubCloud.BlazorSheet.EvalEngine.Helpers;
 
 namespace HubCloud.BlazorSheet.EvalEngine.Engine.CellShiftFormulaHelper
 {
-    public class CellShiftFormulaHelper
+    public class CellShiftFormulaHelper : IFormulaShifter
     {
         private readonly Sheet _sheet;
 
@@ -117,7 +118,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.CellShiftFormulaHelper
             var isRangeMatches = rangeRegex.Matches(formula)
                 .Cast<Match>()
                 .Select(x => new SheetRange(x.Value, formulaRow, formulaColumn))
-                .Any(x => x.RowStart >= insertedRowIndex || x.RowEnd >= insertedRowIndex);
+                .Any(x => CheckRange(x, insertedRowIndex));
 
             if (isRangeMatches)
                 return true;
@@ -127,12 +128,26 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.CellShiftFormulaHelper
             var isAddressMatches = addressRegex.Matches(formula)
                 .Cast<Match>()
                 .Select(x => new SheetCellAddress(x.Value, formulaRow, formulaColumn))
-                .Any(x => x.Row >= insertedRowIndex);
+                .Any(x => CheckAddress(x, insertedRowIndex));
 
             if (isAddressMatches)
                 return true;
 
             return false;
+        }
+
+        private bool CheckAddress(SheetCellAddress cell,
+            int insertedRowIndex)
+        {
+            if (!cell.RowIsRelative)
+                return cell.Row >= insertedRowIndex;
+
+            return true;
+        }
+        
+        private bool CheckRange(SheetRange range, int insertedRowIndex)
+        {
+            return range.RowStart >= insertedRowIndex || range.RowEnd >= insertedRowIndex;
         }
 
         #endregion

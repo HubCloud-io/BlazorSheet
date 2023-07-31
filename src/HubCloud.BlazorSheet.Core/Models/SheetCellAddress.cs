@@ -7,7 +7,6 @@ namespace HubCloud.BlazorSheet.Core.Models
     {
         private bool _rIsRelative;
         private bool _cIsRelative;
-        
         public string SheetName { get; set; } = string.Empty;
         public int Row { get; set; }
         public int Column { get; set; }
@@ -85,8 +84,8 @@ namespace HubCloud.BlazorSheet.Core.Models
             if (int.TryParse(cString, out var col))
                 Column = col;
 
-            Row = row;
-            Column = col;
+            // Row = row;
+            // Column = col;
         }
 
         public override string ToString()

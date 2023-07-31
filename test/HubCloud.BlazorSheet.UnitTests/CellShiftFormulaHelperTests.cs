@@ -1,6 +1,7 @@
 ﻿using HubCloud.BlazorSheet.Core.Enums;
 using HubCloud.BlazorSheet.Core.Models;
 using HubCloud.BlazorSheet.EvalEngine.Engine.CellShiftFormulaHelper;
+using HubCloud.BlazorSheet.EvalEngine.Engine.CellShiftFormulaHelper.Abstractions;
 using NUnit.Framework;
 
 namespace HubCloud.BlazorSheet.UnitTests;
@@ -9,19 +10,10 @@ namespace HubCloud.BlazorSheet.UnitTests;
 public class CellShiftFormulaHelperTests
 {
     [Test]
-    public void OnRowAdd_SimpleAddresses_Test()
+    public void OnRowAdd_AbsoluteAddresses_Test()
     {
         // Arrange
-        var sheetSettings = new SheetSettings 
-        {
-            RowsCount = 10,
-            ColumnsCount = 10
-        };
-
-        var sheet = new Sheet(sheetSettings)
-        {
-            Name = "main"
-        };
+        var sheet = GetSheet();
 
         // value cells
         sheet.GetCell(6, 1).Value = 100;
@@ -37,8 +29,8 @@ public class CellShiftFormulaHelperTests
         workbook.AddSheet(sheet);
         
         // Act
-        var shiftFormulaHelper = new CellShiftFormulaHelper(sheet);
-        var shiftLog = shiftFormulaHelper.OnRowAdd(5);
+        IFormulaShifter formulaShifter = new CellShiftFormulaHelper(sheet);
+        var shiftLog = formulaShifter.OnRowAdd(5);
 
         // Assert
         var formula11 = sheet.GetCell(1, 1).Formula;
@@ -51,5 +43,46 @@ public class CellShiftFormulaHelperTests
         Assert.AreEqual(formula63, @"VAL(""R7C1"")");
         Assert.AreEqual(formula12, @"SUM(""R7C1:R7C1"")+VAL(""R7C1"")");
         Assert.AreEqual(formula15, @"SUM(""R1C6:R8C6"")");
+    }
+    
+    [Test]
+    public void OnRowAdd_RelativeAddresses_Test()
+    {
+        // Arrange
+        var sheet = GetSheet();
+
+        // value cells
+        sheet.GetCell(4, 1).Value = 100;
+        // formula cells
+        sheet.GetCell(6, 1).Formula = @"VAL(""R[-2]C1"")";
+
+        var workbook = new Workbook();
+        workbook.AddSheet(sheet);
+        
+        // Act
+        IFormulaShifter formulaShifter = new CellShiftFormulaHelper(sheet);
+        var shiftLog = formulaShifter.OnRowAdd(5);
+
+        // Assert
+        var formula61 = sheet.GetCell(6, 1).Formula;
+
+        Assert.AreEqual(shiftLog.Count, 1);
+        Assert.AreEqual(formula61, @"VAL(""R[-3]C1"")");
+    }
+
+    private Sheet GetSheet()
+    {
+        var sheetSettings = new SheetSettings 
+        {
+            RowsCount = 10,
+            ColumnsCount = 10
+        };
+
+        var sheet = new Sheet(sheetSettings)
+        {
+            Name = "main"
+        };
+
+        return sheet;
     }
 }

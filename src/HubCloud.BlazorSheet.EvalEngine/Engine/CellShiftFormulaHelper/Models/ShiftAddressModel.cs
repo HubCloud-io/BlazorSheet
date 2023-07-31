@@ -6,6 +6,8 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.CellShiftFormulaHelper.Models
     {
         private readonly SheetCellAddress _sheetCellAddress;
         private readonly SheetRange _sheetRange;
+        private readonly int _formulaRow;
+        private readonly int _formulaColumn;
 
         public ShiftAddressModel(string placeholder,
             string address,
@@ -13,14 +15,17 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.CellShiftFormulaHelper.Models
             int formulaColumn,
             bool isRange = false)
         {
+            _formulaRow = formulaRow;
+            _formulaColumn = formulaColumn;
+            
             Placeholder = placeholder;
             Address = address;
             IsRange = isRange;
 
             if (!IsRange)
-                _sheetCellAddress = new SheetCellAddress(Address, formulaRow, formulaColumn);
+                _sheetCellAddress = new SheetCellAddress(Address, _formulaRow, _formulaColumn);
             else
-                _sheetRange = new SheetRange(Address, formulaRow, formulaColumn);
+                _sheetRange = new SheetRange(Address, _formulaRow, _formulaColumn);
         }
 
         public string Placeholder { get; set; }
