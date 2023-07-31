@@ -89,6 +89,24 @@ namespace HubCloud.BlazorSheet.Core.Models
             Column = col;
         }
 
-        public override string ToString() => $"{SheetName}!R{Row}C{Column}";
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+
+            if (!string.IsNullOrEmpty(SheetName))
+                sb.Append($"{SheetName}!");
+
+            if (RowIsRelative)
+                sb.Append($"R[{Row}]");
+            else
+                sb.Append($"R{Row}");
+            
+            if (ColumnIsRelative)
+                sb.Append($"C[{Column}]");
+            else
+                sb.Append($"C{Column}");
+            
+            return sb.ToString();
+        }
     }
 }
