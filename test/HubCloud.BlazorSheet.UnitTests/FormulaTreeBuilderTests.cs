@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using HubCloud.BlazorSheet.EvalEngine.Engine.FormulaProcessors;
+using HubCloud.BlazorSheet.EvalEngine.Engine.FormulaProcessors.Helpers;
 using HubCloud.BlazorSheet.EvalEngine.Engine.FormulaProcessors.Models;
 using NUnit.Framework;
 
