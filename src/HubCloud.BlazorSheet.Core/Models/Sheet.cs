@@ -849,7 +849,7 @@ namespace HubCloud.BlazorSheet.Core.Models
         public Sheet Copy()
         {
             var output = JsonConvert.SerializeObject(this);
-            return JsonConvert.DeserializeObject<Sheet>(output);
+            return JsonConvert.DeserializeObject<Sheet>(output, new JsonSerializerSettings { FloatParseHandling = FloatParseHandling.Decimal });
         }
 
         public void AddCell(SheetCell cell)

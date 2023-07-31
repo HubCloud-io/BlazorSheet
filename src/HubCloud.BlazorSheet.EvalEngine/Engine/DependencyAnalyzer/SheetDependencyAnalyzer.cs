@@ -20,9 +20,11 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
         public IEnumerable<SheetCell> GetDependencyCells(SheetCellAddress cellAddress)
         {
             _processedCells = new List<string>(GetNoFormulaCells(_sheet));
+
             var dependCellsDict = GetDependencyCellsInner(cellAddress);
 
-            _processedCells.AddRange(GetNotDependedFormulaCells(_sheet, dependCellsDict));
+            var notDependedFormulas = GetNotDependedFormulaCells(_sheet, dependCellsDict);
+            _processedCells.AddRange(notDependedFormulas);
 
             var orderedCells = OrderCellsForCalc(_processedCells, dependCellsDict);
             return orderedCells;
@@ -52,13 +54,13 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
                 }
             }
 
-            if (!_processedCells.Contains(currentCellAddress.ToUpper()))
-                _processedCells.Add(currentCellAddress.ToUpper());
-            foreach (var item in dependCellsDict.Select(x => x.Key))
-            {
-                if (!_processedCells.Contains(item))
-                    _processedCells.Add(item);
-            }
+            // if (!_processedCells.Contains(currentCellAddress.ToUpper()))
+            //     _processedCells.Add(currentCellAddress.ToUpper());
+            // foreach (var item in dependCellsDict.Select(x => x.Key))
+            // {
+            //     if (!_processedCells.Contains(item))
+            //         _processedCells.Add(item);
+            // }
 
             foreach (var cell in dependCellsDict.ToArray())
             {
@@ -110,7 +112,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
             var formula = formulaCell.Formula.ToUpper();
 
             // check address ranges
-            var rangeRegex = new Regex(@"R-*\d*C-*\d*:R-*\d*C-*\d*");
+            var rangeRegex = RegexHelper.AddressRangeRegex;
             var rangeMatches = rangeRegex.Matches(formula)
                 .Cast<Match>()
                 .Select(m => m.Value)
@@ -128,7 +130,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
             }
 
             // check simple addresses
-            var addressRegex = new Regex(@"R-*\d*C-*\d*");
+            var addressRegex = RegexHelper.AddressRegex;
             var addressMatches = addressRegex.Matches(formula)
                 .Cast<Match>()
                 .Select(m => m.Value)
@@ -137,7 +139,8 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
 
             foreach (var match in addressMatches)
             {
-                if (!processedCells.Contains(NormalizeAddress(match.ToUpper(), formulaCellAddress)))
+                var normalizerAddress = NormalizeAddress(match.ToUpper(), formulaCellAddress);
+                if (!processedCells.Contains(normalizerAddress))
                     return false;
             }
 
@@ -151,7 +154,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
             var sb = new StringBuilder(formulaCell.Formula);
 
             // check address ranges
-            var rangeRegex = new Regex(@"R-*\d*C-*\d*:R-*\d*C-*\d*");
+            var rangeRegex = RegexHelper.AddressRangeRegex;
             var rangeMatches = rangeRegex.Matches(sb.ToString())
                 .Cast<Match>()
                 .Select(m => m.Value)
@@ -167,7 +170,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
             }
 
             // check simple addresses
-            var addressRegex = new Regex(@"R-*\d*C-*\d*");
+            var addressRegex = RegexHelper.AddressRegex;
             var addressMatches = addressRegex.Matches(sb.ToString())
                 .Cast<Match>()
                 .Select(m => m.Value)

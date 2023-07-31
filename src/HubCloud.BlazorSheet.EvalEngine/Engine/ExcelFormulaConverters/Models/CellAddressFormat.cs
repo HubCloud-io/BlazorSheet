@@ -2,7 +2,7 @@
 {
     public enum CellAddressFormat
     {
-        RowCellFormat,
-        DefaultExcelFormat
+        R1C1Format,
+        A1Format
     }
 }

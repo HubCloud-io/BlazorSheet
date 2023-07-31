@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace HubCloud.BlazorSheet.EvalEngine.Engine.ExcelFormulaConverters
+namespace HubCloud.BlazorSheet.EvalEngine.Engine.ExcelFormulaConverters.Helpers
 {
-    public class FunctionMatchingHelper
+    public static class FunctionMatchingHelper
     {
         private static Dictionary<string, string> _excelToSheetDict;
         private static Dictionary<string, string> _sheetToExcelDict;

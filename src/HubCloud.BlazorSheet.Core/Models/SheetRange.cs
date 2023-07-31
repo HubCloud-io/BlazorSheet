@@ -26,27 +26,19 @@ namespace HubCloud.BlazorSheet.Core.Models
 
         public SheetRange(string rangeStr, int currentRow, int currentColumn)
         {
-            Parse(rangeStr);
+            Parse(rangeStr, currentRow, currentColumn);
 
             if (RowStart < 0)
-            {
                 RowStart += currentRow;
-            }
 
             if (RowEnd < 0)
-            {
                 RowEnd += currentRow;
-            }
 
             if (ColumnStart < 0)
-            {
                 ColumnStart += currentColumn;
-            }
 
             if (ColumnStart < 0)
-            {
                 ColumnStart += currentColumn;
-            }
         }
         
         public bool IsCellInRange(int row, int column)
@@ -59,14 +51,12 @@ namespace HubCloud.BlazorSheet.Core.Models
             return isInRange;
         }
 
-        private void Parse(string rangeStr)
+        private void Parse(string rangeStr, int currentRow, int currentColumn)
         {
-            
             var parts = rangeStr.Split(':');
-
             if (parts.Length > 0)
             {
-                var startAddress = new SheetCellAddress(parts[0]);
+                var startAddress = new SheetCellAddress(parts[0], currentRow, currentColumn);
 
                 SheetName = startAddress.SheetName;
                 RowStart = startAddress.Row;
@@ -75,7 +65,7 @@ namespace HubCloud.BlazorSheet.Core.Models
 
             if (parts.Length > 1)
             {
-                var endAddress = new SheetCellAddress(parts[1]);
+                var endAddress = new SheetCellAddress(parts[1], currentRow, currentColumn);
                 
                 RowEnd = endAddress.Row;
                 ColumnEnd = endAddress.Column;
