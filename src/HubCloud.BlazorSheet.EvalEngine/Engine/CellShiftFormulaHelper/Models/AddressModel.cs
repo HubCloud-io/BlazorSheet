@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Text;
-using HubCloud.BlazorSheet.Core.Models;
 
 namespace HubCloud.BlazorSheet.EvalEngine.Engine.CellShiftFormulaHelper.Models
 {

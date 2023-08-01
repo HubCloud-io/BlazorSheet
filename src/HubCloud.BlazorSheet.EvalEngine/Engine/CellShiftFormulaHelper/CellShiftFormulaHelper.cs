@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
-using System.Security;
 using System.Text;
 using System.Text.RegularExpressions;
 using HubCloud.BlazorSheet.Core.Models;
@@ -22,133 +22,240 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.CellShiftFormulaHelper
 
         public List<ShiftLogModel> OnRowAdd(int insertedRowIndex)
         {
-            var shiftLog = _sheet.Cells
-                .Where(x => !string.IsNullOrEmpty(x.Formula) &&
-                            IsFormulaContainsShiftedCells(x, insertedRowIndex))
-                .Select(x => ShiftAddresses(x, insertedRowIndex))
-                .ToList();
+            var log = new List<ShiftLogModel>();
 
-            return shiftLog;
+            var formulaCells = GetFormulaCells();
+            foreach (var formulaCell in formulaCells)
+            {
+                var logItem = ProcessFormulaCell(formulaCell,
+                    insertedRowIndex,
+                    ProcessRowAddresses,
+                    ProcessRowRanges);
+                
+                log.Add(logItem);
+            }
+
+            return log;
         }
 
         public List<ShiftLogModel> OnColumnAdd(int insertedColumnIndex)
         {
-            throw new NotImplementedException();
+            var log = new List<ShiftLogModel>();
+            var formulaCells = GetFormulaCells();
+            foreach (var formulaCell in formulaCells)
+            {
+                var logItem = ProcessFormulaCell(formulaCell,
+                    insertedColumnIndex,
+                    ProcessColumnAddresses,
+                    ProcessColumnRanges);
+                log.Add(logItem);
+            }
+            
+            return log;
         }
+
 
         #region private methods
 
-        private ShiftLogModel ShiftAddresses(SheetCell formulaCell, int insertedRowIndex)
+        private ShiftLogModel ProcessFormulaCell(SheetCell formulaCell,
+            int insertedIndex,
+            Action<StringBuilder, Dictionary<string, string>,SheetCellAddress,int> processAddresses,
+            Action<StringBuilder, Dictionary<string, string>, SheetCellAddress, int> processRanges)
         {
-            var formulaModel = ExtractAddresses(formulaCell);
-
-            // build formula
-            var formula = formulaModel.ReplacedFormula;
-            foreach (var addressModel in formulaModel.AddressList)
-            {
-                formula.Replace(addressModel.Placeholder, addressModel.GetShifted(insertedRowIndex));
-            }
-
-            var shiftedFormula = formula.ToString();
-            
-            var logItem = new ShiftLogModel
+            var formulaCellAddress = _sheet.CellAddress(formulaCell);
+            var log = new ShiftLogModel
             {
                 PrevFormula = formulaCell.Formula,
-                CurrentFormula = shiftedFormula,
-                CellAddress = _sheet.CellAddress(formulaCell).ToString()
+                CellAddress = formulaCellAddress.ToString()
             };
 
-            formulaCell.Formula = shiftedFormula;
-
-            return logItem;
-        }
-
-        private FormulaModel ExtractAddresses(SheetCell formulaCell)
-        {
-            var cellAddress = _sheet.CellAddress(formulaCell);
             var formula = new StringBuilder(formulaCell.Formula);
-            var formulaRow = cellAddress.Column;
-            var formulaColumn = cellAddress.Row;
 
-            var model = new FormulaModel();
+            var rangeDict = new Dictionary<string, string>();
+            var addressDict = new Dictionary<string, string>();
 
             // check address ranges
             var rangeRegex = RegexHelper.AddressRangeRegex;
             var rangeMatchesList = rangeRegex.Matches(formula.ToString())
                 .Cast<Match>()
-                .Distinct()
-                .Select((x, i) =>
-                    new ShiftAddressModel($"{{RNG{i}}}", x.Value, formulaRow, formulaColumn, isRange: true))
-                .ToList();
+                .Select(m => m.Value)
+                .Distinct();
 
+            var i = 0;
             foreach (var match in rangeMatchesList)
             {
-                formula.Replace(match.Address, match.Placeholder);
+                var placeholder = $@"{{RNG{i}}}";
+                formula = formula.Replace(match, placeholder);
+                rangeDict.Add(placeholder, match);
+                i++;
             }
 
             // check simple addresses
             var addressRegex = RegexHelper.AddressRegex;
             var addressMatchesList = addressRegex.Matches(formula.ToString())
                 .Cast<Match>()
-                .Distinct()
-                .Select((x, i) => new ShiftAddressModel($"{{ADR{i}}}", x.Value, formulaRow, formulaColumn))
-                .ToList();
+                .Select(m => m.Value)
+                .Distinct();
 
+            i = 0;
             foreach (var match in addressMatchesList)
             {
-                formula.Replace(match.Address, match.Placeholder);
+                var placeholder = $@"{{ADR{i++}}}";
+                formula = formula.Replace(match, placeholder);
+                addressDict.Add(placeholder, match);
             }
 
-            model.AddressList.AddRange(rangeMatchesList);
-            model.AddressList.AddRange(addressMatchesList);
-            model.ReplacedFormula = formula;
+            processAddresses(formula, addressDict, formulaCellAddress, insertedIndex);
+            processRanges(formula, rangeDict, formulaCellAddress, insertedIndex);
 
-            return model;
+            var processedFormula = formula.ToString();
+            formulaCell.Formula = processedFormula;
+
+            log.CurrentFormula = processedFormula;
+
+            return log;
         }
 
-        protected bool IsFormulaContainsShiftedCells(SheetCell formulaCell, int insertedRowIndex)
-        {
-            var cellAddress = _sheet.CellAddress(formulaCell);
-            var formula = formulaCell.Formula;
-            var formulaRow = cellAddress.Column;
-            var formulaColumn = cellAddress.Row;
-
-            // check address ranges
-            var rangeRegex = RegexHelper.AddressRangeRegex;
-            var isRangeMatches = rangeRegex.Matches(formula)
-                .Cast<Match>()
-                .Select(x => new SheetRange(x.Value, formulaRow, formulaColumn))
-                .Any(x => CheckRange(x, insertedRowIndex));
-
-            if (isRangeMatches)
-                return true;
-
-            // check simple addresses
-            var addressRegex = RegexHelper.AddressRegex;
-            var isAddressMatches = addressRegex.Matches(formula)
-                .Cast<Match>()
-                .Select(x => new SheetCellAddress(x.Value, formulaRow, formulaColumn))
-                .Any(x => CheckAddress(x, insertedRowIndex));
-
-            if (isAddressMatches)
-                return true;
-
-            return false;
-        }
-
-        private bool CheckAddress(SheetCellAddress cell,
+        private void ProcessRowAddresses(StringBuilder formula,
+            Dictionary<string, string> addressDict,
+            SheetCellAddress formulaAddress,
             int insertedRowIndex)
         {
-            // if (!cell.RowIsRelative)
-            //     return cell.Row >= insertedRowIndex;
+            foreach (var address in addressDict)
+            {
+                var shiftedAddress = GetShiftedRowAddress(formulaAddress, insertedRowIndex, address.Value);
+                formula.Replace(address.Key, shiftedAddress.ToString());
+            }
+        }
 
-            return true;
+        private void ProcessRowRanges(StringBuilder formula,
+            Dictionary<string, string> rangeDict,
+            SheetCellAddress formulaAddress,
+            int insertedRowIndex)
+        {
+            foreach (var range in rangeDict)
+            {
+                var addresses = range.Value.Trim().Split(':');
+
+                var shiftedAddress1 = GetShiftedRowAddress(formulaAddress, insertedRowIndex, addresses[0]);
+                var shiftedAddress2 = GetShiftedRowAddress(formulaAddress, insertedRowIndex, addresses[1]);
+
+                formula.Replace(range.Key, $"{shiftedAddress1}:{shiftedAddress2}");
+            }
         }
         
-        private bool CheckRange(SheetRange range, int insertedRowIndex)
+        private void ProcessColumnAddresses(StringBuilder formula,
+            Dictionary<string, string> addressDict,
+            SheetCellAddress formulaAddress,
+            int insertedColumnIndex)
         {
-            return range.RowStart >= insertedRowIndex || range.RowEnd >= insertedRowIndex;
+            foreach (var address in addressDict)
+            {
+                var shiftedAddress = GetShiftedColumnAddress(formulaAddress, insertedColumnIndex, address.Value);
+                formula.Replace(address.Key, shiftedAddress.ToString());
+            }
         }
+        
+        private void ProcessColumnRanges(StringBuilder formula,
+            Dictionary<string, string> rangeDict,
+            SheetCellAddress formulaAddress,
+            int insertedColumnIndex)
+        {
+            foreach (var range in rangeDict)
+            {
+                var addresses = range.Value.Trim().Split(':');
+
+                var shiftedAddress1 = GetShiftedColumnAddress(formulaAddress, insertedColumnIndex, addresses[0]);
+                var shiftedAddress2 = GetShiftedColumnAddress(formulaAddress, insertedColumnIndex, addresses[1]);
+
+                formula.Replace(range.Key, $"{shiftedAddress1}:{shiftedAddress2}");
+            }
+        }
+        
+        private StringBuilder GetShiftedRowAddress(SheetCellAddress formulaAddress,
+            int insertedRowIndex,
+            string address)
+        {
+            string rValue;
+            var addressModel = new AddressModel(address);
+
+            if (!addressModel.IsRowRelative)
+            {
+                if (addressModel.RowValue >= insertedRowIndex)
+                    rValue = (addressModel.RowValue + 1).ToString();
+                else
+                    rValue = addressModel.RowValue.ToString();
+            }
+            else
+            {
+                var realRow = formulaAddress.Row + addressModel.RowValue;
+                if (realRow < insertedRowIndex && formulaAddress.Row >= insertedRowIndex)
+                    rValue = (addressModel.RowValue - 1).ToString();
+                else if (realRow >= insertedRowIndex && formulaAddress.Row < insertedRowIndex)
+                    rValue = (addressModel.RowValue + 1).ToString();
+                else
+                    rValue = addressModel.RowValue.ToString();
+            }
+
+            // build address
+            var shiftedAddress = new StringBuilder();
+            shiftedAddress.Append("R");
+            if (addressModel.IsRowRelative)
+                shiftedAddress.Append($"[{rValue}]");
+            else
+                shiftedAddress.Append($"{rValue}");
+
+            shiftedAddress.Append("C");
+            if (addressModel.IsColumnRelative)
+                shiftedAddress.Append($"[{addressModel.ColumnValue.ToString()}]");
+            else
+                shiftedAddress.Append($"{addressModel.ColumnValue.ToString()}");
+            return shiftedAddress;
+        }
+        
+        private StringBuilder GetShiftedColumnAddress(SheetCellAddress formulaAddress,
+            int insertedColumnIndex,
+            string address)
+        {
+            string cValue;
+            var addressModel = new AddressModel(address);
+
+            if (!addressModel.IsColumnRelative)
+            {
+                if (addressModel.ColumnValue >= insertedColumnIndex)
+                    cValue = (addressModel.ColumnValue + 1).ToString();
+                else
+                    cValue = addressModel.ColumnValue.ToString();
+            }
+            else
+            {
+                var realRow = formulaAddress.Column + addressModel.ColumnValue;
+                if (realRow < insertedColumnIndex && formulaAddress.Column >= insertedColumnIndex)
+                    cValue = (addressModel.ColumnValue - 1).ToString();
+                else if (realRow >= insertedColumnIndex && formulaAddress.Column < insertedColumnIndex)
+                    cValue = (addressModel.ColumnValue + 1).ToString();
+                else
+                    cValue = addressModel.ColumnValue.ToString();
+            }
+
+            // build address
+            var shiftedAddress = new StringBuilder();
+            shiftedAddress.Append("R");
+            if (addressModel.IsRowRelative)
+                shiftedAddress.Append($"[{addressModel.RowValue.ToString()}]");
+            else
+                shiftedAddress.Append($"{addressModel.RowValue.ToString()}");
+
+            shiftedAddress.Append("C");
+            if (addressModel.IsColumnRelative)
+                shiftedAddress.Append($"[{cValue}]");
+            else
+                shiftedAddress.Append($"{cValue}");
+            return shiftedAddress;
+        }
+        
+        private IEnumerable<SheetCell> GetFormulaCells()
+            => _sheet.Cells.Where(x => !string.IsNullOrEmpty(x.Formula));
 
         #endregion
     }
