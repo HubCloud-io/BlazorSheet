@@ -115,7 +115,7 @@ public partial class SheetEditPage: ComponentBase
         _sheet.UngroupRows(_selectedRowByNumberList);
     }
 
-    private void OnCollapseExpandAll(bool isExpand)
+    private void OnCollapseExpandAllRows(bool isExpand)
     {
         var headRows = _sheet.Rows
             .Where(x => x.IsGroup)

@@ -9,7 +9,7 @@ namespace HubCloud.BlazorSheet.Components;
 
 public partial class SheetCommandPanel:ComponentBase
 {
-    private bool _isCollapseExpandAll;
+    private bool _isCollapseExpandAllRows;
 
     private List<Tuple<string, string>> _textAlignSource;
     private List<Tuple<string, CellFormatTypes>> _cellFormatSource;
@@ -42,7 +42,7 @@ public partial class SheetCommandPanel:ComponentBase
     public EventCallback UngroupRows { get; set; }
 
     [Parameter]
-    public EventCallback<bool> CollapseExpandAll { get; set; }
+    public EventCallback<bool> CollapseExpandAllRows { get; set; }
 
     [Parameter]
     public bool CanCellsBeJoined { get; set; }
@@ -206,9 +206,9 @@ public partial class SheetCommandPanel:ComponentBase
         await UngroupRows.InvokeAsync();
     }
 
-    private async void OnCollapseExpandAll()
+    private async void OnCollapseExpandAllRows()
     {
-        _isCollapseExpandAll = !_isCollapseExpandAll;
-        await CollapseExpandAll.InvokeAsync(_isCollapseExpandAll);
+        _isCollapseExpandAllRows = !_isCollapseExpandAllRows;
+        await CollapseExpandAllRows.InvokeAsync(_isCollapseExpandAllRows);
     }
 }
