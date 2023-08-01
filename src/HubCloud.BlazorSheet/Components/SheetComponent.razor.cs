@@ -4,6 +4,7 @@ using BBComponents.Abstract;
 using BBComponents.Enums;
 using BBComponents.Models;
 using HubCloud.BlazorSheet.Core.Enums;
+using HubCloud.BlazorSheet.Core.Events;
 using HubCloud.BlazorSheet.Core.Models;
 using HubCloud.BlazorSheet.Infrastructure;
 using Microsoft.AspNetCore.Components;
@@ -50,13 +51,12 @@ public partial class SheetComponent : ComponentBase
     [Parameter] public Sheet Sheet { get; set; }
 
     [Parameter] public SheetRegimes Regime { get; set; }
-    
+
     [Parameter] public bool IsDisabled { get; set; }
     [Parameter] public string MaxHeight { get; set; }
     [Parameter] public string MaxWidth { get; set; }
 
-    [Parameter]
-    public IComboBoxDataProviderFactory ComboBoxDataProviderFactory { get; set; }
+    [Parameter] public IComboBoxDataProviderFactory ComboBoxDataProviderFactory { get; set; }
 
     [Parameter] public EventCallback Changed { get; set; }
 
@@ -65,6 +65,9 @@ public partial class SheetComponent : ComponentBase
     [Parameter] public EventCallback<SheetRow> RowSelected { get; set; }
     [Parameter] public EventCallback<SheetColumn> ColumnSelected { get; set; }
     [Parameter] public EventCallback<SheetCell> CellValueChanged { get; set; }
+
+    [Parameter] public EventCallback<RowAddedEventArgs> RowAdded { get; set; }
+    [Parameter] public EventCallback<ColumnAddedEventArgs> ColumnAdded { get; set; }
 
     [Inject] public IJSRuntime JsRuntime { get; set; }
 
@@ -188,14 +191,28 @@ public partial class SheetComponent : ComponentBase
         {
             case ContextMenuBuilder.AddBeforeItemName:
 
-                Sheet.AddColumn(_currentColumn, -1);
+                var newColumnBefore = Sheet.AddColumn(_currentColumn, -1);
+
+                await ColumnAdded.InvokeAsync(new ColumnAddedEventArgs()
+                {
+                    SourceUid = _currentColumn.Uid,
+                    ColumnUid = newColumnBefore.Uid
+                });
+
                 await Changed.InvokeAsync(null);
 
                 break;
 
             case ContextMenuBuilder.AddAfterItemName:
 
-                Sheet.AddColumn(_currentColumn, 1);
+                var newColumnAfter = Sheet.AddColumn(_currentColumn, 1);
+                
+                await ColumnAdded.InvokeAsync(new ColumnAddedEventArgs()
+                {
+                    SourceUid = _currentColumn.Uid,
+                    ColumnUid = newColumnAfter.Uid
+                });
+                
                 await Changed.InvokeAsync(null);
 
                 break;
@@ -236,14 +253,28 @@ public partial class SheetComponent : ComponentBase
         {
             case ContextMenuBuilder.AddBeforeItemName:
 
-                Sheet.AddRow(_currentRow, -1);
+                var newRowBefore = Sheet.AddRow(_currentRow, -1);
+
+                await RowAdded.InvokeAsync(new RowAddedEventArgs()
+                {
+                    SourceUid = _currentRow.Uid,
+                    RowUid = newRowBefore.Uid
+
+                });
                 await Changed.InvokeAsync(null);
 
                 break;
 
             case ContextMenuBuilder.AddAfterItemName:
 
-                Sheet.AddRow(_currentRow, 1);
+                var newRowAfter =  Sheet.AddRow(_currentRow, 1);
+                
+                await RowAdded.InvokeAsync(new RowAddedEventArgs()
+                {
+                    SourceUid = _currentRow.Uid,
+                    RowUid = newRowAfter.Uid
+
+                });
                 await Changed.InvokeAsync(null);
 
                 break;
@@ -344,7 +375,7 @@ public partial class SheetComponent : ComponentBase
         {
             return;
         }
-        
+
         if (!_multipleSelection)
         {
             _selectedCells.Clear();
@@ -355,7 +386,7 @@ public partial class SheetComponent : ComponentBase
 
         if (!cells.Any())
             return;
-        
+
         foreach (var cell in cells)
         {
             if (!_selectedCells.Contains(cell))
@@ -366,7 +397,7 @@ public partial class SheetComponent : ComponentBase
         }
 
         var firstCell = cells.FirstOrDefault();
-        if(firstCell != null)
+        if (firstCell != null)
         {
             await CellSelected.InvokeAsync(firstCell);
         }
@@ -381,7 +412,7 @@ public partial class SheetComponent : ComponentBase
         {
             return;
         }
-        
+
         if (!_multipleSelection)
         {
             _selectedCells.Clear();

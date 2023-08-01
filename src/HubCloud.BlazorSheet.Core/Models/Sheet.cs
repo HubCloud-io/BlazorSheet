@@ -248,7 +248,7 @@ namespace HubCloud.BlazorSheet.Core.Models
             return _rows[r - 1];
         }
 
-        public void AddRow(SheetRow baseRow, int position)
+        public SheetRow AddRow(SheetRow baseRow, int position)
         {
             var baseRowNumber = RowNumber(baseRow);
             var baseRowIndex = baseRowNumber - 1;
@@ -295,6 +295,8 @@ namespace HubCloud.BlazorSheet.Core.Models
             }
 
             _rowsCount++;
+
+            return newRow;
         }
 
         public SheetColumn GetColumn(int c)
@@ -302,7 +304,7 @@ namespace HubCloud.BlazorSheet.Core.Models
             return _columns[c - 1];
         }
 
-        public void AddColumn(SheetColumn baseColumn, int position)
+        public SheetColumn AddColumn(SheetColumn baseColumn, int position)
         {
             var baseColumnNumber = ColumnNumber(baseColumn);
             var baseColumnIndex = baseColumnNumber - 1;
@@ -349,6 +351,8 @@ namespace HubCloud.BlazorSheet.Core.Models
             }
 
             _columnsCount++;
+
+            return newColumn;
         }
 
         public void RemoveRow(SheetRow row)
@@ -618,7 +622,7 @@ namespace HubCloud.BlazorSheet.Core.Models
         }
 
         private void ChangeSize<T>(int addRemoveCount, IReadOnlyCollection<T> collection, Action<T> removeAction,
-            Action<T, int> addAction) where T : class
+            Func<T, int, T> addAction) where T : class
         {
             if (addRemoveCount > 0)
             {
