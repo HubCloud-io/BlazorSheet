@@ -785,6 +785,172 @@ namespace HubCloud.BlazorSheet.Core.Models
             return true;
         }
 
+        public void GroupRows(List<SheetRow> rows)
+        {
+            var rowNumbers = rows
+                .Select(x => RowNumber(x))
+                .OrderBy(x => x)
+                .ToList();
+
+            var firstRowNumber = rowNumbers.FirstOrDefault();
+            if (firstRowNumber == 0)
+                return;
+
+            var headRow = GetRow(firstRowNumber - 1);
+
+            if (headRow.ParentUid == Guid.Empty)
+            {
+                headRow.IsGroup = true;
+                headRow.IsOpen = true;
+            }
+            else
+                headRow = Rows.FirstOrDefault(x => x.Uid == headRow.ParentUid);
+
+            if (headRow == null)
+                return;
+
+            foreach (var row in rows)
+                row.ParentUid = headRow.Uid;
+
+            var firstRow = GetRow(firstRowNumber);
+            if (firstRow.IsGroup)
+            {
+                firstRow.IsGroup = false;
+                firstRow.IsOpen = false;
+                firstRow.IsHidden = !headRow.IsOpen;
+            }
+
+            var childrenRows = Rows.Where(x => x.ParentUid == firstRow.Uid).ToList();
+            foreach (var childRow in childrenRows)
+            {
+                childRow.ParentUid = headRow.Uid;
+                childRow.IsOpen = false;
+                childRow.IsHidden = !headRow.IsOpen;
+            }
+        }
+
+        public void UngroupRows(List<SheetRow> rows)
+        {
+            var orderedByNumberRows = rows.OrderBy(x => RowNumber(x)).ToList();
+            var lastRow = orderedByNumberRows.LastOrDefault();
+            if (lastRow == null)
+                return;
+
+            var lastGroupRow = orderedByNumberRows.LastOrDefault(x => x.IsGroup);
+            if (lastGroupRow != null)
+            {
+                var lastGroupRowRows = Rows.Where(x => x.ParentUid == lastGroupRow.Uid).ToList();
+                var result = lastGroupRowRows.Except(rows).ToList();
+
+                if (result.Count > 0)
+                {
+                    result.ForEach(x => x.ParentUid = lastRow.Uid);
+
+                    lastRow.IsGroup = true;
+                    lastRow.IsOpen = true;
+
+                    foreach (var row in rows)
+                    {
+                        row.ParentUid = Guid.Empty;
+                        row.IsHidden = false;
+
+                        if (row.Uid != lastRow.Uid)
+                        {
+                            row.IsGroup = false;
+                            row.IsOpen = false;
+                        }
+                    }
+
+                    return;
+                }
+            }
+
+            var firstRow = orderedByNumberRows.FirstOrDefault();
+            if (firstRow == null)
+                return;
+
+            var firstRowNumber = RowNumber(firstRow);
+
+            if (firstRowNumber > 1)
+            {
+                var prevBeforeFirstRow = GetRow(firstRowNumber - 1);
+                prevBeforeFirstRow.IsGroup = false;
+                prevBeforeFirstRow.IsHidden = false;
+                prevBeforeFirstRow.IsGroup = false;
+                prevBeforeFirstRow.IsOpen = false;
+            }
+
+            foreach (var row in rows)
+            {
+                row.ParentUid = Guid.Empty;
+                row.IsHidden = false;
+                row.IsGroup = false;
+                row.IsOpen = false;
+            }
+        }
+
+        public bool CanRowsBeGrouped(List<SheetRow> rows)
+        {
+            var rowNumbers = rows
+                .Select(x => RowNumber(x))
+                .OrderBy(x => x)
+                .ToList();
+
+            if (rowNumbers.Contains(1)) 
+                return false;
+
+            if (rows.Any(x => x.ParentUid != Guid.Empty))
+                return false;
+
+            var headRow = GetRow(rowNumbers.First() - 1);
+            if (headRow.IsHidden)
+                return false;
+
+            if (rows.Contains(headRow))
+                return false;
+
+            var current = rowNumbers.First();
+
+            for (int i = 0; i < rowNumbers.Count; i++)
+            {
+                if (current != rowNumbers[i])
+                    return false;
+
+                current++;
+            }
+
+            return true;
+        }
+
+        public bool CanRowsBeUngrouped(List<SheetRow> rows)
+        {
+            var rowNumbers = rows
+                .Select(x => RowNumber(x))
+                .OrderBy(x => x)
+                .ToList();
+
+            var firstRowNumber = rowNumbers.FirstOrDefault();
+            if (firstRowNumber == 0)
+                return false;
+
+            var firstRow = GetRow(firstRowNumber);
+
+            if (rowNumbers.Count == 1 && firstRow.ParentUid == Guid.Empty)
+                return false;
+
+            var current = rowNumbers.First();
+
+            for (int i = 0; i < rowNumbers.Count; i++)
+            {
+                if (current != rowNumbers[i])
+                    return false;
+
+                current++;
+            }
+
+            return true;
+        }
+
         private bool CanFreezedRowsBeSet(int freezedRows, List<CellWithAddress> cellWithAddressList)
         {
             foreach (var cell in cellWithAddressList)

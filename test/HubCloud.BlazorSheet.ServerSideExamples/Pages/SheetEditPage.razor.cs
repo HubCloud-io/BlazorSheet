@@ -16,10 +16,13 @@ public partial class SheetEditPage: ComponentBase
     private SheetCommandPanelModel _commandPanelModel { get; set; } = new SheetCommandPanelModel();
     private SheetCell _selectedCell { get; set; }
     private List<SheetCell> _selectedCells { get; set; }
+    private List<SheetRow> _selectedRowByNumberList { get; set; }
     private SheetRow _selectedSheetRow { get; set; }
     private SheetColumn _selectedSheetColumn { get; set; }
 
     private bool _canCellsBeJoined;
+    private bool _canRowsBeGrouped;
+    private bool _canRowsBeUngrouped;
 
     public int SelectedCellsCount => _selectedCells == null ? 0 : _selectedCells.Count;
 
@@ -34,6 +37,22 @@ public partial class SheetEditPage: ComponentBase
     private void OnRowSelected(SheetRow row)
     {
         _selectedSheetRow = row;
+    }
+
+    private void OnRowsByNumberSelected(List<SheetRow> rows)
+    {
+        _selectedRowByNumberList = rows;
+
+        if (_selectedRowByNumberList != null && _selectedRowByNumberList.Count > 0)
+        {
+            _canRowsBeGrouped = _sheet.CanRowsBeGrouped(rows);
+            _canRowsBeUngrouped = _sheet.CanRowsBeUngrouped(rows);
+        }
+        else
+        {
+            _canRowsBeGrouped = false;
+            _canRowsBeUngrouped = false;
+        }
     }
 
     private void OnColumnSelected(SheetColumn column)
@@ -81,5 +100,33 @@ public partial class SheetEditPage: ComponentBase
         }
 
         _sheet.SetSettingsFromCommandPanel(_selectedCells, _selectedCell, _commandPanelModel);
+    }
+
+    private void OnGroupRows()
+    {
+        _sheet.GroupRows(_selectedRowByNumberList);
+    }
+
+    private void OnUngroupRows()
+    {
+        _sheet.UngroupRows(_selectedRowByNumberList);
+    }
+
+    private void OnCollapseExpandAll(bool isExpand)
+    {
+        var headRows = _sheet.Rows
+            .Where(x => x.IsGroup)
+            .ToList();
+
+        foreach (var headRow in headRows)
+        {
+            headRow.IsOpen = isExpand;
+
+            var groupedRows = _sheet.Rows
+                .Where(x => x.ParentUid == headRow.Uid)
+                .ToList();
+
+            groupedRows.ForEach(x => x.IsHidden = isExpand ? false : true);
+        }
     }
 }

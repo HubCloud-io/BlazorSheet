@@ -14,7 +14,7 @@ namespace HubCloud.BlazorSheet.Components;
 
 public partial class SheetComponent : ComponentBase
 {
-    private const int LeftSideCellWidth = 30;
+    private const int LeftSideCellWidth = 40;
     private const int TopSideCellHeight = 30;
     private const string CellHiddenBackground = "#cccccc";
 
@@ -29,6 +29,7 @@ public partial class SheetComponent : ComponentBase
     private SheetCell _currentCell;
     private CellStyleBuilder _cellStyleBuilder;
     private List<SheetCell> _selectedCells = new List<SheetCell>();
+    private List<SheetRow> _selectedRowByNumberList = new List<SheetRow>();
     private HashSet<Guid> _selectedIdentifiers = new HashSet<Guid>();
 
     private double _clientX;
@@ -63,6 +64,7 @@ public partial class SheetComponent : ComponentBase
     [Parameter] public EventCallback<SheetCell> CellSelected { get; set; }
     [Parameter] public EventCallback<List<SheetCell>> CellsSelected { get; set; }
     [Parameter] public EventCallback<SheetRow> RowSelected { get; set; }
+    [Parameter] public EventCallback<List<SheetRow>> RowsByNumberSelected { get; set; }
     [Parameter] public EventCallback<SheetColumn> ColumnSelected { get; set; }
     [Parameter] public EventCallback<SheetCell> CellValueChanged { get; set; }
 
@@ -113,6 +115,7 @@ public partial class SheetComponent : ComponentBase
         {
             _selectedCells.Clear();
             _selectedIdentifiers.Clear();
+            _selectedRowByNumberList.Clear();
         }
 
         if (!_selectedCells.Contains(_currentCell))
@@ -378,15 +381,17 @@ public partial class SheetComponent : ComponentBase
     private async Task OnRowNumberCellClick(SheetRow row)
     {
         if (Regime == SheetRegimes.InputForm)
-        {
             return;
-        }
-        
+
         if (!_multipleSelection)
         {
             _selectedCells.Clear();
             _selectedIdentifiers.Clear();
+            _selectedRowByNumberList.Clear();
         }
+
+        if (!_selectedRowByNumberList.Contains(row))
+            _selectedRowByNumberList.Add(row);
 
         var cells = Sheet.Cells.Where(x => x.RowUid == row.Uid);
 
@@ -404,11 +409,10 @@ public partial class SheetComponent : ComponentBase
 
         var firstCell = cells.FirstOrDefault();
         if (firstCell != null)
-        {
             await CellSelected.InvokeAsync(firstCell);
-        }
 
         await CellsSelected.InvokeAsync(_selectedCells);
+        await RowsByNumberSelected.InvokeAsync(_selectedRowByNumberList);
         await RowSelected.InvokeAsync(row);
     }
 
@@ -619,5 +623,19 @@ public partial class SheetComponent : ComponentBase
         {
             Sheet.SplitCells(_currentCell);
         }
+    }
+
+    private void RowGroupOpenCloseClick(SheetRow row)
+    {
+        row.IsOpen = !row.IsOpen;
+        ChangeChildsVisibility(row, !row.IsOpen);
+    }
+
+    private void ChangeChildsVisibility(SheetRow parentRow, bool IsVisible)
+    {
+        var rows = Sheet.Rows.Where(x => x.ParentUid == parentRow.Uid).ToList();
+
+        foreach (var row in rows)
+            row.IsHidden = IsVisible;
     }
 }
