@@ -29,7 +29,7 @@ public class CellShiftFormulaHelperTests
         workbook.AddSheet(sheet);
         
         // Act
-        IFormulaShifter formulaShifter = new CellShiftFormulaHelper2(sheet);// new CellShiftFormulaHelper(sheet);
+        IFormulaShifter formulaShifter = new CellShiftFormulaHelper2(sheet);
         var shiftLog = formulaShifter.OnRowAdd(5);
 
         // Assert
@@ -40,8 +40,8 @@ public class CellShiftFormulaHelperTests
         
         Assert.AreEqual(formula11, @"VAL(""R7C1"")");
         Assert.AreEqual(formula63, @"VAL(""R7C1"")");
-        // Assert.AreEqual(formula12, @"SUM(""R7C1:R7C1"")+VAL(""R7C1"")");
-        // Assert.AreEqual(formula15, @"SUM(""R1C6:R8C6"")");
+        Assert.AreEqual(formula12, @"SUM(""R7C1:R7C1"")+VAL(""R7C1"")");
+        Assert.AreEqual(formula15, @"SUM(""R1C6:R8C6"")");
     }
     
     [Test]
@@ -52,20 +52,24 @@ public class CellShiftFormulaHelperTests
 
         // value cells
         sheet.GetCell(4, 1).Value = 100;
+        sheet.GetCell(6, 3).Value = 42;
         // formula cells
         sheet.GetCell(6, 1).Formula = @"VAL(""R[-2]C1"")";
+        sheet.GetCell(4, 3).Formula = @"VAL(""R[2]C3"")";
 
         var workbook = new Workbook();
         workbook.AddSheet(sheet);
         
         // Act
-        IFormulaShifter formulaShifter = new CellShiftFormulaHelper2(sheet); // new CellShiftFormulaHelper(sheet);
+        IFormulaShifter formulaShifter = new CellShiftFormulaHelper2(sheet);
         var shiftLog = formulaShifter.OnRowAdd(5);
 
         // Assert
         var formula61 = sheet.GetCell(6, 1).Formula;
+        var formula43 = sheet.GetCell(4, 3).Formula;
 
         Assert.AreEqual(formula61, @"VAL(""R[-3]C1"")");
+        Assert.AreEqual(formula43, @"VAL(""R[3]C3"")");
     }
 
     

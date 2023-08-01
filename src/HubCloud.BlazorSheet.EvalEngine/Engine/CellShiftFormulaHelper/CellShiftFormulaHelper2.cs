@@ -105,59 +105,68 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.CellShiftFormulaHelper
             SheetCellAddress formulaAddress,
             int insertedRowIndex)
         {
-            foreach (var addr in addressDict)
+            foreach (var address in addressDict)
             {
-                string rValue;
-                string cValue;
-
-                // row
-                var addressModel = new AddressModel(addr.Value);
-
-                if (!addressModel.IsRowRelative)
-                {
-                    if (addressModel.RowValue >= insertedRowIndex)
-                        rValue = (addressModel.RowValue + 1).ToString();
-                    else
-                        rValue = addressModel.RowValue.ToString();
-                }
-                else
-                {
-                    var realRow = formulaAddress.Row + addressModel.RowValue;
-                    if (realRow < insertedRowIndex && formulaAddress.Row >= insertedRowIndex)
-                        rValue = (addressModel.RowValue - 1).ToString();
-                    else if (realRow >= insertedRowIndex && formulaAddress.Row < insertedRowIndex)
-                        rValue = (addressModel.RowValue + 1).ToString();
-                    else
-                        rValue = addressModel.RowValue.ToString();
-                }
-
-                // columns
-                cValue = addressModel.ColumnValue.ToString();
-
-                // build address
-                var shiftedAddress = new StringBuilder();
-                shiftedAddress.Append("R");
-                if (addressModel.IsRowRelative)
-                    shiftedAddress.Append($"[{rValue}]");
-                else
-                    shiftedAddress.Append($"{rValue}");
-
-                shiftedAddress.Append("C");
-                if (addressModel.IsColumnRelative)
-                    shiftedAddress.Append($"[{cValue}]");
-                else
-                    shiftedAddress.Append($"{cValue}");
-
-                formula.Replace(addr.Key, shiftedAddress.ToString());
+                var shiftedAddress = GetShiftedAddress(formulaAddress, insertedRowIndex, address.Value);
+                formula.Replace(address.Key, shiftedAddress.ToString());
             }
         }
 
-        private StringBuilder ProcessRanges(StringBuilder formula,
+        private void ProcessRanges(StringBuilder formula,
             Dictionary<string, string> rangeDict,
             SheetCellAddress formulaAddress,
             int insertedRowIndex)
         {
-            return formula;
+            foreach (var range in rangeDict)
+            {
+                var addresses = range.Value.Trim().Split(':');
+
+                var shiftedAddress1 = GetShiftedAddress(formulaAddress, insertedRowIndex, addresses[0]);
+                var shiftedAddress2 = GetShiftedAddress(formulaAddress, insertedRowIndex, addresses[1]);
+
+                formula.Replace(range.Key, $"{shiftedAddress1}:{shiftedAddress2}");
+            }
+        }
+        
+        private StringBuilder GetShiftedAddress(SheetCellAddress formulaAddress,
+            int insertedRowIndex,
+            string address)
+        {
+            string rValue;
+            var addressModel = new AddressModel(address);
+
+            if (!addressModel.IsRowRelative)
+            {
+                if (addressModel.RowValue >= insertedRowIndex)
+                    rValue = (addressModel.RowValue + 1).ToString();
+                else
+                    rValue = addressModel.RowValue.ToString();
+            }
+            else
+            {
+                var realRow = formulaAddress.Row + addressModel.RowValue;
+                if (realRow < insertedRowIndex && formulaAddress.Row >= insertedRowIndex)
+                    rValue = (addressModel.RowValue - 1).ToString();
+                else if (realRow >= insertedRowIndex && formulaAddress.Row < insertedRowIndex)
+                    rValue = (addressModel.RowValue + 1).ToString();
+                else
+                    rValue = addressModel.RowValue.ToString();
+            }
+
+            // build address
+            var shiftedAddress = new StringBuilder();
+            shiftedAddress.Append("R");
+            if (addressModel.IsRowRelative)
+                shiftedAddress.Append($"[{rValue}]");
+            else
+                shiftedAddress.Append($"{rValue}");
+
+            shiftedAddress.Append("C");
+            if (addressModel.IsColumnRelative)
+                shiftedAddress.Append($"[{addressModel.ColumnValue.ToString()}]");
+            else
+                shiftedAddress.Append($"{addressModel.ColumnValue.ToString()}");
+            return shiftedAddress;
         }
 
         #endregion
