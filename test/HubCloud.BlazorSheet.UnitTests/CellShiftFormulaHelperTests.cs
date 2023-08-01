@@ -56,6 +56,7 @@ public class CellShiftFormulaHelperTests
         // formula cells
         sheet.GetCell(6, 1).Formula = @"VAL(""R[-2]C1"")";
         sheet.GetCell(4, 3).Formula = @"VAL(""R[2]C3"")";
+        sheet.GetCell(1, 1).Formula = @"SUM(""R1C5:R[5]C5"")";
 
         var workbook = new Workbook();
         workbook.AddSheet(sheet);
@@ -67,9 +68,11 @@ public class CellShiftFormulaHelperTests
         // Assert
         var formula61 = sheet.GetCell(6, 1).Formula;
         var formula43 = sheet.GetCell(4, 3).Formula;
+        var formula11 = sheet.GetCell(1, 1).Formula;
 
         Assert.AreEqual(formula61, @"VAL(""R[-3]C1"")");
         Assert.AreEqual(formula43, @"VAL(""R[3]C3"")");
+        Assert.AreEqual(formula11, @"SUM(""R1C5:R[6]C5"")");
     }
 
     
