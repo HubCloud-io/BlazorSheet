@@ -9,7 +9,6 @@ namespace HubCloud.BlazorSheet.Components;
 
 public partial class SheetCommandPanel:ComponentBase
 {
-    private bool _isCellLinkInputModalOpen;
     private bool _isCollapseExpandAll;
 
     private List<Tuple<string, string>> _textAlignSource;

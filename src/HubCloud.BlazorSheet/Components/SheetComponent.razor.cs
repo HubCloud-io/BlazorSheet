@@ -628,14 +628,6 @@ public partial class SheetComponent : ComponentBase
     private void RowGroupOpenCloseClick(SheetRow row)
     {
         row.IsOpen = !row.IsOpen;
-        ChangeChildsVisibility(row, !row.IsOpen);
-    }
-
-    private void ChangeChildsVisibility(SheetRow parentRow, bool IsVisible)
-    {
-        var rows = Sheet.Rows.Where(x => x.ParentUid == parentRow.Uid).ToList();
-
-        foreach (var row in rows)
-            row.IsHidden = IsVisible;
+        Sheet.ChangeChildrenVisibility(row, row.IsOpen);
     }
 }

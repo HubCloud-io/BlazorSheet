@@ -72,6 +72,9 @@ public partial class SheetEditPage: ComponentBase
 
         var editSettings = _sheet.GetEditSettings(cell);
         _commandPanelModel.SetEditSettings(editSettings);
+
+        _canRowsBeGrouped = false;
+        _canRowsBeUngrouped = false;
     }
 
     private void OnCellsSelected(List<SheetCell> cells)

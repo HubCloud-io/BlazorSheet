@@ -788,104 +788,122 @@ namespace HubCloud.BlazorSheet.Core.Models
         public void GroupRows(List<SheetRow> rows)
         {
             var rowNumbers = rows
-                .Select(x => RowNumber(x))
-                .OrderBy(x => x)
-                .ToList();
+                    .Select(x => RowNumber(x))
+                    .OrderBy(x => x)
+                    .ToList();
 
             var firstRowNumber = rowNumbers.FirstOrDefault();
             if (firstRowNumber == 0)
                 return;
 
-            var headRow = GetRow(firstRowNumber - 1);
+            var firstRow = GetRow(firstRowNumber);
+            if (firstRow.IsGroup)
+                firstRow.IsGroup = false;
 
+            var headRow = GetRow(firstRowNumber - 1);
             if (headRow.ParentUid == Guid.Empty)
             {
                 headRow.IsGroup = true;
                 headRow.IsOpen = true;
             }
             else
-                headRow = Rows.FirstOrDefault(x => x.Uid == headRow.ParentUid);
-
-            if (headRow == null)
-                return;
+            {
+                if (firstRow.ParentUid == Guid.Empty)
+                    headRow = FindMainParentRow(headRow);
+                else
+                {
+                    headRow.IsGroup = true;
+                    headRow.IsOpen = true;
+                }
+            }
 
             foreach (var row in rows)
+            {
+                row.IsGroup = false;
                 row.ParentUid = headRow.Uid;
+                row.IsOpen = headRow.IsOpen;
+                row.IsHidden = !headRow.IsOpen;
 
-            var firstRow = GetRow(firstRowNumber);
-            if (firstRow.IsGroup)
-            {
-                firstRow.IsGroup = false;
-                firstRow.IsOpen = false;
-                firstRow.IsHidden = !headRow.IsOpen;
+                ChangeChildrenParent(row, headRow.Uid);
+                ChangeChildrenVisibility(row, row.IsOpen);
             }
+        }
 
-            var childrenRows = Rows.Where(x => x.ParentUid == firstRow.Uid).ToList();
-            foreach (var childRow in childrenRows)
+        private void ChangeChildrenParent(SheetRow parentRow, Guid newParentUid)
+        {
+            var rows = Rows.Where(x => x.ParentUid == parentRow.Uid).ToList();
+            rows.ForEach(x => x.ParentUid = newParentUid);
+        }
+
+        public void ChangeChildrenVisibility(SheetRow parentRow, bool IsVisible)
+        {
+            var rows = Rows.Where(x => x.ParentUid == parentRow.Uid).ToList();
+
+            foreach (var row in rows)
             {
-                childRow.ParentUid = headRow.Uid;
-                childRow.IsOpen = false;
-                childRow.IsHidden = !headRow.IsOpen;
+                row.IsHidden = !IsVisible;
+
+                if (row.IsGroup)
+                {
+                    var childsVisible = IsVisible && row.IsOpen;
+                    ChangeChildrenVisibility(row, childsVisible);
+                }
             }
+        }
+
+        private SheetRow FindMainParentRow(SheetRow row)
+        {
+            if (row.ParentUid == Guid.Empty)
+                return row;
+
+            var parentRow = Rows.FirstOrDefault(x => x.Uid == row.ParentUid);
+            if (parentRow == null)
+                return null;
+
+            return FindMainParentRow(parentRow);
         }
 
         public void UngroupRows(List<SheetRow> rows)
         {
-            var orderedByNumberRows = rows.OrderBy(x => RowNumber(x)).ToList();
-            var lastRow = orderedByNumberRows.LastOrDefault();
-            if (lastRow == null)
+            rows = rows
+                    .OrderBy(x => RowNumber(x))
+                    .ToList();
+
+            var parentRowUids = rows.Select(x => x.ParentUid).Distinct();
+            if (parentRowUids.Count() > 1)
                 return;
 
-            var lastGroupRow = orderedByNumberRows.LastOrDefault(x => x.IsGroup);
-            if (lastGroupRow != null)
-            {
-                var lastGroupRowRows = Rows.Where(x => x.ParentUid == lastGroupRow.Uid).ToList();
-                var result = lastGroupRowRows.Except(rows).ToList();
-
-                if (result.Count > 0)
-                {
-                    result.ForEach(x => x.ParentUid = lastRow.Uid);
-
-                    lastRow.IsGroup = true;
-                    lastRow.IsOpen = true;
-
-                    foreach (var row in rows)
-                    {
-                        row.ParentUid = Guid.Empty;
-                        row.IsHidden = false;
-
-                        if (row.Uid != lastRow.Uid)
-                        {
-                            row.IsGroup = false;
-                            row.IsOpen = false;
-                        }
-                    }
-
-                    return;
-                }
-            }
-
-            var firstRow = orderedByNumberRows.FirstOrDefault();
-            if (firstRow == null)
+            var parentRowUid = parentRowUids.FirstOrDefault();
+            if (parentRowUid == null)
                 return;
 
-            var firstRowNumber = RowNumber(firstRow);
-
-            if (firstRowNumber > 1)
-            {
-                var prevBeforeFirstRow = GetRow(firstRowNumber - 1);
-                prevBeforeFirstRow.IsGroup = false;
-                prevBeforeFirstRow.IsHidden = false;
-                prevBeforeFirstRow.IsGroup = false;
-                prevBeforeFirstRow.IsOpen = false;
-            }
+            var parentRow = Rows.FirstOrDefault(x => x.Uid == parentRowUid);
+            if (parentRow == null)
+                return;
 
             foreach (var row in rows)
             {
-                row.ParentUid = Guid.Empty;
-                row.IsHidden = false;
-                row.IsGroup = false;
-                row.IsOpen = false;
+                row.ParentUid = parentRow.ParentUid;
+            }
+
+            var lastRow = rows.LastOrDefault();
+            if (lastRow == null)
+                return;
+
+            var lastRowNumber = RowNumber(lastRow);
+
+            var parentChildren = Rows.Where(x => x.ParentUid == parentRow.Uid && RowNumber(x) > lastRowNumber);
+            if (parentChildren.Count() > 0)
+            {
+                lastRow.IsGroup = true;
+                lastRow.IsOpen = true;
+            }
+
+            foreach (var child in parentChildren)
+            {
+                child.ParentUid = lastRow.Uid;
+                child.IsOpen = lastRow.IsOpen;
+                child.IsHidden = !lastRow.IsOpen;
             }
         }
 
@@ -896,10 +914,7 @@ namespace HubCloud.BlazorSheet.Core.Models
                 .OrderBy(x => x)
                 .ToList();
 
-            if (rowNumbers.Contains(1)) 
-                return false;
-
-            if (rows.Any(x => x.ParentUid != Guid.Empty))
+            if (rowNumbers.Contains(1))
                 return false;
 
             var headRow = GetRow(rowNumbers.First() - 1);
@@ -907,6 +922,10 @@ namespace HubCloud.BlazorSheet.Core.Models
                 return false;
 
             if (rows.Contains(headRow))
+                return false;
+
+            if (rows.Any(x => x.ParentUid != Guid.Empty) && 
+                rows.Any(x => x.ParentUid == Guid.Empty))
                 return false;
 
             var current = rowNumbers.First();
@@ -929,13 +948,15 @@ namespace HubCloud.BlazorSheet.Core.Models
                 .OrderBy(x => x)
                 .ToList();
 
-            var firstRowNumber = rowNumbers.FirstOrDefault();
-            if (firstRowNumber == 0)
+            if (rowNumbers.Contains(1))
                 return false;
 
-            var firstRow = GetRow(firstRowNumber);
+            var headRow = GetRow(rowNumbers.First() - 1);
+            if (headRow.IsHidden)
+                return false;
 
-            if (rowNumbers.Count == 1 && firstRow.ParentUid == Guid.Empty)
+            if (rows.Any(x => x.ParentUid != Guid.Empty) &&
+                rows.Any(x => x.ParentUid == Guid.Empty))
                 return false;
 
             var current = rowNumbers.First();
