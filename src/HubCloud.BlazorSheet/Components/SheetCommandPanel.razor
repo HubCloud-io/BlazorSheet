@@ -156,27 +156,40 @@
     </div>
     <div class="row" style="line-height: 15px; font-size: 12px;">
         <div class="col-sm-12">
-            <button 
-                class="btn btn-outline-primary ml-1" 
-                style="padding-top: 2px; padding-bottom: 2px;" 
-                disabled="@(!CanRowsBeGrouped)"
-                @onclick="OnGroupRows"
-            >
-                Group
+            <button class="btn btn-outline-primary ml-1"
+                    style="padding-top: 2px; padding-bottom: 2px;"
+                    disabled="@(!CanRowsBeGrouped)"
+                    @onclick="OnGroupRows">
+                Group rows
             </button>
-            <button 
-                class="btn btn-outline-primary ml-1" 
-                style="padding-top: 2px; padding-bottom: 2px;"
-                disabled="@(!CanRowsBeUngrouped)"
-                @onclick="OnUngroupRows"
-            >
-                Ungroup
+            <button class="btn btn-outline-primary ml-1"
+                    style="padding-top: 2px; padding-bottom: 2px;"
+                    disabled="@(!CanRowsBeUngrouped)"
+                    @onclick="OnUngroupRows">
+                Ungroup rows
             </button>
-            <button 
-                class="btn btn-outline-primary ml-1" 
-                style="padding-top: 2px; padding-bottom: 2px;"
-                @onclick="OnCollapseExpandAllRows">
+            <button class="btn btn-outline-primary ml-1"
+                    style="padding-top: 2px; padding-bottom: 2px;"
+                    @onclick="OnCollapseExpandAllRows">
                 Collapse/Expand all rows
+            </button>
+
+            <button class="btn btn-outline-primary ml-1"
+                    style="padding-top: 2px; padding-bottom: 2px;"
+                    disabled="@(!CanColumnsBeGrouped)"
+                    @onclick="OnGroupColumns">
+                Group columns
+            </button>
+            <button class="btn btn-outline-primary ml-1"
+                    style="padding-top: 2px; padding-bottom: 2px;"
+                    disabled="@(!CanColumnsBeUngrouped)"
+                    @onclick="OnUngroupColumns">
+                Ungroup columns
+            </button>
+            <button class="btn btn-outline-primary ml-1"
+                    style="padding-top: 2px; padding-bottom: 2px;"
+                    @onclick="OnCollapseExpandAllColumns">
+                Collapse/Expand all columns
             </button>
         </div>
     </div>

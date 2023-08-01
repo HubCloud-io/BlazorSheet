@@ -17,12 +17,15 @@ public partial class SheetEditPage: ComponentBase
     private SheetCell _selectedCell { get; set; }
     private List<SheetCell> _selectedCells { get; set; }
     private List<SheetRow> _selectedRowByNumberList { get; set; }
+    private List<SheetColumn> _selectedColumnByNumberList { get; set; }
     private SheetRow _selectedSheetRow { get; set; }
     private SheetColumn _selectedSheetColumn { get; set; }
 
     private bool _canCellsBeJoined;
     private bool _canRowsBeGrouped;
+    private bool _canColumnsBeGrouped;
     private bool _canRowsBeUngrouped;
+    private bool _canColumnsBeUngrouped;
 
     public int SelectedCellsCount => _selectedCells == null ? 0 : _selectedCells.Count;
 
@@ -52,6 +55,22 @@ public partial class SheetEditPage: ComponentBase
         {
             _canRowsBeGrouped = false;
             _canRowsBeUngrouped = false;
+        }
+    }
+
+    private void OnColumnsByNumberSelected(List<SheetColumn> columns)
+    {
+        _selectedColumnByNumberList = columns;
+
+        if (_selectedColumnByNumberList != null && _selectedColumnByNumberList.Count > 0)
+        {
+            _canColumnsBeGrouped = _sheet.CanColumnsBeGrouped(columns);
+            _canColumnsBeUngrouped = _sheet.CanColumnsBeUngrouped(columns);
+        }
+        else
+        {
+            _canColumnsBeGrouped = false;
+            _canColumnsBeUngrouped = false;
         }
     }
 
@@ -110,9 +129,19 @@ public partial class SheetEditPage: ComponentBase
         _sheet.GroupRows(_selectedRowByNumberList);
     }
 
+    private void OnGroupColumns()
+    {
+        _sheet.GroupColumns(_selectedColumnByNumberList);
+    }
+
     private void OnUngroupRows()
     {
         _sheet.UngroupRows(_selectedRowByNumberList);
+    }
+
+    private void OnUngroupColumns()
+    {
+        _sheet.UngroupColumns(_selectedColumnByNumberList);
     }
 
     private void OnCollapseExpandAllRows(bool isExpand)
@@ -130,6 +159,24 @@ public partial class SheetEditPage: ComponentBase
                 .ToList();
 
             groupedRows.ForEach(x => x.IsHidden = isExpand ? false : true);
+        }
+    }
+
+    private void OnCollapseExpandAllColumns(bool isExpand)
+    {
+        var headColumns = _sheet.Columns
+            .Where(x => x.IsGroup)
+            .ToList();
+
+        foreach (var headColumn in headColumns)
+        {
+            headColumn.IsOpen = isExpand;
+
+            var groupedColumns = _sheet.Columns
+                .Where(x => x.ParentUid == headColumn.Uid)
+                .ToList();
+
+            groupedColumns.ForEach(x => x.IsHidden = isExpand ? false : true);
         }
     }
 }

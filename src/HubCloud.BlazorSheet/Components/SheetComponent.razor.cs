@@ -30,6 +30,7 @@ public partial class SheetComponent : ComponentBase
     private CellStyleBuilder _cellStyleBuilder;
     private List<SheetCell> _selectedCells = new List<SheetCell>();
     private List<SheetRow> _selectedRowByNumberList = new List<SheetRow>();
+    private List<SheetColumn> _selectedColumnByNumberList = new List<SheetColumn>();
     private HashSet<Guid> _selectedIdentifiers = new HashSet<Guid>();
 
     private double _clientX;
@@ -65,6 +66,7 @@ public partial class SheetComponent : ComponentBase
     [Parameter] public EventCallback<List<SheetCell>> CellsSelected { get; set; }
     [Parameter] public EventCallback<SheetRow> RowSelected { get; set; }
     [Parameter] public EventCallback<List<SheetRow>> RowsByNumberSelected { get; set; }
+    [Parameter] public EventCallback<List<SheetColumn>> ColumnsByNumberSelected { get; set; }
     [Parameter] public EventCallback<SheetColumn> ColumnSelected { get; set; }
     [Parameter] public EventCallback<SheetCell> CellValueChanged { get; set; }
 
@@ -116,6 +118,7 @@ public partial class SheetComponent : ComponentBase
             _selectedCells.Clear();
             _selectedIdentifiers.Clear();
             _selectedRowByNumberList.Clear();
+            _selectedColumnByNumberList.Clear();
         }
 
         if (!_selectedCells.Contains(_currentCell))
@@ -352,7 +355,11 @@ public partial class SheetComponent : ComponentBase
         {
             _selectedCells.Clear();
             _selectedIdentifiers.Clear();
+            _selectedColumnByNumberList.Clear();
         }
+
+        if (!_selectedColumnByNumberList.Contains(column))
+            _selectedColumnByNumberList.Add(column);
 
         var cells = Sheet.Cells.Where(x => x.ColumnUid == column.Uid);
 
@@ -375,6 +382,7 @@ public partial class SheetComponent : ComponentBase
         }
 
         await CellsSelected.InvokeAsync(_selectedCells);
+        await ColumnsByNumberSelected.InvokeAsync(_selectedColumnByNumberList);
         await ColumnSelected.InvokeAsync(column);
     }
 
@@ -629,5 +637,11 @@ public partial class SheetComponent : ComponentBase
     {
         row.IsOpen = !row.IsOpen;
         Sheet.ChangeChildrenVisibility(row, row.IsOpen);
+    }
+
+    private void ColumnGroupOpenCloseClick(SheetColumn column)
+    {
+        column.IsOpen = !column.IsOpen;
+        Sheet.ChangeChildrenVisibility(column, column.IsOpen);
     }
 }

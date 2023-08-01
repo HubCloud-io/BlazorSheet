@@ -10,6 +10,7 @@ namespace HubCloud.BlazorSheet.Components;
 public partial class SheetCommandPanel:ComponentBase
 {
     private bool _isCollapseExpandAllRows;
+    private bool _isCollapseExpandAllColumns;
 
     private List<Tuple<string, string>> _textAlignSource;
     private List<Tuple<string, CellFormatTypes>> _cellFormatSource;
@@ -39,10 +40,19 @@ public partial class SheetCommandPanel:ComponentBase
     public EventCallback GroupRows { get; set; }
 
     [Parameter]
+    public EventCallback GroupColumns { get; set; }
+
+    [Parameter]
     public EventCallback UngroupRows { get; set; }
 
     [Parameter]
+    public EventCallback UngroupColumns { get; set; }
+
+    [Parameter]
     public EventCallback<bool> CollapseExpandAllRows { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> CollapseExpandAllColumns { get; set; }
 
     [Parameter]
     public bool CanCellsBeJoined { get; set; }
@@ -51,7 +61,13 @@ public partial class SheetCommandPanel:ComponentBase
     public bool CanRowsBeGrouped { get; set; }
 
     [Parameter]
+    public bool CanColumnsBeGrouped { get; set; }
+
+    [Parameter]
     public bool CanRowsBeUngrouped { get; set; }
+
+    [Parameter]
+    public bool CanColumnsBeUngrouped { get; set; }
 
     [Parameter]
     public int SelectedCellsCount { get; set; }
@@ -201,14 +217,30 @@ public partial class SheetCommandPanel:ComponentBase
         await GroupRows.InvokeAsync();
     }
 
+    private async void OnGroupColumns()
+    {
+        await GroupColumns.InvokeAsync();
+    }
+
     private async void OnUngroupRows()
     {
         await UngroupRows.InvokeAsync();
+    }
+
+    private async void OnUngroupColumns()
+    {
+        await UngroupColumns.InvokeAsync();
     }
 
     private async void OnCollapseExpandAllRows()
     {
         _isCollapseExpandAllRows = !_isCollapseExpandAllRows;
         await CollapseExpandAllRows.InvokeAsync(_isCollapseExpandAllRows);
+    }
+
+    private async void OnCollapseExpandAllColumns()
+    {
+        _isCollapseExpandAllColumns = !_isCollapseExpandAllColumns;
+        await CollapseExpandAllColumns.InvokeAsync(_isCollapseExpandAllColumns);
     }
 }

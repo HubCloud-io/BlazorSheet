@@ -24,7 +24,25 @@
             @oncontextmenu:preventDefault
             style="@TopSideCellStyle(Sheet, column)"
             hidden="@CellHidden(column)">
-            @Sheet.ColumnNumber(column)
+            <span>@(Sheet.ColumnNumber(column))</span>
+
+            @if (column.IsGroup)
+            {
+                @if (column.IsOpen)
+                {
+                            <span class="fa fa-solid fa-chevron-right text-primary"
+                          style="cursor:pointer;margin-left:5px;"
+                          @onclick="(e=>ColumnGroupOpenCloseClick(column))">
+                    </span>
+                }
+                else
+                {
+                    <span class="fa fa-solid fa-chevron-down text-primary"
+                          style="cursor:pointer;margin-left:5px;"
+                          @onclick="(e=>ColumnGroupOpenCloseClick(column))">
+                    </span>
+                }
+            }
         </td>
     }
 

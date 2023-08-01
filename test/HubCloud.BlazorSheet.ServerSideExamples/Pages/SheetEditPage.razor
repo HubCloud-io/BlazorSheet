@@ -12,12 +12,17 @@
                    SelectedCellsCount="@SelectedCellsCount"
                    CanCellsBeJoined="@_canCellsBeJoined"
                    CanRowsBeGrouped="@_canRowsBeGrouped"
+                   CanColumnsBeGrouped="@_canColumnsBeGrouped"
                    CanRowsBeUngrouped="@_canRowsBeUngrouped"
+                   CanColumnsBeUngrouped="@_canColumnsBeUngrouped"
                    OpenCellLinkModal="() => _sheetComponent.OpenCellLinkModal()"
                    SplitJoinCells="() => _sheetComponent.SplitJoinCells()"
                    GroupRows="OnGroupRows"
+                   GroupColumns="OnGroupColumns"
                    UngroupRows="OnUngroupRows"
+                   UngroupColumns="OnUngroupColumns"
                    CollapseExpandAllRows="OnCollapseExpandAllRows"
+                   CollapseExpandAllColumns="OnCollapseExpandAllColumns"
                    Changed="OnStyleChanged">
 </SheetCommandPanel>
 
@@ -36,6 +41,7 @@
                         CellsSelected="OnCellsSelected"
                         RowSelected="OnRowSelected"
                         RowsByNumberSelected="OnRowsByNumberSelected"
+                        ColumnsByNumberSelected="OnColumnsByNumberSelected"
                         ColumnSelected="OnColumnSelected">
         </SheetComponent>
 

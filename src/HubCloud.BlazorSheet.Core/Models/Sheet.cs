@@ -829,10 +829,60 @@ namespace HubCloud.BlazorSheet.Core.Models
             }
         }
 
+        public void GroupColumns(List<SheetColumn> columns)
+        {
+            var columnNumbers = columns
+                    .Select(x => ColumnNumber(x))
+                    .OrderBy(x => x)
+                    .ToList();
+
+            var firstColumnNumber = columnNumbers.FirstOrDefault();
+            if (firstColumnNumber == 0)
+                return;
+
+            var firstColumn = GetColumn(firstColumnNumber);
+            if (firstColumn.IsGroup)
+                firstColumn.IsGroup = false;
+
+            var headColumn = GetColumn(firstColumnNumber - 1);
+            if (headColumn.ParentUid == Guid.Empty)
+            {
+                headColumn.IsGroup = true;
+                headColumn.IsOpen = true;
+            }
+            else
+            {
+                if (firstColumn.ParentUid == Guid.Empty)
+                    headColumn = FindMainParentColumn(headColumn);
+                else
+                {
+                    headColumn.IsGroup = true;
+                    headColumn.IsOpen = true;
+                }
+            }
+
+            foreach (var column in columns)
+            {
+                column.IsGroup = false;
+                column.ParentUid = headColumn.Uid;
+                column.IsOpen = headColumn.IsOpen;
+                column.IsHidden = !headColumn.IsOpen;
+
+                ChangeChildrenParent(column, headColumn.Uid);
+                ChangeChildrenVisibility(column, column.IsOpen);
+            }
+        }
+
         private void ChangeChildrenParent(SheetRow parentRow, Guid newParentUid)
         {
             var rows = Rows.Where(x => x.ParentUid == parentRow.Uid).ToList();
             rows.ForEach(x => x.ParentUid = newParentUid);
+        }
+
+        private void ChangeChildrenParent(SheetColumn parentColumn, Guid newParentUid)
+        {
+            var columns = Columns.Where(x => x.ParentUid == parentColumn.Uid).ToList();
+            columns.ForEach(x => x.ParentUid = newParentUid);
         }
 
         public void ChangeChildrenVisibility(SheetRow parentRow, bool IsVisible)
@@ -851,6 +901,22 @@ namespace HubCloud.BlazorSheet.Core.Models
             }
         }
 
+        public void ChangeChildrenVisibility(SheetColumn parentColumn, bool IsVisible)
+        {
+            var columns = Columns.Where(x => x.ParentUid == parentColumn.Uid).ToList();
+
+            foreach (var column in columns)
+            {
+                column.IsHidden = !IsVisible;
+
+                if (column.IsGroup)
+                {
+                    var childsVisible = IsVisible && column.IsOpen;
+                    ChangeChildrenVisibility(column, childsVisible);
+                }
+            }
+        }
+
         private SheetRow FindMainParentRow(SheetRow row)
         {
             if (row.ParentUid == Guid.Empty)
@@ -861,6 +927,18 @@ namespace HubCloud.BlazorSheet.Core.Models
                 return null;
 
             return FindMainParentRow(parentRow);
+        }
+
+        private SheetColumn FindMainParentColumn(SheetColumn column)
+        {
+            if (column.ParentUid == Guid.Empty)
+                return column;
+
+            var parentColumn = Columns.FirstOrDefault(x => x.Uid == column.ParentUid);
+            if (parentColumn == null)
+                return null;
+
+            return FindMainParentColumn(parentColumn);
         }
 
         public void UngroupRows(List<SheetRow> rows)
@@ -907,6 +985,48 @@ namespace HubCloud.BlazorSheet.Core.Models
             }
         }
 
+        public void UngroupColumns(List<SheetColumn> columns)
+        {
+            columns = columns
+                .OrderBy(x => ColumnNumber(x))
+                .ToList();
+
+            var parentColumnUids = columns.Select(x => x.ParentUid).Distinct();
+            if (parentColumnUids.Count() > 1)
+                return;
+
+            var parentColumnUid = parentColumnUids.FirstOrDefault();
+            if (parentColumnUid == null)
+                return;
+
+            var parentColumn = Columns.FirstOrDefault(x => x.Uid == parentColumnUid);
+            if (parentColumn == null)
+                return;
+
+            foreach (var column in columns)
+                column.ParentUid = parentColumn.ParentUid;
+
+            var lastColumn = columns.LastOrDefault();
+            if (lastColumn == null)
+                return;
+
+            var lastColumnNumber = ColumnNumber(lastColumn);
+
+            var parentChildren = Columns.Where(x => x.ParentUid == parentColumn.Uid && ColumnNumber(x) > lastColumnNumber);
+            if (parentChildren.Count() > 0)
+            {
+                lastColumn.IsGroup = true;
+                lastColumn.IsOpen = true;
+            }
+
+            foreach (var child in parentChildren)
+            {
+                child.ParentUid = lastColumn.Uid;
+                child.IsOpen = lastColumn.IsOpen;
+                child.IsHidden = !lastColumn.IsOpen;
+            }
+        }
+
         public bool CanRowsBeGrouped(List<SheetRow> rows)
         {
             var rowNumbers = rows
@@ -941,6 +1061,11 @@ namespace HubCloud.BlazorSheet.Core.Models
             return true;
         }
 
+        public bool CanColumnsBeGrouped(List<SheetColumn> columns)
+        {
+            return true;
+        }
+
         public bool CanRowsBeUngrouped(List<SheetRow> rows)
         {
             var rowNumbers = rows
@@ -969,6 +1094,11 @@ namespace HubCloud.BlazorSheet.Core.Models
                 current++;
             }
 
+            return true;
+        }
+
+        public bool CanColumnsBeUngrouped(List<SheetColumn> columns)
+        {
             return true;
         }
 
