@@ -19,15 +19,23 @@ public class SheetRangeTests
         Assert.AreEqual(string.Empty, sheetRange.SheetName);
     }
 
-    [TestCase("Sheet1!R1C1:R2C2")]
-    [TestCase("Sheet1!R1C1:Sheet2!R2C2")]
-    public void Test_SheetRange_String_Constructor(string address)
+    [TestCase("Sheet1!R1C1:R2C2", 2, 2, 1, 1, 2, 2)]
+    [TestCase("Sheet1!R1C1:Sheet2!R2C2", 2, 2, 1, 1, 2, 2)]
+    [TestCase("Sheet1!R1C1:R[-1]C1", 3, 1, 1, 1, 2, 1)]
+    [TestCase("Sheet1!R[1]C1:R[3]C1", 1, 1, 2, 1, 4, 1)]
+    public void Test_SheetRange_String_Constructor(string address,
+        int currentRow,
+        int currentCol,
+        int rowStart,
+        int colStart,
+        int rowEnd,
+        int colEnd)
     {
-        var sheetRange = new SheetRange(address, 2 , 2);
-        Assert.AreEqual(1, sheetRange.RowStart);
-        Assert.AreEqual(1, sheetRange.ColumnStart);
-        Assert.AreEqual(2, sheetRange.RowEnd);
-        Assert.AreEqual(2, sheetRange.ColumnEnd);
+        var sheetRange = new SheetRange(address, currentRow, currentCol);
+        Assert.AreEqual(rowStart, sheetRange.RowStart);
+        Assert.AreEqual(colStart, sheetRange.ColumnStart);
+        Assert.AreEqual(rowEnd, sheetRange.RowEnd);
+        Assert.AreEqual(colEnd, sheetRange.ColumnEnd);
         Assert.AreEqual("Sheet1", sheetRange.SheetName);
     }
 

@@ -16,7 +16,11 @@ public class ExcelFormulaConverterTests
     [TestCase("=IF(1>2,0,1)", @"IIF(1>2,0,1)")]
     [TestCase("=SUM(A1)", @"SUM(""R1C1"")")]
     [TestCase("=SUM(A1,C1,A1:C1)", @"SUM(""R1C1"",""R1C3"",""R1C1:R1C3"")")]
-    public void ExcelFormulaConverterTests_Tests(string excelFormula, string expectedFormula, int expectedExceptionCount = 0)
+    [TestCase("=SUM(R1C1:R1C3)", @"SUM(""R1C1:R1C3"")")]
+    [TestCase("=SUM(R[1]C[1]:R1C3)", @"SUM(""R[1]C[1]:R1C3"")")]
+    public void ExcelFormulaConverterTests_Tests(string excelFormula,
+        string expectedFormula,
+        int expectedExceptionCount = 0)
     {
         var converter = new ExcelFormulaConverter();
         var result = converter.Convert(excelFormula);
@@ -27,14 +31,15 @@ public class ExcelFormulaConverterTests
 
     [TestCase(@"R1C3", "=C1")]
     [TestCase(@"R1C1:R1C3", "=A1:C1")]
-    [TestCase(@"R1C1:R1C3", "=R1C1:R1C3", 0, CellAddressFormat.RowCellFormat)]
+    [TestCase(@"R1C1:R1C3", "=R1C1:R1C3", 0, CellAddressFormat.R1C1Format)]
     [TestCase(@"SUM(""R1C1:R1C3"")", "=SUM(A1:C1)")]
     [TestCase(@"IIF(1>2,0,1)", "=IF(1>2,0,1)")]
     [TestCase(@"R1C7+(SUM(""R1C1:R1C3"")*2)", "=G1+(SUM(A1:C1)*2)")]
+    [TestCase(@"SUM(""R[1]C1:R1C3"")", "=SUM(R[1]C1:R1C3)", 0, CellAddressFormat.R1C1Format)]
     public void SheetFormulaConverterTests_Tests(string sheetFormula,
         string expectedFormula,
         int expectedExceptionCount = 0,
-        CellAddressFormat addressFormat = CellAddressFormat.DefaultExcelFormat)
+        CellAddressFormat addressFormat = CellAddressFormat.A1Format)
     {
         var converter = new SheetFormulaConverter();
         var result = converter.Convert(sheetFormula, addressFormat);

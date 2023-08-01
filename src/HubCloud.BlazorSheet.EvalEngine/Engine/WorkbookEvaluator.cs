@@ -97,6 +97,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
             EvalSheet(sheet, cells, cellAddress);
         }
 
+        // for recalc only dependent formula by cell 
         private void EvalSheet(Sheet sheet, SheetData cells, SheetCellAddress cellAddress)
         {
             var analyzer = new SheetDependencyAnalyzer(sheet);
@@ -108,6 +109,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
             }
         }
 
+        // for recalc full sheet
         private void EvalSheet(Sheet sheet, SheetData cells)
         {
             var formulaCells = sheet.Cells

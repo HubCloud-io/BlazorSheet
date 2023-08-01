@@ -3,8 +3,10 @@ using System.Linq;
 using System.Text;
 using HubCloud.BlazorSheet.EvalEngine.Engine.ExcelFormulaConverter.Models;
 using HubCloud.BlazorSheet.EvalEngine.Engine.ExcelFormulaConverters.Abstractions;
+using HubCloud.BlazorSheet.EvalEngine.Engine.ExcelFormulaConverters.Helpers;
 using HubCloud.BlazorSheet.EvalEngine.Engine.ExcelFormulaConverters.Models;
 using HubCloud.BlazorSheet.EvalEngine.Engine.FormulaProcessors;
+using HubCloud.BlazorSheet.EvalEngine.Engine.FormulaProcessors.Helpers;
 using HubCloud.BlazorSheet.EvalEngine.Engine.FormulaProcessors.Models;
 using HubCloud.BlazorSheet.EvalEngine.Helpers;
 
@@ -12,7 +14,8 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.ExcelFormulaConverters
 {
     public class SheetFormulaConverter : ISheetToExcelConverter
     {
-        public ConvertResult Convert(string excelFormula, CellAddressFormat cellAddressFormat = CellAddressFormat.DefaultExcelFormat)
+        public ConvertResult Convert(string excelFormula,
+            CellAddressFormat cellAddressFormat = CellAddressFormat.A1Format)
         {
             var treeBuilder = new FormulaTreeBuilder();
             var statementTree = treeBuilder.BuildStatementTree(excelFormula.Trim());
@@ -31,7 +34,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.ExcelFormulaConverters
 
         #region private methods
         private List<Statement> ProcessTree(List<Statement> statementTree,
-            CellAddressFormat cellAddressFormat,
+            CellAddressFormat excelAddressFormat,
             out List<ConvertException> exceptionList)
         {
             exceptionList = new List<ConvertException>();
@@ -40,14 +43,14 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.ExcelFormulaConverters
                 switch (statement.Type)
                 {
                     case ElementType.Function:
-                        statement.ProcessedStatement = ProcessFunction(statement, cellAddressFormat, out var functionExceptionList);
+                        statement.ProcessedStatement = ProcessFunction(statement, excelAddressFormat, out var functionExceptionList);
                         if (functionExceptionList?.Any() == true)
                             exceptionList.AddRange(functionExceptionList);
                         break;
-                    case ElementType.Address when cellAddressFormat == CellAddressFormat.DefaultExcelFormat:
-                        statement.ProcessedStatement = AddressHelper.ConvertRowCellToExcelAddress(statement.OriginStatement);
+                    case ElementType.Address when excelAddressFormat == CellAddressFormat.A1Format:
+                        statement.ProcessedStatement = AddressHelper.ConvertR1C1ToA1Address(statement.OriginStatement);
                         break;
-                    case ElementType.AddressRange when cellAddressFormat == CellAddressFormat.DefaultExcelFormat:
+                    case ElementType.AddressRange when excelAddressFormat == CellAddressFormat.A1Format:
                         statement.ProcessedStatement = ProcessAddressRange(statement.OriginStatement, out var convertException);
                         if (convertException != null)
                             exceptionList.Add(convertException);
@@ -75,7 +78,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.ExcelFormulaConverters
                 return addressRange;
             }
 
-            return $"{AddressHelper.ConvertRowCellToExcelAddress(arr.First())}:{AddressHelper.ConvertRowCellToExcelAddress(arr.Last())}";
+            return $"{AddressHelper.ConvertR1C1ToA1Address(arr.First())}:{AddressHelper.ConvertR1C1ToA1Address(arr.Last())}";
         }
 
         private string ProcessFunction(Statement statement,
@@ -110,7 +113,11 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.ExcelFormulaConverters
                     if (innerExceptionList?.Any() == true)
                         exceptionList.AddRange(innerExceptionList);
 
-                    processedStatement.Append($"{st.FirstOrDefault()?.ProcessedStatement}");
+                    var arg = st.FirstOrDefault();
+                    if (arg?.Type == ElementType.Address)
+                        arg.ProcessedStatement = arg.ProcessedStatement.Trim('"');
+                    
+                    processedStatement.Append($"{arg?.ProcessedStatement}");
 
                     if (isAddressRange)
                     {
