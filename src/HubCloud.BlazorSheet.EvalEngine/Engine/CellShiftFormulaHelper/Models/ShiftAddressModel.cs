@@ -39,21 +39,23 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.CellShiftFormulaHelper.Models
 
         private string GetShiftedAddress(int insertedRowIndex, string address, SheetCellAddress sheetCellAddress)
         {
-            if (sheetCellAddress.Row < insertedRowIndex)
-                return address;
-
-            if (!sheetCellAddress.RowIsRelative)
-                return $"R{sheetCellAddress.Row + 1}C{sheetCellAddress.Column}";
+            // if (sheetCellAddress.Row < insertedRowIndex)
+            //     return address;
+            //
+            // if (!sheetCellAddress.RowIsRelative)
+            //     return $"R{sheetCellAddress.Row + 1}C{sheetCellAddress.Column}";
 
             return string.Empty; // ToDo: logic for relative address
         }
 
         private string GetShiftedRange(int insertedRowIndex)
         {
-            var startAddress = GetShiftedAddress(insertedRowIndex, _sheetRange.StartAddress.ToString(), _sheetRange.StartAddress);
-            var endAddress = GetShiftedAddress(insertedRowIndex, _sheetRange.EndAddress.ToString(), _sheetRange.EndAddress);
+            // var startAddress = GetShiftedAddress(insertedRowIndex, _sheetRange.StartAddress.ToString(), _sheetRange.StartAddress);
+            // var endAddress = GetShiftedAddress(insertedRowIndex, _sheetRange.EndAddress.ToString(), _sheetRange.EndAddress);
+            //
+            // return $"{startAddress}:{endAddress}";
 
-            return $"{startAddress}:{endAddress}";
+            return string.Empty;
         }
     }
 }

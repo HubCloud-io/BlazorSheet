@@ -139,8 +139,8 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.CellShiftFormulaHelper
         private bool CheckAddress(SheetCellAddress cell,
             int insertedRowIndex)
         {
-            if (!cell.RowIsRelative)
-                return cell.Row >= insertedRowIndex;
+            // if (!cell.RowIsRelative)
+            //     return cell.Row >= insertedRowIndex;
 
             return true;
         }
