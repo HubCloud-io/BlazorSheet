@@ -263,6 +263,11 @@ namespace HubCloud.BlazorSheet.Core.Models
                     ColumnUid = column.Uid
                 };
 
+                // Copy style and edit settings.
+                var baseCell = _cells.FirstOrDefault(x => x.RowUid == baseRow.Uid
+                                                          && x.ColumnUid == column.Uid);
+                CopyCellProperties(newCell, baseCell);
+                
                 AddCell(newCell);
             }
 
@@ -311,6 +316,11 @@ namespace HubCloud.BlazorSheet.Core.Models
                     RowUid = row.Uid,
                     ColumnUid = newColumn.Uid
                 };
+
+                // Copy style and edit settings.
+                var baseCell = _cells.FirstOrDefault(x => x.RowUid == row.Uid
+                                                          && x.ColumnUid == baseColumn.Uid);
+                CopyCellProperties(newCell, baseCell);
 
                 AddCell(newCell);
             }
@@ -849,7 +859,8 @@ namespace HubCloud.BlazorSheet.Core.Models
         public Sheet Copy()
         {
             var output = JsonConvert.SerializeObject(this);
-            return JsonConvert.DeserializeObject<Sheet>(output, new JsonSerializerSettings { FloatParseHandling = FloatParseHandling.Decimal });
+            return JsonConvert.DeserializeObject<Sheet>(output,
+                new JsonSerializerSettings {FloatParseHandling = FloatParseHandling.Decimal});
         }
 
         public void AddCell(SheetCell cell)
@@ -860,6 +871,23 @@ namespace HubCloud.BlazorSheet.Core.Models
         public void RemoveCell(SheetCell cell)
         {
             _cells.Remove(cell);
+        }
+
+        private void CopyCellProperties(SheetCell destinationCell, SheetCell sourceCell)
+        {
+            if (sourceCell == null)
+            {
+                return;
+            }
+
+            destinationCell.StyleUid = sourceCell.StyleUid;
+            destinationCell.EditSettingsUid = sourceCell.EditSettingsUid;
+
+            if (!destinationCell.EditSettingsUid.HasValue)
+            {
+                destinationCell.Value = sourceCell.Value;
+                destinationCell.Text = sourceCell.Text;
+            }
         }
     }
 }
