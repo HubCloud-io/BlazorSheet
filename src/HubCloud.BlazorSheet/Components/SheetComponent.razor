@@ -14,7 +14,6 @@
 
 @*Sheet rows*@
 <tr>
-
     <td class="hc-grid-cell" style="@TopLeftEmptyCellStyle()"></td>
 
     @foreach (var column in Sheet.Columns)
@@ -25,7 +24,25 @@
             @oncontextmenu:preventDefault
             style="@TopSideCellStyle(Sheet, column)"
             hidden="@CellHidden(column)">
-            @Sheet.ColumnNumber(column)
+            <span>@(Sheet.ColumnNumber(column))</span>
+
+            @if (column.IsGroup)
+            {
+                @if (column.IsOpen)
+                {
+                            <span class="fa fa-solid fa-chevron-right text-primary"
+                          style="cursor:pointer;margin-left:5px;"
+                          @onclick="(e=>ColumnGroupOpenCloseClick(column))">
+                    </span>
+                }
+                else
+                {
+                    <span class="fa fa-solid fa-chevron-down text-primary"
+                          style="cursor:pointer;margin-left:5px;"
+                          @onclick="(e=>ColumnGroupOpenCloseClick(column))">
+                    </span>
+                }
+            }
         </td>
     }
 
@@ -44,6 +61,24 @@
                 @oncontextmenu:preventDefault
                 hidden="@CellHidden(row)">
                 <span>@(Sheet.RowNumber(row))</span>
+
+                @if (row.IsGroup)
+                {
+                    @if (row.IsOpen)
+                    {
+                        <span class="fa fa-solid fa-chevron-down text-primary"
+                              style="cursor:pointer;margin-left:5px;"
+                              @onclick="(e=>RowGroupOpenCloseClick(row))">
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="fa fa-solid fa-chevron-right text-primary"
+                              style="cursor:pointer;margin-left:5px;"
+                              @onclick="(e=>RowGroupOpenCloseClick(row))">
+                        </span>
+                    }
+                }
             </td>
 
             @foreach (var column in Sheet.Columns)
@@ -138,7 +173,7 @@
             OverscanCount="1" 
             ItemSize="26">
     <ItemContent>
-
+        
         <tr @key="@row.Uid">
             <td class="hc-grid-cell"
                 style="@LeftSideCellStyle(Sheet, row)"
@@ -147,6 +182,25 @@
                 @oncontextmenu:preventDefault
                 hidden="@CellHidden(row)">
                 <span>@(Sheet.RowNumber(row))</span>
+
+                @if (row.IsGroup)
+                {
+                    @if (row.IsOpen)
+                    {
+                        <span class="fa fa-solid fa-chevron-down text-primary"
+                              style="cursor:pointer;margin-left:5px;"
+                              align="center"
+                              @onclick="(e=>RowGroupOpenCloseClick(row))">
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="fa fa-solid fa-chevron-right text-primary"
+                              style="cursor:pointer;margin-left:5px;"
+                              @onclick="(e=>RowGroupOpenCloseClick(row))">
+                        </span>
+                    }
+                }
             </td>
 
 

@@ -799,6 +799,323 @@ namespace HubCloud.BlazorSheet.Core.Models
             return true;
         }
 
+        public void GroupRows(List<SheetRow> rows)
+        {
+            var rowNumbers = rows
+                    .Select(x => RowNumber(x))
+                    .OrderBy(x => x)
+                    .ToList();
+
+            var firstRowNumber = rowNumbers.FirstOrDefault();
+            if (firstRowNumber == 0)
+                return;
+
+            var firstRow = GetRow(firstRowNumber);
+            if (firstRow.IsGroup)
+                firstRow.IsGroup = false;
+
+            var headRow = GetRow(firstRowNumber - 1);
+            if (headRow.ParentUid == Guid.Empty)
+            {
+                headRow.IsGroup = true;
+                headRow.IsOpen = true;
+            }
+            else
+            {
+                if (firstRow.ParentUid == Guid.Empty)
+                    headRow = FindMainParentRow(headRow);
+                else
+                {
+                    headRow.IsGroup = true;
+                    headRow.IsOpen = true;
+                }
+            }
+
+            foreach (var row in rows)
+            {
+                row.IsGroup = false;
+                row.ParentUid = headRow.Uid;
+                row.IsOpen = headRow.IsOpen;
+                row.IsHidden = !headRow.IsOpen;
+
+                ChangeChildrenParent(row, headRow.Uid);
+                ChangeChildrenVisibility(row, row.IsOpen);
+            }
+        }
+
+        public void GroupColumns(List<SheetColumn> columns)
+        {
+            var columnNumbers = columns
+                    .Select(x => ColumnNumber(x))
+                    .OrderBy(x => x)
+                    .ToList();
+
+            var firstColumnNumber = columnNumbers.FirstOrDefault();
+            if (firstColumnNumber == 0)
+                return;
+
+            var firstColumn = GetColumn(firstColumnNumber);
+            if (firstColumn.IsGroup)
+                firstColumn.IsGroup = false;
+
+            var headColumn = GetColumn(firstColumnNumber - 1);
+            if (headColumn.ParentUid == Guid.Empty)
+            {
+                headColumn.IsGroup = true;
+                headColumn.IsOpen = true;
+            }
+            else
+            {
+                if (firstColumn.ParentUid == Guid.Empty)
+                    headColumn = FindMainParentColumn(headColumn);
+                else
+                {
+                    headColumn.IsGroup = true;
+                    headColumn.IsOpen = true;
+                }
+            }
+
+            foreach (var column in columns)
+            {
+                column.IsGroup = false;
+                column.ParentUid = headColumn.Uid;
+                column.IsOpen = headColumn.IsOpen;
+                column.IsHidden = !headColumn.IsOpen;
+
+                ChangeChildrenParent(column, headColumn.Uid);
+                ChangeChildrenVisibility(column, column.IsOpen);
+            }
+        }
+
+        private void ChangeChildrenParent(SheetRow parentRow, Guid newParentUid)
+        {
+            var rows = Rows.Where(x => x.ParentUid == parentRow.Uid).ToList();
+            rows.ForEach(x => x.ParentUid = newParentUid);
+        }
+
+        private void ChangeChildrenParent(SheetColumn parentColumn, Guid newParentUid)
+        {
+            var columns = Columns.Where(x => x.ParentUid == parentColumn.Uid).ToList();
+            columns.ForEach(x => x.ParentUid = newParentUid);
+        }
+
+        public void ChangeChildrenVisibility(SheetRow parentRow, bool IsVisible)
+        {
+            var rows = Rows.Where(x => x.ParentUid == parentRow.Uid).ToList();
+
+            foreach (var row in rows)
+            {
+                row.IsHidden = !IsVisible;
+
+                if (row.IsGroup)
+                {
+                    var childsVisible = IsVisible && row.IsOpen;
+                    ChangeChildrenVisibility(row, childsVisible);
+                }
+            }
+        }
+
+        public void ChangeChildrenVisibility(SheetColumn parentColumn, bool IsVisible)
+        {
+            var columns = Columns.Where(x => x.ParentUid == parentColumn.Uid).ToList();
+
+            foreach (var column in columns)
+            {
+                column.IsHidden = !IsVisible;
+
+                if (column.IsGroup)
+                {
+                    var childsVisible = IsVisible && column.IsOpen;
+                    ChangeChildrenVisibility(column, childsVisible);
+                }
+            }
+        }
+
+        private SheetRow FindMainParentRow(SheetRow row)
+        {
+            if (row.ParentUid == Guid.Empty)
+                return row;
+
+            var parentRow = Rows.FirstOrDefault(x => x.Uid == row.ParentUid);
+            if (parentRow == null)
+                return null;
+
+            return FindMainParentRow(parentRow);
+        }
+
+        private SheetColumn FindMainParentColumn(SheetColumn column)
+        {
+            if (column.ParentUid == Guid.Empty)
+                return column;
+
+            var parentColumn = Columns.FirstOrDefault(x => x.Uid == column.ParentUid);
+            if (parentColumn == null)
+                return null;
+
+            return FindMainParentColumn(parentColumn);
+        }
+
+        public void UngroupRows(List<SheetRow> rows)
+        {
+            rows = rows
+                    .OrderBy(x => RowNumber(x))
+                    .ToList();
+
+            var parentRowUids = rows.Select(x => x.ParentUid).Distinct();
+            if (parentRowUids.Count() > 1)
+                return;
+
+            var parentRowUid = parentRowUids.FirstOrDefault();
+            if (parentRowUid == null)
+                return;
+
+            var parentRow = Rows.FirstOrDefault(x => x.Uid == parentRowUid);
+            if (parentRow == null)
+                return;
+
+            foreach (var row in rows)
+            {
+                row.ParentUid = parentRow.ParentUid;
+            }
+
+            var lastRow = rows.LastOrDefault();
+            if (lastRow == null)
+                return;
+
+            var lastRowNumber = RowNumber(lastRow);
+
+            var parentChildren = Rows.Where(x => x.ParentUid == parentRow.Uid && RowNumber(x) > lastRowNumber);
+            if (parentChildren.Count() > 0)
+            {
+                lastRow.IsGroup = true;
+                lastRow.IsOpen = true;
+            }
+
+            foreach (var child in parentChildren)
+            {
+                child.ParentUid = lastRow.Uid;
+                child.IsOpen = lastRow.IsOpen;
+                child.IsHidden = !lastRow.IsOpen;
+            }
+        }
+
+        public void UngroupColumns(List<SheetColumn> columns)
+        {
+            columns = columns
+                .OrderBy(x => ColumnNumber(x))
+                .ToList();
+
+            var parentColumnUids = columns.Select(x => x.ParentUid).Distinct();
+            if (parentColumnUids.Count() > 1)
+                return;
+
+            var parentColumnUid = parentColumnUids.FirstOrDefault();
+            if (parentColumnUid == null)
+                return;
+
+            var parentColumn = Columns.FirstOrDefault(x => x.Uid == parentColumnUid);
+            if (parentColumn == null)
+                return;
+
+            foreach (var column in columns)
+                column.ParentUid = parentColumn.ParentUid;
+
+            var lastColumn = columns.LastOrDefault();
+            if (lastColumn == null)
+                return;
+
+            var lastColumnNumber = ColumnNumber(lastColumn);
+
+            var parentChildren = Columns.Where(x => x.ParentUid == parentColumn.Uid && ColumnNumber(x) > lastColumnNumber);
+            if (parentChildren.Count() > 0)
+            {
+                lastColumn.IsGroup = true;
+                lastColumn.IsOpen = true;
+            }
+
+            foreach (var child in parentChildren)
+            {
+                child.ParentUid = lastColumn.Uid;
+                child.IsOpen = lastColumn.IsOpen;
+                child.IsHidden = !lastColumn.IsOpen;
+            }
+        }
+
+        public bool CanRowsBeGrouped(List<SheetRow> rows)
+        {
+            var rowNumbers = rows
+                .Select(x => RowNumber(x))
+                .OrderBy(x => x)
+                .ToList();
+
+            if (rowNumbers.Contains(1))
+                return false;
+
+            var headRow = GetRow(rowNumbers.First() - 1);
+            if (headRow.IsHidden)
+                return false;
+
+            if (rows.Contains(headRow))
+                return false;
+
+            if (rows.Any(x => x.ParentUid != Guid.Empty) && 
+                rows.Any(x => x.ParentUid == Guid.Empty))
+                return false;
+
+            var current = rowNumbers.First();
+
+            for (int i = 0; i < rowNumbers.Count; i++)
+            {
+                if (current != rowNumbers[i])
+                    return false;
+
+                current++;
+            }
+
+            return true;
+        }
+
+        public bool CanColumnsBeGrouped(List<SheetColumn> columns)
+        {
+            return true;
+        }
+
+        public bool CanRowsBeUngrouped(List<SheetRow> rows)
+        {
+            var rowNumbers = rows
+                .Select(x => RowNumber(x))
+                .OrderBy(x => x)
+                .ToList();
+
+            if (rowNumbers.Contains(1))
+                return false;
+
+            var headRow = GetRow(rowNumbers.First() - 1);
+            if (headRow.IsHidden)
+                return false;
+
+            if (rows.Any(x => x.ParentUid != Guid.Empty) &&
+                rows.Any(x => x.ParentUid == Guid.Empty))
+                return false;
+
+            var current = rowNumbers.First();
+
+            for (int i = 0; i < rowNumbers.Count; i++)
+            {
+                if (current != rowNumbers[i])
+                    return false;
+
+                current++;
+            }
+
+            return true;
+        }
+
+        public bool CanColumnsBeUngrouped(List<SheetColumn> columns)
+        {
+            return true;
+        }
+
         private bool CanFreezedRowsBeSet(int freezedRows, List<CellWithAddress> cellWithAddressList)
         {
             foreach (var cell in cellWithAddressList)
