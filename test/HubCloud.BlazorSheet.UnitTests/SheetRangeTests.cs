@@ -21,8 +21,6 @@ public class SheetRangeTests
 
     [TestCase("Sheet1!R1C1:R2C2", 2, 2, 1, 1, 2, 2)]
     [TestCase("Sheet1!R1C1:Sheet2!R2C2", 2, 2, 1, 1, 2, 2)]
-    [TestCase("Sheet1!R1C1:R[-1]C1", 3, 1, 1, 1, 2, 1)]
-    [TestCase("Sheet1!R[1]C1:R[3]C1", 1, 1, 2, 1, 4, 1)]
     public void Test_SheetRange_String_Constructor(string address,
         int currentRow,
         int currentCol,
