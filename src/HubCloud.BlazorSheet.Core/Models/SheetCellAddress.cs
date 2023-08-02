@@ -28,23 +28,23 @@ namespace HubCloud.BlazorSheet.Core.Models
         {
             Parse(address);
 
-            if (Row <= 0)
+            if (Row == 0 || _isRowRelative)
                 Row += currentRow;
 
-            if (Column <= 0)
+            if (Column == 0 || _isColumnRelative)
                 Column += currentColumn;
         }
 
+        private bool _isRowRelative;
+        private bool _isColumnRelative;
 
         private void Parse(string address)
         {
             if (string.IsNullOrWhiteSpace(address))
                 throw new ArgumentException("Address can't be null or empty.", nameof(address));
 
-            address = address.Replace(" ", "")
-                .Replace("[", "")
-                .Replace("]", "");
-
+            address = address.Replace(" ", "");
+            
             if (address.Contains("!"))
             {
                 var separatorIndex = address.IndexOf('!');
@@ -60,6 +60,20 @@ namespace HubCloud.BlazorSheet.Core.Models
 
             var rString = address.Substring(1, cIndex - rIndex - 1);
             var cString = address.Substring(cIndex + 1);
+
+            if (rString.Contains("[") && rString.Contains("]"))
+            {
+                _isRowRelative = true;
+                rString = rString.Replace("[", "")
+                    .Replace("]", "");
+            }
+
+            if (cString.Contains("[") && cString.Contains("]"))
+            {
+                _isColumnRelative = true;
+                cString = cString.Replace("[", "")
+                    .Replace("]", "");
+            }
 
             int.TryParse(rString, out var row);
             Row = row;
