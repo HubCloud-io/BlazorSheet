@@ -202,7 +202,9 @@ public partial class SheetComponent : ComponentBase
                 await ColumnAdded.InvokeAsync(new ColumnAddedEventArgs()
                 {
                     SourceUid = _currentColumn.Uid,
-                    ColumnUid = newColumnBefore.Uid
+                    ColumnUid = newColumnBefore.Uid,
+                    Index = Sheet.Columns.IndexOf(newColumnBefore)
+                    
                 });
 
                 await Changed.InvokeAsync(null);
@@ -216,7 +218,9 @@ public partial class SheetComponent : ComponentBase
                 await ColumnAdded.InvokeAsync(new ColumnAddedEventArgs()
                 {
                     SourceUid = _currentColumn.Uid,
-                    ColumnUid = newColumnAfter.Uid
+                    ColumnUid = newColumnAfter.Uid,
+                    Index = Sheet.Columns.IndexOf(newColumnAfter)
+                    
                 });
                 
                 await Changed.InvokeAsync(null);
@@ -264,7 +268,8 @@ public partial class SheetComponent : ComponentBase
                 await RowAdded.InvokeAsync(new RowAddedEventArgs()
                 {
                     SourceUid = _currentRow.Uid,
-                    RowUid = newRowBefore.Uid
+                    RowUid = newRowBefore.Uid,
+                    Index = Sheet.Rows.IndexOf(newRowBefore)
 
                 });
                 await Changed.InvokeAsync(null);
@@ -278,7 +283,8 @@ public partial class SheetComponent : ComponentBase
                 await RowAdded.InvokeAsync(new RowAddedEventArgs()
                 {
                     SourceUid = _currentRow.Uid,
-                    RowUid = newRowAfter.Uid
+                    RowUid = newRowAfter.Uid,
+                    Index = Sheet.Rows.IndexOf(newRowAfter)
 
                 });
                 await Changed.InvokeAsync(null);

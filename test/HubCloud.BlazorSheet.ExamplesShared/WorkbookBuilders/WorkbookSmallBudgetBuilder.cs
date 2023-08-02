@@ -112,7 +112,7 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
         private void SetTotalColumnFormula(int row, int column, SheetCellStyle totalStyle, Sheet sheet)
         {
 
-            sheet.GetCell(8, column).Formula = $"Val(\"R5C{column}\")+Val(\"R6C{column}\")+Val(\"R7C{column}\")";
+            sheet.GetCell(8, column).Formula = $"Sum(\"R5C{column}:R7C{column}\")";
             sheet.GetCell(8, column).StyleUid = totalStyle.Uid;
 
         }
