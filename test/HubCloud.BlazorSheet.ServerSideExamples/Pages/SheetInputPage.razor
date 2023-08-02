@@ -24,7 +24,9 @@
             ComboBoxDataProviderFactory="@_dataProviderFactory"
             Regime="SheetRegimes.InputForm"
             IsDisabled="@_isDisabled"
-            CellValueChanged="OnCellValueChanged">
+            CellValueChanged="OnCellValueChanged" 
+            RowAdded="OnRowAdded"
+            ColumnAdded="OnColumnAdded">
         </HubCloud.BlazorSheet.Components.SheetComponent>
 
     </div>
