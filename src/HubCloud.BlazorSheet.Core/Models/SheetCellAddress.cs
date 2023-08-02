@@ -29,25 +29,21 @@ namespace HubCloud.BlazorSheet.Core.Models
             Parse(address);
 
             if (Row <= 0)
-            {
                 Row += currentRow;
-            }
 
             if (Column <= 0)
-            {
                 Column += currentColumn;
-            }
         }
 
 
         private void Parse(string address)
         {
             if (string.IsNullOrWhiteSpace(address))
-            {
                 throw new ArgumentException("Address can't be null or empty.", nameof(address));
-            }
 
-            address = address.Replace(" ", "");
+            address = address.Replace(" ", "")
+                .Replace("[", "")
+                .Replace("]", "");
 
             if (address.Contains("!"))
             {
@@ -60,24 +56,15 @@ namespace HubCloud.BlazorSheet.Core.Models
             int cIndex = address.IndexOf("C", StringComparison.OrdinalIgnoreCase);
 
             if (rIndex < 0 || cIndex < 0 || cIndex < rIndex)
-            {
                 throw new ArgumentException("Invalid cell address format.", nameof(address));
-            }
 
             var rString = address.Substring(1, cIndex - rIndex - 1);
             var cString = address.Substring(cIndex + 1);
 
-            if (int.TryParse(rString, out var row))
-            {
-                Row = row;
-            }
-
-            if (int.TryParse(cString, out var col))
-            {
-                Column = col;
-            }
-
+            int.TryParse(rString, out var row);
             Row = row;
+
+            int.TryParse(cString, out var col);
             Column = col;
         }
         
