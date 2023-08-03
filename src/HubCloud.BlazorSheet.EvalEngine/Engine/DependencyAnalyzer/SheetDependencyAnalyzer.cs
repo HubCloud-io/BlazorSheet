@@ -297,27 +297,11 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
             if (string.IsNullOrEmpty(address))
                 return null;
             
-            var addressModel = new AddressModel(address);
+            var addressModel = new AddressModel(address, formulaCellAddress);
             if (addressModel.IsRowRelative)
-            {
-                var row = formulaCellAddress.Row + addressModel.RowValue;
-                return row.ToString();
-            }
-
-            address = address.ToUpper();
-            var index = address.IndexOf("R", StringComparison.InvariantCulture);
-            if (index == -1)
-                return null;
-
-            index++;
-            var sb = new StringBuilder();
-            while (address[index] != 'C')
-            {
-                sb.Append(address[index]);
-                index++;
-            }
-
-            return sb.ToString();
+                return (formulaCellAddress.Row + addressModel.RowValue).ToString();
+            else
+                return addressModel.RowValue.ToString();
         }
 
         private static string GetColValue(string address, SheetCellAddress formulaCellAddress)
@@ -325,27 +309,11 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
             if (string.IsNullOrEmpty(address))
                 return null;
             
-            var addressModel = new AddressModel(address);
+            var addressModel = new AddressModel(address, formulaCellAddress);
             if (addressModel.IsColumnRelative)
-            {
-                var col = formulaCellAddress.Column + addressModel.ColumnValue;
-                return col.ToString();
-            }
-
-            address = address.ToUpper();
-            var index = address.IndexOf("C", StringComparison.InvariantCulture);
-            if (index == -1)
-                return null;
-
-            index++;
-            var sb = new StringBuilder();
-            while (index < address.Length)
-            {
-                sb.Append(address[index]);
-                index++;
-            }
-
-            return sb.ToString();
+                return (formulaCellAddress.Column + addressModel.ColumnValue).ToString();
+            else
+                return addressModel.ColumnValue.ToString();
         }
 
         public static string GetCellAddress(SheetCellAddress cellAddress)

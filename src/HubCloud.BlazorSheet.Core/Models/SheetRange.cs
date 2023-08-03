@@ -28,22 +28,22 @@ namespace HubCloud.BlazorSheet.Core.Models
         {
             Parse(rangeStr);
 
-            if (RowStart < 0)
+            if (RowStart <= 0)
             {
                 RowStart += currentRow;
             }
 
-            if (RowEnd < 0)
+            if (RowEnd <= 0)
             {
                 RowEnd += currentRow;
             }
 
-            if (ColumnStart < 0)
+            if (ColumnStart <= 0)
             {
                 ColumnStart += currentColumn;
             }
 
-            if (ColumnStart < 0)
+            if (ColumnStart <= 0)
             {
                 ColumnStart += currentColumn;
             }

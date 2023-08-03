@@ -246,7 +246,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.CellShiftFormulaHelper
                 factor = -1;
             
             string rValue;
-            var addressModel = new AddressModel(address);
+            var addressModel = new AddressModel(address, formulaAddress);
 
             if (!addressModel.IsRowRelative)
             {
@@ -292,7 +292,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.CellShiftFormulaHelper
                 factor = -1;
             
             string cValue;
-            var addressModel = new AddressModel(address);
+            var addressModel = new AddressModel(address, formulaAddress);
 
             if (!addressModel.IsColumnRelative)
             {
