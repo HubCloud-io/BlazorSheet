@@ -6,6 +6,7 @@ namespace HubCloud.BlazorSheet.Core.Events
     {
         public Guid SourceUid { get; set; }
         public Guid ColumnUid { get; set; }
-        public int Index { get; set; }
+        public int ColumnNumber { get; set; }
+        public int Position { get; set; }
     }
 }

@@ -37,14 +37,14 @@ public partial class SheetInputPage : ComponentBase
     private void OnRowAdded(RowAddedEventArgs args)
     {
         var shiftHelper = new CellShiftFormulaHelper(_workbook.FirstSheet);
-        shiftHelper.OnRowAdd(args.Index);
+        shiftHelper.OnRowAdd(args.RowNumber);
         _evaluator = new WorkbookEvaluator(_workbook);
     }
 
     private void OnColumnAdded(ColumnAddedEventArgs args)
     {
         var shiftHelper = new CellShiftFormulaHelper(_workbook.FirstSheet);
-        shiftHelper.OnColumnAdd(args.Index);
+        shiftHelper.OnColumnAdd(args.ColumnNumber);
         _evaluator = new WorkbookEvaluator(_workbook);
     }
 
