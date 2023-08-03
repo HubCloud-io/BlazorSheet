@@ -71,7 +71,9 @@ public partial class SheetComponent : ComponentBase
     [Parameter] public EventCallback<SheetCell> CellValueChanged { get; set; }
 
     [Parameter] public EventCallback<RowAddedEventArgs> RowAdded { get; set; }
+    [Parameter] public EventCallback<RowRemovedEventArgs> RowRemoved { get; set; }
     [Parameter] public EventCallback<ColumnAddedEventArgs> ColumnAdded { get; set; }
+    [Parameter] public EventCallback<ColumnRemovedEventArgs> ColumnRemoved { get; set; }
 
     [Inject] public IJSRuntime JsRuntime { get; set; }
 
@@ -231,7 +233,15 @@ public partial class SheetComponent : ComponentBase
 
             case ContextMenuBuilder.RemoveItemName:
 
+                var columnRemovedArgs = new ColumnRemovedEventArgs()
+                {
+                    ColumnUid = _currentColumn.Uid,
+                    ColumnNumber = Sheet.ColumnNumber(_currentColumn)
+                };
+                
                 Sheet.RemoveColumn(_currentColumn);
+
+                await ColumnRemoved.InvokeAsync(columnRemovedArgs);
                 await Changed.InvokeAsync(null);
                 break;
 
@@ -297,7 +307,15 @@ public partial class SheetComponent : ComponentBase
 
             case ContextMenuBuilder.RemoveItemName:
 
+                var removeArgs = new RowRemovedEventArgs()
+                {
+                    RowUid = _currentRow.Uid,
+                    RowNumber = Sheet.RowNumber(_currentRow)
+
+                };
                 Sheet.RemoveRow(_currentRow);
+
+                await RowRemoved.InvokeAsync(removeArgs);
                 await Changed.InvokeAsync(null);
 
                 break;
