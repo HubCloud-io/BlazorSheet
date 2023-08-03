@@ -7,5 +7,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.CellShiftFormulaHelper.Abstract
     {
         List<ShiftLogModel> OnRowAdd(int insertedRowIndex);
         List<ShiftLogModel> OnColumnAdd(int insertedColumnIndex);
+        List<ShiftLogModel> OnRowDelete(int deletedRowIndex);
+        List<ShiftLogModel> OnColumnDelete(int deletedColumnIndex);
     }
 }
