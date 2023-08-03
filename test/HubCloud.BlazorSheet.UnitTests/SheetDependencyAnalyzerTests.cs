@@ -76,8 +76,9 @@ public class SheetDependencyAnalyzerTests
     [Test]
     public void IsAddressInRange_Test()
     {
-        var state1 = SheetDependencyAnalyzer.IsAddressInRange("R2C2", "R1C1:R3C3");
-        var state2 = SheetDependencyAnalyzer.IsAddressInRange("R2C2", "R3C3:R5C5");
+        var cell = new SheetCellAddress(1, 1);
+        var state1 = SheetDependencyAnalyzer.IsAddressInRange("R2C2", "R1C1:R3C3", cell);
+        var state2 = SheetDependencyAnalyzer.IsAddressInRange("R2C2", "R3C3:R5C5", cell);
         
         Assert.IsTrue(state1);
         Assert.IsFalse(state2);
@@ -86,7 +87,38 @@ public class SheetDependencyAnalyzerTests
     [Test]
     public void GetAddressListByRange_Test()
     {
-        var list = SheetDependencyAnalyzer.GetAddressListByRange("R1C1:R2C3");
+        var cellAddress = new SheetCellAddress(1, 1);
+        var list = SheetDependencyAnalyzer.GetAddressListByRange("R1C1:R2C3", cellAddress);
+        
+        Assert.AreEqual(list.Count, 6);
+        Assert.AreEqual(list[0], "R1C1");
+        Assert.AreEqual(list[1], "R1C2");
+        Assert.AreEqual(list[2], "R1C3");
+        Assert.AreEqual(list[3], "R2C1");
+        Assert.AreEqual(list[4], "R2C2");
+        Assert.AreEqual(list[5], "R2C3");
+    }
+    
+    [Test]
+    public void GetAddressListByRange_Relative_Test()
+    {
+        var cellAddress = new SheetCellAddress(1, 1);
+        var list = SheetDependencyAnalyzer.GetAddressListByRange("R1C1:R[1]C3", cellAddress);
+        
+        Assert.AreEqual(list.Count, 6);
+        Assert.AreEqual(list[0], "R1C1");
+        Assert.AreEqual(list[1], "R1C2");
+        Assert.AreEqual(list[2], "R1C3");
+        Assert.AreEqual(list[3], "R2C1");
+        Assert.AreEqual(list[4], "R2C2");
+        Assert.AreEqual(list[5], "R2C3");
+    }
+    
+    [Test]
+    public void GetAddressListByRange_Relative_Test_2()
+    {
+        var cellAddress = new SheetCellAddress(1, 1);
+        var list = SheetDependencyAnalyzer.GetAddressListByRange("R1C1:R2C[2]", cellAddress);
         
         Assert.AreEqual(list.Count, 6);
         Assert.AreEqual(list[0], "R1C1");

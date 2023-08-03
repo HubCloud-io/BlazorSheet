@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using HubCloud.BlazorSheet.Core.Models;
+using HubCloud.BlazorSheet.EvalEngine.Engine.CellShiftFormulaHelper.Models;
 using HubCloud.BlazorSheet.EvalEngine.Helpers;
 
 namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
@@ -124,7 +125,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
 
             foreach (var rangeMatch in rangeMatches)
             {
-                var rangeAddresses = GetAddressListByRange(rangeMatch);
+                var rangeAddresses = GetAddressListByRange(rangeMatch, formulaCellAddress);
                 foreach (var rangeAddress in rangeAddresses)
                 {
                     if (!processedCells.Contains(rangeAddress))
@@ -166,7 +167,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
 
             foreach (var range in rangeMatches)
             {
-                if (IsAddressInRange(cellAddress, range))
+                if (IsAddressInRange(cellAddress, range, formulaCellAddress))
                     return true;
 
                 sb.Replace(range, "{R}");
@@ -200,7 +201,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
                 .ToList();
 
 
-        public static List<string> GetAddressListByRange(string range)
+        public static List<string> GetAddressListByRange(string range, SheetCellAddress cellAddress)
         {
             var list = new List<string>();
             var arr = range.Split(':').ToArray();
@@ -210,11 +211,11 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
             var startAddress = arr[0];
             var endAddress = arr[1];
 
-            var startRow = int.Parse(GetRowValue(startAddress));
-            var startCol = int.Parse(GetColValue(startAddress));
+            var startRow = int.Parse(GetRowValue(startAddress, cellAddress));
+            var startCol = int.Parse(GetColValue(startAddress, cellAddress));
 
-            var endRow = int.Parse(GetRowValue(endAddress));
-            var endCol = int.Parse(GetColValue(endAddress));
+            var endRow = int.Parse(GetRowValue(endAddress, cellAddress));
+            var endCol = int.Parse(GetColValue(endAddress, cellAddress));
 
             for (var r = startRow; r <= endRow; r++)
             {
@@ -227,7 +228,9 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
             return list;
         }
 
-        public static bool IsAddressInRange(string cellAddress, string addressRange)
+        public static bool IsAddressInRange(string address,
+            string addressRange,
+            SheetCellAddress cellAddress)
         {
             var arr = addressRange.Split(':').ToArray();
             if (arr.Length != 2)
@@ -236,14 +239,14 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
             var startAddress = arr[0];
             var endAddress = arr[1];
 
-            var startRow = int.Parse(GetRowValue(startAddress));
-            var startCol = int.Parse(GetColValue(startAddress));
+            var startRow = int.Parse(GetRowValue(startAddress, cellAddress));
+            var startCol = int.Parse(GetColValue(startAddress, cellAddress));
 
-            var endRow = int.Parse(GetRowValue(endAddress));
-            var endCol = int.Parse(GetColValue(endAddress));
+            var endRow = int.Parse(GetRowValue(endAddress, cellAddress));
+            var endCol = int.Parse(GetColValue(endAddress, cellAddress));
 
-            var currentAddressRow = int.Parse(GetRowValue(cellAddress));
-            var currentAddressCol = int.Parse(GetColValue(cellAddress));
+            var currentAddressRow = int.Parse(GetRowValue(address, cellAddress));
+            var currentAddressCol = int.Parse(GetColValue(address, cellAddress));
 
             if (startRow <= currentAddressRow && endRow >= currentAddressRow &&
                 startCol <= currentAddressCol && endCol >= currentAddressCol)
@@ -254,8 +257,8 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
 
         public static string NormalizeAddress(string address, SheetCellAddress formulaCellAddress)
         {
-            var rowVal = GetRowValue(address);
-            var colVal = GetColValue(address);
+            var rowVal = GetRowValue(address, formulaCellAddress);
+            var colVal = GetColValue(address, formulaCellAddress);
 
             if (rowVal is null || colVal is null)
                 return null;
@@ -289,10 +292,17 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
             return normalizedAddress.ToString();
         }
 
-        private static string GetRowValue(string address)
+        private static string GetRowValue(string address, SheetCellAddress formulaCellAddress)
         {
             if (string.IsNullOrEmpty(address))
                 return null;
+            
+            var addressModel = new AddressModel(address);
+            if (addressModel.IsRowRelative)
+            {
+                var row = formulaCellAddress.Row + addressModel.RowValue;
+                return row.ToString();
+            }
 
             address = address.ToUpper();
             var index = address.IndexOf("R", StringComparison.InvariantCulture);
@@ -310,10 +320,17 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
             return sb.ToString();
         }
 
-        private static string GetColValue(string address)
+        private static string GetColValue(string address, SheetCellAddress formulaCellAddress)
         {
             if (string.IsNullOrEmpty(address))
                 return null;
+            
+            var addressModel = new AddressModel(address);
+            if (addressModel.IsColumnRelative)
+            {
+                var col = formulaCellAddress.Column + addressModel.ColumnValue;
+                return col.ToString();
+            }
 
             address = address.ToUpper();
             var index = address.IndexOf("C", StringComparison.InvariantCulture);

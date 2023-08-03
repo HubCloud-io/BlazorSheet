@@ -85,7 +85,7 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
             sheet.GetCell(4, 6).Value = "Total";
             sheet.GetCell(4, 6).StyleUid = totalStyle.Uid;
 
-            sheet.GetCell(8, 6).Formula = $"Sum(\"R5C6:R-1C6\")";
+            sheet.GetCell(8, 6).Formula = $"Sum(\"R5C6:R[-1]C6\")";
             sheet.GetCell(8, 6).StyleUid = totalStyle.Uid;
 
             sheet.GetCell(1, 6).Value = "About Blazor";
