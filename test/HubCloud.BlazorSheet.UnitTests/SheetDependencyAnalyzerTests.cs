@@ -16,13 +16,44 @@ public class SheetDependencyAnalyzerTests
         var workbook = BuildTestWorkbook();
         
         var analyzer = new SheetDependencyAnalyzer(workbook.FirstSheet);
-        var dependencyCells = analyzer.GetDependencyCells(new SheetCellAddress(2, 2)).ToArray();
+        var dependencyCells = analyzer.GetDependencyCells(new SheetCellAddress(2, 2))
+            .ToArray();
         
         Assert.AreEqual(dependencyCells.Count(), 4);
         Assert.AreEqual(dependencyCells[0].Formula, @"VAL(""R2C2"") + 40");
         Assert.AreEqual(dependencyCells[1].Formula, @"SUM(""R2C2:R2C2"")");
         Assert.AreEqual(dependencyCells[2].Formula, @"VAL(""R5C2"")+VAL(""R2C2"")");
         Assert.AreEqual(dependencyCells[3].Formula, @"VAL(""R2C2"")+VAL(""R4C2"")");
+    }
+
+    [Test]
+    public void DependencyCells_Test()
+    {
+        // Arrange
+        var sheetSettings = new SheetSettings
+        {
+            RowsCount = 10,
+            ColumnsCount = 10
+        };
+
+        var sheet = new Sheet(sheetSettings)
+        {
+            Name = "main"
+        };
+
+        sheet.GetCell(1, 4).Formula = @"SUM(""RC1:R[2]C3"")";
+
+        var workbook = new Workbook();
+        workbook.AddSheet(sheet);
+        
+        // Act
+        var analyzer = new SheetDependencyAnalyzer(workbook.FirstSheet);
+        var dependencyCells = analyzer.GetDependencyCells(new SheetCellAddress(2, 2))
+            .ToArray();
+        
+        // Assert
+        Assert.AreEqual(dependencyCells.Count(), 1);
+        Assert.AreEqual(dependencyCells[0].Formula, @"SUM(""RC1:R[2]C3"")");
     }
 
     [Test]
@@ -76,12 +107,17 @@ public class SheetDependencyAnalyzerTests
     [Test]
     public void IsAddressInRange_Test()
     {
-        var cell = new SheetCellAddress(1, 1);
-        var state1 = SheetDependencyAnalyzer.IsAddressInRange("R2C2", "R1C1:R3C3", cell);
-        var state2 = SheetDependencyAnalyzer.IsAddressInRange("R2C2", "R3C3:R5C5", cell);
+        var state1 = SheetDependencyAnalyzer.IsAddressInRange("R2C2", "R1C1:R3C3", new SheetCellAddress(1, 1));
+        var state2 = SheetDependencyAnalyzer.IsAddressInRange("R2C2", "R3C3:R5C5", new SheetCellAddress(1, 1));
+        var state3 = SheetDependencyAnalyzer.IsAddressInRange("R[1]C[1]", "R1C1:R3C3", new SheetCellAddress(1, 1));
+        var state4 = SheetDependencyAnalyzer.IsAddressInRange("RC2", "R1C1:R3C3", new SheetCellAddress(2, 1));
+        var state5 = SheetDependencyAnalyzer.IsAddressInRange("R2C", "R1C1:R3C3", new SheetCellAddress(1, 2));
         
         Assert.IsTrue(state1);
         Assert.IsFalse(state2);
+        Assert.IsTrue(state3);
+        Assert.IsTrue(state4);
+        Assert.IsTrue(state5);
     }
 
     [Test]
