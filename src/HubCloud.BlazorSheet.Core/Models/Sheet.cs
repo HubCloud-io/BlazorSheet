@@ -1203,8 +1203,10 @@ namespace HubCloud.BlazorSheet.Core.Models
 
             destinationCell.StyleUid = sourceCell.StyleUid;
             destinationCell.EditSettingsUid = sourceCell.EditSettingsUid;
+            destinationCell.Formula = sourceCell.Formula;
 
-            if (!destinationCell.EditSettingsUid.HasValue)
+            if (!destinationCell.EditSettingsUid.HasValue 
+                && string.IsNullOrEmpty(sourceCell.Formula))
             {
                 destinationCell.Value = sourceCell.Value;
                 destinationCell.Text = sourceCell.Text;
