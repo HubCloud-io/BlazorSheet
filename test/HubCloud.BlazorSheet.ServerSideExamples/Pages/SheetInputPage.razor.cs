@@ -38,19 +38,43 @@ public partial class SheetInputPage : ComponentBase
     {
         var shiftHelper = new CellShiftFormulaHelper(_workbook.FirstSheet);
         shiftHelper.OnRowAdd(args.RowNumber);
-        _evaluator = new WorkbookEvaluator(_workbook);
+        InitEvaluator();
+       // _evaluator.EvalWorkbook();
+    }
+
+    private void OnRowRemoved(RowRemovedEventArgs args)
+    {
+        var shiftHelper = new CellShiftFormulaHelper(_workbook.FirstSheet);
+        shiftHelper.OnRowDelete(args.RowNumber);
+        InitEvaluator();
+        _evaluator.EvalWorkbook();
     }
 
     private void OnColumnAdded(ColumnAddedEventArgs args)
     {
         var shiftHelper = new CellShiftFormulaHelper(_workbook.FirstSheet);
         shiftHelper.OnColumnAdd(args.ColumnNumber);
-        _evaluator = new WorkbookEvaluator(_workbook);
+        InitEvaluator();
+        //_evaluator.EvalWorkbook();
+    }
+
+    private void OnColumnRemoved(ColumnRemovedEventArgs args)
+    {
+        var shiftHelper = new CellShiftFormulaHelper(_workbook.FirstSheet);
+        shiftHelper.OnColumnDelete(args.ColumnNumber);
+        InitEvaluator();
+        _evaluator.EvalWorkbook();
     }
 
     private void OnClearLogClick()
     {
         _evaluator.ClearLog();
+    }
+
+    private void InitEvaluator()
+    {
+        _evaluator = new WorkbookEvaluator(_workbook);
+        _evaluator.SetLogLevel(LogLevel.Trace);
     }
     
 }

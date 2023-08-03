@@ -119,7 +119,8 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
 
         private void SetTotalRowFormula(int row, int column, SheetCellStyle totalStyle, Sheet sheet)
         {
-            sheet.GetCell(row, column).Formula = $"Sum(\"R{row}C3:R{row}C5\")";
+            //sheet.GetCell(row, column).Formula = $"Sum(\"R{row}C3:R{row}C5\")";
+            sheet.GetCell(row, column).Formula = $"Sum(\"RC3:RC5\")";
             sheet.GetCell(row, column).StyleUid = totalStyle.Uid;
         }
     }
