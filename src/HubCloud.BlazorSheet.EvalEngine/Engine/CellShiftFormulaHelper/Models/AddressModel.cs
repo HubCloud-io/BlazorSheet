@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using HubCloud.BlazorSheet.Core.Models;
 
 namespace HubCloud.BlazorSheet.EvalEngine.Engine.CellShiftFormulaHelper.Models
 {
@@ -11,7 +12,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.CellShiftFormulaHelper.Models
         public bool IsRowRelative { get; set; }
         public bool IsColumnRelative { get; set; }
 
-        public AddressModel(string address)
+        public AddressModel(string address, SheetCellAddress cellAddress)
         {
             address = address.Trim();
 
@@ -28,15 +29,31 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.CellShiftFormulaHelper.Models
             var rowValue = address.Substring(1, cIndex - rIndex - 1);
             var columnValue = address.Substring(cIndex + 1);
 
-            if (rowValue.Contains("[") && rowValue.Contains("["))
-                IsRowRelative = true;
-            if (columnValue.Contains("[") && columnValue.Contains("["))
-                IsColumnRelative = true;
-
-            if (int.TryParse(rowValue.Trim(new[] {'[', ']'}), out var row))
-                RowValue = row;
-            if (int.TryParse(columnValue.Trim(new[] {'[', ']'}), out var column))
-                ColumnValue = column;
+            // row
+            if (!string.IsNullOrEmpty(rowValue))
+            {
+                if (rowValue.Contains("[") && rowValue.Contains("["))
+                    IsRowRelative = true;
+                if (int.TryParse(rowValue.Trim(new[] {'[', ']'}), out var row))
+                    RowValue = row;
+            }
+            else
+            {
+                RowValue = cellAddress.Row;
+            }
+            
+            // column
+            if (!string.IsNullOrEmpty(columnValue))
+            {
+                if (columnValue.Contains("[") && columnValue.Contains("["))
+                    IsColumnRelative = true;
+                if (int.TryParse(columnValue.Trim(new[] {'[', ']'}), out var column))
+                    ColumnValue = column;
+            }
+            else
+            {
+                ColumnValue = cellAddress.Column;
+            }
         }
 
         public override string ToString()

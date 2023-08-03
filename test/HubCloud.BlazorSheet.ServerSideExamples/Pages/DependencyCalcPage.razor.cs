@@ -39,8 +39,8 @@ public partial class DependencyCalcPage : ComponentBase
     private Workbook BuildTestWorkbook()
     {
         var sheetSettings = new SheetSettings();
-        sheetSettings.RowsCount = 100;
-        sheetSettings.ColumnsCount = 6;
+        sheetSettings.RowsCount = 10;
+        sheetSettings.ColumnsCount = 10;
         
         var numberInputSettings = new SheetCellEditSettings()
         {
@@ -57,7 +57,7 @@ public partial class DependencyCalcPage : ComponentBase
         sheet.GetCell(2, 2).EditSettingsUid = numberInputSettings.Uid;
         sheet.GetCell(2, 2).Value = 0;
         sheet.GetCell(2, 2).Text = "0";
-
+        
         // SetDependentFormulas(sheet);
         SetDependentFormulas_CalcOrder(sheet);
         SetIndependentFormulas(sheet);
