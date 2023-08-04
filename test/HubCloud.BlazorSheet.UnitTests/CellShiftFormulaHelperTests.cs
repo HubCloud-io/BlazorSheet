@@ -245,6 +245,90 @@ public class CellShiftFormulaHelperTests
         Assert.AreEqual(sheet.GetCell(5, 1).Formula, @"SUM(""R6C1:R6C[3]"")");
         Assert.AreEqual(sheet.GetCell(7, 1).Formula, @"SUM(""R8C[3]:R8C[5]"")");
     }
+
+    [Test]
+    public void ColumnTotals_Test()
+    {
+        // Arrange
+        var sheet = GetSheet();
+
+        // value cells
+        sheet.GetCell(1, 1).Value = 1;
+        sheet.GetCell(1, 2).Value = 1;
+        sheet.GetCell(1, 3).Value = 1;
+        
+        sheet.GetCell(2, 1).Value = 2;
+        sheet.GetCell(2, 2).Value = 2;
+        sheet.GetCell(2, 3).Value = 2;
+        
+        sheet.GetCell(3, 1).Value = 3;
+        sheet.GetCell(3, 2).Value = 3;
+        sheet.GetCell(3, 3).Value = 3;
+        
+        // formula cells
+        sheet.GetCell(1, 4).Formula = @"SUM(""R1C1:R1C3"")";
+        sheet.GetCell(2, 4).Formula = @"SUM(""R2C1:R2C3"")";
+        sheet.GetCell(3, 4).Formula = @"SUM(""R3C1:R3C3"")";
+        
+        var workbook = new Workbook();
+        workbook.AddSheet(sheet);
+        
+        // Act
+        var insertedRowNumber = 2;
+        var row = sheet.GetRow(insertedRowNumber);
+        sheet.AddRow(row, 1);
+        
+        IFormulaShifter formulaShifter = new CellShiftFormulaHelper(sheet);
+        formulaShifter.OnRowAdd(insertedRowNumber);
+
+        // Assert
+        Assert.AreEqual(sheet.GetCell(1, 4).Formula, @"SUM(""R1C1:R1C3"")");
+        Assert.AreEqual(sheet.GetCell(2, 4).Formula, @"SUM(""R2C1:R2C3"")");
+        Assert.AreEqual(sheet.GetCell(3, 4).Formula, @"SUM(""R3C1:R3C3"")");
+        Assert.AreEqual(sheet.GetCell(4, 4).Formula, @"SUM(""R4C1:R4C3"")");
+    }
+    
+    [Test]
+    public void ColumnTotals_2_Test()
+    {
+        // Arrange
+        var sheet = GetSheet();
+
+        // value cells
+        sheet.GetCell(1, 1).Value = 1;
+        sheet.GetCell(1, 2).Value = 1;
+        sheet.GetCell(1, 3).Value = 1;
+        
+        sheet.GetCell(2, 1).Value = 2;
+        sheet.GetCell(2, 2).Value = 2;
+        sheet.GetCell(2, 3).Value = 2;
+        
+        sheet.GetCell(3, 1).Value = 3;
+        sheet.GetCell(3, 2).Value = 3;
+        sheet.GetCell(3, 3).Value = 3;
+        
+        // formula cells
+        sheet.GetCell(1, 4).Formula = @"SUM(""RC1:RC3"")";
+        sheet.GetCell(2, 4).Formula = @"SUM(""RC1:RC3"")";
+        sheet.GetCell(3, 4).Formula = @"SUM(""RC1:RC3"")";
+        
+        var workbook = new Workbook();
+        workbook.AddSheet(sheet);
+        
+        // Act
+        var insertedRowNumber = 2;
+        var row = sheet.GetRow(insertedRowNumber);
+        sheet.AddRow(row, 1);
+        
+        IFormulaShifter formulaShifter = new CellShiftFormulaHelper(sheet);
+        formulaShifter.OnRowAdd(insertedRowNumber);
+
+        // Assert
+        Assert.AreEqual(sheet.GetCell(1, 4).Formula, @"SUM(""RC1:RC3"")");
+        Assert.AreEqual(sheet.GetCell(2, 4).Formula, @"SUM(""RC1:RC3"")");
+        Assert.AreEqual(sheet.GetCell(3, 4).Formula, @"SUM(""RC1:RC3"")");
+        Assert.AreEqual(sheet.GetCell(4, 4).Formula, @"SUM(""RC1:RC3"")");
+    }
     
     
     #region private methods
