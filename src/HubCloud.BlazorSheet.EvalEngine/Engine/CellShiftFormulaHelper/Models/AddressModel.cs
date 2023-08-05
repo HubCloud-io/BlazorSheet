@@ -9,8 +9,23 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.CellShiftFormulaHelper.Models
         public string SheetName { get; set; }
         public int RowValue { get; set; }
         public int ColumnValue { get; set; }
+        
+        /// <summary>
+        /// R[1]C1 format
+        /// </summary>
         public bool IsRowRelative { get; set; }
+        /// <summary>
+        /// R1C[1] format
+        /// </summary>
         public bool IsColumnRelative { get; set; }
+        /// <summary>
+        /// RC1 format
+        /// </summary>
+        public bool IsRowCurrent { get; set; }
+        /// <summary>
+        /// R1C format
+        /// </summary>
+        public bool IsColumnCurrent { get; set; }
 
         public AddressModel(string address, SheetCellAddress cellAddress)
         {
@@ -39,6 +54,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.CellShiftFormulaHelper.Models
             }
             else
             {
+                IsRowCurrent = true;
                 RowValue = cellAddress.Row;
             }
             
@@ -52,6 +68,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.CellShiftFormulaHelper.Models
             }
             else
             {
+                IsColumnCurrent = true;
                 ColumnValue = cellAddress.Column;
             }
         }
@@ -66,13 +83,13 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.CellShiftFormulaHelper.Models
             sb.Append("R");
             if (IsRowRelative)
                 sb.Append($"[{RowValue}]");
-            else
+            else if (!IsRowCurrent)
                 sb.Append($"{RowValue}");
             
             sb.Append("C");
             if (IsColumnRelative)
                 sb.Append($"[{ColumnValue}]");
-            else
+            else if (!IsColumnCurrent)
                 sb.Append($"{ColumnValue}");
 
             return sb.ToString();

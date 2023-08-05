@@ -20,14 +20,14 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.CellShiftFormulaHelper
             _sheet = sheet;
         }
 
-        public List<ShiftLogModel> OnRowAdd(int insertedRowIndex)
+        public List<ShiftLogModel> OnRowAdd(int insertedRowNumber)
         {
             var log = new List<ShiftLogModel>();
-            var formulaCells = GetFormulaCells();
+            var formulaCells = GetFormulaCells(exceptRowNumber: insertedRowNumber);
             foreach (var formulaCell in formulaCells)
             {
                 var logItem = ProcessFormulaCell(formulaCell,
-                    insertedRowIndex,
+                    insertedRowNumber,
                     ShiftActions.Add,
                     ProcessRowAddresses,
                     ProcessRowRanges);
@@ -38,14 +38,14 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.CellShiftFormulaHelper
             return log;
         }
 
-        public List<ShiftLogModel> OnColumnAdd(int insertedColumnIndex)
+        public List<ShiftLogModel> OnColumnAdd(int insertedColumnNumber)
         {
             var log = new List<ShiftLogModel>();
-            var formulaCells = GetFormulaCells();
+            var formulaCells = GetFormulaCells(exceptColumnNumber: insertedColumnNumber);
             foreach (var formulaCell in formulaCells)
             {
                 var logItem = ProcessFormulaCell(formulaCell,
-                    insertedColumnIndex,
+                    insertedColumnNumber,
                     ShiftActions.Add,
                     ProcessColumnAddresses,
                     ProcessColumnRanges);
@@ -56,14 +56,14 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.CellShiftFormulaHelper
             return log;
         }
 
-        public List<ShiftLogModel> OnRowDelete(int deletedRowIndex)
+        public List<ShiftLogModel> OnRowDelete(int deletedRowNumber)
         {
             var log = new List<ShiftLogModel>();
             var formulaCells = GetFormulaCells();
             foreach (var formulaCell in formulaCells)
             {
                 var logItem = ProcessFormulaCell(formulaCell,
-                    deletedRowIndex,
+                    deletedRowNumber,
                     ShiftActions.Delete,
                     ProcessRowAddresses,
                     ProcessRowRanges);
@@ -74,14 +74,14 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.CellShiftFormulaHelper
             return log;
         }
 
-        public List<ShiftLogModel> OnColumnDelete(int deletedColumnIndex)
+        public List<ShiftLogModel> OnColumnDelete(int deletedColumnNumber)
         {
             var log = new List<ShiftLogModel>();
             var formulaCells = GetFormulaCells();
             foreach (var formulaCell in formulaCells)
             {
                 var logItem = ProcessFormulaCell(formulaCell,
-                    deletedColumnIndex,
+                    deletedColumnNumber,
                     ShiftActions.Delete,
                     ProcessColumnAddresses,
                     ProcessColumnRanges);
@@ -96,7 +96,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.CellShiftFormulaHelper
         #region private methods
 
         private ShiftLogModel ProcessFormulaCell(SheetCell formulaCell,
-            int insertedIndex,
+            int insertedNumber,
             ShiftActions action,
             Action<StringBuilder, ShiftActions, Dictionary<string, string>,SheetCellAddress,int> processAddresses,
             Action<StringBuilder, ShiftActions, Dictionary<string, string>, SheetCellAddress, int> processRanges)
@@ -144,8 +144,8 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.CellShiftFormulaHelper
                 addressDict.Add(placeholder, match);
             }
 
-            processAddresses(formula, action, addressDict, formulaCellAddress, insertedIndex);
-            processRanges(formula, action, rangeDict, formulaCellAddress, insertedIndex);
+            processAddresses(formula, action, addressDict, formulaCellAddress, insertedNumber);
+            processRanges(formula, action, rangeDict, formulaCellAddress, insertedNumber);
 
             var processedFormula = formula.ToString();
             formulaCell.Formula = processedFormula;
@@ -159,12 +159,12 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.CellShiftFormulaHelper
             ShiftActions action,
             Dictionary<string, string> addressDict,
             SheetCellAddress formulaAddress,
-            int insertedRowIndex)
+            int insertedRowNumber)
         {
             foreach (var address in addressDict)
             {
                 var shiftedAddress = GetShiftedRowAddress(formulaAddress,
-                    insertedRowIndex,
+                    insertedRowNumber,
                     address.Value,
                     action);
                 
@@ -176,19 +176,19 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.CellShiftFormulaHelper
             ShiftActions action,
             Dictionary<string, string> rangeDict,
             SheetCellAddress formulaAddress,
-            int insertedRowIndex)
+            int insertedRowNumber)
         {
             foreach (var range in rangeDict)
             {
                 var addresses = range.Value.Trim().Split(':');
 
                 var shiftedAddress1 = GetShiftedRowAddress(formulaAddress,
-                    insertedRowIndex,
+                    insertedRowNumber,
                     addresses[0],
                     action);
                 
                 var shiftedAddress2 = GetShiftedRowAddress(formulaAddress,
-                    insertedRowIndex,
+                    insertedRowNumber,
                     addresses[1],
                     action);
 
@@ -200,12 +200,12 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.CellShiftFormulaHelper
             ShiftActions action,
             Dictionary<string, string> addressDict,
             SheetCellAddress formulaAddress,
-            int insertedColumnIndex)
+            int insertedColumnNumber)
         {
             foreach (var address in addressDict)
             {
                 var shiftedAddress = GetShiftedColumnAddress(formulaAddress,
-                    insertedColumnIndex,
+                    insertedColumnNumber,
                     address.Value,
                     action);
                 formula.Replace(address.Key, shiftedAddress.ToString());
@@ -216,19 +216,19 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.CellShiftFormulaHelper
             ShiftActions action,
             Dictionary<string, string> rangeDict,
             SheetCellAddress formulaAddress,
-            int insertedColumnIndex)
+            int insertedColumnNumber)
         {
             foreach (var range in rangeDict)
             {
                 var addresses = range.Value.Trim().Split(':');
 
                 var shiftedAddress1 = GetShiftedColumnAddress(formulaAddress,
-                    insertedColumnIndex,
+                    insertedColumnNumber,
                     addresses[0],
                     action);
                 
                 var shiftedAddress2 = GetShiftedColumnAddress(formulaAddress,
-                    insertedColumnIndex,
+                    insertedColumnNumber,
                     addresses[1],
                     action);
 
@@ -237,7 +237,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.CellShiftFormulaHelper
         }
         
         private StringBuilder GetShiftedRowAddress(SheetCellAddress formulaAddress,
-            int insertedRowIndex,
+            int insertedRowNumber,
             string address,
             ShiftActions action)
         {
@@ -248,19 +248,19 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.CellShiftFormulaHelper
             string rValue;
             var addressModel = new AddressModel(address, formulaAddress);
 
-            if (!addressModel.IsRowRelative)
+            if (addressModel.IsRowRelative)
             {
-                if (addressModel.RowValue >= insertedRowIndex)
+                var realRow = formulaAddress.Row + addressModel.RowValue;
+                if (realRow < insertedRowNumber && formulaAddress.Row >= insertedRowNumber)
+                    rValue = (addressModel.RowValue - factor).ToString();
+                else if (realRow >= insertedRowNumber && formulaAddress.Row < insertedRowNumber)
                     rValue = (addressModel.RowValue + factor).ToString();
                 else
                     rValue = addressModel.RowValue.ToString();
             }
             else
             {
-                var realRow = formulaAddress.Row + addressModel.RowValue;
-                if (realRow < insertedRowIndex && formulaAddress.Row >= insertedRowIndex)
-                    rValue = (addressModel.RowValue - factor).ToString();
-                else if (realRow >= insertedRowIndex && formulaAddress.Row < insertedRowIndex)
+                if (addressModel.RowValue >= insertedRowNumber)
                     rValue = (addressModel.RowValue + factor).ToString();
                 else
                     rValue = addressModel.RowValue.ToString();
@@ -271,19 +271,20 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.CellShiftFormulaHelper
             shiftedAddress.Append("R");
             if (addressModel.IsRowRelative)
                 shiftedAddress.Append($"[{rValue}]");
-            else
+            else if (!addressModel.IsRowCurrent)
                 shiftedAddress.Append($"{rValue}");
 
             shiftedAddress.Append("C");
             if (addressModel.IsColumnRelative)
                 shiftedAddress.Append($"[{addressModel.ColumnValue.ToString()}]");
-            else
+            else if (!addressModel.IsColumnCurrent)
                 shiftedAddress.Append($"{addressModel.ColumnValue.ToString()}");
+            
             return shiftedAddress;
         }
         
         private StringBuilder GetShiftedColumnAddress(SheetCellAddress formulaAddress,
-            int insertedColumnIndex,
+            int insertedColumnNumber,
             string address,
             ShiftActions action)
         {
@@ -294,19 +295,19 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.CellShiftFormulaHelper
             string cValue;
             var addressModel = new AddressModel(address, formulaAddress);
 
-            if (!addressModel.IsColumnRelative)
+            if (addressModel.IsColumnRelative)
             {
-                if (addressModel.ColumnValue >= insertedColumnIndex)
+                var realRow = formulaAddress.Column + addressModel.ColumnValue;
+                if (realRow < insertedColumnNumber && formulaAddress.Column >= insertedColumnNumber)
+                    cValue = (addressModel.ColumnValue - factor).ToString();
+                else if (realRow >= insertedColumnNumber && formulaAddress.Column < insertedColumnNumber)
                     cValue = (addressModel.ColumnValue + factor).ToString();
                 else
                     cValue = addressModel.ColumnValue.ToString();
             }
             else
             {
-                var realRow = formulaAddress.Column + addressModel.ColumnValue;
-                if (realRow < insertedColumnIndex && formulaAddress.Column >= insertedColumnIndex)
-                    cValue = (addressModel.ColumnValue - factor).ToString();
-                else if (realRow >= insertedColumnIndex && formulaAddress.Column < insertedColumnIndex)
+                if (addressModel.ColumnValue >= insertedColumnNumber)
                     cValue = (addressModel.ColumnValue + factor).ToString();
                 else
                     cValue = addressModel.ColumnValue.ToString();
@@ -327,9 +328,20 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.CellShiftFormulaHelper
                 shiftedAddress.Append($"{cValue}");
             return shiftedAddress;
         }
-        
-        private IEnumerable<SheetCell> GetFormulaCells()
-            => _sheet.Cells.Where(x => !string.IsNullOrEmpty(x.Formula));
+
+        private IEnumerable<SheetCell> GetFormulaCells(int? exceptRowNumber = null,
+            int? exceptColumnNumber = null)
+        {
+            var query = _sheet.Cells.Where(x => !string.IsNullOrEmpty(x.Formula));
+
+            if (exceptRowNumber != null)
+                query = query.Where(x => _sheet.CellAddress(x).Row != exceptRowNumber);
+            
+            if (exceptColumnNumber != null)
+                query = query.Where(x => _sheet.CellAddress(x).Column != exceptColumnNumber);
+            
+            return query;
+        }
 
         #endregion
     }
