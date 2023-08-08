@@ -199,7 +199,7 @@ public partial class SheetComponent : ComponentBase
         {
             case ContextMenuBuilder.AddBeforeItemName:
 
-                var newColumnBefore = Sheet.AddColumn(_currentColumn, -1);
+                var newColumnBefore = Sheet.AddColumn(_currentColumn, -1, true);
 
                 await ColumnAdded.InvokeAsync(new ColumnAddedEventArgs()
                 {
@@ -216,7 +216,7 @@ public partial class SheetComponent : ComponentBase
 
             case ContextMenuBuilder.AddAfterItemName:
 
-                var newColumnAfter = Sheet.AddColumn(_currentColumn, 1);
+                var newColumnAfter = Sheet.AddColumn(_currentColumn, 1, true);
                 
                 await ColumnAdded.InvokeAsync(new ColumnAddedEventArgs()
                 {
@@ -275,7 +275,7 @@ public partial class SheetComponent : ComponentBase
         {
             case ContextMenuBuilder.AddBeforeItemName:
 
-                var newRowBefore = Sheet.AddRow(_currentRow, -1);
+                var newRowBefore = Sheet.AddRow(_currentRow, -1, true);
 
                 await RowAdded.InvokeAsync(new RowAddedEventArgs()
                 {
@@ -291,7 +291,7 @@ public partial class SheetComponent : ComponentBase
 
             case ContextMenuBuilder.AddAfterItemName:
 
-                var newRowAfter =  Sheet.AddRow(_currentRow, 1);
+                var newRowAfter =  Sheet.AddRow(_currentRow, 1, true);
                 
                 await RowAdded.InvokeAsync(new RowAddedEventArgs()
                 {
