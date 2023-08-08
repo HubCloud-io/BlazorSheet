@@ -199,9 +199,14 @@ namespace HubCloud.BlazorSheet.Core.Models
 
             if (style == null)
             {
-                style = new SheetCellStyle();
+                style = SheetCellStyle.DefaultCellStyle();
                 cell.StyleUid = style.Uid;
-                _styles.Add(style);
+
+                if (_styles.All(x => x.Uid != style.Uid))
+                {
+                    _styles.Add(style);
+                }
+                
             }
 
             return style;
