@@ -200,6 +200,8 @@ public partial class SheetComponent : ComponentBase
             case ContextMenuBuilder.AddBeforeItemName:
 
                 var newColumnBefore = Sheet.AddColumn(_currentColumn, -1, true);
+                newColumnBefore.ParentUid = _currentColumn.ParentUid;
+                newColumnBefore.WidthValue = _currentColumn.WidthValue;
 
                 await ColumnAdded.InvokeAsync(new ColumnAddedEventArgs()
                 {
@@ -217,6 +219,8 @@ public partial class SheetComponent : ComponentBase
             case ContextMenuBuilder.AddAfterItemName:
 
                 var newColumnAfter = Sheet.AddColumn(_currentColumn, 1, true);
+                newColumnAfter.ParentUid = _currentColumn.ParentUid;
+                newColumnAfter.WidthValue = _currentColumn.WidthValue;
                 
                 await ColumnAdded.InvokeAsync(new ColumnAddedEventArgs()
                 {
@@ -276,6 +280,8 @@ public partial class SheetComponent : ComponentBase
             case ContextMenuBuilder.AddBeforeItemName:
 
                 var newRowBefore = Sheet.AddRow(_currentRow, -1, true);
+                newRowBefore.ParentUid = _currentRow.ParentUid;
+                newRowBefore.HeightValue = _currentRow.HeightValue;
 
                 await RowAdded.InvokeAsync(new RowAddedEventArgs()
                 {
@@ -292,6 +298,8 @@ public partial class SheetComponent : ComponentBase
             case ContextMenuBuilder.AddAfterItemName:
 
                 var newRowAfter =  Sheet.AddRow(_currentRow, 1, true);
+                newRowAfter.ParentUid = _currentRow.ParentUid;
+                newRowAfter.HeightValue = _currentRow.HeightValue;
                 
                 await RowAdded.InvokeAsync(new RowAddedEventArgs()
                 {
