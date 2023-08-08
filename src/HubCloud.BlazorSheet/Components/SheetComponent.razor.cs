@@ -646,13 +646,6 @@ public partial class SheetComponent : ComponentBase
         return ((column.IsHidden || row.IsHidden) && !_isHiddenCellsVisible) || cell.HiddenByJoin;
     }
 
-
-    private bool CellHidden(SheetColumn column, SheetRow row)
-    {
-        return (column.IsHidden || row.IsHidden) && !_isHiddenCellsVisible;
-    }
-
-
     private bool CellHidden(SheetColumn column)
     {
         return column.IsHidden && !_isHiddenCellsVisible;
