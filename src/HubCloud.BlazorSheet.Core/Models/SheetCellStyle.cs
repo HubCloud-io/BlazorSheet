@@ -6,6 +6,8 @@ namespace HubCloud.BlazorSheet.Core.Models
 {
     public class SheetCellStyle
     {
+        public const string DefaultCellStyleUid = "{dc0e92be-1f30-45e0-990e-dd1a0c0bdf2c}";
+        
         public Guid Uid { get; set; } = Guid.NewGuid();
         public string BackgroundColor { get; set; } = "#ffffff";
         public string Color { get; set; } = "#000000";
@@ -121,10 +123,20 @@ namespace HubCloud.BlazorSheet.Core.Models
                 string.Equals(BorderTop, other.BorderTop, StringComparison.OrdinalIgnoreCase) &&
                 string.Equals(BorderBottom, other.BorderBottom, StringComparison.OrdinalIgnoreCase) &&
                 string.Equals(TextAlign, other.TextAlign, StringComparison.OrdinalIgnoreCase) &&
-                string.Equals(Format, other.TextAlign, StringComparison.OrdinalIgnoreCase) &&
+                string.Equals(Format, other.Format, StringComparison.OrdinalIgnoreCase) &&
                 Locked == other.Locked;
 
             return isEqual;
+        }
+
+        public static SheetCellStyle DefaultCellStyle()
+        {
+            var newStyle = new SheetCellStyle
+            {
+                Uid = Guid.Parse(DefaultCellStyleUid)
+            };
+
+            return newStyle;
         }
         
         private string BorderStyle(int borderWidth, string borderColor)

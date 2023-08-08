@@ -276,7 +276,7 @@ public class CellShiftFormulaHelperTests
         // Act
         var insertedRowNumber = 2;
         var row = sheet.GetRow(insertedRowNumber);
-        sheet.AddRow(row, 1);
+        sheet.AddRow(row, 1, true);
         
         IFormulaShifter formulaShifter = new CellShiftFormulaHelper(sheet);
         formulaShifter.OnRowAdd(insertedRowNumber);
@@ -318,7 +318,7 @@ public class CellShiftFormulaHelperTests
         // Act
         var insertedRowNumber = 2;
         var row = sheet.GetRow(insertedRowNumber);
-        sheet.AddRow(row, 1);
+        sheet.AddRow(row, 1, true);
         
         IFormulaShifter formulaShifter = new CellShiftFormulaHelper(sheet);
         formulaShifter.OnRowAdd(insertedRowNumber);
