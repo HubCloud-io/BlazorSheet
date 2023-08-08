@@ -67,7 +67,7 @@ public class SheetTests
         var sheet = new Sheet(sheetSettings);
 
         var firstRow = sheet.Rows.ToList()[baseRowNumber - 1];
-        sheet.AddRow(firstRow, position, true);
+        sheet.AddRow(firstRow, position, false);
 
         var cellTopLeft = sheet.GetCell(checkRow, checkColumn);
 
@@ -86,7 +86,7 @@ public class SheetTests
         var sheet = new Sheet(sheetSettings);
 
         var firstColumn = sheet.Columns.ToList()[baseColumnNumber - 1];
-        sheet.AddColumn(firstColumn, position, true);
+        sheet.AddColumn(firstColumn, position, false);
 
         var checkCell = sheet.GetCell(checkRow, checkColumn);
 
