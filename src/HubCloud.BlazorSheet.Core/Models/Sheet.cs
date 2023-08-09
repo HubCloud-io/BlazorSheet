@@ -985,9 +985,7 @@ namespace HubCloud.BlazorSheet.Core.Models
                 return;
 
             foreach (var row in rows)
-            {
                 row.ParentUid = parentRow.ParentUid;
-            }
 
             var lastRow = rows.LastOrDefault();
             if (lastRow == null)
@@ -1000,13 +998,19 @@ namespace HubCloud.BlazorSheet.Core.Models
             {
                 lastRow.IsGroup = true;
                 lastRow.IsOpen = true;
-            }
 
-            foreach (var child in parentChildren)
+                foreach (var child in parentChildren)
+                {
+                    child.ParentUid = lastRow.Uid;
+                    child.IsOpen = lastRow.IsOpen;
+                    child.IsHidden = !lastRow.IsOpen;
+                }
+            }
+            else
             {
-                child.ParentUid = lastRow.Uid;
-                child.IsOpen = lastRow.IsOpen;
-                child.IsHidden = !lastRow.IsOpen;
+                parentChildren = Rows.Where(x => x.ParentUid == parentRow.Uid);
+                if (parentChildren.Except(rows).Count() == 0)
+                    parentRow.IsGroup = false;
             }
         }
 
@@ -1042,13 +1046,19 @@ namespace HubCloud.BlazorSheet.Core.Models
             {
                 lastColumn.IsGroup = true;
                 lastColumn.IsOpen = true;
-            }
 
-            foreach (var child in parentChildren)
+                foreach (var child in parentChildren)
+                {
+                    child.ParentUid = lastColumn.Uid;
+                    child.IsOpen = lastColumn.IsOpen;
+                    child.IsHidden = !lastColumn.IsOpen;
+                }
+            }
+            else
             {
-                child.ParentUid = lastColumn.Uid;
-                child.IsOpen = lastColumn.IsOpen;
-                child.IsHidden = !lastColumn.IsOpen;
+                parentChildren = Columns.Where(x => x.ParentUid == parentColumn.Uid);
+                if (parentChildren.Except(columns).Count() == 0)
+                    parentColumn.IsGroup = false;
             }
         }
 
