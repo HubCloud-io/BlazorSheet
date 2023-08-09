@@ -65,6 +65,8 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
 
             for (var r = 5; r <= 7; r++)
             {
+                var row = sheet.GetRow(r);
+                row.IsAddRemoveAllowed = true;
                 for (var c = 3; c <= 5; c++)
                 {
                     sheet.GetCell(r, c).EditSettingsUid = editSettings.Uid;

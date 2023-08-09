@@ -9,6 +9,7 @@ namespace HubCloud.BlazorSheet.Core.Models
         public bool IsGroup { get; set; }
         public bool IsOpen { get; set; }
         public bool IsHidden { get; set; }
+        public bool IsAddRemoveAllowed { get; set; }
         public double HeightValue { get; set; } = 20;
 
         public string Height => (HeightValue.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)) + "px";

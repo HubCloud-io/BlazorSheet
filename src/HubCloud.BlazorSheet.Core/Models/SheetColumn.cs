@@ -9,6 +9,7 @@ namespace HubCloud.BlazorSheet.Core.Models
         public bool IsGroup { get; set; }
         public bool IsOpen { get; set; }
         public bool IsHidden { get; set; }
+        public bool IsAddRemoveAllowed { get; set; }
         public double WidthValue { get; set; } = 100;
         public string Width => (WidthValue.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)) + "px";
 

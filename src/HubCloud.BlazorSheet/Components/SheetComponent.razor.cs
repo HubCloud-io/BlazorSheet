@@ -80,9 +80,6 @@ public partial class SheetComponent : ComponentBase
 
     protected override async Task OnInitializedAsync()
     {
-        _rowMenuItems = ContextMenuBuilder.BuildColumnContextMenu("row");
-        _columnMenuItems = ContextMenuBuilder.BuildColumnContextMenu("column");
-
         _cellStyleBuilder = new CellStyleBuilder
         {
             LeftSideCellWidth = LeftSideCellWidth,
@@ -174,6 +171,8 @@ public partial class SheetComponent : ComponentBase
         _clientY = e.ClientY;
 
         _currentRow = row;
+        _rowMenuItems = ContextMenuBuilder.BuildColumnContextMenu("row", Regime, row.IsAddRemoveAllowed);
+
 
         _isColumnContextMenuOpen = false;
         _isRowContextMenuOpen = true;
@@ -185,6 +184,7 @@ public partial class SheetComponent : ComponentBase
         _clientY = e.ClientY;
 
         _currentColumn = column;
+        _columnMenuItems = ContextMenuBuilder.BuildColumnContextMenu("column", Regime, column.IsAddRemoveAllowed);
 
         _isColumnContextMenuOpen = true;
         _isRowContextMenuOpen = false;
@@ -247,6 +247,11 @@ public partial class SheetComponent : ComponentBase
 
                 await ColumnRemoved.InvokeAsync(columnRemovedArgs);
                 await Changed.InvokeAsync(null);
+                break;
+            
+            case ContextMenuBuilder.AllowAddRemoveItemName:
+
+                _currentColumn.IsAddRemoveAllowed = !_currentColumn.IsAddRemoveAllowed;
                 break;
 
             case ContextMenuBuilder.WidthItemName:
@@ -326,6 +331,11 @@ public partial class SheetComponent : ComponentBase
                 await RowRemoved.InvokeAsync(removeArgs);
                 await Changed.InvokeAsync(null);
 
+                break;
+            
+            case ContextMenuBuilder.AllowAddRemoveItemName:
+
+                _currentRow.IsAddRemoveAllowed = !_currentRow.IsAddRemoveAllowed;
                 break;
 
             case ContextMenuBuilder.HeightItemName:

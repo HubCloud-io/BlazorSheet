@@ -260,6 +260,12 @@ namespace HubCloud.BlazorSheet.Core.Models
 
             var newRow = new SheetRow();
 
+            if (copySettings)
+            {
+                newRow.IsAddRemoveAllowed = baseRow.IsAddRemoveAllowed;
+                newRow.HeightValue = baseRow.HeightValue;
+            }
+
             foreach (var column in _columns)
             {
                 var newCell = new SheetCell()
@@ -318,6 +324,12 @@ namespace HubCloud.BlazorSheet.Core.Models
             var baseColumnIndex = baseColumnNumber - 1;
 
             var newColumn = new SheetColumn();
+
+            if (copySettings)
+            {
+                newColumn.IsAddRemoveAllowed = baseColumn.IsAddRemoveAllowed;
+                newColumn.WidthValue = baseColumn.WidthValue;
+            }
 
             foreach (var row in _rows)
             {
