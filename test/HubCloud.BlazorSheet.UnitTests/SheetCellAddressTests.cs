@@ -24,14 +24,18 @@ public class SheetCellAddressTests
     [TestCase("RC", 2, 3, 2, 3)]
     [TestCase("R1C", 2, 3, 1, 3)]
     [TestCase("RC1", 2, 3, 2, 1)]
+    [TestCase("R2C1", 2, 3, 2, 1)]
+    [TestCase("R[-1]C2", 3, 2, 2, 2)]
+    [TestCase("R3C[-1]", 3, 3, 3, 2)]
+    [TestCase("R[2]C1", 3, 3, 5, 1)]
     public void Parse_ValidCellAddressWithCurrentCoordinates_ReturnAddress(string address, 
-        int currentRow, 
-        int currentColumn, 
-        int checkRow, 
+        int currentRow,
+        int currentColumn,
+        int checkRow,
         int checkColumn)
     {
         var cellAddress = new SheetCellAddress(address, currentRow, currentColumn);
-        
+
         Assert.AreEqual(checkRow, cellAddress.Row);
         Assert.AreEqual(checkColumn, cellAddress.Column);
     }

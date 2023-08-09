@@ -38,8 +38,8 @@ public class SimpleFormulaProcessorTests
     {
         var exceptionList = new List<string> { "SUM" };
         
-        var builder = new SimpleFormulaProcessor(exceptionList);
-        var formulaOut = builder.PrepareFormula(formulaIn, ContextName);
+        var simpleFormulaProcessor = new SimpleFormulaProcessor(exceptionList);
+        var formulaOut = simpleFormulaProcessor.PrepareFormula(formulaIn, ContextName);
         
         Assert.AreEqual(expected, formulaOut);
     }

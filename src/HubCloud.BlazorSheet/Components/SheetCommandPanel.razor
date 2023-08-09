@@ -131,10 +131,10 @@
                 </BbSelect>
             }
 
-            <button class="btn btn-outline-success ml-1" style="padding-top:2px; padding-bottom: 2px; margin-top: -5px; margin-left: 3px;" @onclick="OnExport">
+            <button title="Excel export" class="btn btn-outline-success ml-1" style="padding-top:2px; padding-bottom: 2px; margin-top: -5px; margin-left: 3px;" @onclick="OnExport">
                 <span class="fa fa-file-export"></span>
             </button>
-            <button class="btn btn-outline-success mr-1" style="padding-top:2px; padding-bottom: 2px; margin-top: -5px;" @onclick="OnImport">
+            <button title="Excel import" class="btn btn-outline-success mr-1" style="padding-top:2px; padding-bottom: 2px; margin-top: -5px;" @onclick="OnImport">
                 <span class="fa fa-file-import"></span>
             </button>
 
@@ -142,18 +142,64 @@
                 <span class="fa fa-solid fa-link"></span>
             </button>
 
-            <button class="btn btn-outline-primary ml-1" disabled="@IsButtonSplitJoinDisabled()" style="padding-top:2px; padding-bottom: 2px; margin-top: -5px; margin-left: 3px;" @onclick="OnSplitJoinCells">
-                @if (SelectedCellsCount > 1)
-                {
-                    <span>Join</span>
-                }
-                else
-                {
-                    <span>Split</span>
-                }
-            </button>
+            <div class="btn-group btn-group-sm float-left">
+                <button type="button" class="btn btn-sm btn-outline-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Actions
+                </button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <button class="dropdown-item" 
+                            type="button" 
+                            disabled="@IsButtonSplitJoinDisabled()" 
+                            @onclick="OnSplitJoinCells">
+                        @if (SelectedCellsCount > 1)
+                        {
+                            <span>Join</span>
+                        }
+                        else
+                        {
+                            <span>Split</span>
+                        }
+                    </button>
+                    <button class="dropdown-item"
+                            type="button"
+                            disabled="@(!CanRowsBeGrouped)"
+                            @onclick="OnGroupRows">
+                        Group rows
+                    </button>
+                    <button class="dropdown-item" 
+                            type="button"
+                            disabled="@(!CanRowsBeUngrouped)"
+                            @onclick="OnUngroupRows">
+                        Ungroup rows
+                    </button>
+                    <button class="dropdown-item"
+                            type="button"
+                            @onclick="OnCollapseExpandAllRows">
+                        Collapse/Expand all rows
+                    </button>
+
+                    <button class="dropdown-item"
+                            type="button"
+                            disabled="@(!CanColumnsBeGrouped)"
+                            @onclick="OnGroupColumns">
+                        Group columns
+                    </button>
+                    <button class="dropdown-item"
+                            type="button"
+                            disabled="@(!CanColumnsBeUngrouped)"
+                            @onclick="OnUngroupColumns">
+                        Ungroup columns
+                    </button>
+                    <button class="dropdown-item"
+                            type="button"
+                            @onclick="OnCollapseExpandAllColumns">
+                        Collapse/Expand all columns
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
+
     <div class="row" style="margin-top:5px;">
 
         <div class="col-sm-1">

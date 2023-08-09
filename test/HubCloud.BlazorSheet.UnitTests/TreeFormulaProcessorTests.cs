@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace HubCloud.BlazorSheet.UnitTests;
 
 [TestFixture]
-public class SimpleFormulaConverterTests
+public class TreeFormulaProcessorTests
 {
     private const string ContextName = "_cells";
 
@@ -28,10 +28,10 @@ public class SimpleFormulaConverterTests
     [TestCase(@"Sum(""R5C3:R5C5"")", @$"Sum(""R5C3:R5C5"")")]
     public void FormulaProcessor_Tests(string formulaIn, string expected)
     {
-        var converter = new TreeFormulaProcessor();
+        var treeFormulaProcessor = new TreeFormulaProcessor();
         
         var exceptionList = new List<string> { "SUM" };
-        var formulaOut = converter.PrepareFormula(formulaIn, ContextName, exceptionList);
+        var formulaOut = treeFormulaProcessor.PrepareFormula(formulaIn, ContextName, exceptionList);
         
         Assert.AreEqual(expected, formulaOut);
     }

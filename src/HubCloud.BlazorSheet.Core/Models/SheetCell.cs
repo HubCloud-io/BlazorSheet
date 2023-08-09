@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.Security.Cryptography.X509Certificates;
+using System.Xml.Serialization;
 using Newtonsoft.Json;
 
 namespace HubCloud.BlazorSheet.Core.Models
@@ -29,6 +30,7 @@ namespace HubCloud.BlazorSheet.Core.Models
             return new CellKey(RowUid, ColumnUid);
         }
 
+        [XmlIgnore]
         [JsonIgnore]
         public decimal DecimalValue
         {
@@ -46,6 +48,7 @@ namespace HubCloud.BlazorSheet.Core.Models
             set => Value = value;
         }
         
+        [XmlIgnore]
         [JsonIgnore]
         public int IntValue
         {
@@ -63,6 +66,7 @@ namespace HubCloud.BlazorSheet.Core.Models
             set => Value = value;
         }
         
+        [XmlIgnore]
         [JsonIgnore]
         public bool BoolValue
         {
@@ -80,6 +84,7 @@ namespace HubCloud.BlazorSheet.Core.Models
             set => Value = value;
         }
         
+        [XmlIgnore]
         [JsonIgnore]
         public string StringValue
         {
@@ -87,6 +92,7 @@ namespace HubCloud.BlazorSheet.Core.Models
             set => Value = value;
         }
 
+        [XmlIgnore]
         [JsonIgnore]
         public DateTime DateTimeValue
         {
@@ -131,16 +137,14 @@ namespace HubCloud.BlazorSheet.Core.Models
             if (Value == null)
                 return;
 
-            var text = Value as string;
-
-            if (string.IsNullOrEmpty(text) ||
+            if (string.IsNullOrEmpty(StringValue) ||
                 string.IsNullOrEmpty(format))
                 return;
 
-            if (DateTime.TryParse(text, out var date))
+            if (DateTime.TryParse(StringValue, out var date))
                 Text = date.ToString(format);
             else if (decimal.TryParse(
-                text.Replace(',', '.'),
+                StringValue.Replace(',', '.'),
                 NumberStyles.AllowDecimalPoint,
                 new NumberFormatInfo { NumberDecimalSeparator = "." },
                 out var decimalValue))

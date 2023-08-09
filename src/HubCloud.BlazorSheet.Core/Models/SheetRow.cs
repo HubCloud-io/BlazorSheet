@@ -5,6 +5,9 @@ namespace HubCloud.BlazorSheet.Core.Models
     public class SheetRow: ICloneable
     {
         public Guid Uid { get; set; } = Guid.NewGuid();
+        public Guid ParentUid { get; set; }
+        public bool IsGroup { get; set; }
+        public bool IsOpen { get; set; }
         public bool IsHidden { get; set; }
         public double HeightValue { get; set; } = 20;
 

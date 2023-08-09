@@ -15,7 +15,6 @@ namespace HubCloud.BlazorSheet.Core.Models
         private readonly List<SheetRow> _rows = new List<SheetRow>();
         private readonly List<SheetColumn> _columns = new List<SheetColumn>();
         private readonly List<SheetCell> _cells = new List<SheetCell>();
-        private readonly Dictionary<CellKey, SheetCell> _cellsIndex = new Dictionary<CellKey, SheetCell>();
         private readonly List<SheetCellStyle> _styles = new List<SheetCellStyle>();
         private readonly List<SheetCellEditSettings> _editSettings = new List<SheetCellEditSettings>();
 
@@ -23,6 +22,7 @@ namespace HubCloud.BlazorSheet.Core.Models
         public string Name { get; set; }
         public bool UseVirtualization { get; set; }
         public bool IsProtected { get; set; }
+
         public int RowsCount
         {
             get => _rowsCount;
@@ -50,11 +50,11 @@ namespace HubCloud.BlazorSheet.Core.Models
         public int FreezedRows { get; set; }
         public int FreezedColumns { get; set; }
 
-        public IReadOnlyCollection<SheetRow> Rows => _rows;
-        public IReadOnlyCollection<SheetColumn> Columns => _columns;
-        public IReadOnlyCollection<SheetCell> Cells => _cells;
-        public IReadOnlyCollection<SheetCellStyle> Styles => _styles;
-        public IReadOnlyCollection<SheetCellEditSettings> EditSettings => _editSettings;
+        public List<SheetRow> Rows => _rows;
+        public List<SheetColumn> Columns => _columns;
+        public List<SheetCell> Cells => _cells;
+        public List<SheetCellStyle> Styles => _styles;
+        public List<SheetCellEditSettings> EditSettings => _editSettings;
 
         public Sheet()
         {
@@ -78,7 +78,7 @@ namespace HubCloud.BlazorSheet.Core.Models
             {
                 AddCell(cell);
             }
-           
+
             _styles.AddRange(settings.Styles);
             _editSettings.AddRange(settings.EditSettings);
 
@@ -144,6 +144,10 @@ namespace HubCloud.BlazorSheet.Core.Models
             foreach (var cell in Cells)
             {
                 cell.Text = cell.Value?.ToString();
+
+                var style = GetStyle(cell);
+                if (style != null)
+                    cell.ApplyFormat(style.Format);
             }
         }
 
@@ -156,19 +160,14 @@ namespace HubCloud.BlazorSheet.Core.Models
 
         public SheetCell GetCell(SheetRow row, SheetColumn column)
         {
-            //var cell = Cells.FirstOrDefault(x => x.RowUid == row.Uid && x.ColumnUid == column.Uid);
-            var key = new CellKey(row.Uid, column.Uid);
-            if (_cellsIndex.TryGetValue(key, out var cell))
-            {
-                return cell;
-            }
+            var cell = Cells.FirstOrDefault(x => x.RowUid == row.Uid && x.ColumnUid == column.Uid);
 
-            return null;
+            return cell;
         }
 
         public SheetCell GetCell(SheetCellAddress cellAddress)
             => GetCell(cellAddress.Row, cellAddress.Column);
-        
+
         public SheetCell GetCell(int rowNumber, int columnNumber)
         {
             if (rowNumber > _rowsCount || rowNumber <= 0)
@@ -200,9 +199,14 @@ namespace HubCloud.BlazorSheet.Core.Models
 
             if (style == null)
             {
-                style = new SheetCellStyle();
+                style = SheetCellStyle.DefaultCellStyle();
                 cell.StyleUid = style.Uid;
-                _styles.Add(style);
+
+                if (_styles.All(x => x.Uid != style.Uid))
+                {
+                    _styles.Add(style);
+                }
+                
             }
 
             return style;
@@ -219,7 +223,7 @@ namespace HubCloud.BlazorSheet.Core.Models
             {
                 editSettings = new SheetCellEditSettings();
             }
-            
+
             return editSettings;
         }
 
@@ -249,7 +253,7 @@ namespace HubCloud.BlazorSheet.Core.Models
             return _rows[r - 1];
         }
 
-        public void AddRow(SheetRow baseRow, int position)
+        public SheetRow AddRow(SheetRow baseRow, int position, bool copySettings)
         {
             var baseRowNumber = RowNumber(baseRow);
             var baseRowIndex = baseRowNumber - 1;
@@ -264,6 +268,14 @@ namespace HubCloud.BlazorSheet.Core.Models
                     ColumnUid = column.Uid
                 };
 
+                if (copySettings)
+                {
+                    // Copy style and edit settings.
+                    var baseCell = _cells.FirstOrDefault(x => x.RowUid == baseRow.Uid
+                                                              && x.ColumnUid == column.Uid);
+                    CopyCellProperties(newCell, baseCell);
+                }
+                
                 AddCell(newCell);
             }
 
@@ -291,14 +303,16 @@ namespace HubCloud.BlazorSheet.Core.Models
             }
 
             _rowsCount++;
+
+            return newRow;
         }
 
         public SheetColumn GetColumn(int c)
         {
-            return _columns[c-1];
+            return _columns[c - 1];
         }
 
-        public void AddColumn(SheetColumn baseColumn, int position)
+        public SheetColumn AddColumn(SheetColumn baseColumn, int position, bool copySettings)
         {
             var baseColumnNumber = ColumnNumber(baseColumn);
             var baseColumnIndex = baseColumnNumber - 1;
@@ -312,6 +326,14 @@ namespace HubCloud.BlazorSheet.Core.Models
                     RowUid = row.Uid,
                     ColumnUid = newColumn.Uid
                 };
+
+                if (copySettings)
+                {
+                    // Copy style and edit settings.
+                    var baseCell = _cells.FirstOrDefault(x => x.RowUid == row.Uid
+                                                              && x.ColumnUid == baseColumn.Uid);
+                    CopyCellProperties(newCell, baseCell);
+                }
 
                 AddCell(newCell);
             }
@@ -340,6 +362,8 @@ namespace HubCloud.BlazorSheet.Core.Models
             }
 
             _columnsCount++;
+
+            return newColumn;
         }
 
         public void RemoveRow(SheetRow row)
@@ -383,7 +407,8 @@ namespace HubCloud.BlazorSheet.Core.Models
             }
         }
 
-        public void SetSettingsFromCommandPanel(List<SheetCell> cells, SheetCell cell, SheetCommandPanelModel commandPanelModel)
+        public void SetSettingsFromCommandPanel(List<SheetCell> cells, SheetCell cell,
+            SheetCommandPanelModel commandPanelModel)
         {
             if (cells == null)
             {
@@ -402,7 +427,7 @@ namespace HubCloud.BlazorSheet.Core.Models
 
             var newStyle = new SheetCellStyle(commandPanelModel);
             SetStyle(cells, newStyle);
-            
+
             var newEditSettings = new SheetCellEditSettings(commandPanelModel);
             if (!newEditSettings.IsStandard())
             {
@@ -460,7 +485,7 @@ namespace HubCloud.BlazorSheet.Core.Models
                 cell.StyleUid = styleUid;
             }
         }
-        
+
         public void SetEditSettings(SheetCell cell, SheetCellEditSettings newEditSettings)
         {
             if (cell == null)
@@ -476,7 +501,7 @@ namespace HubCloud.BlazorSheet.Core.Models
             var collection = new SheetCell[] {cell};
             SetEditSettings(collection, newEditSettings);
         }
-        
+
         public void SetEditSettings(IEnumerable<SheetCell> cells, SheetCellEditSettings newEditSettings)
         {
             if (cells == null)
@@ -518,7 +543,7 @@ namespace HubCloud.BlazorSheet.Core.Models
 
             return null;
         }
-        
+
         public SheetCellEditSettings FindExistingEditSettings(SheetCellEditSettings newEditSettings)
         {
             foreach (var item in _editSettings)
@@ -607,7 +632,8 @@ namespace HubCloud.BlazorSheet.Core.Models
                 ChangeSize<SheetRow>(rowsAddRemoveCount, Rows, RemoveRow, AddRow);
         }
 
-        private void ChangeSize<T>(int addRemoveCount, IReadOnlyCollection<T> collection, Action<T> removeAction, Action<T, int> addAction) where T : class
+        private void ChangeSize<T>(int addRemoveCount, IReadOnlyCollection<T> collection, Action<T> removeAction,
+            Func<T, int, bool, T> addAction) where T : class
         {
             if (addRemoveCount > 0)
             {
@@ -626,7 +652,7 @@ namespace HubCloud.BlazorSheet.Core.Models
                     var lastItem = collection.LastOrDefault();
 
                     if (lastItem != null)
-                        addAction(lastItem, 1);
+                        addAction(lastItem, 1, false);
                 }
             }
         }
@@ -636,7 +662,6 @@ namespace HubCloud.BlazorSheet.Core.Models
             _rows.Clear();
             _columns.Clear();
             _cells.Clear();
-            _cellsIndex.Clear();
             //_styles.Clear();
             //_editSettings.Clear();
         }
@@ -658,10 +683,10 @@ namespace HubCloud.BlazorSheet.Core.Models
             var grouppedByColumn = cellWithAddressList.GroupBy(x => x.Address.Column).OrderBy(x => x.Key);
 
             var topLeftCell = grouppedByRow
-                    .First()
-                    .OrderBy(x => x.Address.Column)
-                    .First()
-                    .Cell;
+                .First()
+                .OrderBy(x => x.Address.Column)
+                .First()
+                .Cell;
 
             // join cells by horizontal and vertical
             if (grouppedByRow.Count() > 1 && grouppedByColumn.Count() > 1)
@@ -785,6 +810,323 @@ namespace HubCloud.BlazorSheet.Core.Models
             return true;
         }
 
+        public void GroupRows(List<SheetRow> rows)
+        {
+            var rowNumbers = rows
+                    .Select(x => RowNumber(x))
+                    .OrderBy(x => x)
+                    .ToList();
+
+            var firstRowNumber = rowNumbers.FirstOrDefault();
+            if (firstRowNumber == 0)
+                return;
+
+            var firstRow = GetRow(firstRowNumber);
+            if (firstRow.IsGroup)
+                firstRow.IsGroup = false;
+
+            var headRow = GetRow(firstRowNumber - 1);
+            if (headRow.ParentUid == Guid.Empty)
+            {
+                headRow.IsGroup = true;
+                headRow.IsOpen = true;
+            }
+            else
+            {
+                if (firstRow.ParentUid == Guid.Empty)
+                    headRow = FindMainParentRow(headRow);
+                else
+                {
+                    headRow.IsGroup = true;
+                    headRow.IsOpen = true;
+                }
+            }
+
+            foreach (var row in rows)
+            {
+                row.IsGroup = false;
+                row.ParentUid = headRow.Uid;
+                row.IsOpen = headRow.IsOpen;
+                row.IsHidden = !headRow.IsOpen;
+
+                ChangeChildrenParent(row, headRow.Uid);
+                ChangeChildrenVisibility(row, row.IsOpen);
+            }
+        }
+
+        public void GroupColumns(List<SheetColumn> columns)
+        {
+            var columnNumbers = columns
+                    .Select(x => ColumnNumber(x))
+                    .OrderBy(x => x)
+                    .ToList();
+
+            var firstColumnNumber = columnNumbers.FirstOrDefault();
+            if (firstColumnNumber == 0)
+                return;
+
+            var firstColumn = GetColumn(firstColumnNumber);
+            if (firstColumn.IsGroup)
+                firstColumn.IsGroup = false;
+
+            var headColumn = GetColumn(firstColumnNumber - 1);
+            if (headColumn.ParentUid == Guid.Empty)
+            {
+                headColumn.IsGroup = true;
+                headColumn.IsOpen = true;
+            }
+            else
+            {
+                if (firstColumn.ParentUid == Guid.Empty)
+                    headColumn = FindMainParentColumn(headColumn);
+                else
+                {
+                    headColumn.IsGroup = true;
+                    headColumn.IsOpen = true;
+                }
+            }
+
+            foreach (var column in columns)
+            {
+                column.IsGroup = false;
+                column.ParentUid = headColumn.Uid;
+                column.IsOpen = headColumn.IsOpen;
+                column.IsHidden = !headColumn.IsOpen;
+
+                ChangeChildrenParent(column, headColumn.Uid);
+                ChangeChildrenVisibility(column, column.IsOpen);
+            }
+        }
+
+        private void ChangeChildrenParent(SheetRow parentRow, Guid newParentUid)
+        {
+            var rows = Rows.Where(x => x.ParentUid == parentRow.Uid).ToList();
+            rows.ForEach(x => x.ParentUid = newParentUid);
+        }
+
+        private void ChangeChildrenParent(SheetColumn parentColumn, Guid newParentUid)
+        {
+            var columns = Columns.Where(x => x.ParentUid == parentColumn.Uid).ToList();
+            columns.ForEach(x => x.ParentUid = newParentUid);
+        }
+
+        public void ChangeChildrenVisibility(SheetRow parentRow, bool IsVisible)
+        {
+            var rows = Rows.Where(x => x.ParentUid == parentRow.Uid).ToList();
+
+            foreach (var row in rows)
+            {
+                row.IsHidden = !IsVisible;
+
+                if (row.IsGroup)
+                {
+                    var childsVisible = IsVisible && row.IsOpen;
+                    ChangeChildrenVisibility(row, childsVisible);
+                }
+            }
+        }
+
+        public void ChangeChildrenVisibility(SheetColumn parentColumn, bool IsVisible)
+        {
+            var columns = Columns.Where(x => x.ParentUid == parentColumn.Uid).ToList();
+
+            foreach (var column in columns)
+            {
+                column.IsHidden = !IsVisible;
+
+                if (column.IsGroup)
+                {
+                    var childsVisible = IsVisible && column.IsOpen;
+                    ChangeChildrenVisibility(column, childsVisible);
+                }
+            }
+        }
+
+        private SheetRow FindMainParentRow(SheetRow row)
+        {
+            if (row.ParentUid == Guid.Empty)
+                return row;
+
+            var parentRow = Rows.FirstOrDefault(x => x.Uid == row.ParentUid);
+            if (parentRow == null)
+                return null;
+
+            return FindMainParentRow(parentRow);
+        }
+
+        private SheetColumn FindMainParentColumn(SheetColumn column)
+        {
+            if (column.ParentUid == Guid.Empty)
+                return column;
+
+            var parentColumn = Columns.FirstOrDefault(x => x.Uid == column.ParentUid);
+            if (parentColumn == null)
+                return null;
+
+            return FindMainParentColumn(parentColumn);
+        }
+
+        public void UngroupRows(List<SheetRow> rows)
+        {
+            rows = rows
+                    .OrderBy(x => RowNumber(x))
+                    .ToList();
+
+            var parentRowUids = rows.Select(x => x.ParentUid).Distinct();
+            if (parentRowUids.Count() > 1)
+                return;
+
+            var parentRowUid = parentRowUids.FirstOrDefault();
+            if (parentRowUid == null)
+                return;
+
+            var parentRow = Rows.FirstOrDefault(x => x.Uid == parentRowUid);
+            if (parentRow == null)
+                return;
+
+            foreach (var row in rows)
+            {
+                row.ParentUid = parentRow.ParentUid;
+            }
+
+            var lastRow = rows.LastOrDefault();
+            if (lastRow == null)
+                return;
+
+            var lastRowNumber = RowNumber(lastRow);
+
+            var parentChildren = Rows.Where(x => x.ParentUid == parentRow.Uid && RowNumber(x) > lastRowNumber);
+            if (parentChildren.Count() > 0)
+            {
+                lastRow.IsGroup = true;
+                lastRow.IsOpen = true;
+            }
+
+            foreach (var child in parentChildren)
+            {
+                child.ParentUid = lastRow.Uid;
+                child.IsOpen = lastRow.IsOpen;
+                child.IsHidden = !lastRow.IsOpen;
+            }
+        }
+
+        public void UngroupColumns(List<SheetColumn> columns)
+        {
+            columns = columns
+                .OrderBy(x => ColumnNumber(x))
+                .ToList();
+
+            var parentColumnUids = columns.Select(x => x.ParentUid).Distinct();
+            if (parentColumnUids.Count() > 1)
+                return;
+
+            var parentColumnUid = parentColumnUids.FirstOrDefault();
+            if (parentColumnUid == null)
+                return;
+
+            var parentColumn = Columns.FirstOrDefault(x => x.Uid == parentColumnUid);
+            if (parentColumn == null)
+                return;
+
+            foreach (var column in columns)
+                column.ParentUid = parentColumn.ParentUid;
+
+            var lastColumn = columns.LastOrDefault();
+            if (lastColumn == null)
+                return;
+
+            var lastColumnNumber = ColumnNumber(lastColumn);
+
+            var parentChildren = Columns.Where(x => x.ParentUid == parentColumn.Uid && ColumnNumber(x) > lastColumnNumber);
+            if (parentChildren.Count() > 0)
+            {
+                lastColumn.IsGroup = true;
+                lastColumn.IsOpen = true;
+            }
+
+            foreach (var child in parentChildren)
+            {
+                child.ParentUid = lastColumn.Uid;
+                child.IsOpen = lastColumn.IsOpen;
+                child.IsHidden = !lastColumn.IsOpen;
+            }
+        }
+
+        public bool CanRowsBeGrouped(List<SheetRow> rows)
+        {
+            var rowNumbers = rows
+                .Select(x => RowNumber(x))
+                .OrderBy(x => x)
+                .ToList();
+
+            if (rowNumbers.Contains(1))
+                return false;
+
+            var headRow = GetRow(rowNumbers.First() - 1);
+            if (headRow.IsHidden)
+                return false;
+
+            if (rows.Contains(headRow))
+                return false;
+
+            if (rows.Any(x => x.ParentUid != Guid.Empty) && 
+                rows.Any(x => x.ParentUid == Guid.Empty))
+                return false;
+
+            var current = rowNumbers.First();
+
+            for (int i = 0; i < rowNumbers.Count; i++)
+            {
+                if (current != rowNumbers[i])
+                    return false;
+
+                current++;
+            }
+
+            return true;
+        }
+
+        public bool CanColumnsBeGrouped(List<SheetColumn> columns)
+        {
+            return true;
+        }
+
+        public bool CanRowsBeUngrouped(List<SheetRow> rows)
+        {
+            var rowNumbers = rows
+                .Select(x => RowNumber(x))
+                .OrderBy(x => x)
+                .ToList();
+
+            if (rowNumbers.Contains(1))
+                return false;
+
+            var headRow = GetRow(rowNumbers.First() - 1);
+            if (headRow.IsHidden)
+                return false;
+
+            if (rows.Any(x => x.ParentUid != Guid.Empty) &&
+                rows.Any(x => x.ParentUid == Guid.Empty))
+                return false;
+
+            var current = rowNumbers.First();
+
+            for (int i = 0; i < rowNumbers.Count; i++)
+            {
+                if (current != rowNumbers[i])
+                    return false;
+
+                current++;
+            }
+
+            return true;
+        }
+
+        public bool CanColumnsBeUngrouped(List<SheetColumn> columns)
+        {
+            return true;
+        }
+
         private bool CanFreezedRowsBeSet(int freezedRows, List<CellWithAddress> cellWithAddressList)
         {
             foreach (var cell in cellWithAddressList)
@@ -827,6 +1169,7 @@ namespace HubCloud.BlazorSheet.Core.Models
                 if (!CanFreezedRowsBeSet(commandPanelModel.FreezedRows, cellWithAddressList))
                     return false;
             }
+
             if (commandPanelModel.FreezedColumns > 0)
             {
                 var cellWithAddressList = Cells
@@ -848,33 +1191,37 @@ namespace HubCloud.BlazorSheet.Core.Models
         public Sheet Copy()
         {
             var output = JsonConvert.SerializeObject(this);
-            return JsonConvert.DeserializeObject<Sheet>(output);
+            return JsonConvert.DeserializeObject<Sheet>(output,
+                new JsonSerializerSettings {FloatParseHandling = FloatParseHandling.Decimal});
         }
 
         public void AddCell(SheetCell cell)
         {
-            var key = cell.GetKey();
-
-            if (_cellsIndex.ContainsKey(key))
-            {
-                // Do nothing
-            }
-            else
-            {
-                _cells.Add(cell);
-                _cellsIndex.Add(key, cell);
-            }
+            _cells.Add(cell);
         }
 
         public void RemoveCell(SheetCell cell)
         {
-            var key = cell.GetKey();
-
-            if (_cellsIndex.ContainsKey(key))
-            {
-                _cellsIndex.Remove(key);
-            }
             _cells.Remove(cell);
+        }
+
+        private void CopyCellProperties(SheetCell destinationCell, SheetCell sourceCell)
+        {
+            if (sourceCell == null)
+            {
+                return;
+            }
+
+            destinationCell.StyleUid = sourceCell.StyleUid;
+            destinationCell.EditSettingsUid = sourceCell.EditSettingsUid;
+            destinationCell.Formula = sourceCell.Formula;
+
+            if (!destinationCell.EditSettingsUid.HasValue 
+                && string.IsNullOrEmpty(sourceCell.Formula))
+            {
+                destinationCell.Value = sourceCell.Value;
+                destinationCell.Text = sourceCell.Text;
+            }
         }
     }
 }

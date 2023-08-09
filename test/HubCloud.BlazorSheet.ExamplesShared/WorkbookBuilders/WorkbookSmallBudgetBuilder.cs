@@ -85,7 +85,7 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
             sheet.GetCell(4, 6).Value = "Total";
             sheet.GetCell(4, 6).StyleUid = totalStyle.Uid;
 
-            sheet.GetCell(8, 6).Formula = $"Sum(\"R5C6:R-1C6\")";
+            sheet.GetCell(8, 6).Formula = $"Sum(\"R5C6:R[-1]C6\")";
             sheet.GetCell(8, 6).StyleUid = totalStyle.Uid;
 
             sheet.GetCell(1, 6).Value = "About Blazor";
@@ -112,14 +112,15 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
         private void SetTotalColumnFormula(int row, int column, SheetCellStyle totalStyle, Sheet sheet)
         {
 
-            sheet.GetCell(8, column).Formula = $"Val(\"R5C{column}\")+Val(\"R6C{column}\")+Val(\"R7C{column}\")";
+            sheet.GetCell(8, column).Formula = $"Sum(\"R5C{column}:R7C{column}\")";
             sheet.GetCell(8, column).StyleUid = totalStyle.Uid;
 
         }
 
         private void SetTotalRowFormula(int row, int column, SheetCellStyle totalStyle, Sheet sheet)
         {
-            sheet.GetCell(row, column).Formula = $"Sum(\"R{row}C3:R{row}C5\")";
+            //sheet.GetCell(row, column).Formula = $"Sum(\"R{row}C3:R{row}C5\")";
+            sheet.GetCell(row, column).Formula = $"Sum(\"RC3:RC5\")";
             sheet.GetCell(row, column).StyleUid = totalStyle.Uid;
         }
     }

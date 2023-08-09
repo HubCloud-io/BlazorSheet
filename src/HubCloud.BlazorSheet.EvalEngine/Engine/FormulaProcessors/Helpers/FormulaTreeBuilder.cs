@@ -3,8 +3,9 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using HubCloud.BlazorSheet.EvalEngine.Engine.FormulaProcessors.Models;
+using HubCloud.BlazorSheet.EvalEngine.Helpers;
 
-namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaProcessors
+namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaProcessors.Helpers
 {
     public class FormulaTreeBuilder
     {
@@ -178,14 +179,15 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaProcessors
                         var argIndex = 1;
                         foreach (var param in statement.FunctionParams)
                         {
-                            var isAddressParam = IsAddressParams(param.InnerStatements);
-                            if (isAddressParam)
-                                outFormula.Append('"');
-
                             var currentArg = BuildFormula(param.InnerStatements);
+                                
+                            var isAddressParam = IsAddressParams(param.InnerStatements);
+                            if (isAddressParam && currentArg[0] != '"')
+                                outFormula.Append('"');
+                           
                             outFormula.Append(currentArg);
 
-                            if (isAddressParam)
+                            if (isAddressParam && currentArg[currentArg.Length - 1] != '"')
                                 outFormula.Append('"');
 
                             if (argIndex++ < statement.FunctionParams.Count)
@@ -221,10 +223,10 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaProcessors
 
         #region private methods
 
-        private Regex _addressRangeRegex = new Regex(@"R-*\d*C-*\d*:R-*\d*C-*\d*", RegexOptions.Compiled);
-        private Regex _addressRegex = new Regex(@"R-*\d*C-*\d*", RegexOptions.Compiled);
-        private Regex _excelAddressRegex = new Regex(@"\$?[A-Z]+\$?\d+", RegexOptions.Compiled);
-        private Regex _excelAddressRangeRegex = new Regex(@"\$?[A-Z]+\$?\d+:\$?[A-Z]+\$?\d+", RegexOptions.Compiled);
+        private readonly Regex _addressRangeRegex = RegexHelper.AddressRangeRegex;
+        private readonly Regex _addressRegex = RegexHelper.AddressRegex;
+        private readonly Regex _excelAddressRegex = RegexHelper.ExcelAddressRegex;
+        private readonly Regex _excelAddressRangeRegex = RegexHelper.ExcelAddressRangeRegex;
 
         protected ElementType GetStatementType(StringBuilder statement, string nextSymbol = null)
         {

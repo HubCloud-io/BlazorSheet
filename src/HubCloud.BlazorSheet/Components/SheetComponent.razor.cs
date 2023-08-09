@@ -4,6 +4,7 @@ using BBComponents.Abstract;
 using BBComponents.Enums;
 using BBComponents.Models;
 using HubCloud.BlazorSheet.Core.Enums;
+using HubCloud.BlazorSheet.Core.Events;
 using HubCloud.BlazorSheet.Core.Models;
 using HubCloud.BlazorSheet.Infrastructure;
 using Microsoft.AspNetCore.Components;
@@ -14,12 +15,12 @@ namespace HubCloud.BlazorSheet.Components;
 
 public partial class SheetComponent : ComponentBase
 {
-    private const int LeftSideCellWidth = 30;
-    private const int TopSideCellWidth = 30;
+    private const int LeftSideCellWidth = 40;
+    private const int TopSideCellHeight = 30;
     private const string CellHiddenBackground = "#cccccc";
 
     private bool _multipleSelection;
-    private bool _showHiddenCells;
+    private bool _isHiddenCellsVisible;
 
     private string _currentCellText;
     private bool _cellHasChanged;
@@ -27,7 +28,10 @@ public partial class SheetComponent : ComponentBase
     private SheetColumn _currentColumn;
     private SheetRow _currentRow;
     private SheetCell _currentCell;
+    private CellStyleBuilder _cellStyleBuilder;
     private List<SheetCell> _selectedCells = new List<SheetCell>();
+    private List<SheetRow> _selectedRowByNumberList = new List<SheetRow>();
+    private List<SheetColumn> _selectedColumnByNumberList = new List<SheetColumn>();
     private HashSet<Guid> _selectedIdentifiers = new HashSet<Guid>();
 
     private double _clientX;
@@ -49,21 +53,27 @@ public partial class SheetComponent : ComponentBase
     [Parameter] public Sheet Sheet { get; set; }
 
     [Parameter] public SheetRegimes Regime { get; set; }
-    
+
     [Parameter] public bool IsDisabled { get; set; }
     [Parameter] public string MaxHeight { get; set; }
     [Parameter] public string MaxWidth { get; set; }
 
-    [Parameter]
-    public IComboBoxDataProviderFactory ComboBoxDataProviderFactory { get; set; }
+    [Parameter] public IComboBoxDataProviderFactory ComboBoxDataProviderFactory { get; set; }
 
     [Parameter] public EventCallback Changed { get; set; }
 
     [Parameter] public EventCallback<SheetCell> CellSelected { get; set; }
     [Parameter] public EventCallback<List<SheetCell>> CellsSelected { get; set; }
     [Parameter] public EventCallback<SheetRow> RowSelected { get; set; }
+    [Parameter] public EventCallback<List<SheetRow>> RowsByNumberSelected { get; set; }
+    [Parameter] public EventCallback<List<SheetColumn>> ColumnsByNumberSelected { get; set; }
     [Parameter] public EventCallback<SheetColumn> ColumnSelected { get; set; }
     [Parameter] public EventCallback<SheetCell> CellValueChanged { get; set; }
+
+    [Parameter] public EventCallback<RowAddedEventArgs> RowAdded { get; set; }
+    [Parameter] public EventCallback<RowRemovedEventArgs> RowRemoved { get; set; }
+    [Parameter] public EventCallback<ColumnAddedEventArgs> ColumnAdded { get; set; }
+    [Parameter] public EventCallback<ColumnRemovedEventArgs> ColumnRemoved { get; set; }
 
     [Inject] public IJSRuntime JsRuntime { get; set; }
 
@@ -73,6 +83,11 @@ public partial class SheetComponent : ComponentBase
         _rowMenuItems = ContextMenuBuilder.BuildColumnContextMenu("row");
         _columnMenuItems = ContextMenuBuilder.BuildColumnContextMenu("column");
 
+        _cellStyleBuilder = new CellStyleBuilder
+        {
+            LeftSideCellWidth = LeftSideCellWidth,
+            TopSideCellHeight = TopSideCellHeight
+        };
 
         try
         {
@@ -107,6 +122,8 @@ public partial class SheetComponent : ComponentBase
         {
             _selectedCells.Clear();
             _selectedIdentifiers.Clear();
+            _selectedRowByNumberList.Clear();
+            _selectedColumnByNumberList.Clear();
         }
 
         if (!_selectedCells.Contains(_currentCell))
@@ -182,21 +199,53 @@ public partial class SheetComponent : ComponentBase
         {
             case ContextMenuBuilder.AddBeforeItemName:
 
-                Sheet.AddColumn(_currentColumn, -1);
+                var newColumnBefore = Sheet.AddColumn(_currentColumn, -1, true);
+                newColumnBefore.ParentUid = _currentColumn.ParentUid;
+                newColumnBefore.WidthValue = _currentColumn.WidthValue;
+
+                await ColumnAdded.InvokeAsync(new ColumnAddedEventArgs()
+                {
+                    SourceUid = _currentColumn.Uid,
+                    ColumnUid = newColumnBefore.Uid,
+                    ColumnNumber = Sheet.ColumnNumber(newColumnBefore),
+                    Position = -1
+                    
+                });
+
                 await Changed.InvokeAsync(null);
 
                 break;
 
             case ContextMenuBuilder.AddAfterItemName:
 
-                Sheet.AddColumn(_currentColumn, 1);
+                var newColumnAfter = Sheet.AddColumn(_currentColumn, 1, true);
+                newColumnAfter.ParentUid = _currentColumn.ParentUid;
+                newColumnAfter.WidthValue = _currentColumn.WidthValue;
+                
+                await ColumnAdded.InvokeAsync(new ColumnAddedEventArgs()
+                {
+                    SourceUid = _currentColumn.Uid,
+                    ColumnUid = newColumnAfter.Uid,
+                    ColumnNumber = Sheet.ColumnNumber(newColumnAfter),
+                    Position = 1
+                    
+                });
+                
                 await Changed.InvokeAsync(null);
 
                 break;
 
             case ContextMenuBuilder.RemoveItemName:
 
+                var columnRemovedArgs = new ColumnRemovedEventArgs()
+                {
+                    ColumnUid = _currentColumn.Uid,
+                    ColumnNumber = Sheet.ColumnNumber(_currentColumn)
+                };
+                
                 Sheet.RemoveColumn(_currentColumn);
+
+                await ColumnRemoved.InvokeAsync(columnRemovedArgs);
                 await Changed.InvokeAsync(null);
                 break;
 
@@ -216,7 +265,7 @@ public partial class SheetComponent : ComponentBase
                 break;
 
             case ContextMenuBuilder.ShowHiddenHideHiddenItemName:
-                _showHiddenCells = !_showHiddenCells;
+                _isHiddenCellsVisible = !_isHiddenCellsVisible;
                 break;
         }
     }
@@ -230,21 +279,51 @@ public partial class SheetComponent : ComponentBase
         {
             case ContextMenuBuilder.AddBeforeItemName:
 
-                Sheet.AddRow(_currentRow, -1);
+                var newRowBefore = Sheet.AddRow(_currentRow, -1, true);
+                newRowBefore.ParentUid = _currentRow.ParentUid;
+                newRowBefore.HeightValue = _currentRow.HeightValue;
+
+                await RowAdded.InvokeAsync(new RowAddedEventArgs()
+                {
+                    SourceUid = _currentRow.Uid,
+                    RowUid = newRowBefore.Uid,
+                    RowNumber = Sheet.RowNumber(newRowBefore),
+                    Position = -1
+
+                });
                 await Changed.InvokeAsync(null);
 
                 break;
 
             case ContextMenuBuilder.AddAfterItemName:
 
-                Sheet.AddRow(_currentRow, 1);
+                var newRowAfter =  Sheet.AddRow(_currentRow, 1, true);
+                newRowAfter.ParentUid = _currentRow.ParentUid;
+                newRowAfter.HeightValue = _currentRow.HeightValue;
+                
+                await RowAdded.InvokeAsync(new RowAddedEventArgs()
+                {
+                    SourceUid = _currentRow.Uid,
+                    RowUid = newRowAfter.Uid,
+                    RowNumber = Sheet.RowNumber(newRowAfter),
+                    Position = 1
+
+                });
                 await Changed.InvokeAsync(null);
 
                 break;
 
             case ContextMenuBuilder.RemoveItemName:
 
+                var removeArgs = new RowRemovedEventArgs()
+                {
+                    RowUid = _currentRow.Uid,
+                    RowNumber = Sheet.RowNumber(_currentRow)
+
+                };
                 Sheet.RemoveRow(_currentRow);
+
+                await RowRemoved.InvokeAsync(removeArgs);
                 await Changed.InvokeAsync(null);
 
                 break;
@@ -265,7 +344,7 @@ public partial class SheetComponent : ComponentBase
                 break;
 
             case ContextMenuBuilder.ShowHiddenHideHiddenItemName:
-                _showHiddenCells = !_showHiddenCells;
+                _isHiddenCellsVisible = !_isHiddenCellsVisible;
                 break;
         }
     }
@@ -334,45 +413,22 @@ public partial class SheetComponent : ComponentBase
 
     private async Task OnColumnNumberCellClick(SheetColumn column)
     {
+        if (Regime == SheetRegimes.InputForm)
+        {
+            return;
+        }
+
         if (!_multipleSelection)
         {
             _selectedCells.Clear();
             _selectedIdentifiers.Clear();
+            _selectedColumnByNumberList.Clear();
         }
+
+        if (!_selectedColumnByNumberList.Contains(column))
+            _selectedColumnByNumberList.Add(column);
 
         var cells = Sheet.Cells.Where(x => x.ColumnUid == column.Uid);
-
-        if (!cells.Any())
-            return;
-        
-        foreach (var cell in cells)
-        {
-            if (!_selectedCells.Contains(cell))
-                _selectedCells.Add(cell);
-
-            if (!_selectedIdentifiers.Contains(cell.Uid))
-                _selectedIdentifiers.Add(cell.Uid);
-        }
-
-        var firstCell = cells.FirstOrDefault();
-        if(firstCell != null)
-        {
-            await CellSelected.InvokeAsync(firstCell);
-        }
-
-        await CellsSelected.InvokeAsync(_selectedCells);
-        await ColumnSelected.InvokeAsync(column);
-    }
-
-    private async Task OnRowNumberCellClick(SheetRow row)
-    {
-        if (!_multipleSelection)
-        {
-            _selectedCells.Clear();
-            _selectedIdentifiers.Clear();
-        }
-
-        var cells = Sheet.Cells.Where(x => x.RowUid == row.Uid);
 
         if (!cells.Any())
             return;
@@ -393,6 +449,45 @@ public partial class SheetComponent : ComponentBase
         }
 
         await CellsSelected.InvokeAsync(_selectedCells);
+        await ColumnsByNumberSelected.InvokeAsync(_selectedColumnByNumberList);
+        await ColumnSelected.InvokeAsync(column);
+    }
+
+    private async Task OnRowNumberCellClick(SheetRow row)
+    {
+        if (Regime == SheetRegimes.InputForm)
+            return;
+
+        if (!_multipleSelection)
+        {
+            _selectedCells.Clear();
+            _selectedIdentifiers.Clear();
+            _selectedRowByNumberList.Clear();
+        }
+
+        if (!_selectedRowByNumberList.Contains(row))
+            _selectedRowByNumberList.Add(row);
+
+        var cells = Sheet.Cells.Where(x => x.RowUid == row.Uid);
+
+        if (!cells.Any())
+            return;
+
+        foreach (var cell in cells)
+        {
+            if (!_selectedCells.Contains(cell))
+                _selectedCells.Add(cell);
+
+            if (!_selectedIdentifiers.Contains(cell.Uid))
+                _selectedIdentifiers.Add(cell.Uid);
+        }
+
+        var firstCell = cells.FirstOrDefault();
+        if (firstCell != null)
+            await CellSelected.InvokeAsync(firstCell);
+
+        await CellsSelected.InvokeAsync(_selectedCells);
+        await RowsByNumberSelected.InvokeAsync(_selectedRowByNumberList);
         await RowSelected.InvokeAsync(row);
     }
 
@@ -423,15 +518,15 @@ public partial class SheetComponent : ComponentBase
         sb.Append(";");
 
         sb.Append("height:");
-        sb.Append($"{TopSideCellWidth}px");
+        sb.Append($"{TopSideCellHeight}px");
         sb.Append(";");
 
         sb.Append("max-height:");
-        sb.Append($"{TopSideCellWidth}px");
+        sb.Append($"{TopSideCellHeight}px");
         sb.Append(";");
 
         sb.Append("min-height:");
-        sb.Append($"{TopSideCellWidth}px");
+        sb.Append($"{TopSideCellHeight}px");
         sb.Append(";");
 
         sb.Append("top:");
@@ -489,34 +584,9 @@ public partial class SheetComponent : ComponentBase
         sb.Append(row.Height);
         sb.Append(";");
 
-        if (sheet.FreezedRows > 0)
-        {
-            var rowIndex = sheet.Rows.ToList().IndexOf(row);
-            var rowNumber = rowIndex + 1;
+        _cellStyleBuilder.AddFreezedStyle(sb, sheet, row, _isHiddenCellsVisible);
 
-            if (rowNumber <= sheet.FreezedRows)
-            {
-                sb.Append("z-index:");
-                sb.Append(10);
-                sb.Append(";");
-
-                var topPosition = TopPosition(sheet, rowNumber, rowIndex);
-
-                if (!string.IsNullOrEmpty(topPosition))
-                {
-                    sb.Append("top: ");
-                    sb.Append(topPosition);
-                    sb.Append(";");
-                }
-            }
-
-            if (rowNumber == sheet.FreezedRows || NeedSetBorderBottom(sheet, rowIndex))
-            {
-                sb.Append("border-bottom: 2px solid navy;");
-            }
-        }
-
-        if (row.IsHidden && _showHiddenCells)
+        if (row.IsHidden && _isHiddenCellsVisible)
         {
             sb.Append("background:");
             sb.Append(CellHiddenBackground);
@@ -543,15 +613,15 @@ public partial class SheetComponent : ComponentBase
         sb.Append(";");
 
         sb.Append("height:");
-        sb.Append($"{TopSideCellWidth}px");
+        sb.Append($"{TopSideCellHeight}px");
         sb.Append(";");
 
         sb.Append("max-height:");
-        sb.Append($"{TopSideCellWidth}px");
+        sb.Append($"{TopSideCellHeight}px");
         sb.Append(";");
 
         sb.Append("min-height:");
-        sb.Append($"{TopSideCellWidth}px");
+        sb.Append($"{TopSideCellHeight}px");
         sb.Append(";");
 
         sb.Append("position: ");
@@ -562,34 +632,9 @@ public partial class SheetComponent : ComponentBase
         sb.Append(0);
         sb.Append(";");
 
-        if (sheet.FreezedColumns > 0)
-        {
-            var columnIndex = sheet.Columns.ToList().IndexOf(column);
-            var columnNumber = columnIndex + 1;
+        _cellStyleBuilder.AddFreezedStyle(sb, sheet, column, _isHiddenCellsVisible);
 
-            if (columnNumber <= sheet.FreezedColumns)
-            {
-                sb.Append("z-index: ");
-                sb.Append(10);
-                sb.Append(";");
-
-                var leftPosition = LeftPosition(sheet, columnNumber, columnIndex);
-
-                if (!string.IsNullOrEmpty(leftPosition))
-                {
-                    sb.Append("left: ");
-                    sb.Append(leftPosition);
-                    sb.Append(";");
-                }
-            }
-
-            if (columnNumber == sheet.FreezedColumns || NeedSetBorderRight(sheet, columnIndex))
-            {
-                sb.Append("border-right: 2px solid navy;");
-            }
-        }
-
-        if (column.IsHidden && _showHiddenCells)
+        if (column.IsHidden && _isHiddenCellsVisible)
         {
             sb.Append("background:");
             sb.Append(CellHiddenBackground);
@@ -599,303 +644,24 @@ public partial class SheetComponent : ComponentBase
         return sb.ToString();
     }
 
-    private bool NeedSetBorderRight(Sheet sheet, int columnIndex)
+    public string CellStyle(SheetRow row, SheetColumn column, SheetCell cell)
     {
-        if (sheet.Columns.Any(x => x.IsHidden) && !_showHiddenCells)
-        {
-            var nextColumnIndex = ++columnIndex;
-            var nextColumnNumber = nextColumnIndex + 1;
-
-            if (nextColumnIndex < sheet.Columns.Count)
-            {
-                var nextColumn = sheet.Columns.ToArray()[nextColumnIndex];
-
-                if (nextColumn.IsHidden)
-                {
-                    if (nextColumnNumber == sheet.FreezedColumns)
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return NeedSetBorderRight(sheet, nextColumnIndex);
-                    }
-                }
-            }
-        }
-
-        return false;
-    }
-
-    private bool NeedSetBorderBottom(Sheet sheet, int rowIndex)
-    {
-        if (sheet.Rows.Any(x => x.IsHidden) && !_showHiddenCells)
-        {
-            var nextRowIndex = ++rowIndex;
-            var nextRowNumber = nextRowIndex + 1;
-
-            if (nextRowIndex < sheet.Rows.Count)
-            {
-                var nextRow = sheet.Rows.ToArray()[nextRowIndex];
-
-                if (nextRow.IsHidden)
-                {
-                    if (nextRowNumber == sheet.FreezedRows)
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return NeedSetBorderBottom(sheet, nextRowIndex);
-                    }
-                }
-            }
-        }
-
-        return false;
-    }
-
-    public string CellStyle(Sheet sheet, SheetRow row, SheetColumn column, SheetCell cell)
-    {
-        var cellStyle = sheet.GetStyle(cell);
-
-        var sb = new StringBuilder();
-
-        sb.Append("overflow: hidden; white-space: nowrap;");
-
-        sb.Append("width:");
-        sb.Append(column.Width);
-        sb.Append(";");
-
-        sb.Append("max-width:");
-        sb.Append(column.Width);
-        sb.Append(";");
-
-        sb.Append("min-width:");
-        sb.Append(column.Width);
-        sb.Append(";");
-
-        sb.Append("height:");
-        sb.Append(row.Height);
-        sb.Append(";");
-
-        sb.Append("max-height:");
-        sb.Append(row.Height);
-        sb.Append(";");
-
-        sb.Append("min-height:");
-        sb.Append(row.Height);
-        sb.Append(";");
-
-        if ((column.IsHidden || row.IsHidden) && _showHiddenCells)
-        {
-            sb.Append("background-color:");
-            sb.Append(CellHiddenBackground);
-            sb.Append(";");
-        }
-        else
-        {
-            if (!string.IsNullOrEmpty(cellStyle.BackgroundColor))
-            {
-                sb.Append("background-color:");
-                sb.Append(cellStyle.BackgroundColor);
-                sb.Append(";");
-            }
-        }
-
-        if (!string.IsNullOrEmpty(cellStyle.Color))
-        {
-            sb.Append("color:");
-            sb.Append(cellStyle.Color);
-            sb.Append(";");
-        }
-
-        if (!string.IsNullOrEmpty(cellStyle.FontSize))
-        {
-            sb.Append("font-size:");
-            sb.Append(cellStyle.FontSize);
-            sb.Append(";");
-        }
-
-        if (!string.IsNullOrEmpty(cellStyle.TextAlign))
-        {
-            sb.Append("text-align:");
-            sb.Append(cellStyle.TextAlign);
-            sb.Append(";");
-        }
-
-        if (!string.IsNullOrEmpty(cellStyle.FontWeight))
-        {
-            sb.Append("font-weight:");
-            sb.Append(cellStyle.FontWeight);
-            sb.Append(";");
-        }
-
-        if (!string.IsNullOrEmpty(cellStyle.FontStyle))
-        {
-            sb.Append("font-style:");
-            sb.Append(cellStyle.FontStyle);
-            sb.Append(";");
-        }
-
-        if (!string.IsNullOrEmpty(cellStyle.BorderTop))
-        {
-            sb.Append("border-top:");
-            sb.Append(cellStyle.BorderTop);
-            sb.Append(";");
-        }
-
-        if (!string.IsNullOrEmpty(cellStyle.BorderLeft))
-        {
-            sb.Append("border-left:");
-            sb.Append(cellStyle.BorderLeft);
-            sb.Append(";");
-        }
-
-        if (!string.IsNullOrEmpty(cellStyle.BorderBottom))
-        {
-            sb.Append("border-bottom:");
-            sb.Append(cellStyle.BorderBottom);
-            sb.Append(";");
-        }
-
-        if (!string.IsNullOrEmpty(cellStyle.BorderRight))
-        {
-            sb.Append("border-right:");
-            sb.Append(cellStyle.BorderRight);
-            sb.Append(";");
-        }
-
-        AddFreezedStyle(sb, sheet, row, column);
-
-        return sb.ToString();
-    }
-
-    private void AddFreezedStyle(StringBuilder sb, Sheet sheet, SheetRow row, SheetColumn column)
-    {
-        if (sheet.FreezedColumns == 0 && sheet.FreezedRows == 0)
-            return;
-
-        var rowIndex = sheet.Rows.ToList().IndexOf(row);
-        var rowNumber = rowIndex + 1;
-
-        var columnIndex = sheet.Columns.ToList().IndexOf(column);
-        var columnNumber = columnIndex + 1;
-
-        var htmlPosition = HtmlPosition(sheet, rowNumber, columnNumber);
-
-        if (!string.IsNullOrEmpty(htmlPosition))
-        {
-            sb.Append("position: ");
-            sb.Append(htmlPosition);
-            sb.Append(";");
-
-            var leftPosition = LeftPosition(sheet, columnNumber, columnIndex);
-            var topPosition = TopPosition(sheet, rowNumber, rowIndex);
-
-            if (!string.IsNullOrEmpty(topPosition))
-            {
-                sb.Append("top: ");
-                sb.Append(topPosition);
-                sb.Append(";");
-            }
-            if (!string.IsNullOrEmpty(leftPosition))
-            {
-                sb.Append("left: ");
-                sb.Append(leftPosition);
-                sb.Append(";");
-            }
-
-            if (!string.IsNullOrEmpty(leftPosition) && !string.IsNullOrEmpty(topPosition))
-            {
-                sb.Append("z-index: 10;");
-            }
-            else
-            {
-                if (!string.IsNullOrEmpty(leftPosition) || !string.IsNullOrEmpty(topPosition))
-                {
-                    sb.Append("z-index: 1;");
-                }
-            }
-        }
-
-        if (rowNumber == sheet.FreezedRows || NeedSetBorderBottom(sheet, rowIndex))
-        {
-            sb.Append("border-bottom: 2px solid navy;");
-        }
-
-        if (columnNumber == sheet.FreezedColumns || NeedSetBorderRight(sheet, columnIndex))
-        {
-            sb.Append("border-right: 2px solid navy;");
-        }
-    }
-
-    private static string HtmlPosition(Sheet sheet, int rowNumber, int columnNumber)
-    {
-        return (rowNumber <= sheet.FreezedRows || columnNumber <= sheet.FreezedColumns) ? "sticky" : "";
-    }
-
-    private string LeftPosition(Sheet sheet, int columnNumber, int columnIndex)
-    {
-        double left = 0;
-
-        if (columnNumber > 0)
-            left = LeftSideCellWidth;
-
-        for (int i = 0; i < columnIndex; i++)
-        {
-            var column = sheet.Columns.ToArray()[i];
-
-            if (column.IsHidden && !_showHiddenCells)
-                continue;
-
-            left += column.WidthValue;
-        }
-
-        return columnNumber <= sheet.FreezedColumns ? $"{(int)left}px" : "";
-    }
-
-    private string TopPosition(Sheet sheet, int rowNumber, int rowIndex)
-    {
-        double top = 0;
-
-        if (rowNumber > 0)
-            top = TopSideCellWidth;
-
-        for (int i = 0; i < rowIndex; i++)
-        {
-            var row = sheet.Rows.ToArray()[i];
-
-            if (row.IsHidden && !_showHiddenCells) 
-                continue;
-
-            if (row.HeightValue < 26)
-                top += 26;
-            else
-                top += row.HeightValue;
-        }
-
-        return rowNumber <= sheet.FreezedRows ? $"{(int)top}px" : "";
+        return _cellStyleBuilder.GetCellStyle(Sheet, row, column, cell, _isHiddenCellsVisible);
     }
 
     private bool CellHidden(SheetColumn column, SheetRow row, SheetCell cell)
     {
-        return ((column.IsHidden || row.IsHidden) && !_showHiddenCells) || cell.HiddenByJoin;
-    }
-
-    private bool CellHidden(SheetColumn column, SheetRow row)
-    {
-        return (column.IsHidden || row.IsHidden) && !_showHiddenCells;
+        return ((column.IsHidden || row.IsHidden) && !_isHiddenCellsVisible) || cell.HiddenByJoin;
     }
 
     private bool CellHidden(SheetColumn column)
     {
-        return column.IsHidden && !_showHiddenCells;
+        return column.IsHidden && !_isHiddenCellsVisible;
     }
 
     private bool CellHidden(SheetRow row)
     {
-        return row.IsHidden && !_showHiddenCells;
+        return row.IsHidden && !_isHiddenCellsVisible;
     }
 
     public void OpenCellLinkModal()
@@ -925,5 +691,17 @@ public partial class SheetComponent : ComponentBase
         {
             Sheet.SplitCells(_currentCell);
         }
+    }
+
+    private void RowGroupOpenCloseClick(SheetRow row)
+    {
+        row.IsOpen = !row.IsOpen;
+        Sheet.ChangeChildrenVisibility(row, row.IsOpen);
+    }
+
+    private void ColumnGroupOpenCloseClick(SheetColumn column)
+    {
+        column.IsOpen = !column.IsOpen;
+        Sheet.ChangeChildrenVisibility(column, column.IsOpen);
     }
 }

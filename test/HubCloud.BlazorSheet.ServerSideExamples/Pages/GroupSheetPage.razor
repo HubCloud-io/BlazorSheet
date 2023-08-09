@@ -1,36 +1,24 @@
-﻿@page "/sheetinput"
+﻿@page "/groupsheet"
 @using HubCloud.BlazorSheet.Core.Enums
-@using BBComponents.Components
+<h3>GroupSheetPage</h3>
 
-<h3>Sheet Input</h3>
-<hr/>
 <div class="row">
     <div class="col-sm-12">
         <button class="btn btn-sm btn-outline-primary" @onclick="OnClearLogClick">Clear log</button>
-        
-        <span>&nbsp;</span>
-        <BbCheckBox @bind-Value="@_isDisabled"></BbCheckBox>
-        <label>Is disabled</label>
+        <button class="btn btn-sm btn-outline-primary" @onclick="OnCalcClick">Calc</button>
     </div>
 </div>
-<hr/>
 
+<hr/>
 
 <div class="row">
     <div class="col-sm-8">
-
         <HubCloud.BlazorSheet.Components.SheetComponent
             Sheet="@_workbook.FirstSheet"
-            ComboBoxDataProviderFactory="@_dataProviderFactory"
+            MaxHeight="500px"
             Regime="SheetRegimes.InputForm"
-            IsDisabled="@_isDisabled"
-            CellValueChanged="OnCellValueChanged" 
-            RowAdded="OnRowAdded"
-            RowRemoved="OnRowRemoved"
-            ColumnAdded="OnColumnAdded" 
-            ColumnRemoved="OnColumnRemoved">
+            CellValueChanged="OnCellValueChanged">
         </HubCloud.BlazorSheet.Components.SheetComponent>
-
     </div>
     <div class="col-sm-4">
         
@@ -61,4 +49,3 @@
         
     </div>
 </div>
-

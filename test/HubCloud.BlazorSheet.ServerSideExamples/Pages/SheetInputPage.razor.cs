@@ -1,5 +1,7 @@
-﻿using HubCloud.BlazorSheet.Core.Models;
+﻿using HubCloud.BlazorSheet.Core.Events;
+using HubCloud.BlazorSheet.Core.Models;
 using HubCloud.BlazorSheet.EvalEngine.Engine;
+using HubCloud.BlazorSheet.EvalEngine.Engine.CellShiftFormulaHelper;
 using HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders;
 using HubCloud.BlazorSheet.Infrastructure;
 using HubCloud.BlazorSheet.ServerSideExamples.Infrastructure;
@@ -32,9 +34,47 @@ public partial class SheetInputPage : ComponentBase
         _evaluator.EvalWorkbook();
     }
 
+    private void OnRowAdded(RowAddedEventArgs args)
+    {
+        var shiftHelper = new CellShiftFormulaHelper(_workbook.FirstSheet);
+        shiftHelper.OnRowAdd(args.RowNumber);
+        InitEvaluator();
+       // _evaluator.EvalWorkbook();
+    }
+
+    private void OnRowRemoved(RowRemovedEventArgs args)
+    {
+        var shiftHelper = new CellShiftFormulaHelper(_workbook.FirstSheet);
+        shiftHelper.OnRowDelete(args.RowNumber);
+        InitEvaluator();
+        _evaluator.EvalWorkbook();
+    }
+
+    private void OnColumnAdded(ColumnAddedEventArgs args)
+    {
+        var shiftHelper = new CellShiftFormulaHelper(_workbook.FirstSheet);
+        shiftHelper.OnColumnAdd(args.ColumnNumber);
+        InitEvaluator();
+        //_evaluator.EvalWorkbook();
+    }
+
+    private void OnColumnRemoved(ColumnRemovedEventArgs args)
+    {
+        var shiftHelper = new CellShiftFormulaHelper(_workbook.FirstSheet);
+        shiftHelper.OnColumnDelete(args.ColumnNumber);
+        InitEvaluator();
+        _evaluator.EvalWorkbook();
+    }
+
     private void OnClearLogClick()
     {
         _evaluator.ClearLog();
+    }
+
+    private void InitEvaluator()
+    {
+        _evaluator = new WorkbookEvaluator(_workbook);
+        _evaluator.SetLogLevel(LogLevel.Trace);
     }
     
 }

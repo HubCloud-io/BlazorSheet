@@ -30,7 +30,6 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
             _workbook = workbook;
             
             _interpreter = InterpreterInitializer.CreateInterpreter(_data);
-            
             _interpreter.SetVariable("_data", _data);
         }
 
@@ -40,8 +39,6 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
             _data = data;
             
             _interpreter = InterpreterInitializer.CreateInterpreter(_data);
-            
-          
             _interpreter.SetVariable(ContextName, _data);
         }
         
@@ -53,11 +50,11 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
 
             var exceptionList = new List<string> { "SUM" };
             var formulaProcessor = new SimpleFormulaProcessor(exceptionList);
-            var formula = formulaProcessor.PrepareFormula(expression, ContextName);
             
-
+            var formula = string.Empty;
             try
             {
+                formula = formulaProcessor.PrepareFormula(expression, ContextName);
                 result = _interpreter.Eval(formula);
                 
                 _logger.LogDebug("Cell:R{0}C{1}. Formula: {2}. Result: {3}."
@@ -97,6 +94,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
             EvalSheet(sheet, cells, cellAddress);
         }
 
+        // for recalc only dependent formula by cell 
         private void EvalSheet(Sheet sheet, SheetData cells, SheetCellAddress cellAddress)
         {
             var analyzer = new SheetDependencyAnalyzer(sheet);
@@ -108,13 +106,14 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
             }
         }
 
+        // for recalc full sheet
         private void EvalSheet(Sheet sheet, SheetData cells)
         {
             var formulaCells = sheet.Cells
                 .Where(x => !string.IsNullOrWhiteSpace(x.Formula))
                 .ToList();
 
-            var valueCells = SheetDependencyAnalyzer.GetNullValueCellAddresses(sheet);
+            var valueCells = SheetDependencyAnalyzer.GetNoFormulaCells(sheet);
             var nonNullValueCells = sheet.Cells
                 .Where(x => x.Value != null)
                 .Select(x => SheetDependencyAnalyzer.GetCellAddress(sheet.CellAddress(x)));
@@ -126,7 +125,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
             
             var analyzer = new SheetDependencyAnalyzer(sheet);
             var dependencyCells = analyzer.OrderCellsForCalc(valueCells, dict);
-            
+
             foreach (var cell in dependencyCells)
             {
                 EvalCell(cell, sheet, cells);
@@ -144,6 +143,11 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
                 cell.Value = evalResult;
                
             cell.Text = cell.Value?.ToString();
+
+            var style = sheet.GetStyle(cell);
+            if (style != null)
+                cell.ApplyFormat(style.Format);
+
             cells[cellAddress.Row, cellAddress.Column] = cell.Value;
         }
         
