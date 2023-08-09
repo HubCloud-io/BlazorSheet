@@ -171,7 +171,7 @@ public partial class SheetComponent : ComponentBase
         _clientY = e.ClientY;
 
         _currentRow = row;
-        _rowMenuItems = ContextMenuBuilder.BuildColumnContextMenu("row", Regime, row.IsGroup);
+        _rowMenuItems = ContextMenuBuilder.BuildColumnContextMenu("row", Regime, row.IsAddRemoveAllowed);
 
 
         _isColumnContextMenuOpen = false;

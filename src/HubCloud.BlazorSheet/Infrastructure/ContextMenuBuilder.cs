@@ -17,6 +17,7 @@ public class ContextMenuBuilder
     public const string CloseItemName = "Close";
 
     public const string SheetSizeItemName = "SheetSize";
+    public const string AllowAddRemoveItemName = "AllowAddRemove";
 
     public const string ShowHideItemName = "Show/Hide";
     public const string ShowHiddenHideHiddenItemName = "ShowHidden/HideHidden";
@@ -32,113 +33,7 @@ public class ContextMenuBuilder
         AddDesignItems(items, isDesignRegime, callFrom);
         AddShowHideItems(items, isDesignRegime);
         AddCloseItems(items, isAddRemoveAllowed);
-
-        // if (isAddRemoveAllowed)
-        // {
-        //     items.Add(new MenuItem()
-        //     {
-        //         Kind = MenuItemKinds.Item,
-        //         Name = AddBeforeItemName,
-        //         Title = "Add before",
-        //         IconClass = "fa fa-plus text-primary"
-        //     });
-        //
-        //     items.Add(new MenuItem()
-        //     {
-        //         Kind = MenuItemKinds.Item,
-        //         Name = AddAfterItemName,
-        //         Title = "Add after",
-        //         IconClass = "fa fa-plus text-primary"
-        //     });
-        // }
-        //
-        //
-        // if (isDesignRegime)
-        // {
-        //     if (callFrom == "column")
-        //     {
-        //         items.Add(new MenuItem()
-        //         {
-        //             Kind = MenuItemKinds.Item,
-        //             Name = WidthItemName,
-        //             Title = "Change width",
-        //             IconClass = "fa fa-edit text-primary"
-        //         });
-        //     }
-        //
-        //     if (callFrom == "row")
-        //     {
-        //         items.Add(new MenuItem()
-        //         {
-        //             Kind = MenuItemKinds.Item,
-        //             Name = HeightItemName,
-        //             Title = "Change height",
-        //             IconClass = "fa fa-edit text-primary"
-        //         });
-        //     }
-        //
-        //     items.Add(new MenuItem()
-        //     {
-        //         Kind = MenuItemKinds.Item,
-        //         Name = SheetSizeItemName,
-        //         Title = "Change sheet size",
-        //         IconClass = "fa fa-edit text-primary"
-        //     });
-        // }
-        //
-        // items.Add(new MenuItem()
-        // {
-        //     Kind = MenuItemKinds.Delimiter
-        // });
-        //
-        // if (isDesignRegime)
-        // {
-        //     items.Add(new MenuItem()
-        //     {
-        //         Kind = MenuItemKinds.Item,
-        //         Name = ShowHideItemName,
-        //         Title = ShowHideItemName,
-        //         IconClass = "fa fa-sharp fa-regular fa-eye"
-        //     });
-        // }
-        //
-        // items.Add(new MenuItem()
-        // {
-        //     Kind = MenuItemKinds.Item,
-        //     Name = ShowHiddenHideHiddenItemName,
-        //     Title = "Show hidden/Hide hidden",
-        //     IconClass = "fa fa-sharp fa-regular fa-eye"
-        // });
-        //
-        // if (isAddRemoveAllowed)
-        // {
-        //     items.Add(new MenuItem()
-        //     {
-        //         Kind = MenuItemKinds.Delimiter
-        //     });
-        //
-        //     items.Add(new MenuItem()
-        //     {
-        //         Kind = MenuItemKinds.Item,
-        //         Name = RemoveItemName,
-        //         Title = "Remove",
-        //         IconClass = "fa fa-times text-danger"
-        //     });
-        // }
-        //
-        // items.Add(new MenuItem()
-        // {
-        //     Kind = MenuItemKinds.Delimiter
-        // });
-        //
-        // items.Add(new MenuItem()
-        // {
-        //     Kind = MenuItemKinds.Item,
-        //     Name = CloseItemName,
-        //     Title = "Close",
-        //     IconClass = "fa fa-times text-secondary"
-        // });
-
+        
         return items;
     }
     
@@ -166,6 +61,7 @@ public class ContextMenuBuilder
         }
 
         items.Add(CreateMenuItem(MenuItemKinds.Item, SheetSizeItemName, "Change sheet size", "fa fa-edit text-primary"));
+        items.Add(CreateMenuItem(MenuItemKinds.Item, AllowAddRemoveItemName, "Allow add/remove", "fa fa-edit text-success"));
     }
     
     private static void AddShowHideItems(List<IMenuItem> items, bool isDesignRegime)
