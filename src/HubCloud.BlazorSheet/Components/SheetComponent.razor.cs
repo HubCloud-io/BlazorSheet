@@ -248,6 +248,11 @@ public partial class SheetComponent : ComponentBase
                 await ColumnRemoved.InvokeAsync(columnRemovedArgs);
                 await Changed.InvokeAsync(null);
                 break;
+            
+            case ContextMenuBuilder.AllowAddRemoveItemName:
+
+                _currentColumn.IsAddRemoveAllowed = !_currentColumn.IsAddRemoveAllowed;
+                break;
 
             case ContextMenuBuilder.WidthItemName:
                 _isColumnWidthModalOpen = true;
@@ -326,6 +331,11 @@ public partial class SheetComponent : ComponentBase
                 await RowRemoved.InvokeAsync(removeArgs);
                 await Changed.InvokeAsync(null);
 
+                break;
+            
+            case ContextMenuBuilder.AllowAddRemoveItemName:
+
+                _currentRow.IsAddRemoveAllowed = !_currentRow.IsAddRemoveAllowed;
                 break;
 
             case ContextMenuBuilder.HeightItemName:
