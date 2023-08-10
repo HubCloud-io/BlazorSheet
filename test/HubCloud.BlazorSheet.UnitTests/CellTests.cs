@@ -25,7 +25,8 @@ namespace HubCloud.BlazorSheet.UnitTests
         {
             var cell = new SheetCell();
             cell.Value = input;
-            cell.ApplyFormat(format);
+            cell.Format = format;
+            cell.ApplyFormat();
 
             Assert.AreEqual(expected, cell.Text);
         }

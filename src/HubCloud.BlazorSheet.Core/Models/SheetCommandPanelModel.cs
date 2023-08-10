@@ -94,33 +94,6 @@ namespace HubCloud.BlazorSheet.Core.Models
             {
                 TextAlign = DefaultTextAlign;
             }
-
-            switch (cellStyle.Format)
-            {
-                case "":
-                case null:
-                    this.FormatType = CellFormatTypes.None;
-                    break;
-                case CellFormatConsts.Integer:
-                    this.FormatType = CellFormatTypes.Integer;
-                    break;
-                case CellFormatConsts.IntegerTwoDecimalPlaces:
-                    this.FormatType = CellFormatTypes.IntegerTwoDecimalPlaces;
-                    break;
-                case CellFormatConsts.IntegerThreeDecimalPlaces:
-                    this.FormatType = CellFormatTypes.IntegerThreeDecimalPlaces;
-                    break;
-                case CellFormatConsts.Date:
-                    this.FormatType = CellFormatTypes.Date;
-                    break;
-                case CellFormatConsts.DateTime:
-                    this.FormatType = CellFormatTypes.DateTime;
-                    break;
-                default:
-                    this.FormatType = CellFormatTypes.Custom;
-                    this.CustomFormat = cellStyle.Format;
-                    break;
-            }
         }
 
         public void SetEditSettings(SheetCellEditSettings editSettings)
@@ -146,6 +119,36 @@ namespace HubCloud.BlazorSheet.Core.Models
             else
             {
                 return DefaultFontSize;
+            }
+        }
+
+        public void SetFromatType(string format)
+        {
+            switch (format)
+            {
+                case "":
+                case null:
+                    FormatType = CellFormatTypes.None;
+                    break;
+                case CellFormatConsts.Integer:
+                    FormatType = CellFormatTypes.Integer;
+                    break;
+                case CellFormatConsts.IntegerTwoDecimalPlaces:
+                    FormatType = CellFormatTypes.IntegerTwoDecimalPlaces;
+                    break;
+                case CellFormatConsts.IntegerThreeDecimalPlaces:
+                    FormatType = CellFormatTypes.IntegerThreeDecimalPlaces;
+                    break;
+                case CellFormatConsts.Date:
+                    FormatType = CellFormatTypes.Date;
+                    break;
+                case CellFormatConsts.DateTime:
+                    FormatType = CellFormatTypes.DateTime;
+                    break;
+                default:
+                    FormatType = CellFormatTypes.Custom;
+                    CustomFormat = format;
+                    break;
             }
         }
     }
