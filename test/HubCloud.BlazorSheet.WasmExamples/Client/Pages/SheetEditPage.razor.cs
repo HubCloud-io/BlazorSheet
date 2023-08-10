@@ -44,15 +44,7 @@ namespace HubCloud.BlazorSheet.WasmExamples.Client.Pages
     private void OnCellSelected(SheetCell cell)
     {
         _selectedCell = cell;
-        var style = _sheet.GetStyle(cell);
-        _commandPanelModel.CopyFrom(style);
-
-        var cellAddress = _sheet.CellAddress(cell);
-        _commandPanelModel.SelectedCellAddress = $"R{cellAddress.Row}C{cellAddress.Column}";
-        _commandPanelModel.InputText = cell.Formula;
-
-        var editSettings = _sheet.GetEditSettings(cell);
-        _commandPanelModel.SetEditSettings(editSettings);
+        _sheet.SetSettingsToCommandPanel(cell, _commandPanelModel);
     }
 
     private void OnCellsSelected(List<SheetCell> cells)

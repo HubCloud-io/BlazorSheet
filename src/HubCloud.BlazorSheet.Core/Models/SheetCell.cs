@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Globalization;
-using System.Security.Cryptography.X509Certificates;
 using System.Xml.Serialization;
+using HubCloud.BlazorSheet.Core.Consts;
+using HubCloud.BlazorSheet.Core.Enums;
 using Newtonsoft.Json;
 
 namespace HubCloud.BlazorSheet.Core.Models
@@ -23,6 +24,7 @@ namespace HubCloud.BlazorSheet.Core.Models
         [JsonIgnore] public string Text { get; set; }
         public object Value { get; set; }
         public string Formula { get; set; }
+        public string Format { get; set; } = string.Empty;
 
         public bool HasLink => !string.IsNullOrEmpty(Link) && !string.IsNullOrWhiteSpace(Link);
 
@@ -133,23 +135,54 @@ namespace HubCloud.BlazorSheet.Core.Models
             return ConcreteClone();
         }
 
-        public void ApplyFormat(string format)
+        public void ApplyFormat()
         {
             if (Value == null)
                 return;
 
             if (string.IsNullOrEmpty(StringValue) ||
-                string.IsNullOrEmpty(format))
+                string.IsNullOrEmpty(Format))
                 return;
 
             if (DateTime.TryParse(StringValue, out var date))
-                Text = date.ToString(format);
+                Text = date.ToString(Format);
             else if (decimal.TryParse(
                 StringValue.Replace(',', '.'),
                 NumberStyles.AllowDecimalPoint,
                 new NumberFormatInfo { NumberDecimalSeparator = "." },
                 out var decimalValue))
-                Text = decimalValue.ToString(format, CultureInfo.InvariantCulture);
+                Text = decimalValue.ToString(Format, CultureInfo.InvariantCulture);
+        }
+
+        public void SetFormat(CellFormatTypes formatType, string customFormat)
+        {
+            switch (formatType)
+            {
+                case CellFormatTypes.Custom:
+                    Format = customFormat;
+                    break;
+                case CellFormatTypes.None:
+                    Format = CellFormatConsts.None;
+                    break;
+                case CellFormatTypes.Integer:
+                    Format = CellFormatConsts.Integer;
+                    break;
+                case CellFormatTypes.IntegerTwoDecimalPlaces:
+                    Format = CellFormatConsts.IntegerTwoDecimalPlaces;
+                    break;
+                case CellFormatTypes.IntegerThreeDecimalPlaces:
+                    Format = CellFormatConsts.IntegerThreeDecimalPlaces;
+                    break;
+                case CellFormatTypes.Date:
+                    Format = CellFormatConsts.Date;
+                    break;
+                case CellFormatTypes.DateTime:
+                    Format = CellFormatConsts.DateTime;
+                    break;
+                default:
+                    Format = string.Empty;
+                    break;
+            }
         }
     }
 }

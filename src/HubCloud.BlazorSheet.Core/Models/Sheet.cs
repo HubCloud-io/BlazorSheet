@@ -144,10 +144,7 @@ namespace HubCloud.BlazorSheet.Core.Models
             foreach (var cell in Cells)
             {
                 cell.Text = cell.Value?.ToString();
-
-                var style = GetStyle(cell);
-                if (style != null)
-                    cell.ApplyFormat(style.Format);
+                cell.ApplyFormat();
             }
         }
 
@@ -435,6 +432,7 @@ namespace HubCloud.BlazorSheet.Core.Models
             if (cell != null)
             {
                 cell.Formula = commandPanelModel.InputText;
+                cell.SetFormat(commandPanelModel.FormatType, commandPanelModel.CustomFormat);
             }
 
             var newStyle = new SheetCellStyle(commandPanelModel);
@@ -449,6 +447,20 @@ namespace HubCloud.BlazorSheet.Core.Models
             FreezedRows = commandPanelModel.FreezedRows;
             FreezedColumns = commandPanelModel.FreezedColumns;
             IsProtected = commandPanelModel.SheetProtected;
+        }
+
+        public void SetSettingsToCommandPanel(SheetCell cell, SheetCommandPanelModel commandPanelModel)
+        {
+            var style = GetStyle(cell);
+            commandPanelModel.CopyFrom(style);
+
+            var cellAddress = CellAddress(cell);
+            commandPanelModel.SelectedCellAddress = $"R{cellAddress.Row}C{cellAddress.Column}";
+            commandPanelModel.InputText = cell.Formula;
+            commandPanelModel.SetFromatType(cell.Format);
+
+            var editSettings = GetEditSettings(cell);
+            commandPanelModel.SetEditSettings(editSettings);
         }
 
         public void SetStyle(SheetCell cell, SheetCellStyle newStyle)
