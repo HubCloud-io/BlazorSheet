@@ -10,6 +10,7 @@ namespace HubCloud.BlazorSheet.Core.Models
         public bool IsGroup { get; set; }
         public bool IsOpen { get; set; }
         public bool IsHidden { get; set; }
+        public bool IsCollapsed { get; set; }
         public bool IsAddRemoveAllowed { get; set; }
         public double HeightValue { get; set; } = 20;
 
@@ -32,7 +33,8 @@ namespace HubCloud.BlazorSheet.Core.Models
             {
                 Uid = this.Uid,
                 HeightValue = this.HeightValue,
-                IsHidden = this.IsHidden
+                IsHidden = this.IsHidden,
+                IsCollapsed = this.IsCollapsed
             };
 
             return clone;
