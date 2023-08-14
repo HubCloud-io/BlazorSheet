@@ -143,6 +143,20 @@ public class SheetTests
         Assert.AreEqual(checkRowsCount, sheet.Rows.Count);
     }
 
+    [TestCase(1, 1, 2, 2, 4)]
+    [TestCase(0, 1, 2, 2, 0)]
+    [TestCase(1, 0, 2, 2, 0)]
+    [TestCase(1, 1, 0, 2, 0)]
+    [TestCase(1, 1, 2, 0, 0)]
+    [TestCase(2, 2, 6, 6, 36)]
+    public void GetCellsByRange_ReturnListCells(int fromRow, int fromCol, int toRow, int toCol, int expectedCount)
+    {
+        var sheet = new Sheet(10, 10);
+        var cells = sheet.GetCellsByRange(fromRow, fromCol, toRow, toCol);
+
+        Assert.AreEqual(expectedCount, cells.Count);
+    }
+
     private SheetSettings BuildSheetSettingsWithCellNames(int rowsCount, int columnsCount)
     {
         var sheetSettings = new SheetSettings()

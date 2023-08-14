@@ -1257,5 +1257,34 @@ namespace HubCloud.BlazorSheet.Core.Models
                 destinationCell.Text = sourceCell.Text;
             }
         }
+
+        public List<SheetCell> GetCellsByRange(int fromRow, int fromCol, int toRow, int toCol)
+        {
+            var cells = new List<SheetCell>();
+
+            if (fromRow < 1 || fromCol < 1 || toRow < 1 || toCol < 1)
+                return cells;
+
+            var row = fromRow;
+
+            for (int i = 0; i < toRow; i++)
+            {
+                var col = fromCol;
+
+                for (int j = 0; j < toCol; j++)
+                {
+                    var cell = GetCell(row, col);
+
+                    if (cell != null)
+                        cells.Add(cell);
+
+                    col++;
+                }
+
+                row++;
+            }
+
+            return cells;
+        }
     }
 }
