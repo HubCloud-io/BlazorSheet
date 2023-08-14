@@ -867,7 +867,7 @@ namespace HubCloud.BlazorSheet.Core.Models
                 row.IsGroup = false;
                 row.ParentUid = headRow.Uid;
                 row.IsOpen = headRow.IsOpen;
-                row.IsHidden = !headRow.IsOpen;
+                row.IsCollapsed = !headRow.IsOpen;
 
                 ChangeChildrenParent(row, headRow.Uid);
                 ChangeChildrenVisibility(row, row.IsOpen);
@@ -911,7 +911,7 @@ namespace HubCloud.BlazorSheet.Core.Models
                 column.IsGroup = false;
                 column.ParentUid = headColumn.Uid;
                 column.IsOpen = headColumn.IsOpen;
-                column.IsHidden = !headColumn.IsOpen;
+                column.IsCollapsed = !headColumn.IsOpen;
 
                 ChangeChildrenParent(column, headColumn.Uid);
                 ChangeChildrenVisibility(column, column.IsOpen);
@@ -936,7 +936,7 @@ namespace HubCloud.BlazorSheet.Core.Models
 
             foreach (var row in rows)
             {
-                row.IsHidden = !IsVisible;
+                row.IsCollapsed = !IsVisible;
 
                 if (row.IsGroup)
                 {
@@ -952,7 +952,7 @@ namespace HubCloud.BlazorSheet.Core.Models
 
             foreach (var column in columns)
             {
-                column.IsHidden = !IsVisible;
+                column.IsCollapsed = !IsVisible;
 
                 if (column.IsGroup)
                 {

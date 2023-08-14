@@ -661,17 +661,17 @@ public partial class SheetComponent : ComponentBase
 
     private bool CellHidden(SheetColumn column, SheetRow row, SheetCell cell)
     {
-        return ((column.IsHidden || row.IsHidden) && !_isHiddenCellsVisible) || cell.HiddenByJoin;
+        return ((column.IsHidden || row.IsHidden) && !_isHiddenCellsVisible) || cell.HiddenByJoin || row.IsCollapsed || column.IsCollapsed;
     }
 
     private bool CellHidden(SheetColumn column)
     {
-        return column.IsHidden && !_isHiddenCellsVisible;
+        return (column.IsHidden && !_isHiddenCellsVisible) || column.IsCollapsed;
     }
 
     private bool CellHidden(SheetRow row)
     {
-        return row.IsHidden && !_isHiddenCellsVisible;
+        return (row.IsHidden && !_isHiddenCellsVisible) || row.IsCollapsed;
     }
 
     public void OpenCellLinkModal()
