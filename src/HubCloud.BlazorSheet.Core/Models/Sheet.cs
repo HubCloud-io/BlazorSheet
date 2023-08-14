@@ -420,19 +420,15 @@ namespace HubCloud.BlazorSheet.Core.Models
             SheetCommandPanelModel commandPanelModel)
         {
             if (cells == null)
-            {
                 return;
-            }
 
             if (commandPanelModel == null)
-            {
                 return;
-            }
 
-            if (cell != null)
+            foreach (var item in cells)
             {
-                cell.Formula = commandPanelModel.InputText;
-                cell.SetFormat(commandPanelModel.FormatType, commandPanelModel.CustomFormat);
+                item.Formula = commandPanelModel.InputText;
+                item.SetFormat(commandPanelModel.FormatType, commandPanelModel.CustomFormat);
             }
 
             var newStyle = new SheetCellStyle(commandPanelModel);
