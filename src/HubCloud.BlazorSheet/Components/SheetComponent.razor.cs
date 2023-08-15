@@ -659,19 +659,19 @@ public partial class SheetComponent : ComponentBase
         return _cellStyleBuilder.GetCellStyle(Sheet, row, column, cell, _isHiddenCellsVisible);
     }
 
-    private bool CellHidden(SheetColumn column, SheetRow row, SheetCell cell)
+    private bool ShouldCellBeDisplayed(SheetColumn column, SheetRow row, SheetCell cell)
     {
         return ((column.IsHidden || row.IsHidden) && !_isHiddenCellsVisible) || cell.HiddenByJoin || row.IsCollapsed || column.IsCollapsed;
     }
 
-    private bool CellHidden(SheetColumn column)
+    private bool ShouldColumnBeDisplayed(SheetColumn column)
     {
-        return (column.IsHidden && !_isHiddenCellsVisible) || column.IsCollapsed;
+        return (!column.IsHidden || _isHiddenCellsVisible) && !column.IsCollapsed;
     }
 
-    private bool CellHidden(SheetRow row)
+    private bool ShouldRowBeDisplayed(SheetRow row)
     {
-        return (row.IsHidden && !_isHiddenCellsVisible) || row.IsCollapsed;
+        return (!row.IsHidden || _isHiddenCellsVisible) && !row.IsCollapsed;
     }
 
     public void OpenCellLinkModal()
