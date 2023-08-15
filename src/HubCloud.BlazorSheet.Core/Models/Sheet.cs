@@ -490,8 +490,12 @@ namespace HubCloud.BlazorSheet.Core.Models
             var existingStyle = FindExistingStyle(newStyle);
 
             Guid styleUid;
+
             if (existingStyle == null)
             {
+                if (_styles.Any(x => x.Uid == newStyle.Uid))
+                    newStyle.Uid = Guid.NewGuid();
+
                 _styles.Add(newStyle);
                 styleUid = newStyle.Uid;
             }
