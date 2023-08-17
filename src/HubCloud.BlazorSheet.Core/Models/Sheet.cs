@@ -1268,23 +1268,29 @@ namespace HubCloud.BlazorSheet.Core.Models
             if (fromRow < 1 || fromCol < 1 || toRow < 1 || toCol < 1)
                 return cells;
 
-            var row = fromRow;
+            if (fromRow > toRow || fromCol > toCol)
+                return cells;
 
-            for (int i = 0; i < toRow; i++)
+            var rowIterationCount = fromRow == toRow ? 1 : toRow;
+            var colIterationCount = fromCol == toCol ? 1 : toCol;
+
+            var currentRow = fromRow;
+
+            for (int i = 0; i < rowIterationCount; i++)
             {
-                var col = fromCol;
+                var currentCol = fromCol;
 
-                for (int j = 0; j < toCol; j++)
+                for (int j = 0; j < colIterationCount; j++)
                 {
-                    var cell = GetCell(row, col);
+                    var cell = GetCell(currentRow, currentCol);
 
                     if (cell != null)
                         cells.Add(cell);
 
-                    col++;
+                    currentCol++;
                 }
 
-                row++;
+                currentRow++;
             }
 
             return cells;

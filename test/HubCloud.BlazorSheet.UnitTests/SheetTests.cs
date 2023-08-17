@@ -143,6 +143,8 @@ public class SheetTests
         Assert.AreEqual(checkRowsCount, sheet.Rows.Count);
     }
 
+    [TestCase(7, 1, 7, 9, 9)]
+    [TestCase(1, 1, 9, 1, 9)]
     [TestCase(1, 1, 2, 2, 4)]
     [TestCase(0, 1, 2, 2, 0)]
     [TestCase(1, 0, 2, 2, 0)]
