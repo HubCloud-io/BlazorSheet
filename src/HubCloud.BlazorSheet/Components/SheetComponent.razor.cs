@@ -714,4 +714,14 @@ public partial class SheetComponent : ComponentBase
         column.IsOpen = !column.IsOpen;
         Sheet.ChangeChildrenVisibility(column, column.IsOpen);
     }
+
+    private string GetHtmlSpacing(int indent)
+    {
+        var spacing = string.Empty;
+
+        for (int i = 0; i < indent; i++)
+            spacing += "\u00A0";
+
+        return spacing;
+    }
 }

@@ -20,6 +20,7 @@ namespace HubCloud.BlazorSheet.Core.Models
         public int Rowspan { get; set; } = 1;
         public bool HiddenByJoin { get; set; }
         public bool Locked { get; set; } = true;
+        public int Indent { get; set; }
 
         [JsonIgnore] public string Text { get; set; }
         public object Value { get; set; }
@@ -122,6 +123,7 @@ namespace HubCloud.BlazorSheet.Core.Models
                 ColumnUid = this.ColumnUid,
                 Name = this.Name,
                 Link = this.Link,
+                Indent = this.Indent,
 
                 Text = this.Text,
                 Value = this.Value
