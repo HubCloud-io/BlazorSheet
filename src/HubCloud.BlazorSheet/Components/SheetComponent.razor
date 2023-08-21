@@ -135,7 +135,15 @@
                                         }
                                         else
                                         {
-                                            @cell.Text
+                                            if (cell.Indent > 0)
+                                            {
+                                                <span>@GetHtmlSpacing(cell.Indent)</span>
+                                                <span>@cell.Text</span>
+                                            }
+                                            else
+                                            {
+                                                @cell.Text
+                                            }
                                         }
                                     }
 
@@ -169,7 +177,15 @@
                                         }
                                         else
                                         {
-                                            @cell.Text
+                                            if (cell.Indent > 0)
+                                            {
+                                                <span>@GetHtmlSpacing(cell.Indent)</span>
+                                                <span>@cell.Text</span>
+                                            }
+                                            else
+                                            {
+                                                @cell.Text
+                                            }
                                         }
                                     }
 
@@ -263,7 +279,15 @@
                                         }
                                         else
                                         {
-                                            @cell.Text
+                                            if (cell.Indent > 0)
+                                            {
+                                                <span>@GetHtmlSpacing(cell.Indent)</span>
+                                                <span>@cell.Text</span>
+                                            }
+                                            else
+                                            {
+                                                @cell.Text
+                                            }
                                         }
                                     }
 
@@ -297,7 +321,15 @@
                                         }
                                         else
                                         {
-                                            @cell.Text
+                                            if (cell.Indent > 0)
+                                            {
+                                                <span>@GetHtmlSpacing(cell.Indent)</span>
+                                                <span>@cell.Text</span>
+                                            }
+                                            else
+                                            {
+                                                @cell.Text
+                                            }
                                         }
                                     }
 
