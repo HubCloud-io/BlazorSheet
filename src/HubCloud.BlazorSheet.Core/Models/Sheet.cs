@@ -1295,5 +1295,60 @@ namespace HubCloud.BlazorSheet.Core.Models
 
             return cells;
         }
+
+        public int GetDimensionEndRowNumber()
+        {
+            var rowUids = Cells
+                .Where(x => x.Value != null)
+                .Select(x => x.RowUid)
+                .Distinct();
+
+            var rows = Rows.Where(x => rowUids.Contains(x.Uid));
+
+            return rows
+                .Select(x => RowNumber(x))
+                .Max();
+        }
+
+        public void ApplyStyleParams(IEnumerable<SheetCell> cells, Dictionary<string, object> styleParams)
+        {
+            if (!cells.Any() || !styleParams.Any())
+                return;
+
+            var style = new SheetCellStyle();
+
+            foreach (var item in styleParams)
+            {
+                var prop = style.GetType().GetProperty(item.Key);
+                if (prop != null)
+                    prop.SetValue(style, item.Value, null);
+            }
+
+            var styleUids = cells.Select(x => x.StyleUid).Distinct();
+            foreach (var styleUid in styleUids)
+            {
+                var currentStyle = Styles.FirstOrDefault(x => x.Uid == styleUid);
+                if (currentStyle == null)
+                    currentStyle = style;
+                else
+                {
+                    currentStyle = currentStyle.Copy();
+
+                    foreach (var item in styleParams)
+                    {
+                        var prop = currentStyle.GetType().GetProperty(item.Key);
+                        if (prop != null)
+                            prop.SetValue(currentStyle, item.Value, null);
+                    }
+                }
+
+                var currentCells = cells.Where(x => x.StyleUid == styleUid);
+                SetStyle(currentCells, currentStyle);
+            }
+
+            var withoutStyleCells = cells.Where(x => !x.StyleUid.HasValue);
+            if (withoutStyleCells.Any())
+                SetStyle(withoutStyleCells, style);
+        }
     }
 }

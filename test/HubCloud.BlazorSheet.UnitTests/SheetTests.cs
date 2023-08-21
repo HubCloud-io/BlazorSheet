@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using HubCloud.BlazorSheet.Core.Models;
 using NUnit.Framework;
 
@@ -157,6 +158,61 @@ public class SheetTests
         var cells = sheet.GetCellsByRange(fromRow, fromCol, toRow, toCol);
 
         Assert.AreEqual(expectedCount, cells.Count);
+    }
+
+    [Test]
+    public void GetDimensionEndRowNumber_ReturnsLastFillRow()
+    {
+        var sheetSettings = BuildSheetSettingsWithCellNames(5, 5);
+        var sheet = new Sheet(sheetSettings);
+
+        sheet.AddRow(sheet.Rows.Last(), 1, false);
+        sheet.AddRow(sheet.Rows.Last(), 1, false);
+        sheet.AddRow(sheet.Rows.Last(), 1, false);
+
+        var rowNumber = sheet.GetDimensionEndRowNumber();
+
+        Assert.AreEqual(5, rowNumber);
+    }
+
+    [Test]
+    public void ApplyStyleParams()
+    {
+        var sheet = new Sheet(5, 5);
+
+        var cell11 = sheet.GetCell(1, 1);
+        var cell12 = sheet.GetCell(1, 2);
+
+        var style = new SheetCellStyle
+        {
+            BackgroundColor = "red",
+            BorderBottom = "1px solid #275081",
+            BorderLeft = "1px solid #275081",
+            BorderRight = "1px solid #275081",
+            BorderTop = "1px solid #275081",
+            Color = "#ffffff",
+            FontSize = "12px",
+            FontStyle = "italic",
+            FontWeight = "bold",
+            TextAlign = "center"
+        };
+
+        sheet.SetStyle(cell11, style);
+        sheet.SetStyle(cell12, style);
+
+        var styleParams = new Dictionary<string, object>
+        {
+            { nameof(SheetCellStyle.TextAlign), "left" },
+            { nameof(SheetCellStyle.BackgroundColor), "green" }
+        };
+        sheet.ApplyStyleParams(new List<SheetCell> { cell11 }, styleParams);
+
+        var style1 = sheet.GetStyle(cell11);
+        var style2 = sheet.GetStyle(cell12);
+
+        var result = style1.IsStyleEqual(style2);
+
+        Assert.AreEqual(false, result);
     }
 
     private SheetSettings BuildSheetSettingsWithCellNames(int rowsCount, int columnsCount)

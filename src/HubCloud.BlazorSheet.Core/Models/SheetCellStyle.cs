@@ -109,5 +109,23 @@ namespace HubCloud.BlazorSheet.Core.Models
             var style = $"{borderWidth}px solid {borderColor}";
             return style;
         }
+
+        public SheetCellStyle Copy()
+        {
+            return new SheetCellStyle
+            {
+                BackgroundColor = BackgroundColor,
+                BorderBottom = BorderBottom,
+                BorderRight = BorderRight,
+                BorderTop = BorderTop,
+                BorderLeft = BorderLeft,
+                Color = Color,
+                FontFamily = FontFamily,
+                FontSize = FontSize,
+                FontStyle = FontStyle,
+                FontWeight = FontWeight,
+                TextAlign = TextAlign
+            };
+        }
     }
 }
