@@ -7,11 +7,11 @@ public class ComboBoxDataProvider:IComboBoxDataProvider<int>
 {
     private int _itemsCount = 100;
     private List<SelectItem<int>> _collection;
-    private string _catalogName;
+    private int _dataType;
 
-    public ComboBoxDataProvider(string catalogName)
+    public ComboBoxDataProvider(int dataType)
     {
-        _catalogName = catalogName;
+        _dataType = dataType;
         Init();
     }
     
@@ -37,7 +37,7 @@ public class ComboBoxDataProvider:IComboBoxDataProvider<int>
         {
             var item = new SelectItem<int>();
             item.Value = i;
-            item.Text = $"{_catalogName} {i}";
+            item.Text = $"Item {_dataType} {i}";
             
             _collection.Add(item);
         }
