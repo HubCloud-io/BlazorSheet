@@ -64,11 +64,11 @@ namespace HubCloud.BlazorSheet.Core.Models
             return hash;
         }
 
-        public int GetDataType(CellControlKinds controlKind)
+        public static int GetDataType(CellControlKinds controlKind)
         {
             var dataType = 0;
 
-            switch (_controlKind)
+            switch (controlKind)
             {
                 case CellControlKinds.TextInput:
                     dataType = (int) CellDataTypes.String;
