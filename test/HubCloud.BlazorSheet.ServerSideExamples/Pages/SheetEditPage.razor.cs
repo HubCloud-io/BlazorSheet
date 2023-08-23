@@ -9,7 +9,7 @@ namespace HubCloud.BlazorSheet.ServerSideExamples.Pages;
 
 public partial class SheetEditPage: ComponentBase
 {
-    private IItemsSourceDataProvider _itemSourceDataProvider = new ItemsSourceProvider();
+    private IDataTypeDataProvider _dataTypeDataProvider = new DataTypeDataProvider();
 
     private SheetComponent _sheetComponent;
     private Sheet _sheet;

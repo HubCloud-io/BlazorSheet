@@ -16,7 +16,7 @@ public partial class SheetCommandPanel:ComponentBase
     private List<Tuple<string, CellFormatTypes>> _cellFormatSource;
     private List<Tuple<CellBorderTypes, string>> _borderTypesSource;
     private List<Tuple<CellControlKinds, string>> _controlKindSource;
-    private List<Tuple<string, string>> _itemsSourceSource;
+    private List<Tuple<int, string>> _dataTypeSource;
 
     [Parameter]
     public SheetCommandPanelModel Model { get; set; }
@@ -71,8 +71,9 @@ public partial class SheetCommandPanel:ComponentBase
 
     [Parameter]
     public int SelectedCellsCount { get; set; }
-
-    [Parameter] public IItemsSourceDataProvider ItemsSourceDataProvider { get; set; } 
+    
+    [Parameter]
+    public IDataTypeDataProvider DataTypeDataProvider { get; set; }
     
     protected override void OnInitialized()
     {
@@ -98,9 +99,9 @@ public partial class SheetCommandPanel:ComponentBase
         _cellFormatSource.Add(new Tuple<string, CellFormatTypes>("Date&Time", CellFormatTypes.DateTime));
         _cellFormatSource.Add(new Tuple<string, CellFormatTypes>("Custom", CellFormatTypes.Custom));
 
-        if (ItemsSourceDataProvider != null)
+        if (DataTypeDataProvider != null)
         {
-            _itemsSourceSource = ItemsSourceDataProvider.GetItems().ToList();
+            _dataTypeSource = DataTypeDataProvider.GetItems().ToList();
         }
         
         _controlKindSource = new List<Tuple<CellControlKinds, string>>();
@@ -108,9 +109,8 @@ public partial class SheetCommandPanel:ComponentBase
         _controlKindSource.Add(new Tuple<CellControlKinds, string>(CellControlKinds.TextInput, "Text input"));
         _controlKindSource.Add(new Tuple<CellControlKinds, string>(CellControlKinds.NumberInput, "Number input"));
         _controlKindSource.Add(new Tuple<CellControlKinds, string>(CellControlKinds.DateInput, "Date input"));
-        _controlKindSource.Add(new Tuple<CellControlKinds, string>(CellControlKinds.DateTimeInput, "Date&Time input"));
         _controlKindSource.Add(new Tuple<CellControlKinds, string>(CellControlKinds.CheckBox, "Check box"));
-        _controlKindSource.Add(new Tuple<CellControlKinds, string>(CellControlKinds.ComboBox, "Combo box"));
+        _controlKindSource.Add(new Tuple<CellControlKinds, string>(CellControlKinds.Select, "Select"));
     }
 
     protected override void OnParametersSet()
@@ -147,6 +147,12 @@ public partial class SheetCommandPanel:ComponentBase
         await Changed.InvokeAsync(null);
     }
 
+    private async Task OnControlKindChanged()
+    {
+        Model.DataType = SheetCellEditSettings.GetDataType(Model.ControlKind);
+        await Changed.InvokeAsync(null);
+    }
+    
     private async Task OnSettingsChanged()
     {
         await Changed.InvokeAsync(null);

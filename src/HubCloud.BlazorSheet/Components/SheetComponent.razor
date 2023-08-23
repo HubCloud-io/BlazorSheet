@@ -165,7 +165,7 @@
                                                          Cell="@cell"
                                                          IsDisabled="@IsDisabled"
                                                          ColumnWidth="@((int) column.WidthValue)"
-                                                         ComboBoxDataProvider="@ComboBoxDataProviderFactory?.Create(editSettings.ItemsSource)"
+                                                         ComboBoxDataProvider="@ComboBoxDataProviderFactory?.Create(editSettings.CellDataType)"
                                                          Changed="(e => OnCellValueChanged(cell))">
                                         </CellEditControl>
                                     }
@@ -309,7 +309,7 @@
                                                          Cell="@cell"
                                                          IsDisabled="@IsDisabled"
                                                          ColumnWidth="@((int) column.WidthValue)"
-                                                         ComboBoxDataProvider="@ComboBoxDataProviderFactory?.Create(editSettings.ItemsSource)"
+                                                         ComboBoxDataProvider="@ComboBoxDataProviderFactory?.Create(editSettings.CellDataType)"
                                                          Changed="(e => OnCellValueChanged(cell))">
                                         </CellEditControl>
                                     }

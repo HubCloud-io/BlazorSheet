@@ -27,6 +27,7 @@ namespace HubCloud.BlazorSheet.Core.Models
         public int BorderWidth { get; set; } = 1;
         public string BorderColor { get; set; } = "#000000";
         
+        public int DataType { get; set; }
         public string ItemsSource { get; set; }
         public CellControlKinds ControlKind { get; set; }
         public int NumberDigits { get; set; }
@@ -101,6 +102,7 @@ namespace HubCloud.BlazorSheet.Core.Models
             ControlKind = editSettings.ControlKind;
             NumberDigits = editSettings.NumberDigits;
             ItemsSource = editSettings.ItemsSource;
+            DataType = editSettings.CellDataType;
         }
 
         private int ParseFontSize(string fontSizePx)

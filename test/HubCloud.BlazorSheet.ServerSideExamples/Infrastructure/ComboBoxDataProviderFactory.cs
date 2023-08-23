@@ -5,9 +5,9 @@ namespace HubCloud.BlazorSheet.ServerSideExamples.Infrastructure;
 
 public class ComboBoxDataProviderFactory: IComboBoxDataProviderFactory
 {
-    public IComboBoxDataProvider<int> Create(string itemsSource)
+    public IComboBoxDataProvider<int> Create(int dataType)
     {
-        var dataProvider = new ComboBoxDataProvider(itemsSource);
+        var dataProvider = new ComboBoxDataProvider(dataType);
 
         return dataProvider;
     }

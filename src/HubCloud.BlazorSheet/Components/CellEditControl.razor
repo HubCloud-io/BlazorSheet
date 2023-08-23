@@ -1,4 +1,5 @@
 ﻿@using HubCloud.BlazorSheet.Core.Enums
+@using HubCloud.BlazorSheet.Editors
 @using BBComponents.Enums
 @using BBComponents.Components
 
@@ -27,24 +28,19 @@
 
         case CellControlKinds.DateInput:
 
-            <BbDatePicker @bind-Value="@Cell.DateTimeValue"
-                          IsDisabled="IsDisabled"
-                          DropdownWidth="@DropdownWidth"
-                          DropdownPosition="@DropdownPositions.Fixed"
-                          Size="@BootstrapElementSizes.Sm"
-                          Changed="@OnChanged">
-            </BbDatePicker>
+            <DateEditor @bind-Value="@Cell.DateTimeValue"
+                        IsDisabled="@IsDisabled"
+                        Changed="@OnChanged">
+            </DateEditor>
+
             break;
 
         case CellControlKinds.DateTimeInput:
 
-            <BbDatePicker @bind-Value="@Cell.DateTimeValue"
-                          IsDisabled="IsDisabled"
-                          DropdownWidth="@DropdownWidth"
-                          DropdownPosition="@DropdownPositions.Fixed"
-                          Size="@BootstrapElementSizes.Sm"
-                          Changed="@OnChanged">
-            </BbDatePicker>
+            <DateEditor @bind-Value="@Cell.DateTimeValue"
+                        IsDisabled="@IsDisabled"
+                        Changed="@OnChanged">
+            </DateEditor>
             break;
 
         case CellControlKinds.CheckBox:
@@ -78,6 +74,23 @@
                 <span style="color:red;">Combobox data provider is not defined</span>
             }
 
+            break;
+
+        case CellControlKinds.Select:
+        
+            @if (ComboBoxDataProvider != null)
+            {
+                <SelectEditor DataProvider="ComboBoxDataProvider" 
+                              IsDisabled="@IsDisabled" 
+                              @bind-Value="@Cell.IntValue" 
+                              Changed="OnChanged"></SelectEditor>
+            }
+            else
+            {
+                <span style="color:red;">Combobox data provider is not defined</span>
+            }
+        
+        
             break;
 
         default:
