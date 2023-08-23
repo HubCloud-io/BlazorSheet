@@ -29,8 +29,8 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
 
             var editSettingsDepartment = new SheetCellEditSettings()
             {
-                ControlKind = CellControlKinds.ComboBox,
-                ItemsSource = "department"
+                ControlKind = CellControlKinds.Select,
+                CellDataType = 26
             };
             sheetSettings.EditSettings.Add(editSettingsDepartment);
 

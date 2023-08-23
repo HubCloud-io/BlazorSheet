@@ -37,7 +37,7 @@ public class ComboBoxDataProvider:IComboBoxDataProvider<int>
         {
             var item = new SelectItem<int>();
             item.Value = i;
-            item.Text = $"Item {_dataType} {i}";
+            item.Text = $"Catalog {_dataType} / Item {i}";
             
             _collection.Add(item);
         }

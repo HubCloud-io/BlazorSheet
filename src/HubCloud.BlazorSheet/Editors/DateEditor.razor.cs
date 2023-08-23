@@ -4,7 +4,7 @@ using ExpressoFunctions.FunctionLibrary;
 
 namespace HubCloud.BlazorSheet.Editors;
 
-public partial class SheetCellDateEditor : ComponentBase
+public partial class DateEditor : ComponentBase
 {
     private string _value;
     private bool _wasInit;
