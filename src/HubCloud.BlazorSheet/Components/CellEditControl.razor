@@ -1,4 +1,5 @@
 ﻿@using HubCloud.BlazorSheet.Core.Enums
+@using HubCloud.BlazorSheet.Editors
 @using BBComponents.Enums
 @using BBComponents.Components
 
@@ -27,24 +28,33 @@
 
         case CellControlKinds.DateInput:
 
-            <BbDatePicker @bind-Value="@Cell.DateTimeValue"
-                          IsDisabled="IsDisabled"
-                          DropdownWidth="@DropdownWidth"
-                          DropdownPosition="@DropdownPositions.Fixed"
-                          Size="@BootstrapElementSizes.Sm"
-                          Changed="@OnChanged">
-            </BbDatePicker>
+            @* <BbDatePicker @bind-Value="@Cell.DateTimeValue" *@
+            @*               IsDisabled="IsDisabled" *@
+            @*               DropdownWidth="@DropdownWidth" *@
+            @*               DropdownPosition="@DropdownPositions.Fixed" *@
+            @*               Size="@BootstrapElementSizes.Sm" *@
+            @*               Changed="@OnChanged"> *@
+            @* </BbDatePicker> *@
+            
+            <SheetCellDateEditor @bind-Value="@Cell.DateTimeValue" 
+                                 IsDisabled="@IsDisabled"
+                                 Changed="@OnChanged"></SheetCellDateEditor>
+            
             break;
 
         case CellControlKinds.DateTimeInput:
 
-            <BbDatePicker @bind-Value="@Cell.DateTimeValue"
-                          IsDisabled="IsDisabled"
-                          DropdownWidth="@DropdownWidth"
-                          DropdownPosition="@DropdownPositions.Fixed"
-                          Size="@BootstrapElementSizes.Sm"
-                          Changed="@OnChanged">
-            </BbDatePicker>
+            @* <BbDatePicker @bind-Value="@Cell.DateTimeValue" *@
+            @*               IsDisabled="IsDisabled" *@
+            @*               DropdownWidth="@DropdownWidth" *@
+            @*               DropdownPosition="@DropdownPositions.Fixed" *@
+            @*               Size="@BootstrapElementSizes.Sm" *@
+            @*               Changed="@OnChanged"> *@
+            @* </BbDatePicker> *@
+        
+            <SheetCellDateEditor @bind-Value="@Cell.DateTimeValue" 
+                                 IsDisabled="@IsDisabled"
+                                 Changed="@OnChanged"></SheetCellDateEditor>
             break;
 
         case CellControlKinds.CheckBox:

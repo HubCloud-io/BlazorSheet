@@ -55,6 +55,8 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
             sheet.GetCell(4, 2).Value = "Budget item / Period";
 
             sheet.GetCell(4, 3).Formula = $"Val(\"R2C3\").BeginYear()";
+            sheet.GetCell(4, 3).EditSettingsUid = editSettingsDate.Uid;
+            
             sheet.GetCell(4, 4).Formula = $"Val(\"R2C3\").BeginYear().AddMonths(1)";
             sheet.GetCell(4, 5).Formula = $"Val(\"R2C3\").BeginYear().AddMonths(2)";
 
