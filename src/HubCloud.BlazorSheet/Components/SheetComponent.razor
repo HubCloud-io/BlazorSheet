@@ -296,31 +296,13 @@
                             }
                             else
                             {
-                                <td @key="@cell.Uid"
-                                    class="@CellClass(cell)"
-                                    style="@CellStyle(row, column, cell)"
-                                    @ondblclick="(e=>OnCellDblClick(e, cell))"
-                                    colspan="@cell.Colspan"
-                                    rowspan="@cell.Rowspan">
-
-                                    @if (cell.HasLink)
-                                    {
-                                        <a href="@cell.Link" target="_blank">@cell.StringValue</a>
-                                    }
-                                    else
-                                    {
-                                        if (cell.Indent > 0)
-                                        {
-                                            <span>@GetHtmlSpacing(cell.Indent)</span>
-                                            <span>@cell.Text</span>
-                                        }
-                                        else
-                                        {
-                                            @cell.Text
-                                        }
-                                    }
-
-                                </td>
+                                <SheetCellComponent Sheet="@Sheet" 
+                                                    Row="@row" 
+                                                    Column="@column" 
+                                                    Cell="@cell" 
+                                                    StyleBuilder="@_cellStyleBuilder"
+                                                    IsHiddenCellsVisible="@_isHiddenCellsVisible" 
+                                                    StartEdit="OnCellStartEdit"></SheetCellComponent>
                             }
                         }
                     </tr>

@@ -1,0 +1,25 @@
+﻿<td @key="@Cell.Uid"
+    class="hc-sheet-cell"
+    style="@CellStyle(Row, Column, Cell)"
+    @ondblclick="(e=>OnCellDblClick(e, Cell))"
+    colspan="@Cell.Colspan"
+    rowspan="@Cell.Rowspan">
+
+    @if (Cell.HasLink)
+    {
+        <a href="@Cell.Link" target="_blank">@Cell.StringValue</a>
+    }
+    else
+    {
+        if (Cell.Indent > 0)
+        {
+            <span>@GetHtmlSpacing(Cell.Indent)</span>
+            <span>@Cell.Text</span>
+        }
+        else
+        {
+            @Cell.Text
+        }
+    }
+
+</td>

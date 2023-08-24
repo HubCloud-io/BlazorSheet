@@ -168,29 +168,10 @@ public partial class SheetComponent : ComponentBase
             _multipleSelection = false;
         }
     }
-
-    private void OnCellDblClick(MouseEventArgs e, SheetCell cell)
+    
+    private void OnCellStartEdit(CellEditInfo args)
     {
-        _cellEditInfo = null;
-        
-        if (!cell.EditSettingsUid.HasValue)
-        {
-            return;
-        }
-
-        var row = Sheet.GetRow(cell.RowUid);
-        var column = Sheet.GetColumn(cell.ColumnUid);
-        var editSettings = Sheet.GetEditSettings(cell);
-
-        _cellEditInfo = new CellEditInfo()
-        {
-            ClientX = e.ClientX,
-            ClientY = e.ClientY,
-            EditSettings = editSettings,
-            Cell = cell,
-            Row = row,
-            Column = column
-        };
+        _cellEditInfo = args;
     }
 
     private void OnRowContextMenu(MouseEventArgs e, SheetRow row)
@@ -451,6 +432,7 @@ public partial class SheetComponent : ComponentBase
 
     private async Task OnEditorChanged(SheetCell cell)
     {
+        _cellEditInfo = null;
         cell.Text = cell.Value?.ToString();
         await CellValueChanged.InvokeAsync(cell);
      
