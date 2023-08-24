@@ -5,20 +5,9 @@ namespace HubCloud.BlazorSheet.Core.Models
 {
     public class SheetCellEditSettings
     {
-        private CellControlKinds _controlKind;
-
         public Guid Uid { get; set; } = Guid.NewGuid();
 
-        public CellControlKinds ControlKind
-        {
-            get { return _controlKind; }
-            set
-            {
-                _controlKind = value;
-                CellDataType = GetDataType(_controlKind);
-            }
-        }
-
+        public CellControlKinds ControlKind { get; set; }
         public int CellDataType { get; set; }
         public string ItemsSource { get; set; } = string.Empty;
         public int NumberDigits { get; set; }
