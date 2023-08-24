@@ -1,4 +1,5 @@
 ﻿using System.Data.Common;
+using System.Net.NetworkInformation;
 using System.Text;
 using BBComponents.Abstract;
 using BBComponents.Enums;
@@ -6,6 +7,7 @@ using BBComponents.Models;
 using HubCloud.BlazorSheet.Core.Enums;
 using HubCloud.BlazorSheet.Core.Events;
 using HubCloud.BlazorSheet.Core.Models;
+using HubCloud.BlazorSheet.Editors;
 using HubCloud.BlazorSheet.Infrastructure;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
@@ -24,6 +26,8 @@ public partial class SheetComponent : ComponentBase
 
     private string _currentCellText;
     private bool _cellHasChanged;
+
+    private CellEditInfo _cellEditInfo;
 
     private SheetColumn _currentColumn;
     private SheetRow _currentRow;
@@ -163,6 +167,30 @@ public partial class SheetComponent : ComponentBase
         {
             _multipleSelection = false;
         }
+    }
+
+    private void OnCellDblClick(MouseEventArgs e, SheetCell cell)
+    {
+        _cellEditInfo = null;
+        
+        if (!cell.EditSettingsUid.HasValue)
+        {
+            return;
+        }
+
+        var row = Sheet.GetRow(cell.RowUid);
+        var column = Sheet.GetColumn(cell.ColumnUid);
+        var editSettings = Sheet.GetEditSettings(cell);
+
+        _cellEditInfo = new CellEditInfo()
+        {
+            ClientX = e.ClientX,
+            ClientY = e.ClientY,
+            EditSettings = editSettings,
+            Cell = cell,
+            Row = row,
+            Column = column
+        };
     }
 
     private void OnRowContextMenu(MouseEventArgs e, SheetRow row)
@@ -419,6 +447,13 @@ public partial class SheetComponent : ComponentBase
     private async Task OnCellValueChanged(SheetCell cell)
     {
         await CellValueChanged.InvokeAsync(cell);
+    }
+
+    private async Task OnEditorChanged(SheetCell cell)
+    {
+        cell.Text = cell.Value?.ToString();
+        await CellValueChanged.InvokeAsync(cell);
+     
     }
 
     private async Task OnColumnNumberCellClick(SheetColumn column)
