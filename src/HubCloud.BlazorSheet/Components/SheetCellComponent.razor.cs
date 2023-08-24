@@ -3,11 +3,17 @@ using HubCloud.BlazorSheet.Editors;
 using HubCloud.BlazorSheet.Infrastructure;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.JSInterop;
 
 namespace HubCloud.BlazorSheet.Components;
 
 public partial class SheetCellComponent: ComponentBase
 {
+    private ElementReference _cellElement;
+    
+    [Inject]
+    public IJSRuntime JsRuntime { get; set; }
+    
     [Parameter]
     public Sheet Sheet { get; set; }
     
@@ -36,6 +42,19 @@ public partial class SheetCellComponent: ComponentBase
         {
             return;
         }
+
+        DomRect domRect = null;
+        try
+        {
+            domRect = await JsRuntime.InvokeAsync<DomRect>("getElementCoordinates", _cellElement);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"OnCellDblClick. Cannot get element coordinates. Message: {ex.Message}");
+        }
+        
+        if(domRect == null)
+            return;
         
         var row = Sheet.GetRow(cell.RowUid);
         var column = Sheet.GetColumn(cell.ColumnUid);
@@ -43,8 +62,7 @@ public partial class SheetCellComponent: ComponentBase
 
         var cellEditInfo = new CellEditInfo()
         {
-            ClientX = e.ClientX,
-            ClientY = e.ClientY,
+            DomRect = domRect,
             EditSettings = editSettings,
             Cell = cell,
             Row = row,

@@ -51,3 +51,13 @@ window.outsideClickHandler = {
         });
     }
 };
+
+window.getElementCoordinates = (element) => {
+    const rect = element.getBoundingClientRect();
+    return {
+        top: rect.top + window.scrollY,
+        left: rect.left + window.scrollX,
+        width: rect.width,
+        height: rect.height
+    };
+}

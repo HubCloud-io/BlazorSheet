@@ -19,7 +19,8 @@ public partial class CellEditor: ComponentBase
     {
         get
         {
-            var style = $"border: 1px solid blue;  position: fixed; width: {CellEditInfo.Column.Width}; height: {CellEditInfo.Row.Height}; top: {CellEditInfo.ClientY}px; left: {CellEditInfo.ClientX}px;";
+            var style = $"border: 1px solid blue;  position: fixed; width: " +
+                        $"{CellEditInfo.DomRect.Width}px; height: {CellEditInfo.DomRect.Height}px; top: {CellEditInfo.DomRect.Top}px; left: {CellEditInfo.DomRect.Left}px;";
             return style;
         }
     }
