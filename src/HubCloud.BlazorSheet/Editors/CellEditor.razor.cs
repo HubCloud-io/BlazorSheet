@@ -27,6 +27,11 @@ public partial class CellEditor: ComponentBase
 
     public async Task OnChanged()
     {
+        CellEditInfo.Cell.ApplyFormat();
+        if (string.IsNullOrEmpty(CellEditInfo.Cell.Text))
+        {
+            CellEditInfo.Cell.Text = CellEditInfo.Cell.Value.ToString();
+        }
         await Changed.InvokeAsync(CellEditInfo.Cell);
     }
 }

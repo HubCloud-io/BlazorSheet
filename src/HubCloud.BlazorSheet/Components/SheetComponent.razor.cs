@@ -433,7 +433,6 @@ public partial class SheetComponent : ComponentBase
     private async Task OnEditorChanged(SheetCell cell)
     {
         _cellEditInfo = null;
-        cell.Text = cell.Value?.ToString();
         await CellValueChanged.InvokeAsync(cell);
      
     }
