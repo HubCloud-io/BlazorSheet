@@ -34,6 +34,8 @@ public partial class SheetCellComponent: ComponentBase
     
     [Parameter]
     public EventCallback<CellEditInfo> StartEdit { get; set; }
+
+    public string Id => $"cell_{Cell.Uid}";
     
     private async Task OnCellDblClick(MouseEventArgs e, SheetCell cell)
     {
@@ -46,7 +48,7 @@ public partial class SheetCellComponent: ComponentBase
         DomRect domRect = null;
         try
         {
-            domRect = await JsRuntime.InvokeAsync<DomRect>("getElementCoordinates", _cellElement);
+            domRect = await JsRuntime.InvokeAsync<DomRect>("getElementCoordinates", Id);
         }
         catch (Exception ex)
         {
@@ -56,8 +58,7 @@ public partial class SheetCellComponent: ComponentBase
         if(domRect == null)
             return;
         
-        var row = Sheet.GetRow(cell.RowUid);
-        var column = Sheet.GetColumn(cell.ColumnUid);
+     
         var editSettings = Sheet.GetEditSettings(cell);
 
         var cellEditInfo = new CellEditInfo()
@@ -65,8 +66,6 @@ public partial class SheetCellComponent: ComponentBase
             DomRect = domRect,
             EditSettings = editSettings,
             Cell = cell,
-            Row = row,
-            Column = column
         };
 
         await StartEdit.InvokeAsync(cellEditInfo);

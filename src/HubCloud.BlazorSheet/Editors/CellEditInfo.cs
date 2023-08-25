@@ -8,7 +8,5 @@ public class CellEditInfo
     public DomRect DomRect { get; set; }
     public SheetCellEditSettings EditSettings { get; set; }
     public SheetCell Cell { get; set; }
-    public SheetRow Row { get; set; }
-    public SheetColumn Column { get; set; }
     public IComboBoxDataProvider<int> ComboBoxDataProvider { get; set; }
 }

@@ -444,7 +444,45 @@ public partial class SheetComponent : ComponentBase
     {
         _cellEditInfo = null;
         await CellValueChanged.InvokeAsync(cell);
-     
+
+        var editingCells = Sheet.Cells.Where( x=>x.EditSettingsUid.HasValue).ToList();
+        var currentIndex = editingCells.IndexOf(cell);
+        var nextIndex = currentIndex + 1;
+        if (nextIndex < editingCells.Count)
+        {
+            var nextCell = editingCells[nextIndex];
+            var editSettings = Sheet.GetEditSettings(nextCell);
+            if (editSettings == null)
+            {
+                return;
+            }
+            
+            DomRect domRect = null;
+            try
+            {
+                domRect = await JsRuntime.InvokeAsync<DomRect>("getElementCoordinates", $"cell_{nextCell.Uid}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"OnCellDblClick. Cannot get element coordinates. Message: {ex.Message}");
+            }
+
+            if (domRect == null)
+            {
+                return;
+            }
+
+            var cellEditInfo = new CellEditInfo()
+            {
+                DomRect = domRect,
+                EditSettings = editSettings,
+                Cell = nextCell,
+            };
+
+            _cellEditInfo = cellEditInfo;
+        }
+
+
     }
 
     private async Task OnColumnNumberCellClick(SheetColumn column)
