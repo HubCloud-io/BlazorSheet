@@ -159,6 +159,12 @@ public partial class SheetComponent : ComponentBase
         {
             _multipleSelection = true;
         }
+
+        if (e.Key == "Escape")
+        {
+            _cellEditInfo = null;
+        }
+        
     }
 
     private void OnTableKeyUp(KeyboardEventArgs e)
