@@ -178,6 +178,10 @@ public partial class SheetComponent : ComponentBase
     private void OnCellStartEdit(CellEditInfo args)
     {
         _cellEditInfo = args;
+        if (ComboBoxDataProviderFactory != null)
+        {
+            _cellEditInfo.ComboBoxDataProvider = ComboBoxDataProviderFactory.Create(_cellEditInfo.EditSettings.CellDataType);
+        }
     }
 
     private void OnRowContextMenu(MouseEventArgs e, SheetRow row)

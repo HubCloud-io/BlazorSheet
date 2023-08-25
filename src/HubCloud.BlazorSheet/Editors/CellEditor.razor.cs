@@ -1,20 +1,22 @@
 ﻿using System.Collections.Specialized;
 using HubCloud.BlazorSheet.Core.Models;
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 
 namespace HubCloud.BlazorSheet.Editors;
 
-public partial class CellEditor: ComponentBase
+public partial class CellEditor : ComponentBase
 {
-    [Parameter]
-    public CellEditInfo CellEditInfo { get; set; }
-    
-    [Parameter]
-    public bool IsDisabled { get; set; }
-    
-    [Parameter]
-    public EventCallback<SheetCell> Changed { get; set; }
-    
+    [Parameter] public CellEditInfo CellEditInfo { get; set; }
+
+    [Parameter] public bool IsDisabled { get; set; }
+
+    [Parameter] public EventCallback<SheetCell> Changed { get; set; }
+
+    [Inject] public IJSRuntime JsRuntime { get; set; }
+
+    public string InputId => $"input_{CellEditInfo.Cell.Uid}";
+
     public string EditorStyle
     {
         get
@@ -25,6 +27,21 @@ public partial class CellEditor: ComponentBase
         }
     }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                await JsRuntime.InvokeVoidAsync("focusElement", InputId);
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine($"OnAfterRenderAsync. Cannot focus element. Message: {e.Message}");
+            }
+        }
+    }
+
     public async Task OnChanged()
     {
         CellEditInfo.Cell.ApplyFormat();
@@ -32,6 +49,7 @@ public partial class CellEditor: ComponentBase
         {
             CellEditInfo.Cell.Text = CellEditInfo.Cell.Value.ToString();
         }
+
         await Changed.InvokeAsync(CellEditInfo.Cell);
     }
 }

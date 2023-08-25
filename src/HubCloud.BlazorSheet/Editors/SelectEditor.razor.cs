@@ -9,6 +9,9 @@ public partial class SelectEditor: ComponentBase
 
     private string _value;
     
+    [Parameter]
+    public string Id { get; set; }
+    
     /// <summary>
     /// Selected value.
     /// </summary>

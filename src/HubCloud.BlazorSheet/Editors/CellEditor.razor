@@ -13,6 +13,7 @@
         case CellControlKinds.NumberInput:
 
             <BbNumberInput TValue="decimal"
+                           Id="@InputId"
                            HtmlStyle="width:100%; height:100%; text-align:right; border: none;"
                            IsDisabled="IsDisabled"
                            Digits="@CellEditInfo.EditSettings.NumberDigits"
@@ -23,7 +24,8 @@
 
         case CellControlKinds.TextInput:
 
-            <BbTextInput HtmlStyle="width:100%; height:100%; border: none;"
+            <BbTextInput Id="@InputId" 
+                         HtmlStyle="width:100%; height:100%; border: none;"
                          @bind-Value="@CellEditInfo.Cell.StringValue"
                          Changed="@OnChanged">
             </BbTextInput>
@@ -31,7 +33,8 @@
 
         case CellControlKinds.DateInput:
 
-            <DateEditor @bind-Value="@CellEditInfo.Cell.DateTimeValue"
+            <DateEditor Id="@InputId"  
+                        @bind-Value="@CellEditInfo.Cell.DateTimeValue"
                         IsDisabled="@IsDisabled"
                         Changed="@OnChanged">
             </DateEditor>
@@ -40,7 +43,8 @@
 
         case CellControlKinds.DateTimeInput:
 
-            <DateEditor @bind-Value="@CellEditInfo.Cell.DateTimeValue"
+            <DateEditor Id="@InputId" 
+                        @bind-Value="@CellEditInfo.Cell.DateTimeValue"
                         IsDisabled="@IsDisabled"
                         Changed="@OnChanged">
             </DateEditor>
@@ -48,7 +52,8 @@
 
         case CellControlKinds.CheckBox:
 
-            <BbCheckBox @bind-Value="@CellEditInfo.Cell.BoolValue"
+            <BbCheckBox Id="@InputId" 
+                        @bind-Value="@CellEditInfo.Cell.BoolValue"
                         IsDisabled="IsDisabled"
                         Changed="@OnChanged">
             </BbCheckBox>
@@ -79,22 +84,23 @@
         @* *@
         @*     break; *@
         @* *@
-        @* case CellControlKinds.Select: *@
-        @* *@
-        @*     @if (ComboBoxDataProvider != null) *@
-        @*     { *@
-        @*         <SelectEditor DataProvider="ComboBoxDataProvider"  *@
-        @*                       IsDisabled="@IsDisabled"  *@
-        @*                       @bind-Value="@Cell.IntValue"  *@
-        @*                       Changed="OnChanged"></SelectEditor> *@
-        @*     } *@
-        @*     else *@
-        @*     { *@
-        @*         <span style="color:red;">Combobox data provider is not defined</span> *@
-        @*     } *@
-        @* *@
-        @* *@
-        @*     break; *@
+        case CellControlKinds.Select:
+        
+            @if (CellEditInfo.ComboBoxDataProvider != null)
+            {
+                <SelectEditor Id="@InputId" 
+                              DataProvider="CellEditInfo.ComboBoxDataProvider"
+                              IsDisabled="@IsDisabled"
+                              @bind-Value="@CellEditInfo.Cell.IntValue"
+                              Changed="OnChanged"></SelectEditor>
+            }
+            else
+            {
+                <span style="color:red;">Combobox data provider is not defined</span>
+            }
+        
+        
+            break;
 
         default:
 
