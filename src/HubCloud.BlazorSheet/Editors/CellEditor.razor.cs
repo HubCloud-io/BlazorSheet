@@ -52,4 +52,10 @@ public partial class CellEditor : ComponentBase
 
         await Changed.InvokeAsync(CellEditInfo.Cell);
     }
+
+    private async Task OnSelectChanged(SelectResultArgs args)
+    {
+        CellEditInfo.Cell.Text = args.Text;
+        await Changed.InvokeAsync(CellEditInfo.Cell);
+    }
 }
