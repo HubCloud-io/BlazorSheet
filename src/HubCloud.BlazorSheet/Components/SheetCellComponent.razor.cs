@@ -30,6 +30,9 @@ public partial class SheetCellComponent: ComponentBase
     public bool IsHiddenCellsVisible { get; set; }
     
     [Parameter]
+    public HashSet<Guid> SelectedIdentifiers { get; set; }
+    
+    [Parameter]
     public CellStyleBuilder StyleBuilder { get; set; }
     
     [Parameter]
@@ -82,6 +85,16 @@ public partial class SheetCellComponent: ComponentBase
     private string CellStyle(SheetRow row, SheetColumn column, SheetCell cell)
     {
         return StyleBuilder.GetCellStyle(Sheet, row, column, cell, IsHiddenCellsVisible);
+    }
+    
+    public string CellClass(SheetCell cell)
+    {
+        var result = "hc-sheet-cell";
+
+        if (SelectedIdentifiers.Contains(cell.Uid))
+            return result += " hc-sheet-cell__active";
+
+        return result;
     }
     
     private string GetHtmlSpacing(int indent)

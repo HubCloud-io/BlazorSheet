@@ -146,6 +146,7 @@ public partial class SheetComponent : ComponentBase
     private async Task OnCellClicked(SheetCell cell)
     {
         _currentCell = cell;
+        _cellEditInfo = null;
         
         if (!_multipleSelection)
         {

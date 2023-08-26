@@ -158,6 +158,7 @@
                                                     Cell="@cell" 
                                                     StyleBuilder="@_cellStyleBuilder"
                                                     IsHiddenCellsVisible="@_isHiddenCellsVisible" 
+                                                    SelectedIdentifiers="@_selectedIdentifiers"
                                                     StartEdit="OnCellStartEdit"></SheetCellComponent>
                             }
                         }
@@ -270,6 +271,7 @@
                                                     Cell="@cell" 
                                                     StyleBuilder="@_cellStyleBuilder"
                                                     IsHiddenCellsVisible="@_isHiddenCellsVisible"
+                                                    SelectedIdentifiers="@_selectedIdentifiers"
                                                     Clicked="OnCellClicked"
                                                     StartEdit="OnCellStartEdit"></SheetCellComponent>
                             }
@@ -351,7 +353,7 @@
                 Changed="OnEditorChanged"></CellEditor>
 }
 
-@if (_currentCell != null && _cellEditInfo == null)
-{
-    <CellSelection Cell="@_currentCell"></CellSelection>
-}
+@* @if (_currentCell != null && _cellEditInfo == null) *@
+@* { *@
+@*     <CellSelection Cell="@_currentCell"></CellSelection> *@
+@* } *@

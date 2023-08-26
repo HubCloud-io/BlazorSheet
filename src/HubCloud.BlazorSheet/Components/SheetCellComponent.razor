@@ -1,7 +1,7 @@
 ﻿<td @key="@Cell.Uid"
     @ref="_cellElement"
     id="@Id"
-    class="hc-sheet-cell"
+    class="@CellClass(Cell)"
     style="@CellStyle(Row, Column, Cell)"
     @onclick="(e=>OnCellClick(e, Cell))"
     @ondblclick="(e=>OnCellDblClick(e, Cell))"
