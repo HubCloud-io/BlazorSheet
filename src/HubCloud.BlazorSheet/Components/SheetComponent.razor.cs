@@ -1,4 +1,5 @@
 ﻿using System.Data.Common;
+using System.Net.NetworkInformation;
 using System.Text;
 using BBComponents.Abstract;
 using BBComponents.Enums;
@@ -6,6 +7,7 @@ using BBComponents.Models;
 using HubCloud.BlazorSheet.Core.Enums;
 using HubCloud.BlazorSheet.Core.Events;
 using HubCloud.BlazorSheet.Core.Models;
+using HubCloud.BlazorSheet.Editors;
 using HubCloud.BlazorSheet.Infrastructure;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
@@ -24,6 +26,8 @@ public partial class SheetComponent : ComponentBase
 
     private string _currentCellText;
     private bool _cellHasChanged;
+
+    private CellEditInfo _cellEditInfo;
 
     private SheetColumn _currentColumn;
     private SheetRow _currentRow;
@@ -112,8 +116,8 @@ public partial class SheetComponent : ComponentBase
     {
         _currentCell = cell;
 
-        _clientX = e.ClientX;
-        _clientY = e.ClientY;
+       // _clientX = e.ClientX;
+       // _clientY = e.ClientY;
 
         if (!_multipleSelection)
         {
@@ -139,6 +143,32 @@ public partial class SheetComponent : ComponentBase
         await ColumnSelected.InvokeAsync(column);
     }
 
+    private async Task OnCellClicked(SheetCell cell)
+    {
+        _currentCell = cell;
+        _cellEditInfo = null;
+        
+        if (!_multipleSelection)
+        {
+            _selectedCells.Clear();
+            _selectedIdentifiers.Clear();
+            _selectedRowByNumberList.Clear();
+            _selectedColumnByNumberList.Clear();
+        }
+
+        if (!_selectedCells.Contains(_currentCell))
+            _selectedCells.Add(_currentCell);
+        else
+            _selectedCells.Remove(_currentCell);
+
+        if (!_selectedIdentifiers.Contains(_currentCell.Uid))
+            _selectedIdentifiers.Add(_currentCell.Uid);
+        else
+            _selectedIdentifiers.Remove(_currentCell.Uid);
+        
+        await CellSelected.InvokeAsync(cell);
+    }
+
     private void OnCellFocusOut(FocusEventArgs e, SheetCell cell)
     {
         if (_cellHasChanged)
@@ -149,12 +179,26 @@ public partial class SheetComponent : ComponentBase
         }
     }
 
-    private void OnTableKeyDown(KeyboardEventArgs e)
+    private async Task OnTableKeyDown(KeyboardEventArgs e)
     {
         if (e.Key == "Control")
         {
             _multipleSelection = true;
         }
+
+        if (e.Key == "Escape")
+        {
+            _cellEditInfo = null;
+        }
+
+        if (e.Key == "Enter")
+        {
+            if (_currentCell != null)
+            {
+                await StartCellEditAsync(_currentCell);
+            }
+        }
+        
     }
 
     private void OnTableKeyUp(KeyboardEventArgs e)
@@ -162,6 +206,15 @@ public partial class SheetComponent : ComponentBase
         if (e.Key == "Control")
         {
             _multipleSelection = false;
+        }
+    }
+    
+    private void OnCellStartEdit(CellEditInfo args)
+    {
+        _cellEditInfo = args;
+        if (ComboBoxDataProviderFactory != null)
+        {
+            _cellEditInfo.ComboBoxDataProvider = ComboBoxDataProviderFactory.Create(_cellEditInfo.EditSettings.CellDataType);
         }
     }
 
@@ -419,6 +472,70 @@ public partial class SheetComponent : ComponentBase
     private async Task OnCellValueChanged(SheetCell cell)
     {
         await CellValueChanged.InvokeAsync(cell);
+    }
+
+    private async Task OnEditorChanged(SheetCell cell)
+    {
+        _cellEditInfo = null;
+        await OnCellClicked(cell);
+        
+        await CellValueChanged.InvokeAsync(cell);
+
+        var editingCells = Sheet.Cells.Where( x=>x.EditSettingsUid.HasValue).ToList();
+        var currentIndex = editingCells.IndexOf(cell);
+        var nextIndex = currentIndex + 1;
+        if (nextIndex < editingCells.Count)
+        {
+            var nextCell = editingCells[nextIndex];
+            await OnCellClicked(nextCell);
+            await StartCellEditAsync(nextCell);
+
+        }
+
+
+    }
+
+    private async Task StartCellEditAsync(SheetCell cell)
+    {
+        var editSettings = Sheet.GetEditSettings(cell);
+        if (editSettings == null)
+        {
+            return;
+        }
+
+        if (editSettings.ControlKind == CellControlKinds.Undefined)
+        {
+            return;
+        }
+            
+        DomRect domRect = null;
+        try
+        {
+            domRect = await JsRuntime.InvokeAsync<DomRect>("getElementCoordinates", $"cell_{cell.Uid}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"OnCellDblClick. Cannot get element coordinates. Message: {ex.Message}");
+        }
+
+        if (domRect == null)
+        {
+            return;
+        }
+
+        var cellEditInfo = new CellEditInfo()
+        {
+            DomRect = domRect,
+            EditSettings = editSettings,
+            Cell = cell,
+        };
+
+        if (ComboBoxDataProviderFactory != null)
+        {
+            cellEditInfo.ComboBoxDataProvider = ComboBoxDataProviderFactory.Create(editSettings.CellDataType);
+        }
+
+        _cellEditInfo = cellEditInfo;
     }
 
     private async Task OnColumnNumberCellClick(SheetColumn column)

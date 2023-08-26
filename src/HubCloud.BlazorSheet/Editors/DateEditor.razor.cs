@@ -9,6 +9,8 @@ public partial class DateEditor : ComponentBase
     private string _value;
     private bool _wasInit;
    
+    [Parameter]
+    public string Id { get; set; }
     
     [Parameter]
     public DateTime Value { get; set; } 

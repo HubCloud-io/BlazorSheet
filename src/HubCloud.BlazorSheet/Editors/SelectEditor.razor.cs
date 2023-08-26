@@ -9,6 +9,9 @@ public partial class SelectEditor: ComponentBase
 
     private string _value;
     
+    [Parameter]
+    public string Id { get; set; }
+    
     /// <summary>
     /// Selected value.
     /// </summary>
@@ -32,7 +35,7 @@ public partial class SelectEditor: ComponentBase
     /// It is necessary to have possibility catch changed even whet we use @bind-Value.
     /// </summary>
     [Parameter]
-    public EventCallback<int> Changed { get; set; }
+    public EventCallback<SelectResultArgs> Changed { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -59,7 +62,16 @@ public partial class SelectEditor: ComponentBase
         if (int.TryParse(_value, out var intValue))
         {
             await ValueChanged.InvokeAsync(intValue);
-            await Changed.InvokeAsync(intValue);
+
+            var resultItem = _source.FirstOrDefault(x => x.Item1.Equals(_value));
+
+            var args = new SelectResultArgs()
+            {
+                Value = intValue,
+                Text = resultItem?.Item2
+            };
+            
+            await Changed.InvokeAsync(args);
         }
         
     }

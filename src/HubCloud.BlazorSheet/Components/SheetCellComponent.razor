@@ -1,0 +1,28 @@
+﻿<td @key="@Cell.Uid"
+    @ref="_cellElement"
+    id="@Id"
+    class="@CellClass(Cell)"
+    style="@CellStyle(Row, Column, Cell)"
+    @onclick="(e=>OnCellClick(e, Cell))"
+    @ondblclick="(e=>OnCellDblClick(e, Cell))"
+    colspan="@Cell.Colspan"
+    rowspan="@Cell.Rowspan">
+
+    @if (Cell.HasLink)
+    {
+        <a href="@Cell.Link" target="_blank">@Cell.StringValue</a>
+    }
+    else
+    {
+        if (Cell.Indent > 0)
+        {
+            <span>@GetHtmlSpacing(Cell.Indent)</span>
+            <span>@Cell.Text</span>
+        }
+        else
+        {
+            @Cell.Text
+        }
+    }
+
+</td>

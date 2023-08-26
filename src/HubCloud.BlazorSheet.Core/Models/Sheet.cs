@@ -250,6 +250,11 @@ namespace HubCloud.BlazorSheet.Core.Models
             return _rows[r - 1];
         }
 
+        public SheetRow GetRow(Guid uid)
+        {
+            return _rows.FirstOrDefault(x => x.Uid == uid);
+        }
+
         public SheetRow AddRow(SheetRow baseRow, int position, bool copySettings)
         {
             var baseRowNumber = RowNumber(baseRow);
@@ -313,6 +318,11 @@ namespace HubCloud.BlazorSheet.Core.Models
         public SheetColumn GetColumn(int c)
         {
             return _columns[c - 1];
+        }
+
+        public SheetColumn GetColumn(Guid uid)
+        {
+            return _columns.FirstOrDefault(x => x.Uid == uid);
         }
 
         public SheetColumn AddColumn(SheetColumn baseColumn, int position, bool copySettings)

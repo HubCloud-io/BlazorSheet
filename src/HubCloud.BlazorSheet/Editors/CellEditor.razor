@@ -1,0 +1,112 @@
+﻿@using HubCloud.BlazorSheet.Core.Enums
+@using HubCloud.BlazorSheet.Core.Enums
+@using HubCloud.BlazorSheet.Editors
+@using BBComponents.Enums
+@using BBComponents.Components
+
+<div style="@EditorStyle">
+
+    @if (CellEditInfo.EditSettings != null)
+    {
+         @switch (CellEditInfo.EditSettings.ControlKind)
+    {
+        case CellControlKinds.NumberInput:
+
+            <BbNumberInput TValue="decimal"
+                           Id="@InputId"
+                           HtmlStyle="width:100%; height:100%; text-align:right; border: none;"
+                           IsDisabled="IsDisabled"
+                           Digits="@CellEditInfo.EditSettings.NumberDigits"
+                           @bind-Value="@CellEditInfo.Cell.DecimalValue"
+                           Changed="@OnChanged">
+            </BbNumberInput>
+            break;
+
+        case CellControlKinds.TextInput:
+
+            <BbTextInput Id="@InputId" 
+                         HtmlStyle="width:100%; height:100%; border: none;"
+                         @bind-Value="@CellEditInfo.Cell.StringValue"
+                         Changed="@OnChanged">
+            </BbTextInput>
+            break;
+
+        case CellControlKinds.DateInput:
+
+            <DateEditor Id="@InputId"  
+                        @bind-Value="@CellEditInfo.Cell.DateTimeValue"
+                        IsDisabled="@IsDisabled"
+                        Changed="@OnChanged">
+            </DateEditor>
+
+            break;
+
+        case CellControlKinds.DateTimeInput:
+
+            <DateEditor Id="@InputId" 
+                        @bind-Value="@CellEditInfo.Cell.DateTimeValue"
+                        IsDisabled="@IsDisabled"
+                        Changed="@OnChanged">
+            </DateEditor>
+            break;
+
+        case CellControlKinds.CheckBox:
+
+            <BbCheckBox Id="@InputId" 
+                        @bind-Value="@CellEditInfo.Cell.BoolValue"
+                        IsDisabled="IsDisabled"
+                        Changed="@OnChanged">
+            </BbCheckBox>
+
+            break;
+
+        @* case CellControlKinds.ComboBox: *@
+        @* *@
+        @*     @if (ComboBoxDataProvider != null) *@
+        @*     { *@
+        @*         <BbComboBox TValue="int" *@
+        @*                     DataProvider="@ComboBoxDataProvider" *@
+        @*                     DropdownPosition="DropdownPositions.Fixed" *@
+        @*                     DropdownWidth="@DropdownWidth" *@
+        @*                     DataRegime="ComboBoxDataRegimes.Server" *@
+        @*                     Size="BootstrapElementSizes.Sm" *@
+        @*                     IsDisabled="IsDisabled" *@
+        @*                     ValueName="Value" *@
+        @*                     TextName="Text" *@
+        @*                     @bind-Value="@Cell.IntValue" *@
+        @*                     Changed="OnChanged"> *@
+        @*         </BbComboBox> *@
+        @*     } *@
+        @*     else *@
+        @*     { *@
+        @*         <span style="color:red;">Combobox data provider is not defined</span> *@
+        @*     } *@
+        @* *@
+        @*     break; *@
+        @* *@
+        case CellControlKinds.Select:
+        
+            @if (CellEditInfo.ComboBoxDataProvider != null)
+            {
+                <SelectEditor Id="@InputId" 
+                              DataProvider="CellEditInfo.ComboBoxDataProvider"
+                              IsDisabled="@IsDisabled"
+                              @bind-Value="@CellEditInfo.Cell.IntValue"
+                              Changed="OnSelectChanged"></SelectEditor>
+            }
+            else
+            {
+                <span style="color:red;">Combobox data provider is not defined</span>
+            }
+        
+        
+            break;
+
+        default:
+
+            <span style="color:red;">Unknown control</span>
+            break;
+    }
+    }
+
+</div>

@@ -42,23 +42,40 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
             };
             sheetSettings.Styles.Add(totalStyle);
 
+            var numberEditCellStyle = new SheetCellStyle()
+            {
+                TextAlign = "right",
+                BackgroundColor = "#f2fff4"
+            };
+            sheetSettings.Styles.Add(numberEditCellStyle);
+            
+            var otherEditCellStyle = new SheetCellStyle()
+            {
+                BackgroundColor = "#f2fff4"
+            };
+            sheetSettings.Styles.Add(otherEditCellStyle);
+
             var sheet = new Sheet(sheetSettings);
             sheet.Name = "budget";
 
             sheet.GetCell(1, 2).Value = "Department";
             sheet.GetCell(2, 2).EditSettingsUid = editSettingsDepartment.Uid;
-            
+            sheet.GetCell(2, 2).StyleUid = otherEditCellStyle.Uid;
             
             sheet.GetCell(1, 3).Value = "Start date";
             sheet.GetCell(2, 3).EditSettingsUid = editSettingsDate.Uid;
+            sheet.GetCell(2, 3).StyleUid = otherEditCellStyle.Uid;
+            sheet.GetCell(2, 3).Format = "dd.MM.yyyy";
 
             sheet.GetCell(4, 2).Value = "Budget item / Period";
 
             sheet.GetCell(4, 3).Formula = $"Val(\"R2C3\").BeginYear()";
-            sheet.GetCell(4, 3).EditSettingsUid = editSettingsDate.Uid;
+            sheet.GetCell(4, 3).Format = "dd.MM.yyyy";
             
             sheet.GetCell(4, 4).Formula = $"Val(\"R2C3\").BeginYear().AddMonths(1)";
+            sheet.GetCell(4, 4).Format = "dd.MM.yyyy";
             sheet.GetCell(4, 5).Formula = $"Val(\"R2C3\").BeginYear().AddMonths(2)";
+            sheet.GetCell(4, 5).Format = "dd.MM.yyyy";
 
             sheet.GetCell(5, 2).Value = "Rent";
             sheet.GetCell(6, 2).Value = "Tax";
@@ -71,7 +88,10 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
                 row.IsAddRemoveAllowed = true;
                 for (var c = 3; c <= 5; c++)
                 {
-                    sheet.GetCell(r, c).EditSettingsUid = editSettings.Uid;
+                    var currentCell = sheet.GetCell(r, c);
+                    currentCell.EditSettingsUid = editSettings.Uid;
+                    currentCell.Format = "F2";
+                    currentCell.StyleUid = numberEditCellStyle.Uid;
                 }
             }
 
@@ -115,17 +135,19 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
 
         private void SetTotalColumnFormula(int row, int column, SheetCellStyle totalStyle, Sheet sheet)
         {
-
-            sheet.GetCell(8, column).Formula = $"Sum(\"R5C{column}:R7C{column}\")";
-            sheet.GetCell(8, column).StyleUid = totalStyle.Uid;
+            var cell = sheet.GetCell(8, column);
+            cell.Formula = $"Sum(\"R5C{column}:R7C{column}\")";
+            cell.StyleUid = totalStyle.Uid;
+            cell.Format = "F2";
 
         }
 
         private void SetTotalRowFormula(int row, int column, SheetCellStyle totalStyle, Sheet sheet)
         {
-            //sheet.GetCell(row, column).Formula = $"Sum(\"R{row}C3:R{row}C5\")";
-            sheet.GetCell(row, column).Formula = $"Sum(\"RC3:RC5\")";
-            sheet.GetCell(row, column).StyleUid = totalStyle.Uid;
+            var cell = sheet.GetCell(row, column);
+            cell.Formula = $"Sum(\"RC3:RC5\")";
+            cell.StyleUid = totalStyle.Uid;
+            cell.Format = "F2";
         }
     }
 }
