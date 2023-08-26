@@ -501,6 +501,11 @@ public partial class SheetComponent : ComponentBase
         {
             return;
         }
+
+        if (editSettings.ControlKind == CellControlKinds.Undefined)
+        {
+            return;
+        }
             
         DomRect domRect = null;
         try
