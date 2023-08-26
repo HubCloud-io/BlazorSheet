@@ -178,7 +178,7 @@ public partial class SheetComponent : ComponentBase
         }
     }
 
-    private void OnTableKeyDown(KeyboardEventArgs e)
+    private async Task OnTableKeyDown(KeyboardEventArgs e)
     {
         if (e.Key == "Control")
         {
@@ -188,6 +188,14 @@ public partial class SheetComponent : ComponentBase
         if (e.Key == "Escape")
         {
             _cellEditInfo = null;
+        }
+
+        if (e.Key == "Enter")
+        {
+            if (_currentCell != null)
+            {
+                await StartCellEditAsync(_currentCell);
+            }
         }
         
     }
@@ -468,6 +476,8 @@ public partial class SheetComponent : ComponentBase
     private async Task OnEditorChanged(SheetCell cell)
     {
         _cellEditInfo = null;
+        await OnCellClicked(cell);
+        
         await CellValueChanged.InvokeAsync(cell);
 
         var editingCells = Sheet.Cells.Where( x=>x.EditSettingsUid.HasValue).ToList();
@@ -476,38 +486,50 @@ public partial class SheetComponent : ComponentBase
         if (nextIndex < editingCells.Count)
         {
             var nextCell = editingCells[nextIndex];
-            var editSettings = Sheet.GetEditSettings(nextCell);
-            if (editSettings == null)
-            {
-                return;
-            }
-            
-            DomRect domRect = null;
-            try
-            {
-                domRect = await JsRuntime.InvokeAsync<DomRect>("getElementCoordinates", $"cell_{nextCell.Uid}");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"OnCellDblClick. Cannot get element coordinates. Message: {ex.Message}");
-            }
+            await OnCellClicked(nextCell);
+            await StartCellEditAsync(nextCell);
 
-            if (domRect == null)
-            {
-                return;
-            }
-
-            var cellEditInfo = new CellEditInfo()
-            {
-                DomRect = domRect,
-                EditSettings = editSettings,
-                Cell = nextCell,
-            };
-
-            _cellEditInfo = cellEditInfo;
         }
 
 
+    }
+
+    private async Task StartCellEditAsync(SheetCell cell)
+    {
+        var editSettings = Sheet.GetEditSettings(cell);
+        if (editSettings == null)
+        {
+            return;
+        }
+            
+        DomRect domRect = null;
+        try
+        {
+            domRect = await JsRuntime.InvokeAsync<DomRect>("getElementCoordinates", $"cell_{cell.Uid}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"OnCellDblClick. Cannot get element coordinates. Message: {ex.Message}");
+        }
+
+        if (domRect == null)
+        {
+            return;
+        }
+
+        var cellEditInfo = new CellEditInfo()
+        {
+            DomRect = domRect,
+            EditSettings = editSettings,
+            Cell = cell,
+        };
+
+        if (ComboBoxDataProviderFactory != null)
+        {
+            cellEditInfo.ComboBoxDataProvider = ComboBoxDataProviderFactory.Create(editSettings.CellDataType);
+        }
+
+        _cellEditInfo = cellEditInfo;
     }
 
     private async Task OnColumnNumberCellClick(SheetColumn column)
