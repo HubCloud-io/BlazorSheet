@@ -3,6 +3,7 @@
     id="@Id"
     class="hc-sheet-cell"
     style="@CellStyle(Row, Column, Cell)"
+    @onclick="(e=>OnCellClick(e, Cell))"
     @ondblclick="(e=>OnCellDblClick(e, Cell))"
     colspan="@Cell.Colspan"
     rowspan="@Cell.Rowspan">

@@ -269,7 +269,8 @@
                                                     Column="@column" 
                                                     Cell="@cell" 
                                                     StyleBuilder="@_cellStyleBuilder"
-                                                    IsHiddenCellsVisible="@_isHiddenCellsVisible" 
+                                                    IsHiddenCellsVisible="@_isHiddenCellsVisible"
+                                                    Clicked="OnCellClicked"
                                                     StartEdit="OnCellStartEdit"></SheetCellComponent>
                             }
                         }
@@ -348,4 +349,9 @@
     <CellEditor CellEditInfo="@_cellEditInfo" 
                 IsDisabled="@IsDisabled" 
                 Changed="OnEditorChanged"></CellEditor>
+}
+
+@if (_currentCell != null && _cellEditInfo == null)
+{
+    <CellSelection Cell="@_currentCell"></CellSelection>
 }

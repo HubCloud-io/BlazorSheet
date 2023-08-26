@@ -34,8 +34,16 @@ public partial class SheetCellComponent: ComponentBase
     
     [Parameter]
     public EventCallback<CellEditInfo> StartEdit { get; set; }
+    
+    [Parameter]
+    public EventCallback<SheetCell> Clicked { get; set; }
 
     public string Id => $"cell_{Cell.Uid}";
+
+    private async Task OnCellClick(MouseEventArgs e, SheetCell cell)
+    {
+        await Clicked.InvokeAsync(Cell);
+    }
     
     private async Task OnCellDblClick(MouseEventArgs e, SheetCell cell)
     {
