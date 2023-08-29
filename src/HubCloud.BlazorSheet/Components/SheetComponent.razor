@@ -8,7 +8,8 @@
 
 <div style="overflow-y: auto; overflow-x: auto; max-height: @MaxHeight; max-width:@MaxWidth">
 
-    <table class="hc-sheet"
+    <table id="@TableId" 
+           class="hc-sheet"
            tabindex="0"
            @onkeydown="(e => OnTableKeyDown(e))"
            @onkeyup="(e => OnTableKeyUp(e))">
@@ -349,7 +350,8 @@
 @if (_cellEditInfo != null)
 {
     <CellEditor CellEditInfo="@_cellEditInfo" 
-                IsDisabled="@IsDisabled" 
+                IsDisabled="@IsDisabled"
+                EditCancelled="OnCellEditCancelled"
                 Changed="OnEditorChanged"></CellEditor>
 }
 

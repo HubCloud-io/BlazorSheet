@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="HubCloud.BBComponents" Version="6.0.34" />
+    <PackageReference Include="HubCloud.BBComponents" Version="6.0.37" />
   </ItemGroup>
 
   <ItemGroup>

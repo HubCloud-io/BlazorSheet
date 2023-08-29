@@ -1,6 +1,7 @@
 ﻿using HubCloud.BlazorSheet.Core.Models;
 using Microsoft.AspNetCore.Components;
 using ExpressoFunctions.FunctionLibrary;
+using Microsoft.AspNetCore.Components.Web;
 
 namespace HubCloud.BlazorSheet.Editors;
 
@@ -23,6 +24,9 @@ public partial class DateEditor : ComponentBase
     
     [Parameter]
     public EventCallback<DateTime> Changed { get; set; }
+    
+    [Parameter]
+    public EventCallback EditCancelled { get; set; }
 
     protected override void OnParametersSet()
     {
@@ -50,6 +54,14 @@ public partial class DateEditor : ComponentBase
 
             await ValueChanged.InvokeAsync(dateTimeValue);
             await Changed.InvokeAsync(dateTimeValue);
+        }
+    }
+
+    private async Task OnInputKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key.ToUpper() == "ESCAPE")
+        {
+            await EditCancelled.InvokeAsync(null);
         }
     }
 }

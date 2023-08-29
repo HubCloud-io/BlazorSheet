@@ -1,5 +1,6 @@
 ﻿using System.Collections.Specialized;
 using HubCloud.BlazorSheet.Core.Models;
+using HubCloud.BlazorSheet.Infrastructure;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
@@ -7,11 +8,16 @@ namespace HubCloud.BlazorSheet.Editors;
 
 public partial class CellEditor : ComponentBase
 {
+
+    private JsCallService _jsCallService;
+    
     [Parameter] public CellEditInfo CellEditInfo { get; set; }
 
     [Parameter] public bool IsDisabled { get; set; }
 
     [Parameter] public EventCallback<SheetCell> Changed { get; set; }
+    
+    [Parameter] public EventCallback<SheetCell> EditCancelled { get; set; }
 
     [Inject] public IJSRuntime JsRuntime { get; set; }
 
@@ -27,18 +33,25 @@ public partial class CellEditor : ComponentBase
         }
     }
 
+    protected override void OnInitialized()
+    {
+        _jsCallService = new JsCallService(JsRuntime);
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            try
-            {
-                await JsRuntime.InvokeVoidAsync("focusElement", InputId);
-            }
-            catch(Exception e)
-            {
-                Console.WriteLine($"OnAfterRenderAsync. Cannot focus element. Message: {e.Message}");
-            }
+
+            await _jsCallService.FocusElementAsync(InputId);
+            // try
+            // {
+            //     await JsRuntime.InvokeVoidAsync("blazorSheet.focusElement", InputId);
+            // }
+            // catch(Exception e)
+            // {
+            //     Console.WriteLine($"blazorSheet. Cannot focus element. Message: {e.Message}");
+            // }
         }
     }
 
@@ -57,5 +70,10 @@ public partial class CellEditor : ComponentBase
     {
         CellEditInfo.Cell.Text = args.Text;
         await Changed.InvokeAsync(CellEditInfo.Cell);
+    }
+
+    private async Task OnEditCancelled()
+    {
+        await EditCancelled.InvokeAsync(CellEditInfo.Cell);
     }
 }

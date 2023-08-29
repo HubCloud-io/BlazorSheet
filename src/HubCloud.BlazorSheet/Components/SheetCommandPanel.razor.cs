@@ -75,6 +75,7 @@ public partial class SheetCommandPanel:ComponentBase
     [Parameter]
     public IDataTypeDataProvider DataTypeDataProvider { get; set; }
     
+    
     protected override void OnInitialized()
     {
         _textAlignSource = new List<Tuple<string, string>>();

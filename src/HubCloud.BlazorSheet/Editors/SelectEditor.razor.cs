@@ -1,5 +1,6 @@
 ﻿using BBComponents.Abstract;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
 
 namespace HubCloud.BlazorSheet.Editors;
 
@@ -36,6 +37,9 @@ public partial class SelectEditor: ComponentBase
     /// </summary>
     [Parameter]
     public EventCallback<SelectResultArgs> Changed { get; set; }
+    
+    [Parameter]
+    public EventCallback EditCancelled { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -74,5 +78,14 @@ public partial class SelectEditor: ComponentBase
             await Changed.InvokeAsync(args);
         }
         
+    }
+    
+    private async Task OnInputKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key.ToUpper() == "ESCAPE")
+        {
+            await EditCancelled.InvokeAsync(null);
+        }
+       
     }
 }

@@ -53,6 +53,7 @@ public partial class SheetComponent : ComponentBase
     private bool _isCellLinkInputModalOpen;
 
     private IComboBoxDataProvider<int> _fakeComboBoxDataProvider = new FakeComboBoxDataProvider();
+    private JsCallService _jsCallService;
 
     [Parameter] public Sheet Sheet { get; set; }
 
@@ -81,6 +82,8 @@ public partial class SheetComponent : ComponentBase
 
     [Inject] public IJSRuntime JsRuntime { get; set; }
 
+    public string TableId => $"table_{Sheet.Uid}";
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -97,6 +100,21 @@ public partial class SheetComponent : ComponentBase
         catch (Exception e)
         {
             Console.WriteLine($"addInputEvent error. Message: {e.Message}.");
+        }
+
+        _jsCallService = new JsCallService(JsRuntime);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var firstCell = Sheet.Cells.FirstOrDefault(x => x.EditSettingsUid.HasValue);
+            if (firstCell != null)
+            {
+                await OnCellClicked(firstCell);
+                await _jsCallService.FocusElementAsync(TableId);
+            }
         }
     }
 
@@ -186,17 +204,48 @@ public partial class SheetComponent : ComponentBase
             _multipleSelection = true;
         }
 
-        if (e.Key == "Escape")
+        SheetCell nextCell = null;
+        switch (e.Key.ToUpper())
         {
-            _cellEditInfo = null;
-        }
+            case KeyboardKeys.Enter:
+                
+                if (_currentCell != null)
+                {
+                    await StartCellEditAsync(_currentCell);
+                }
+                
+                break;
+            
+            case KeyboardKeys.Escape:
+                
+                _cellEditInfo = null;
+                break;
+            
+            case KeyboardKeys.ArrowUp:
 
-        if (e.Key == "Enter")
+                nextCell = SheetArrowNavigationHelper.ArrowUp(Sheet, _currentCell);
+                break;
+            
+            case KeyboardKeys.ArrowDown:
+                
+                nextCell = SheetArrowNavigationHelper.ArrowDown(Sheet, _currentCell);
+                break;
+            
+            case KeyboardKeys.ArrowLeft:
+                
+                nextCell = SheetArrowNavigationHelper.ArrowLeft(Sheet, _currentCell);
+                break;
+            
+            case KeyboardKeys.ArrowRight:
+                
+                nextCell = SheetArrowNavigationHelper.ArrowRight(Sheet, _currentCell);
+                break;
+        }
+        
+        if (nextCell != null)
         {
-            if (_currentCell != null)
-            {
-                await StartCellEditAsync(_currentCell);
-            }
+            _currentCell = nextCell;
+            await OnCellClicked(_currentCell);
         }
         
     }
@@ -491,8 +540,20 @@ public partial class SheetComponent : ComponentBase
             await StartCellEditAsync(nextCell);
 
         }
+        else
+        {
+            await OnCellClicked(cell); 
+            await _jsCallService.FocusElementAsync(TableId);
+        }
 
 
+    }
+
+    private async Task OnCellEditCancelled(SheetCell cell)
+    {
+        _cellEditInfo = null;
+        await OnCellClicked(cell);
+        await _jsCallService.FocusElementAsync(TableId);
     }
 
     private async Task StartCellEditAsync(SheetCell cell)
@@ -511,11 +572,11 @@ public partial class SheetComponent : ComponentBase
         DomRect domRect = null;
         try
         {
-            domRect = await JsRuntime.InvokeAsync<DomRect>("getElementCoordinates", $"cell_{cell.Uid}");
+            domRect = await JsRuntime.InvokeAsync<DomRect>("blazorSheet.getElementCoordinates", $"cell_{cell.Uid}");
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"OnCellDblClick. Cannot get element coordinates. Message: {ex.Message}");
+            Console.WriteLine($"BlazorSheet. Cannot get element coordinates. Message: {ex.Message}");
         }
 
         if (domRect == null)

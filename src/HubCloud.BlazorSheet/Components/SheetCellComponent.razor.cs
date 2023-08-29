@@ -7,39 +7,29 @@ using Microsoft.JSInterop;
 
 namespace HubCloud.BlazorSheet.Components;
 
-public partial class SheetCellComponent: ComponentBase
+public partial class SheetCellComponent : ComponentBase
 {
     private ElementReference _cellElement;
-    
-    [Inject]
-    public IJSRuntime JsRuntime { get; set; }
-    
-    [Parameter]
-    public Sheet Sheet { get; set; }
-    
-    [Parameter]
-    public SheetRow Row { get; set; }
-    
-    [Parameter]
-    public SheetColumn Column { get; set; }
-    
-    [Parameter]
-    public SheetCell Cell { get; set; }
-    
-    [Parameter]
-    public bool IsHiddenCellsVisible { get; set; }
-    
-    [Parameter]
-    public HashSet<Guid> SelectedIdentifiers { get; set; }
-    
-    [Parameter]
-    public CellStyleBuilder StyleBuilder { get; set; }
-    
-    [Parameter]
-    public EventCallback<CellEditInfo> StartEdit { get; set; }
-    
-    [Parameter]
-    public EventCallback<SheetCell> Clicked { get; set; }
+
+    [Inject] public IJSRuntime JsRuntime { get; set; }
+
+    [Parameter] public Sheet Sheet { get; set; }
+
+    [Parameter] public SheetRow Row { get; set; }
+
+    [Parameter] public SheetColumn Column { get; set; }
+
+    [Parameter] public SheetCell Cell { get; set; }
+
+    [Parameter] public bool IsHiddenCellsVisible { get; set; }
+
+    [Parameter] public HashSet<Guid> SelectedIdentifiers { get; set; }
+
+    [Parameter] public CellStyleBuilder StyleBuilder { get; set; }
+
+    [Parameter] public EventCallback<CellEditInfo> StartEdit { get; set; }
+
+    [Parameter] public EventCallback<SheetCell> Clicked { get; set; }
 
     public string Id => $"cell_{Cell.Uid}";
 
@@ -47,29 +37,21 @@ public partial class SheetCellComponent: ComponentBase
     {
         await Clicked.InvokeAsync(Cell);
     }
-    
+
     private async Task OnCellDblClick(MouseEventArgs e, SheetCell cell)
     {
-        
         if (!cell.EditSettingsUid.HasValue)
         {
             return;
         }
 
-        DomRect domRect = null;
-        try
-        {
-            domRect = await JsRuntime.InvokeAsync<DomRect>("getElementCoordinates", Id);
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"OnCellDblClick. Cannot get element coordinates. Message: {ex.Message}");
-        }
-        
-        if(domRect == null)
+        var jsCallService = new JsCallService(JsRuntime);
+        var domRect = await jsCallService.GetElementCoordinates(Id);
+
+        if (domRect == null)
             return;
-        
-     
+
+
         var editSettings = Sheet.GetEditSettings(cell);
 
         var cellEditInfo = new CellEditInfo()
@@ -81,12 +63,12 @@ public partial class SheetCellComponent: ComponentBase
 
         await StartEdit.InvokeAsync(cellEditInfo);
     }
-    
+
     private string CellStyle(SheetRow row, SheetColumn column, SheetCell cell)
     {
         return StyleBuilder.GetCellStyle(Sheet, row, column, cell, IsHiddenCellsVisible);
     }
-    
+
     public string CellClass(SheetCell cell)
     {
         var result = "hc-sheet-cell";
@@ -96,7 +78,7 @@ public partial class SheetCellComponent: ComponentBase
 
         return result;
     }
-    
+
     private string GetHtmlSpacing(int indent)
     {
         var spacing = string.Empty;
