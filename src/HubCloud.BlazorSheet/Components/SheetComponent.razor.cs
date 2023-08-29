@@ -191,17 +191,48 @@ public partial class SheetComponent : ComponentBase
             _multipleSelection = true;
         }
 
-        if (e.Key == "Escape")
+        SheetCell nextCell = null;
+        switch (e.Key.ToUpper())
         {
-            _cellEditInfo = null;
-        }
+            case KeyboardKeys.Enter:
+                
+                if (_currentCell != null)
+                {
+                    await StartCellEditAsync(_currentCell);
+                }
+                
+                break;
+            
+            case KeyboardKeys.Escape:
+                
+                _cellEditInfo = null;
+                break;
+            
+            case KeyboardKeys.ArrowUp:
 
-        if (e.Key == "Enter")
+                nextCell = SheetArrowNavigationHelper.ArrowUp(Sheet, _currentCell);
+                break;
+            
+            case KeyboardKeys.ArrowDown:
+                
+                nextCell = SheetArrowNavigationHelper.ArrowDown(Sheet, _currentCell);
+                break;
+            
+            case KeyboardKeys.ArrowLeft:
+                
+                nextCell = SheetArrowNavigationHelper.ArrowLeft(Sheet, _currentCell);
+                break;
+            
+            case KeyboardKeys.ArrowRight:
+                
+                nextCell = SheetArrowNavigationHelper.ArrowRight(Sheet, _currentCell);
+                break;
+        }
+        
+        if (nextCell != null)
         {
-            if (_currentCell != null)
-            {
-                await StartCellEditAsync(_currentCell);
-            }
+            _currentCell = nextCell;
+            await OnCellClicked(_currentCell);
         }
         
     }
