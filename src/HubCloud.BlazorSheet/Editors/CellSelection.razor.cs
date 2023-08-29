@@ -32,11 +32,11 @@ public partial class CellSelection: ComponentBase
         {
             try
             {
-                _domRect = await JsRuntime.InvokeAsync<DomRect>("getElementCoordinates", $"cell_{Cell.Uid}");
+                _domRect = await JsRuntime.InvokeAsync<DomRect>("blazorSheet.getElementCoordinates", $"cell_{Cell.Uid}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"OnCellDblClick. Cannot get element coordinates. Message: {ex.Message}");
+                Console.WriteLine($"blazorSheet. Cannot get element coordinates. Message: {ex.Message}");
             }
         }
         

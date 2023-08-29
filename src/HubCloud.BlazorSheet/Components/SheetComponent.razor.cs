@@ -521,11 +521,11 @@ public partial class SheetComponent : ComponentBase
         DomRect domRect = null;
         try
         {
-            domRect = await JsRuntime.InvokeAsync<DomRect>("getElementCoordinates", $"cell_{cell.Uid}");
+            domRect = await JsRuntime.InvokeAsync<DomRect>("blazorSheet.getElementCoordinates", $"cell_{cell.Uid}");
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"OnCellDblClick. Cannot get element coordinates. Message: {ex.Message}");
+            Console.WriteLine($"BlazorSheet. Cannot get element coordinates. Message: {ex.Message}");
         }
 
         if (domRect == null)

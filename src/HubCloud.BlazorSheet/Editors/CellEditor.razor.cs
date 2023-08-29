@@ -35,11 +35,11 @@ public partial class CellEditor : ComponentBase
         {
             try
             {
-                await JsRuntime.InvokeVoidAsync("focusElement", InputId);
+                await JsRuntime.InvokeVoidAsync("blazorSheet.focusElement", InputId);
             }
             catch(Exception e)
             {
-                Console.WriteLine($"OnAfterRenderAsync. Cannot focus element. Message: {e.Message}");
+                Console.WriteLine($"blazorSheet. Cannot focus element. Message: {e.Message}");
             }
         }
     }
