@@ -36,6 +36,7 @@
             <DateEditor Id="@InputId"  
                         @bind-Value="@CellEditInfo.Cell.DateTimeValue"
                         IsDisabled="@IsDisabled"
+                        EditCancelled="OnEditCancelled"
                         Changed="@OnChanged">
             </DateEditor>
 
@@ -46,6 +47,7 @@
             <DateEditor Id="@InputId" 
                         @bind-Value="@CellEditInfo.Cell.DateTimeValue"
                         IsDisabled="@IsDisabled"
+                         EditCancelled="OnEditCancelled"
                         Changed="@OnChanged">
             </DateEditor>
             break;

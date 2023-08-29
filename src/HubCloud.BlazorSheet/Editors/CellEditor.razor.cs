@@ -12,6 +12,8 @@ public partial class CellEditor : ComponentBase
     [Parameter] public bool IsDisabled { get; set; }
 
     [Parameter] public EventCallback<SheetCell> Changed { get; set; }
+    
+    [Parameter] public EventCallback<SheetCell> EditCancelled { get; set; }
 
     [Inject] public IJSRuntime JsRuntime { get; set; }
 
@@ -57,5 +59,10 @@ public partial class CellEditor : ComponentBase
     {
         CellEditInfo.Cell.Text = args.Text;
         await Changed.InvokeAsync(CellEditInfo.Cell);
+    }
+
+    private async Task OnEditCancelled()
+    {
+        await EditCancelled.InvokeAsync(CellEditInfo.Cell);
     }
 }

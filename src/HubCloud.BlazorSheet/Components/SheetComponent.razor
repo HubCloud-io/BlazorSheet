@@ -349,7 +349,8 @@
 @if (_cellEditInfo != null)
 {
     <CellEditor CellEditInfo="@_cellEditInfo" 
-                IsDisabled="@IsDisabled" 
+                IsDisabled="@IsDisabled"
+                EditCancelled="OnCellEditCancelled"
                 Changed="OnEditorChanged"></CellEditor>
 }
 

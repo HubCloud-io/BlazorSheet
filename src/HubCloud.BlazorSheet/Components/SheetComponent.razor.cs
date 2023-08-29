@@ -491,8 +491,18 @@ public partial class SheetComponent : ComponentBase
             await StartCellEditAsync(nextCell);
 
         }
+        else
+        {
+            await OnCellClicked(cell); 
+        }
 
 
+    }
+
+    private async Task OnCellEditCancelled(SheetCell cell)
+    {
+        _cellEditInfo = null;
+        await OnCellClicked(cell);
     }
 
     private async Task StartCellEditAsync(SheetCell cell)
