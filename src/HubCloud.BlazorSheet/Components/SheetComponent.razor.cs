@@ -53,6 +53,7 @@ public partial class SheetComponent : ComponentBase
     private bool _isCellLinkInputModalOpen;
 
     private IComboBoxDataProvider<int> _fakeComboBoxDataProvider = new FakeComboBoxDataProvider();
+    private JsCallService _jsCallService;
 
     [Parameter] public Sheet Sheet { get; set; }
 
@@ -81,6 +82,8 @@ public partial class SheetComponent : ComponentBase
 
     [Inject] public IJSRuntime JsRuntime { get; set; }
 
+    public string TableId => $"table_{Sheet.Uid}";
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -98,6 +101,8 @@ public partial class SheetComponent : ComponentBase
         {
             Console.WriteLine($"addInputEvent error. Message: {e.Message}.");
         }
+
+        _jsCallService = new JsCallService(JsRuntime);
     }
 
     protected override void OnParametersSet()
@@ -494,6 +499,7 @@ public partial class SheetComponent : ComponentBase
         else
         {
             await OnCellClicked(cell); 
+            await _jsCallService.FocusElementAsync(TableId);
         }
 
 
@@ -503,6 +509,7 @@ public partial class SheetComponent : ComponentBase
     {
         _cellEditInfo = null;
         await OnCellClicked(cell);
+        await _jsCallService.FocusElementAsync(TableId);
     }
 
     private async Task StartCellEditAsync(SheetCell cell)
