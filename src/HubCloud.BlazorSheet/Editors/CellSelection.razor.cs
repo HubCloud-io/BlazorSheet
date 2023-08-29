@@ -1,4 +1,5 @@
 ﻿using HubCloud.BlazorSheet.Core.Models;
+using HubCloud.BlazorSheet.Infrastructure;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
@@ -30,14 +31,10 @@ public partial class CellSelection: ComponentBase
     {
         if (_cellUid != Cell.Uid)
         {
-            try
-            {
-                _domRect = await JsRuntime.InvokeAsync<DomRect>("blazorSheet.getElementCoordinates", $"cell_{Cell.Uid}");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"blazorSheet. Cannot get element coordinates. Message: {ex.Message}");
-            }
+            
+            var jsCallService = new JsCallService(JsRuntime);
+            var domRect = await jsCallService.GetElementCoordinates($"cell_{Cell.Uid}");
+         
         }
         
         _cellUid = Cell.Uid;
