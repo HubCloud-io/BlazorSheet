@@ -47,7 +47,7 @@
             <DateEditor Id="@InputId" 
                         @bind-Value="@CellEditInfo.Cell.DateTimeValue"
                         IsDisabled="@IsDisabled"
-                         EditCancelled="OnEditCancelled"
+                        EditCancelled="OnEditCancelled"
                         Changed="@OnChanged">
             </DateEditor>
             break;
@@ -94,6 +94,7 @@
                               DataProvider="CellEditInfo.ComboBoxDataProvider"
                               IsDisabled="@IsDisabled"
                               @bind-Value="@CellEditInfo.Cell.IntValue"
+                              EditCancelled="OnEditCancelled"
                               Changed="OnSelectChanged"></SelectEditor>
             }
             else

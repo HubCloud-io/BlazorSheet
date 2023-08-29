@@ -59,6 +59,9 @@ public partial class DateEditor : ComponentBase
 
     private async Task OnInputKeyDown(KeyboardEventArgs e)
     {
-        await EditCancelled.InvokeAsync(null);
+        if (e.Key.ToUpper() == "ESCAPE")
+        {
+            await EditCancelled.InvokeAsync(null);
+        }
     }
 }
