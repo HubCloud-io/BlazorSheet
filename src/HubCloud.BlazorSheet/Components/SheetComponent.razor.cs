@@ -105,6 +105,19 @@ public partial class SheetComponent : ComponentBase
         _jsCallService = new JsCallService(JsRuntime);
     }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var firstCell = Sheet.Cells.FirstOrDefault(x => x.EditSettingsUid.HasValue);
+            if (firstCell != null)
+            {
+                await OnCellClicked(firstCell);
+                await _jsCallService.FocusElementAsync(TableId);
+            }
+        }
+    }
+
     protected override void OnParametersSet()
     {
     }
