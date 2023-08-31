@@ -103,7 +103,7 @@ public partial class SheetComponent : ComponentBase
         }
 
         _jsCallService = new JsCallService(JsRuntime);
-        await _jsCallService.DisableArrowScroll();
+        await _jsCallService.DisableArrowScroll("hc-sheet-container");
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

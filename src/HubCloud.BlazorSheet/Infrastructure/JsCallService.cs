@@ -39,11 +39,11 @@ public class JsCallService
         return domRect;
     }
 
-    public async Task DisableArrowScroll()
+    public async Task DisableArrowScroll(string className)
     {
         try
         {
-            await _jsRuntime.InvokeVoidAsync("blazorSheet.disableArrowScroll");
+            await _jsRuntime.InvokeVoidAsync("blazorSheet.disableArrowScroll", className);
         }
         catch (Exception e)
         {
