@@ -22,3 +22,8 @@
     .hc-sheet .hc-sheet-cell__active {
         border: 1px solid #0000ff !important;
     }
+    
+    .hc-sheet-editor input,select {
+        outline: none;
+        border:none;
+    }
