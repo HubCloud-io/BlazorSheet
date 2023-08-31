@@ -540,15 +540,15 @@ public partial class SheetComponent : ComponentBase
         
         await CellValueChanged.InvokeAsync(cell);
 
-        var editingCells = Sheet.Cells.Where( x=>x.EditSettingsUid.HasValue).ToList();
-        var currentIndex = editingCells.IndexOf(cell);
-        var nextIndex = currentIndex + 1;
-        if (nextIndex < editingCells.Count)
+        var nextCell = SheetArrowNavigationHelper.NextEditingCell(Sheet, cell);
+
+        // var editingCells = Sheet.Cells.Where( x=>x.EditSettingsUid.HasValue).ToList();
+        // var currentIndex = editingCells.IndexOf(cell);
+        // var nextIndex = currentIndex + 1;
+        if (nextCell != null)
         {
-            var nextCell = editingCells[nextIndex];
             await OnCellClicked(nextCell);
             await StartCellEditAsync(nextCell);
-
         }
         else
         {

@@ -71,4 +71,50 @@ public class SheetArrowNavigationHelper
 
         return nextCell;
     }
+
+    public static SheetCell NextEditingCell(Sheet sheet, SheetCell currentCell)
+    {
+        if (currentCell == null)
+            return null;
+
+        var address = sheet.CellAddress(currentCell);
+
+        var currentRow = address.Row;
+        var currentColumn = address.Column;
+
+        var flagContinue = true;
+
+        SheetCell nextCell = null;
+        
+        while (flagContinue)
+        {
+            currentColumn += 1;
+            if (currentColumn > sheet.ColumnsCount)
+            {
+                currentRow += 1;
+                currentColumn = 1;
+            }
+
+            if (currentRow > sheet.RowsCount)
+            {
+                flagContinue = false;
+                break;
+            }
+
+            nextCell = sheet.GetCell(currentRow, currentColumn);
+            if (nextCell.EditSettingsUid.HasValue)
+            {
+                flagContinue = false;
+                break;
+            }
+            else
+            {
+                flagContinue = true;
+                nextCell = null;
+            }
+        }
+
+        return nextCell;
+
+    }
 }
