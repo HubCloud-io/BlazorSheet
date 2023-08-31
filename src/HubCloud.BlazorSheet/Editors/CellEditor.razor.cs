@@ -44,16 +44,7 @@ public partial class CellEditor : ComponentBase
     {
         if (firstRender)
         {
-
             await _jsCallService.FocusElementAsync(InputId);
-            // try
-            // {
-            //     await JsRuntime.InvokeVoidAsync("blazorSheet.focusElement", InputId);
-            // }
-            // catch(Exception e)
-            // {
-            //     Console.WriteLine($"blazorSheet. Cannot focus element. Message: {e.Message}");
-            // }
         }
     }
 
@@ -71,6 +62,12 @@ public partial class CellEditor : ComponentBase
     private async Task OnSelectChanged(SelectResultArgs args)
     {
         CellEditInfo.Cell.Text = args.Text;
+        await Changed.InvokeAsync(CellEditInfo.Cell);
+    }
+
+    private async Task OnTextInputChanged()
+    {
+        CellEditInfo.Cell.Text = CellEditInfo.Cell.Value.ToString();
         await Changed.InvokeAsync(CellEditInfo.Cell);
     }
 
