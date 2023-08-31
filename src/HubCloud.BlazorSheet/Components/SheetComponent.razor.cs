@@ -202,6 +202,11 @@ public partial class SheetComponent : ComponentBase
         }
     }
 
+    private void OnScroll()
+    {
+        _cellEditInfo = null;
+    }
+
     private async Task OnTableKeyDown(KeyboardEventArgs e)
     {
         if (e.Key == "Control")

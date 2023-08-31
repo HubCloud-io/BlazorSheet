@@ -6,7 +6,7 @@
 @using BBComponents.Enums
 @using Microsoft.AspNetCore.Components.Web.Virtualization
 
-<div style="overflow-y: auto; overflow-x: auto; max-height: @MaxHeight; max-width:@MaxWidth">
+<div @onscroll="OnScroll" style="overflow-y: auto; overflow-x: auto; max-height: @MaxHeight; max-width:@MaxWidth">
 
     <table id="@TableId" 
            class="hc-sheet"
