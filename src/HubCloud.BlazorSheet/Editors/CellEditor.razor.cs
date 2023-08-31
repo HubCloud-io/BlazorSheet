@@ -1,4 +1,5 @@
 ﻿using System.Collections.Specialized;
+using System.Globalization;
 using HubCloud.BlazorSheet.Core.Models;
 using HubCloud.BlazorSheet.Infrastructure;
 using Microsoft.AspNetCore.Components;
@@ -29,8 +30,12 @@ public partial class CellEditor : ComponentBase
         {
             var height =(int)Math.Floor( CellEditInfo.DomRect.Height );
             var width = (int) Math.Floor(CellEditInfo.DomRect.Width);
+            var topStr = CellEditInfo.DomRect.Top.ToString(CultureInfo.InvariantCulture);
+            var leftStr = CellEditInfo.DomRect.Left.ToString(CultureInfo.InvariantCulture);
+            
             var style = $"border: 1px solid blue;  position: fixed; width: " +
-                        $"{width}px; height: {height}px; top: {CellEditInfo.DomRect.Top}px; left: {CellEditInfo.DomRect.Left}px;";
+                        $"{width}px; height: {height}px; top: {topStr}px; left: {leftStr}px;";
+            
             return style;
         }
     }
