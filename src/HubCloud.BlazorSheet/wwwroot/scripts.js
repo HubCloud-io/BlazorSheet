@@ -26,8 +26,7 @@
 
     disableArrowScroll: function () {
         document.addEventListener('keydown', function(event) {
-            if ([37, 38, 39, 40].indexOf(event.keyCode) > -1) {
-                // The key codes for ←, ↑, →, ↓ respectively
+            if (["ArrowLeft", "ArrowUp", "ArrowRight", "ArrowDown"].indexOf(event.code) > -1) {
                 event.preventDefault();
             }
         }, false) 
