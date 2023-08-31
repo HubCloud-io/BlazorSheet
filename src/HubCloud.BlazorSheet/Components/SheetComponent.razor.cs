@@ -103,18 +103,23 @@ public partial class SheetComponent : ComponentBase
         }
 
         _jsCallService = new JsCallService(JsRuntime);
+        await _jsCallService.DisableArrowScroll();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            var firstCell = Sheet.Cells.FirstOrDefault(x => x.EditSettingsUid.HasValue);
-            if (firstCell != null)
+            if( Regime == SheetRegimes.InputForm && Sheet != null)
             {
-                await OnCellClicked(firstCell);
-                await _jsCallService.FocusElementAsync(TableId);
+                var firstCell = Sheet.Cells.FirstOrDefault(x => x.EditSettingsUid.HasValue);
+                if (firstCell != null)
+                {
+                    await OnCellClicked(firstCell);
+                    await _jsCallService.FocusElementAsync(TableId);
+                }
             }
+          
         }
     }
 
@@ -222,7 +227,7 @@ public partial class SheetComponent : ComponentBase
                 break;
             
             case KeyboardKeys.ArrowUp:
-
+                
                 nextCell = SheetArrowNavigationHelper.ArrowUp(Sheet, _currentCell);
                 break;
             

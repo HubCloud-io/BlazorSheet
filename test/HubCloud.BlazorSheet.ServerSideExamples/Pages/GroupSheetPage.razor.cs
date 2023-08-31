@@ -13,7 +13,7 @@ public partial class GroupSheetPage
     protected override void OnInitialized()
     {
         var builder = new WorkbookWithGroupsBuilder();
-        _workbook = builder.Build();
+        _workbook = builder.Build(20, 10);
         
         _evaluator = new WorkbookEvaluator(_workbook);
         _evaluator.SetLogLevel(LogLevel.Trace);
