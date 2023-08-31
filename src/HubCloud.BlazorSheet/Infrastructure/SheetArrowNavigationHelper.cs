@@ -74,6 +74,9 @@ public class SheetArrowNavigationHelper
 
     public static SheetCell NextEditingCell(Sheet sheet, SheetCell currentCell)
     {
+        if (sheet == null)
+            return null;
+
         if (currentCell == null)
             return null;
 

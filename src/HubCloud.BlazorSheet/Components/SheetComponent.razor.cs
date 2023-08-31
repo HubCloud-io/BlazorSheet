@@ -110,14 +110,19 @@ public partial class SheetComponent : ComponentBase
     {
         if (firstRender)
         {
-            if( Regime == SheetRegimes.InputForm && Sheet != null)
+            if( Regime == SheetRegimes.InputForm)
             {
-                var firstCell = Sheet.Cells.FirstOrDefault(x => x.EditSettingsUid.HasValue);
-                if (firstCell != null)
+                if (Sheet != null)
                 {
-                    await OnCellClicked(firstCell);
-                    await _jsCallService.FocusElementAsync(TableId);
+                    var firstCell = Sheet.GetCell(1, 1);
+                    var nextCell = SheetArrowNavigationHelper.NextEditingCell(Sheet, firstCell);
+                    if (nextCell != null)
+                    {
+                        await OnCellClicked(nextCell);
+                        await _jsCallService.FocusElementAsync(TableId);
+                    }
                 }
+             
             }
           
         }
