@@ -108,24 +108,24 @@ public partial class SheetComponent : ComponentBase
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender)
-        {
-            if( Regime == SheetRegimes.InputForm)
-            {
-                if (Sheet != null)
-                {
-                    var firstCell = Sheet.GetCell(1, 1);
-                    var nextCell = SheetArrowNavigationHelper.NextEditingCell(Sheet, firstCell);
-                    if (nextCell != null)
-                    {
-                        await OnCellClicked(nextCell);
-                        await _jsCallService.FocusElementAsync(TableId);
-                    }
-                }
+        //if (firstRender)
+        //{
+        //    if( Regime == SheetRegimes.InputForm)
+        //    {
+        //        if (Sheet != null)
+        //        {
+        //            var firstCell = Sheet.GetCell(1, 1);
+        //            var nextCell = SheetArrowNavigationHelper.NextEditingCell(Sheet, firstCell);
+        //            if (nextCell != null)
+        //            {
+        //                await OnCellClicked(nextCell);
+        //                await _jsCallService.FocusElementAsync(TableId);
+        //            }
+        //        }
              
-            }
+        //    }
           
-        }
+        //}
     }
 
     protected override void OnParametersSet()
