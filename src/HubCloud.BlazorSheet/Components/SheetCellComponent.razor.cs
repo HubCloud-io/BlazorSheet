@@ -1,4 +1,6 @@
-﻿using HubCloud.BlazorSheet.Core.Models;
+﻿using System.Security.Cryptography.X509Certificates;
+using HubCloud.BlazorSheet.Core.Enums;
+using HubCloud.BlazorSheet.Core.Models;
 using HubCloud.BlazorSheet.Editors;
 using HubCloud.BlazorSheet.Infrastructure;
 using Microsoft.AspNetCore.Components;
@@ -20,6 +22,8 @@ public partial class SheetCellComponent : ComponentBase
     [Parameter] public SheetColumn Column { get; set; }
 
     [Parameter] public SheetCell Cell { get; set; }
+    
+    [Parameter] public SheetRegimes Regime { get; set; }
 
     [Parameter] public bool IsHiddenCellsVisible { get; set; }
 
@@ -40,28 +44,55 @@ public partial class SheetCellComponent : ComponentBase
 
     private async Task OnCellDblClick(MouseEventArgs e, SheetCell cell)
     {
-        if (!cell.EditSettingsUid.HasValue)
+        if (Regime == SheetRegimes.Design)
         {
-            return;
+            var jsCallService = new JsCallService(JsRuntime);
+            var domRect = await jsCallService.GetElementCoordinates(Id);
+
+            if (domRect == null)
+                return;
+
+            var editSettings = new SheetCellEditSettings()
+            {
+                ControlKind = CellControlKinds.TextInput,
+                CellDataType = (int)CellDataTypes.String,
+            };
+            
+            var cellEditInfo = new CellEditInfo()
+            {
+                DomRect = domRect,
+                EditSettings = editSettings,
+                Cell = cell,
+            };
+
+            await StartEdit.InvokeAsync(cellEditInfo);
         }
-
-        var jsCallService = new JsCallService(JsRuntime);
-        var domRect = await jsCallService.GetElementCoordinates(Id);
-
-        if (domRect == null)
-            return;
-
-
-        var editSettings = Sheet.GetEditSettings(cell);
-
-        var cellEditInfo = new CellEditInfo()
+        else if (Regime == SheetRegimes.InputForm)
         {
-            DomRect = domRect,
-            EditSettings = editSettings,
-            Cell = cell,
-        };
+            if (!cell.EditSettingsUid.HasValue)
+            {
+                return;
+            }
 
-        await StartEdit.InvokeAsync(cellEditInfo);
+            var jsCallService = new JsCallService(JsRuntime);
+            var domRect = await jsCallService.GetElementCoordinates(Id);
+
+            if (domRect == null)
+                return;
+
+
+            var editSettings = Sheet.GetEditSettings(cell);
+
+            var cellEditInfo = new CellEditInfo()
+            {
+                DomRect = domRect,
+                EditSettings = editSettings,
+                Cell = cell,
+            };
+
+            await StartEdit.InvokeAsync(cellEditInfo);
+        }
+        
     }
 
     private string CellStyle(SheetRow row, SheetColumn column, SheetCell cell)

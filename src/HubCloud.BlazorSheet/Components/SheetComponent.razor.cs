@@ -24,7 +24,6 @@ public partial class SheetComponent : ComponentBase
     private bool _multipleSelection;
     private bool _isHiddenCellsVisible;
 
-    private string _currentCellText;
     private bool _cellHasChanged;
 
     private CellEditInfo _cellEditInfo;
@@ -93,21 +92,15 @@ public partial class SheetComponent : ComponentBase
             TopSideCellHeight = TopSideCellHeight
         };
 
-        try
-        {
-            await JsRuntime.InvokeVoidAsync("addInputEvent");
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine($"addInputEvent error. Message: {e.Message}.");
-        }
-
         _jsCallService = new JsCallService(JsRuntime);
-        await _jsCallService.DisableArrowScroll("hc-sheet-container");
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (firstRender)
+        {
+            await _jsCallService.DisableArrowScroll("hc-sheet-container");
+        }
     }
 
     protected override async Task OnParametersSetAsync()
@@ -125,14 +118,6 @@ public partial class SheetComponent : ComponentBase
                 }
             }
         }
-    }
-
-    private async Task OnInput(ChangeEventArgs e, SheetCell cell)
-    {
-        _currentCellText = e.Value?.ToString();
-        _cellHasChanged = true;
-
-        await Changed.InvokeAsync(null);
     }
 
     private async Task OnCellClick(MouseEventArgs e, SheetRow row, SheetColumn column, SheetCell cell)
@@ -192,16 +177,6 @@ public partial class SheetComponent : ComponentBase
         await CellSelected.InvokeAsync(cell);
     }
 
-    private void OnCellFocusOut(FocusEventArgs e, SheetCell cell)
-    {
-        if (_cellHasChanged)
-        {
-            cell.Value = _currentCellText;
-            _cellHasChanged = false;
-            _currentCellText = "";
-        }
-    }
-
     private void OnScroll()
     {
         _cellEditInfo = null;
@@ -215,7 +190,7 @@ public partial class SheetComponent : ComponentBase
         }
 
         SheetCell nextCell = null;
-        
+
         switch (e.Key.ToUpper())
         {
             case KeyboardKeys.Tab:
@@ -269,7 +244,7 @@ public partial class SheetComponent : ComponentBase
 
     private bool IsLetterOrNumberOrEnter(string key)
     {
-        return (key.Length == 1 && char.IsLetterOrDigit(key[0])) || 
+        return (key.Length == 1 && char.IsLetterOrDigit(key[0])) ||
                (key.Length > 1 && key.StartsWith("Digit")) ||
                key.Equals("Enter", StringComparison.OrdinalIgnoreCase);
     }
@@ -576,45 +551,64 @@ public partial class SheetComponent : ComponentBase
 
     private async Task StartCellEditAsync(SheetCell cell)
     {
-        var editSettings = Sheet.GetEditSettings(cell);
-        if (editSettings == null)
+        if (Regime == SheetRegimes.Design)
         {
-            return;
-        }
+            var domRect = await _jsCallService.GetElementCoordinates($"cell_{cell.Uid}");
+            
+            if (domRect == null)
+            {
+                return;
+            }
 
-        if (editSettings.ControlKind == CellControlKinds.Undefined)
-        {
-            return;
-        }
+            var editSettings = new SheetCellEditSettings()
+            {
+                ControlKind = CellControlKinds.TextInput,
+                CellDataType = (int) CellDataTypes.String,
+            };
 
-        DomRect domRect = null;
-        try
-        {
-            domRect = await JsRuntime.InvokeAsync<DomRect>("blazorSheet.getElementCoordinates", $"cell_{cell.Uid}");
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"BlazorSheet. Cannot get element coordinates. Message: {ex.Message}");
-        }
+            var cellEditInfo = new CellEditInfo()
+            {
+                DomRect = domRect,
+                EditSettings = editSettings,
+                Cell = cell,
+            };
 
-        if (domRect == null)
-        {
-            return;
+            _cellEditInfo = cellEditInfo;
         }
-
-        var cellEditInfo = new CellEditInfo()
+        else if (Regime == SheetRegimes.InputForm)
         {
-            DomRect = domRect,
-            EditSettings = editSettings,
-            Cell = cell,
-        };
+            var editSettings = Sheet.GetEditSettings(cell);
+            if (editSettings == null)
+            {
+                return;
+            }
 
-        if (ComboBoxDataProviderFactory != null)
-        {
-            cellEditInfo.ComboBoxDataProvider = ComboBoxDataProviderFactory.Create(editSettings.CellDataType);
+            if (editSettings.ControlKind == CellControlKinds.Undefined)
+            {
+                return;
+            }
+
+            var domRect = await _jsCallService.GetElementCoordinates($"cell_{cell.Uid}");
+
+            if (domRect == null)
+            {
+                return;
+            }
+
+            var cellEditInfo = new CellEditInfo()
+            {
+                DomRect = domRect,
+                EditSettings = editSettings,
+                Cell = cell,
+            };
+
+            if (ComboBoxDataProviderFactory != null)
+            {
+                cellEditInfo.ComboBoxDataProvider = ComboBoxDataProviderFactory.Create(editSettings.CellDataType);
+            }
+
+            _cellEditInfo = cellEditInfo;
         }
-
-        _cellEditInfo = cellEditInfo;
     }
 
     private async Task OnColumnNumberCellClick(SheetColumn column)
