@@ -120,8 +120,7 @@ public class SheetTests
         sheet.SetStyle(sheet.GetCell(1, 2), redStyleDuplicate);
         sheet.SetStyle(sheet.GetCell(1, 3), greenStyle);
 
-        // 3 - because one style is default
-        Assert.AreEqual(3, sheet.Styles.Count);
+        Assert.AreEqual(2, sheet.Styles.Count);
         Assert.AreEqual(redStyle.Uid, sheet.GetCell(1, 1).StyleUid);
         Assert.AreEqual(redStyle.Uid, sheet.GetCell(1, 2).StyleUid);
         Assert.AreEqual(greenStyle.Uid, sheet.GetCell(1, 3).StyleUid);
