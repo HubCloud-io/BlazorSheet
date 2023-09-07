@@ -119,38 +119,7 @@ public partial class SheetComponent : ComponentBase
             }
         }
     }
-
-    private async Task OnCellClick(MouseEventArgs e, SheetRow row, SheetColumn column, SheetCell cell)
-    {
-        _currentCell = cell;
-
-        // _clientX = e.ClientX;
-        // _clientY = e.ClientY;
-
-        if (!_multipleSelection)
-        {
-            _selectedCells.Clear();
-            _selectedIdentifiers.Clear();
-            _selectedRowByNumberList.Clear();
-            _selectedColumnByNumberList.Clear();
-        }
-
-        if (!_selectedCells.Contains(_currentCell))
-            _selectedCells.Add(_currentCell);
-        else
-            _selectedCells.Remove(_currentCell);
-
-        if (!_selectedIdentifiers.Contains(_currentCell.Uid))
-            _selectedIdentifiers.Add(_currentCell.Uid);
-        else
-            _selectedIdentifiers.Remove(_currentCell.Uid);
-
-        await CellSelected.InvokeAsync(cell);
-        await CellsSelected.InvokeAsync(_selectedCells);
-        await RowSelected.InvokeAsync(row);
-        await ColumnSelected.InvokeAsync(column);
-    }
-
+    
     private async Task OnCellClicked(SheetCell cell)
     {
         _currentCell = cell;
@@ -173,8 +142,11 @@ public partial class SheetComponent : ComponentBase
             _selectedIdentifiers.Add(_currentCell.Uid);
         else
             _selectedIdentifiers.Remove(_currentCell.Uid);
-
+        
         await CellSelected.InvokeAsync(cell);
+        await CellsSelected.InvokeAsync(_selectedCells); 
+        //await RowSelected.InvokeAsync(row);
+        //await ColumnSelected.InvokeAsync(column);
     }
 
     private void OnScroll()

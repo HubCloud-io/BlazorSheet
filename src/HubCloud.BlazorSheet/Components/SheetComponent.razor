@@ -105,56 +105,6 @@
 
                             if (ShouldCellBeDisplayed(column, row, cell))
                                 continue;
-
-                            @* @if (Regime == SheetRegimes.Design) *@
-                            @* { *@
-                            @*     <td @key="@cell.Uid" *@
-                            @*         class="@CellClass(cell)" *@
-                            @*         contenteditable="@(!cell.HasLink)" *@
-                            @*         style="@CellStyle(row, column, cell)" *@
-                            @*         colspan="@cell.Colspan" *@
-                            @*         rowspan="@cell.Rowspan" *@
-                            @*         @oninput="(e => OnInput(e, cell))" *@
-                            @*         @onclick="(e => OnCellClick(e, row, column, cell))" *@
-                            @*         @onfocusout="(e => OnCellFocusOut(e, cell))"> *@
-                            @* *@
-                            @*         @if (cell.EditSettingsUid.HasValue) *@
-                            @*         { *@
-                            @*             var editSettings = Sheet.GetEditSettings(cell); *@
-                            @*             <CellEditControl EditSettings="@editSettings" *@
-                            @*                              Cell="@cell" *@
-                            @*                              IsDisabled="@IsDisabled" *@
-                            @*                              ColumnWidth="@((int) column.WidthValue)" *@
-                            @*                              ComboBoxDataProvider="@_fakeComboBoxDataProvider" *@
-                            @*                              Changed="(e => OnCellValueChanged(cell))"> *@
-                            @*             </CellEditControl> *@
-                            @*         } *@
-                            @*         else *@
-                            @*         { *@
-                            @*             if (cell.HasLink) *@
-                            @*             { *@
-                            @*                 <a href="@cell.Link" target="_blank">@cell.StringValue</a> *@
-                            @*             } *@
-                            @*             else *@
-                            @*             { *@
-                            @*                 if (cell.Indent > 0) *@
-                            @*                 { *@
-                            @*                     <span>@GetHtmlSpacing(cell.Indent)</span> *@
-                            @*                     <span>@cell.Text</span> *@
-                            @*                 } *@
-                            @*                 else *@
-                            @*                 { *@
-                            @*                     @cell.Text *@
-                            @*                 } *@
-                            @*             } *@
-                            @*         } *@
-                            @* *@
-                            @*     </td> *@
-                            @* } *@
-                            @* else *@
-                            @* { *@
-                            @*     *@
-                            @* } *@
                             
                             <SheetCellComponent Sheet="@Sheet"
                                                 Regime="@Regime"
@@ -222,56 +172,6 @@
 
                             if (ShouldCellBeDisplayed(column, row, cell))
                                 continue;
-
-                            @* @if (Regime == SheetRegimes.Design) *@
-                            @* { *@
-                            @*     <td @key="@cell.Uid" *@
-                            @*         class="@CellClass(cell)" *@
-                            @*         contenteditable="@(!cell.HasLink)" *@
-                            @*         style="@CellStyle(row, column, cell)" *@
-                            @*         colspan="@cell.Colspan" *@
-                            @*         rowspan="@cell.Rowspan" *@
-                            @*         @oninput="(e => OnInput(e, cell))" *@
-                            @*         @onclick="(e => OnCellClick(e, row, column, cell))" *@
-                            @*         @onfocusout="(e => OnCellFocusOut(e, cell))"> *@
-                            @* *@
-                            @*         @if (cell.EditSettingsUid.HasValue) *@
-                            @*         { *@
-                            @*             var editSettings = Sheet.GetEditSettings(cell); *@
-                            @*             <CellEditControl EditSettings="@editSettings" *@
-                            @*                              Cell="@cell" *@
-                            @*                              IsDisabled="@IsDisabled" *@
-                            @*                              ColumnWidth="@((int) column.WidthValue)" *@
-                            @*                              ComboBoxDataProvider="@_fakeComboBoxDataProvider" *@
-                            @*                              Changed="(e => OnCellValueChanged(cell))"> *@
-                            @*             </CellEditControl> *@
-                            @*         } *@
-                            @*         else *@
-                            @*         { *@
-                            @*             if (cell.HasLink) *@
-                            @*             { *@
-                            @*                 <a href="@cell.Link" target="_blank">@cell.StringValue</a> *@
-                            @*             } *@
-                            @*             else *@
-                            @*             { *@
-                            @*                 if (cell.Indent > 0) *@
-                            @*                 { *@
-                            @*                     <span>@GetHtmlSpacing(cell.Indent)</span> *@
-                            @*                     <span>@cell.Text</span> *@
-                            @*                 } *@
-                            @*                 else *@
-                            @*                 { *@
-                            @*                     @cell.Text *@
-                            @*                 } *@
-                            @*             } *@
-                            @*         } *@
-                            @* *@
-                            @*     </td> *@
-                            @* } *@
-                            @* else *@
-                            @* { *@
-                            @*     *@
-                            @* } *@
                             
                             <SheetCellComponent Sheet="@Sheet"
                                                 Regime="@Regime"

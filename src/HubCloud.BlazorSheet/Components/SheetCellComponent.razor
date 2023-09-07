@@ -27,13 +27,20 @@
 
         @if (Regime == SheetRegimes.Design)
         {
-            <span>&nbsp;</span>
+            
             if (Cell.EditSettingsUid.HasValue)
             {
                 var editSettings = Sheet.GetEditSettings(Cell);
-                <span>@editSettings.ControlKind</span>
+                <span>&laquo;</span>
+                <span>@ControlPresentation(editSettings.ControlKind)</span>
+                <span>&raquo;</span>                               
             }
-            <span>@Cell.Format</span>
+            
+            @if (!string.IsNullOrEmpty(@Cell.Format))
+            {
+                <span>:</span>
+                <span>@Cell.Format</span>
+            }
 
             @if (!string.IsNullOrEmpty(Cell.Formula))
             {

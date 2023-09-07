@@ -119,4 +119,34 @@ public partial class SheetCellComponent : ComponentBase
 
         return spacing;
     }
+
+    private string ControlPresentation(CellControlKinds controlKind)
+    {
+        string presentation;
+
+        switch (controlKind)
+        {
+           
+            case CellControlKinds.TextInput:
+                presentation = "Text";
+                break;
+            case CellControlKinds.NumberInput:
+                presentation = "Number";
+                break;
+            case CellControlKinds.DateInput:
+                presentation = "Date";
+                break;
+            case CellControlKinds.DateTimeInput:
+                presentation = "DateTime";
+                break;
+            case CellControlKinds.CheckBox:
+                presentation = "Flag";
+                break;
+            default:
+                presentation = controlKind.ToString();
+                break;
+        }
+
+        return presentation;
+    }
 }
