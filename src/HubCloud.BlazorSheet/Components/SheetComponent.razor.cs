@@ -497,11 +497,17 @@ public partial class SheetComponent : ComponentBase
 
         await CellValueChanged.InvokeAsync(cell);
 
-        var nextCell = SheetArrowNavigationHelper.NextEditingCellDown(Sheet, cell);
-
-        // var editingCells = Sheet.Cells.Where( x=>x.EditSettingsUid.HasValue).ToList();
-        // var currentIndex = editingCells.IndexOf(cell);
-        // var nextIndex = currentIndex + 1;
+        SheetCell nextCell = null;
+        if (Regime == SheetRegimes.Design)
+        {
+             nextCell = SheetArrowNavigationHelper.ArrowDown(Sheet, cell);
+        }
+        else if (Regime == SheetRegimes.InputForm)
+        {
+             nextCell = SheetArrowNavigationHelper.NextEditingCellDown(Sheet, cell);
+        }
+        
+        
         if (nextCell != null)
         {
             await OnCellClicked(nextCell);
