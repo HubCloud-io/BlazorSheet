@@ -219,6 +219,9 @@ public partial class SheetComponent : ComponentBase
         SheetCell nextCell = null;
         switch (e.Key.ToUpper())
         {
+            case KeyboardKeys.Tab:
+                nextCell = SheetArrowNavigationHelper.ArrowRight(Sheet, _currentCell);
+                break;
             case KeyboardKeys.Enter:
                 
                 if (_currentCell != null)
@@ -251,6 +254,14 @@ public partial class SheetComponent : ComponentBase
             case KeyboardKeys.ArrowRight:
                 
                 nextCell = SheetArrowNavigationHelper.ArrowRight(Sheet, _currentCell);
+                break;
+            
+            default:
+                
+                if (_currentCell != null)
+                {
+                    await StartCellEditAsync(_currentCell);
+                }
                 break;
         }
         

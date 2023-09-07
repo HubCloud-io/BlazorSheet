@@ -8,4 +8,5 @@ public class KeyboardKeys
     public const string ArrowRight = "ARROWRIGHT";
     public const string Enter = "ENTER";
     public const string Escape = "ESCAPE";
+    public const string Tab = "TAB";
 }
