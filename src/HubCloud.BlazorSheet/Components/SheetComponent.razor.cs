@@ -117,7 +117,7 @@ public partial class SheetComponent : ComponentBase
             if (Sheet != null)
             {
                 var firstCell = Sheet.GetCell(1, 1);
-                var nextCell = SheetArrowNavigationHelper.NextEditingCell(Sheet, firstCell);
+                var nextCell = SheetArrowNavigationHelper.NextEditingCellDown(Sheet, firstCell);
                 if (nextCell != null)
                 {
                     await OnCellClicked(nextCell);
@@ -550,7 +550,7 @@ public partial class SheetComponent : ComponentBase
 
         await CellValueChanged.InvokeAsync(cell);
 
-        var nextCell = SheetArrowNavigationHelper.NextEditingCell(Sheet, cell);
+        var nextCell = SheetArrowNavigationHelper.NextEditingCellDown(Sheet, cell);
 
         // var editingCells = Sheet.Cells.Where( x=>x.EditSettingsUid.HasValue).ToList();
         // var currentIndex = editingCells.IndexOf(cell);
