@@ -108,7 +108,6 @@ public partial class SheetComponent : ComponentBase
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-       
     }
 
     protected override async Task OnParametersSetAsync()
@@ -125,7 +124,6 @@ public partial class SheetComponent : ComponentBase
                     await _jsCallService.FocusElementAsync(TableId);
                 }
             }
-
         }
     }
 
@@ -141,8 +139,8 @@ public partial class SheetComponent : ComponentBase
     {
         _currentCell = cell;
 
-       // _clientX = e.ClientX;
-       // _clientY = e.ClientY;
+        // _clientX = e.ClientX;
+        // _clientY = e.ClientY;
 
         if (!_multipleSelection)
         {
@@ -172,7 +170,7 @@ public partial class SheetComponent : ComponentBase
     {
         _currentCell = cell;
         _cellEditInfo = null;
-        
+
         if (!_multipleSelection)
         {
             _selectedCells.Clear();
@@ -190,7 +188,7 @@ public partial class SheetComponent : ComponentBase
             _selectedIdentifiers.Add(_currentCell.Uid);
         else
             _selectedIdentifiers.Remove(_currentCell.Uid);
-        
+
         await CellSelected.InvokeAsync(cell);
     }
 
@@ -217,60 +215,63 @@ public partial class SheetComponent : ComponentBase
         }
 
         SheetCell nextCell = null;
+        
         switch (e.Key.ToUpper())
         {
             case KeyboardKeys.Tab:
                 nextCell = SheetArrowNavigationHelper.ArrowRight(Sheet, _currentCell);
                 break;
-            case KeyboardKeys.Enter:
-                
-                if (_currentCell != null)
-                {
-                    await StartCellEditAsync(_currentCell);
-                }
-                
-                break;
-            
+
             case KeyboardKeys.Escape:
-                
+
                 _cellEditInfo = null;
                 break;
-            
+
             case KeyboardKeys.ArrowUp:
-                
+
                 nextCell = SheetArrowNavigationHelper.ArrowUp(Sheet, _currentCell);
                 break;
-            
+
             case KeyboardKeys.ArrowDown:
-                
+
                 nextCell = SheetArrowNavigationHelper.ArrowDown(Sheet, _currentCell);
                 break;
-            
+
             case KeyboardKeys.ArrowLeft:
-                
+
                 nextCell = SheetArrowNavigationHelper.ArrowLeft(Sheet, _currentCell);
                 break;
-            
+
             case KeyboardKeys.ArrowRight:
-                
+
                 nextCell = SheetArrowNavigationHelper.ArrowRight(Sheet, _currentCell);
                 break;
-            
+
             default:
-                
-                if (_currentCell != null)
+
+                if (IsLetterOrNumberOrEnter(e.Key))
                 {
-                    await StartCellEditAsync(_currentCell);
+                    if (_currentCell != null)
+                    {
+                        await StartCellEditAsync(_currentCell);
+                    }
                 }
+
                 break;
         }
-        
+
         if (nextCell != null)
         {
             _currentCell = nextCell;
             await OnCellClicked(_currentCell);
         }
-        
+    }
+
+    private bool IsLetterOrNumberOrEnter(string key)
+    {
+        return (key.Length == 1 && char.IsLetterOrDigit(key[0])) || 
+               (key.Length > 1 && key.StartsWith("Digit")) ||
+               key.Equals("Enter", StringComparison.OrdinalIgnoreCase);
     }
 
     private void OnTableKeyUp(KeyboardEventArgs e)
@@ -280,13 +281,14 @@ public partial class SheetComponent : ComponentBase
             _multipleSelection = false;
         }
     }
-    
+
     private void OnCellStartEdit(CellEditInfo args)
     {
         _cellEditInfo = args;
         if (ComboBoxDataProviderFactory != null)
         {
-            _cellEditInfo.ComboBoxDataProvider = ComboBoxDataProviderFactory.Create(_cellEditInfo.EditSettings.CellDataType);
+            _cellEditInfo.ComboBoxDataProvider =
+                ComboBoxDataProviderFactory.Create(_cellEditInfo.EditSettings.CellDataType);
         }
     }
 
@@ -334,7 +336,6 @@ public partial class SheetComponent : ComponentBase
                     ColumnUid = newColumnBefore.Uid,
                     ColumnNumber = Sheet.ColumnNumber(newColumnBefore),
                     Position = -1
-                    
                 });
 
                 await Changed.InvokeAsync(null);
@@ -346,16 +347,15 @@ public partial class SheetComponent : ComponentBase
                 var newColumnAfter = Sheet.AddColumn(_currentColumn, 1, true);
                 newColumnAfter.ParentUid = _currentColumn.ParentUid;
                 newColumnAfter.WidthValue = _currentColumn.WidthValue;
-                
+
                 await ColumnAdded.InvokeAsync(new ColumnAddedEventArgs()
                 {
                     SourceUid = _currentColumn.Uid,
                     ColumnUid = newColumnAfter.Uid,
                     ColumnNumber = Sheet.ColumnNumber(newColumnAfter),
                     Position = 1
-                    
                 });
-                
+
                 await Changed.InvokeAsync(null);
 
                 break;
@@ -367,13 +367,13 @@ public partial class SheetComponent : ComponentBase
                     ColumnUid = _currentColumn.Uid,
                     ColumnNumber = Sheet.ColumnNumber(_currentColumn)
                 };
-                
+
                 Sheet.RemoveColumn(_currentColumn);
 
                 await ColumnRemoved.InvokeAsync(columnRemovedArgs);
                 await Changed.InvokeAsync(null);
                 break;
-            
+
             case ContextMenuBuilder.AllowAddRemoveItemName:
 
                 _currentColumn.IsAddRemoveAllowed = !_currentColumn.IsAddRemoveAllowed;
@@ -419,7 +419,6 @@ public partial class SheetComponent : ComponentBase
                     RowUid = newRowBefore.Uid,
                     RowNumber = Sheet.RowNumber(newRowBefore),
                     Position = -1
-
                 });
                 await Changed.InvokeAsync(null);
 
@@ -427,17 +426,16 @@ public partial class SheetComponent : ComponentBase
 
             case ContextMenuBuilder.AddAfterItemName:
 
-                var newRowAfter =  Sheet.AddRow(_currentRow, 1, true);
+                var newRowAfter = Sheet.AddRow(_currentRow, 1, true);
                 newRowAfter.ParentUid = _currentRow.ParentUid;
                 newRowAfter.HeightValue = _currentRow.HeightValue;
-                
+
                 await RowAdded.InvokeAsync(new RowAddedEventArgs()
                 {
                     SourceUid = _currentRow.Uid,
                     RowUid = newRowAfter.Uid,
                     RowNumber = Sheet.RowNumber(newRowAfter),
                     Position = 1
-
                 });
                 await Changed.InvokeAsync(null);
 
@@ -449,7 +447,6 @@ public partial class SheetComponent : ComponentBase
                 {
                     RowUid = _currentRow.Uid,
                     RowNumber = Sheet.RowNumber(_currentRow)
-
                 };
                 Sheet.RemoveRow(_currentRow);
 
@@ -457,7 +454,7 @@ public partial class SheetComponent : ComponentBase
                 await Changed.InvokeAsync(null);
 
                 break;
-            
+
             case ContextMenuBuilder.AllowAddRemoveItemName:
 
                 _currentRow.IsAddRemoveAllowed = !_currentRow.IsAddRemoveAllowed;
@@ -550,7 +547,7 @@ public partial class SheetComponent : ComponentBase
     {
         _cellEditInfo = null;
         await OnCellClicked(cell);
-        
+
         await CellValueChanged.InvokeAsync(cell);
 
         var nextCell = SheetArrowNavigationHelper.NextEditingCell(Sheet, cell);
@@ -565,11 +562,9 @@ public partial class SheetComponent : ComponentBase
         }
         else
         {
-            await OnCellClicked(cell); 
+            await OnCellClicked(cell);
             await _jsCallService.FocusElementAsync(TableId);
         }
-
-
     }
 
     private async Task OnCellEditCancelled(SheetCell cell)
@@ -591,7 +586,7 @@ public partial class SheetComponent : ComponentBase
         {
             return;
         }
-            
+
         DomRect domRect = null;
         try
         {
@@ -862,7 +857,8 @@ public partial class SheetComponent : ComponentBase
 
     private bool ShouldCellBeDisplayed(SheetColumn column, SheetRow row, SheetCell cell)
     {
-        return ((column.IsHidden || row.IsHidden) && !_isHiddenCellsVisible) || cell.HiddenByJoin || row.IsCollapsed || column.IsCollapsed;
+        return ((column.IsHidden || row.IsHidden) && !_isHiddenCellsVisible) || cell.HiddenByJoin || row.IsCollapsed ||
+               column.IsCollapsed;
     }
 
     private bool ShouldColumnBeDisplayed(SheetColumn column)
