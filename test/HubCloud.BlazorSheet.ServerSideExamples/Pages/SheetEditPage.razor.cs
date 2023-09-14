@@ -137,37 +137,11 @@ public partial class SheetEditPage: ComponentBase
 
     private void OnCollapseExpandAllRows(bool isExpand)
     {
-        var headRows = _sheet.Rows
-            .Where(x => x.IsGroup)
-            .ToList();
-
-        foreach (var headRow in headRows)
-        {
-            headRow.IsOpen = isExpand;
-
-            var groupedRows = _sheet.Rows
-                .Where(x => x.ParentUid == headRow.Uid)
-                .ToList();
-
-            groupedRows.ForEach(x => x.IsHidden = isExpand ? false : true);
-        }
+        _sheet.CollapseExpandRows(isExpand);
     }
 
     private void OnCollapseExpandAllColumns(bool isExpand)
     {
-        var headColumns = _sheet.Columns
-            .Where(x => x.IsGroup)
-            .ToList();
-
-        foreach (var headColumn in headColumns)
-        {
-            headColumn.IsOpen = isExpand;
-
-            var groupedColumns = _sheet.Columns
-                .Where(x => x.ParentUid == headColumn.Uid)
-                .ToList();
-
-            groupedColumns.ForEach(x => x.IsHidden = isExpand ? false : true);
-        }
+        _sheet.CollapseExpandColumns(isExpand);
     }
 }
