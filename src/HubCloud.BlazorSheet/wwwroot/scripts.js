@@ -25,17 +25,19 @@
     },
 
     disableArrowScroll: function (className) {
-
+        
         var elements = document.getElementsByClassName(className);
-        if (!elements.length){
+        
+        if (elements.length === 0){
             return;
         }
+        
         const element = elements[0];
         
         if(element == null){
             return;
         }
-
+        
         element.addEventListener('keydown', function(event) {
             if (["ArrowLeft", "ArrowUp", "ArrowRight", "ArrowDown"].indexOf(event.code) > -1) {
                 event.preventDefault();

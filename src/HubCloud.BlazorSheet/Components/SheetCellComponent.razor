@@ -1,10 +1,11 @@
-﻿<td @key="@Cell.Uid"
+﻿@using HubCloud.BlazorSheet.Core.Enums
+<td @key="@Cell.Uid"
     @ref="_cellElement"
     id="@Id"
     class="@CellClass(Cell)"
     style="@CellStyle(Row, Column, Cell)"
-    @onclick="(e=>OnCellClick(e, Cell))"
-    @ondblclick="(e=>OnCellDblClick(e, Cell))"
+    @onclick="(e => OnCellClick(e, Cell))"
+    @ondblclick="(e => OnCellDblClick(e, Cell))"
     colspan="@Cell.Colspan"
     rowspan="@Cell.Rowspan">
 
@@ -22,6 +23,30 @@
         else
         {
             @Cell.Text
+        }
+
+        @if (Regime == SheetRegimes.Design)
+        {
+            
+            if (Cell.EditSettingsUid.HasValue)
+            {
+                var editSettings = Sheet.GetEditSettings(Cell);
+                <span>&laquo;</span>
+                <span>@ControlPresentation(editSettings.ControlKind)</span>
+                <span>&raquo;</span>                               
+            }
+            
+            @if (!string.IsNullOrEmpty(@Cell.Format))
+            {
+                <span>:</span>
+                <span>@Cell.Format</span>
+            }
+
+            @if (!string.IsNullOrEmpty(Cell.Formula))
+            {
+                <span>=</span>
+                <small>@Cell.Formula</small>
+            }
         }
     }
 
