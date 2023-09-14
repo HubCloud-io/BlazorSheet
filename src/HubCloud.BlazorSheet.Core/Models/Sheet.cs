@@ -1360,5 +1360,37 @@ namespace HubCloud.BlazorSheet.Core.Models
             if (withoutStyleCells.Any())
                 SetStyle(withoutStyleCells, style);
         }
+
+        public void CollapseExpandRows(bool isExpand)
+        {
+            var headRows = Rows.Where(x => x.IsGroup);
+
+            foreach (var headRow in headRows)
+            {
+                headRow.IsOpen = isExpand;
+
+                var groupedRows = Rows
+                    .Where(x => x.ParentUid == headRow.Uid)
+                    .ToList();
+
+                groupedRows.ForEach(x => x.IsHidden = isExpand ? false : true);
+            }
+        }
+
+        public void CollapseExpandColumns(bool isExpand)
+        {
+            var headColumns = Columns.Where(x => x.IsGroup);
+
+            foreach (var headColumn in headColumns)
+            {
+                headColumn.IsOpen = isExpand;
+
+                var groupedColumns = Columns
+                    .Where(x => x.ParentUid == headColumn.Uid)
+                    .ToList();
+
+                groupedColumns.ForEach(x => x.IsHidden = isExpand ? false : true);
+            }
+        }
     }
 }
