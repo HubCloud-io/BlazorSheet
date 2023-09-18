@@ -4,6 +4,7 @@ using HubCloud.BlazorSheet.Core.Interfaces;
 using HubCloud.BlazorSheet.Core.Models;
 using HubCloud.BlazorSheet.Infrastructure;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
 
 namespace HubCloud.BlazorSheet.Components;
 
@@ -11,6 +12,10 @@ public partial class SheetCommandPanel:ComponentBase
 {
     private bool _isCollapseExpandAllRows;
     private bool _isCollapseExpandAllColumns;
+    
+    private bool _isEditSettingsOpen;
+    private double _clientX;
+    private double _clientY;
 
     private List<Tuple<string, string>> _textAlignSource;
     private List<Tuple<string, CellFormatTypes>> _cellFormatSource;
@@ -147,12 +152,6 @@ public partial class SheetCommandPanel:ComponentBase
         Model.BorderColor = e.Value?.ToString();
         await Changed.InvokeAsync(null);
     }
-
-    private async Task OnControlKindChanged()
-    {
-        Model.DataType = SheetCellEditSettings.GetDataType(Model.ControlKind);
-        await Changed.InvokeAsync(null);
-    }
     
     private async Task OnSettingsChanged()
     {
@@ -249,5 +248,18 @@ public partial class SheetCommandPanel:ComponentBase
     {
         _isCollapseExpandAllColumns = !_isCollapseExpandAllColumns;
         await CollapseExpandAllColumns.InvokeAsync(_isCollapseExpandAllColumns);
+    }
+
+    private void OnEditSettingsClick(MouseEventArgs e)
+    {
+        _isEditSettingsOpen = true;
+
+        _clientX = e.ClientX;
+        _clientY = e.ClientY;
+    }
+
+    private void OnEditParametersClosed(SheetCellEditSettings editSettings)
+    {
+        _isEditSettingsOpen = false;
     }
 }
