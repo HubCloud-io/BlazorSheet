@@ -8,7 +8,7 @@
     </div>
     <div style="font-size: 12px;">
 
-        <div class="row">
+        <div>
             <div>
                 Control kind
             </div>
@@ -24,7 +24,7 @@
             </div>
         </div>
 
-        <div class="row">
+        <div>
             <div>
                 Data type
             </div>
@@ -39,14 +39,14 @@
             </div>
         </div>
 
-        <div class="row">
+        <div>
             <div>Required</div>
             <div>
                 <BbCheckBox @bind-Value="@_editSettings.Required"></BbCheckBox>
             </div>
         </div>
 
-        <div class="row">
+        <div>
             <div>
                 Auto clear method
             </div>
@@ -61,7 +61,7 @@
             </div>
         </div>
 
-        <div class="row">
+        <div>
             <div>Default value</div>
             <div>
                 <BbTextInput @bind-Value="@_editSettings.DefaultValue" HtmlStyle="width: 100%"></BbTextInput>
@@ -70,7 +70,7 @@
 
         @if (_editSettings.ControlKind == CellControlKinds.NumberInput)
         {
-            <div class="row">
+            <div>
                 <div>Number digits</div>
                 <div>
                     <BbNumberInput TValue="int"
@@ -83,14 +83,14 @@
 
         @if (_editSettings.CellDataType >= 20)
         {
-            <div class="row">
+            <div>
                 <div>Items source</div>
                 <div>
                     <BbTextInput @bind-Value="@_editSettings.ItemsSource" HtmlStyle="width: 100%;"></BbTextInput>
                 </div>
             </div>
 
-            <div class="row">
+            <div>
                 <div>Autogenerate</div>
                 <div>
                     <BbCheckBox @bind-Value="@_editSettings.AutoGenerate"></BbCheckBox>
@@ -99,7 +99,7 @@
 
             @if (_editSettings.AutoGenerate)
             {
-                <div class="row">
+                <div>
                     <div>Autogenerate mask</div>
                     <div>
                         <BbTextInput @bind-Value="@_editSettings.AutoGenerateMask" HtmlStyle="width: 100%;"></BbTextInput>
