@@ -7,41 +7,108 @@
         Edit settings
     </div>
     <div style="font-size: 12px;">
-        <div>
-            Control kind
+
+        <div class="row">
+            <div>
+                Control kind
+            </div>
+            <div>
+                <BbSelect TValue="CellControlKinds"
+                          ItemsSource="@_controlKindSource"
+                          ValueName="Item1"
+                          TextName="Item2"
+                          HtmlStyle="height:25px; width: 100%"
+                          @bind-Value="@_editSettings.ControlKind"
+                          Changed="OnControlKindChanged">
+                </BbSelect>
+            </div>
         </div>
-        <div>
-            <BbSelect TValue="CellControlKinds"
-                      ItemsSource="@_controlKindSource"
-                      ValueName="Item1"
-                      TextName="Item2"
-                      HtmlStyle="height:25px; width: 100%"
-                      @bind-Value="@_editSettings.ControlKind"
-                      Changed="OnControlKindChanged">
-            </BbSelect>
+
+        <div class="row">
+            <div>
+                Data type
+            </div>
+            <div>
+                <BbSelect TValue="int"
+                          ItemsSource="@_dataTypeSource"
+                          ValueName="Item1"
+                          TextName="Item2"
+                          HtmlStyle="height:25px; width: 100%"
+                          @bind-Value="@_editSettings.CellDataType">
+                </BbSelect>
+            </div>
         </div>
-        <div>
-            Data type
+
+        <div class="row">
+            <div>Required</div>
+            <div>
+                <BbCheckBox @bind-Value="@_editSettings.Required"></BbCheckBox>
+            </div>
         </div>
-        <div>
-            <BbSelect TValue="int"
-                      ItemsSource="@_dataTypeSource"
-                      ValueName="Item1"
-                      TextName="Item2"
-                      HtmlStyle="height:25px; width: 100%"
-                      @bind-Value="@_editSettings.CellDataType">
-            </BbSelect>
+
+        <div class="row">
+            <div>
+                Auto clear method
+            </div>
+            <div>
+                <BbSelect TValue="CellAutoClearMethods"
+                          ItemsSource="@_autoClearSource"
+                          ValueName="Item1"
+                          TextName="Item2"
+                          HtmlStyle="height:25px; width: 100%"
+                          @bind-Value="@_editSettings.AutoClearMethod">
+                </BbSelect>
+            </div>
         </div>
+
+        <div class="row">
+            <div>Default value</div>
+            <div>
+                <BbTextInput @bind-Value="@_editSettings.DefaultValue" HtmlStyle="width: 100%"></BbTextInput>
+            </div>
+        </div>
+
         @if (_editSettings.ControlKind == CellControlKinds.NumberInput)
         {
-            <div>Number digits</div>
-            <div>
-                <BbNumberInput TValue="int"
-                               @bind-Value="@_editSettings.NumberDigits"
-                               HtmlStyle="width:30px;text-align:right;">
-                </BbNumberInput>
+            <div class="row">
+                <div>Number digits</div>
+                <div>
+                    <BbNumberInput TValue="int"
+                                   @bind-Value="@_editSettings.NumberDigits"
+                                   HtmlStyle="width:40px;text-align:right;">
+                    </BbNumberInput>
+                </div>
             </div>
         }
+
+        @if (_editSettings.CellDataType >= 20)
+        {
+            <div class="row">
+                <div>Items source</div>
+                <div>
+                    <BbTextInput @bind-Value="@_editSettings.ItemsSource" HtmlStyle="width: 100%;"></BbTextInput>
+                </div>
+            </div>
+
+            <div class="row">
+                <div>Autogenerate</div>
+                <div>
+                    <BbCheckBox @bind-Value="@_editSettings.AutoGenerate"></BbCheckBox>
+                </div>
+            </div>
+
+            @if (_editSettings.AutoGenerate)
+            {
+                <div class="row">
+                    <div>Autogenerate mask</div>
+                    <div>
+                        <BbTextInput @bind-Value="@_editSettings.AutoGenerateMask" HtmlStyle="width: 100%;"></BbTextInput>
+                    </div>
+                </div>
+            }
+        }
+
+
 
     </div>
 

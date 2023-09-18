@@ -12,6 +12,7 @@ public partial class EditParametersModal: ComponentBase
     private SheetCellEditSettings _editSettings;
     
     private List<Tuple<CellControlKinds, string>> _controlKindSource;
+    private List<Tuple<CellAutoClearMethods, string>> _autoClearSource;
     private List<Tuple<int, string>> _dataTypeSource;
     
     [Parameter]
@@ -52,6 +53,10 @@ public partial class EditParametersModal: ComponentBase
         _controlKindSource.Add(new Tuple<CellControlKinds, string>(CellControlKinds.DateInput, "Date input"));
         _controlKindSource.Add(new Tuple<CellControlKinds, string>(CellControlKinds.CheckBox, "Check box"));
         _controlKindSource.Add(new Tuple<CellControlKinds, string>(CellControlKinds.Select, "Select"));
+
+        _autoClearSource = new List<Tuple<CellAutoClearMethods, string>>();
+        _autoClearSource.Add(new Tuple<CellAutoClearMethods, string>(CellAutoClearMethods.None, "None"));
+        _autoClearSource.Add(new Tuple<CellAutoClearMethods, string>(CellAutoClearMethods.ClearWhenCopy, "When copy"));
     }
 
     protected override void OnParametersSet()
