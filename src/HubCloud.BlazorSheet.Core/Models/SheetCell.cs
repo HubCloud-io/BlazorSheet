@@ -51,7 +51,7 @@ namespace HubCloud.BlazorSheet.Core.Models
             }
             set => Value = value;
         }
-        
+
         [XmlIgnore]
         [JsonIgnore]
         public int IntValue
@@ -69,7 +69,7 @@ namespace HubCloud.BlazorSheet.Core.Models
             }
             set => Value = value;
         }
-        
+
         [XmlIgnore]
         [JsonIgnore]
         public bool BoolValue
@@ -87,7 +87,7 @@ namespace HubCloud.BlazorSheet.Core.Models
             }
             set => Value = value;
         }
-        
+
         [XmlIgnore]
         [JsonIgnore]
         public string StringValue
@@ -150,7 +150,7 @@ namespace HubCloud.BlazorSheet.Core.Models
                 Text = date.ToString(Format);
             else if (decimal.TryParse(
                 StringValue.Replace(',', '.'),
-                NumberStyles.AllowDecimalPoint,
+                NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingSign,
                 new NumberFormatInfo { NumberDecimalSeparator = "." },
                 out var decimalValue))
                 Text = decimalValue.ToString(Format, CultureInfo.InvariantCulture);
