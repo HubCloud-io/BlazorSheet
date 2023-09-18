@@ -11,6 +11,12 @@ namespace HubCloud.BlazorSheet.Core.Models
         public int CellDataType { get; set; }
         public string ItemsSource { get; set; } = string.Empty;
         public int NumberDigits { get; set; }
+        public bool Required { get; set; }
+        public string DefaultValue { get; set; }
+        public bool AutoGenerate { get; set; }
+        public string AutoGenerateMask { get; set; }
+        public CellAutoClearMethods AutoClearMethod { get; set; }
+        
 
         public SheetCellEditSettings()
         {
@@ -38,7 +44,12 @@ namespace HubCloud.BlazorSheet.Core.Models
             return ControlKind == other.ControlKind &&
                    NumberDigits == other.NumberDigits &&
                    CellDataType == other.CellDataType &&
-                   (ItemsSource?.Equals(other.ItemsSource, StringComparison.OrdinalIgnoreCase) ?? true);
+                   (ItemsSource?.Equals(other.ItemsSource, StringComparison.OrdinalIgnoreCase) ?? true) &&
+                   Required == other.Required &&
+                   (DefaultValue?.Equals(other.DefaultValue, StringComparison.OrdinalIgnoreCase) ?? true) &&
+                   AutoGenerate == other.AutoGenerate &&
+                   (AutoGenerateMask?.Equals(other.AutoGenerateMask, StringComparison.OrdinalIgnoreCase) ?? true) &&
+                   AutoClearMethod == other.AutoClearMethod;
         }
 
         // override GetHashCode as well when Equals is overridden
@@ -50,6 +61,12 @@ namespace HubCloud.BlazorSheet.Core.Models
             hash = hash * 23 + NumberDigits.GetHashCode();
             hash = hash * 23 + CellDataType.GetHashCode();
             hash = hash * 23 + ItemsSource?.GetHashCode() ?? 0;
+            hash = hash * 23 + Required.GetHashCode();
+            hash = hash * 23 + DefaultValue?.GetHashCode() ?? 0;
+            hash = hash * 23 + AutoGenerate.GetHashCode();
+            hash = hash * 23 + AutoGenerateMask?.GetHashCode() ?? 0;
+            hash = hash * 23 + AutoClearMethod.GetHashCode();
+            
             return hash;
         }
 
