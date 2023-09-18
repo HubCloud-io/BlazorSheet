@@ -58,6 +58,9 @@ public partial class SheetCommandPanel:ComponentBase
 
     [Parameter]
     public EventCallback<bool> CollapseExpandAllColumns { get; set; }
+    
+    [Parameter]
+    public EventCallback<SheetCellEditSettings> EditSettingsChanged { get; set; }
 
     [Parameter]
     public bool CanCellsBeJoined { get; set; }
@@ -258,8 +261,14 @@ public partial class SheetCommandPanel:ComponentBase
         _clientY = e.ClientY;
     }
 
-    private void OnEditParametersClosed(SheetCellEditSettings editSettings)
+    private async Task OnEditParametersClosed(SheetCellEditSettings editSettings)
     {
         _isEditSettingsOpen = false;
+
+        if (editSettings != null)
+        {
+            Model.EditSettings = editSettings;
+            await EditSettingsChanged.InvokeAsync(Model.EditSettings);
+        }
     }
 }
