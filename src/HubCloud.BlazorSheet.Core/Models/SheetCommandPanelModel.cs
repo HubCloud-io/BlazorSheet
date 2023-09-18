@@ -27,10 +27,12 @@ namespace HubCloud.BlazorSheet.Core.Models
         public int BorderWidth { get; set; } = 1;
         public string BorderColor { get; set; } = "#000000";
         
-        public int DataType { get; set; }
-        public string ItemsSource { get; set; }
-        public CellControlKinds ControlKind { get; set; }
-        public int NumberDigits { get; set; }
+        // public int DataType { get; set; }
+        // public string ItemsSource { get; set; }
+        // public CellControlKinds ControlKind { get; set; }
+        // public int NumberDigits { get; set; }
+
+        public SheetCellEditSettings EditSettings { get; set; } = new SheetCellEditSettings();
         
         public string SelectedCellAddress { get; set; }
         public string InputText { get; set; }
@@ -99,10 +101,16 @@ namespace HubCloud.BlazorSheet.Core.Models
 
         public void SetEditSettings(SheetCellEditSettings editSettings)
         {
-            ControlKind = editSettings.ControlKind;
-            NumberDigits = editSettings.NumberDigits;
-            ItemsSource = editSettings.ItemsSource;
-            DataType = editSettings.CellDataType;
+            EditSettings.ControlKind = editSettings.ControlKind;
+            EditSettings.NumberDigits = editSettings.NumberDigits;
+            EditSettings.ItemsSource = editSettings.ItemsSource;
+            EditSettings.CellDataType = editSettings.CellDataType;
+
+            EditSettings.Required = editSettings.Required;
+            EditSettings.DefaultValue = editSettings.DefaultValue;
+            EditSettings.AutoGenerate = editSettings.AutoGenerate;
+            EditSettings.AutoGenerateMask = editSettings.AutoGenerateMask;
+            EditSettings.AutoClearMethod = editSettings.AutoClearMethod;
         }
 
         private int ParseFontSize(string fontSizePx)

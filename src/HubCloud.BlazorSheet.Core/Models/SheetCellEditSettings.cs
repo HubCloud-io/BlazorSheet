@@ -24,10 +24,16 @@ namespace HubCloud.BlazorSheet.Core.Models
 
         public SheetCellEditSettings(SheetCommandPanelModel commandPanelModel)
         {
-            CellDataType = commandPanelModel.DataType;
-            ItemsSource = commandPanelModel.ItemsSource;
-            ControlKind = commandPanelModel.ControlKind;
-            NumberDigits = commandPanelModel.NumberDigits;
+            CellDataType = commandPanelModel.EditSettings.CellDataType;
+            ItemsSource = commandPanelModel.EditSettings.ItemsSource;
+            ControlKind = commandPanelModel.EditSettings.ControlKind;
+            NumberDigits = commandPanelModel.EditSettings.NumberDigits;
+
+            Required = commandPanelModel.EditSettings.Required;
+            DefaultValue = commandPanelModel.EditSettings.DefaultValue;
+            AutoGenerate = commandPanelModel.EditSettings.AutoGenerate;
+            AutoGenerateMask = commandPanelModel.EditSettings.AutoGenerateMask;
+            AutoClearMethod = commandPanelModel.EditSettings.AutoClearMethod;
         }
 
         public bool IsStandard()
@@ -68,6 +74,25 @@ namespace HubCloud.BlazorSheet.Core.Models
             hash = hash * 23 + AutoClearMethod.GetHashCode();
             
             return hash;
+        }
+
+        public SheetCellEditSettings ConcreteClone()
+        {
+            var clone = new SheetCellEditSettings()
+            {
+                ControlKind = this.ControlKind,
+                CellDataType = this.CellDataType,
+                ItemsSource = this.ItemsSource,
+                NumberDigits = this.NumberDigits,
+                Required = this.Required,
+                DefaultValue = this.DefaultValue,
+                AutoGenerate = this.AutoGenerate,
+                AutoGenerateMask = this.AutoGenerateMask,
+                AutoClearMethod = this.AutoClearMethod
+
+            };
+
+            return clone;
         }
 
         public static int GetDataType(CellControlKinds controlKind)

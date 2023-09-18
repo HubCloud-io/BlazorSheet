@@ -115,6 +115,14 @@ public partial class SheetEditPage: ComponentBase
         _sheet.SetSettingsFromCommandPanel(_selectedCells, _selectedCell, _commandPanelModel);
     }
 
+    private void OnEditSettingsChanged(SheetCellEditSettings editSettings)
+    {
+        if (_selectedCell == null)
+            return;
+        
+        _sheet.SetEditSettings(_selectedCells, editSettings.ConcreteClone());
+    }
+
     private void OnGroupRows()
     {
         _sheet.GroupRows(_selectedRowByNumberList);

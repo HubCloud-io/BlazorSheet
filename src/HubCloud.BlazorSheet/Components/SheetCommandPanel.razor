@@ -2,215 +2,226 @@
 @using HubCloud.BlazorSheet.Core.Enums
 
 <div class="hc-sheet-command-panel">
-    <div class="row" style="line-height: 15px; font-size: 12px;">
+<div class="row" style="line-height: 15px; font-size: 12px;">
 
-        <div class="col-sm-12">
+    <div class="col-sm-12">
 
-            <span class="fa fa-light fa-snowflake text-primary"></span>
-            <span class="text-primary">R</span>
-            <BbNumberInput TValue="int"
-                           @bind-Value="@Model.FreezedRows"
-                           Changed="OnSettingsChanged"
-                           HtmlStyle="width:30px;margin-left:5px; text-align:right;">
-            </BbNumberInput>
-            <span class="text-primary">С</span>
-            <BbNumberInput TValue="int"
-                           @bind-Value="@Model.FreezedColumns"
-                           Changed="OnSettingsChanged"
-                           HtmlStyle="width:30px;margin-left:5px; text-align:right;">
-            </BbNumberInput>
+        <span class="fa fa-light fa-snowflake text-primary"></span>
+        <span class="text-primary">R</span>
+        <BbNumberInput TValue="int"
+                       @bind-Value="@Model.FreezedRows"
+                       Changed="OnSettingsChanged"
+                       HtmlStyle="width:30px;margin-left:5px; text-align:right;">
+        </BbNumberInput>
+        <span class="text-primary">С</span>
+        <BbNumberInput TValue="int"
+                       @bind-Value="@Model.FreezedColumns"
+                       Changed="OnSettingsChanged"
+                       HtmlStyle="width:30px;margin-left:5px; text-align:right;">
+        </BbNumberInput>
 
-            <span class="fa fa-font text-primary" style="margin-left: 3px;"></span>
-            <BbNumberInput TValue="int"
-                           @bind-Value="@Model.FontSize"
-                           Changed="OnSettingsChanged"
-                           HtmlStyle="width:30px;margin-left:5px; text-align:right;">
-            </BbNumberInput>
+        <span class="fa fa-font text-primary" style="margin-left: 3px;"></span>
+        <BbNumberInput TValue="int"
+                       @bind-Value="@Model.FontSize"
+                       Changed="OnSettingsChanged"
+                       HtmlStyle="width:30px;margin-left:5px; text-align:right;">
+        </BbNumberInput>
 
-            <span class="fa fa-align-left text-primary" style="margin-left: 3px;"></span>
-            <BbSelect TValue="string"
-                      ItemsSource="@_textAlignSource"
-                      TextName="Item1"
-                      ValueName="Item2"
-                      @bind-Value="@Model.TextAlign"
-                      HtmlStyle="width:70px;margin-left:5px;height:25px;"
-                      Changed="OnSettingsChanged">
-            </BbSelect>
+        <span class="fa fa-align-left text-primary" style="margin-left: 3px;"></span>
+        <BbSelect TValue="string"
+                  ItemsSource="@_textAlignSource"
+                  TextName="Item1"
+                  ValueName="Item2"
+                  @bind-Value="@Model.TextAlign"
+                  HtmlStyle="width:70px;margin-left:5px;height:25px;"
+                  Changed="OnSettingsChanged">
+        </BbSelect>
 
-            <button class="@ToggleButtonStyle(Model.IsBold)"
-                    @onclick="OnBoldClick"
-                    style="padding-top:2px; padding-bottom: 2px; margin-top: -5px;">
-                <span>B</span>
+        <button class="@ToggleButtonStyle(Model.IsBold)"
+                @onclick="OnBoldClick"
+                style="padding-top:2px; padding-bottom: 2px; margin-top: -5px;">
+            <span>B</span>
+        </button>
+
+        <button class="@ToggleButtonStyle(Model.IsItalic)"
+                @onclick="OnItalicClick"
+                style="padding-top: 2px; padding-bottom: 2px; margin-top: -5px;">
+            <span style="font-style: italic;">I</span>
+        </button>
+
+        <span class="fa fa-font text-primary" style="margin-left: 3px;"></span>
+        @* <BbTextInput @bind-Value="@StyleModel.Color" Changed="OnSettingsChanged" HtmlStyle="width:70px;"></BbTextInput> *@
+        <input type="color"
+               @onchange="(e => OnColorChange(e))"
+               value="@Model.Color"
+               style="width:30px; height: 25px;"/>
+
+        <span class="fa fa-tint text-primary" style="margin-left: 3px;"></span>
+        @* <BbTextInput @bind-Value="@StyleModel.BackgroundColor" Changed="OnSettingsChanged" HtmlStyle="width:70px;"></BbTextInput> *@
+        <input type="color"
+               @onchange="(e => OnBackgroundColorChange(e))"
+               value="@Model.BackgroundColor"
+               style="width:30px; height: 25px;"/>
+
+        <span class="fa fa-border text-primary" style="margin-left: 3px;"></span>
+        <BbSelect TValue="CellBorderTypes"
+                  ItemsSource="@_borderTypesSource"
+                  ValueName="Item1"
+                  TextName="Item2"
+                  HtmlStyle="height:25px;"
+                  @bind-Value="@Model.BorderType"
+                  Changed="OnSettingsChanged">
+        </BbSelect>
+
+        <BbNumberInput TValue="int"
+                       @bind-Value="@Model.BorderWidth"
+                       Changed="OnSettingsChanged"
+                       HtmlStyle="width:30px;margin-left:5px; text-align:right;">
+        </BbNumberInput>
+
+        <input type="color"
+               @onchange="(e => OnBorderColorChange(e))"
+               value="@Model.BorderColor"
+               style="width:30px; height: 25px;"/>
+
+        <BbSelect TValue="CellFormatTypes"
+                  ItemsSource="@_cellFormatSource"
+                  TextName="Item1"
+                  ValueName="Item2"
+                  HtmlStyle="width:150px;margin-left:5px;margin-right:5px;height:25px;"
+                  @bind-Value="@Model.FormatType"
+                  Changed="OnCellFormatChanged">
+        </BbSelect>
+
+        @if (Model.FormatType == CellFormatTypes.Custom)
+        {
+            <BbTextInput @bind-Value="@Model.CustomFormat" Changed="OnCustomFormatInputChanged" HtmlStyle="width:150px;margin-right:5px;height:25px;"/>
+        }
+            
+        <a href="#" @onclick:preventDefault @onclick="(e=>OnEditSettingsClick(e))">Edit</a>
+
+
+        @* <BbSelect TValue="CellControlKinds" *@
+        @*           ItemsSource="@_controlKindSource" *@
+        @*           ValueName="Item1" *@
+        @*           TextName="Item2" *@
+        @*           HtmlStyle="height:25px;" *@
+        @*           @bind-Value="@Model.ControlKind" *@
+        @*           Changed="OnControlKindChanged"> *@
+        @* </BbSelect> *@
+
+        @* <BbSelect TValue="int" *@
+        @*           ItemsSource="@_dataTypeSource" *@
+        @*           ValueName="Item1" *@
+        @*           TextName="Item2" *@
+        @*           HtmlStyle="height:25px; margin-left:5px;" *@
+        @*           @bind-Value="@Model.DataType" *@
+        @*           Changed="OnSettingsChanged"> *@
+        @* </BbSelect> *@
+
+        @* @if (Model.ControlKind == CellControlKinds.NumberInput) *@
+        @* { *@
+        @*     <BbNumberInput TValue="int" *@
+        @*                    @bind-Value="@Model.NumberDigits" *@
+        @*                    Changed="OnSettingsChanged" *@
+        @*                    HtmlStyle="width:30px;margin-left:5px; text-align:right;"> *@
+        @* *@
+        @*     </BbNumberInput> *@
+        @* } *@
+
+
+        <button title="Excel export" class="btn btn-outline-success ml-1" style="padding-top:2px; padding-bottom: 2px; margin-top: -5px; margin-left: 3px;" @onclick="OnExport">
+            <span class="fa fa-file-export"></span>
+        </button>
+        <button title="Excel import" class="btn btn-outline-success mr-1" style="padding-top:2px; padding-bottom: 2px; margin-top: -5px;" @onclick="OnImport">
+            <span class="fa fa-file-import"></span>
+        </button>
+
+        <button class="btn btn-outline-primary ml-1" style="padding-top:2px; padding-bottom: 2px; margin-top: -5px; margin-left: 3px;" @onclick="OnOpenCellLinkModal">
+            <span class="fa fa-solid fa-link"></span>
+        </button>
+
+        <div class="btn-group btn-group-sm float-left">
+            <button type="button" class="btn btn-sm btn-outline-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Actions
             </button>
-
-            <button class="@ToggleButtonStyle(Model.IsItalic)"
-                    @onclick="OnItalicClick"
-                    style="padding-top: 2px; padding-bottom: 2px; margin-top: -5px;">
-                <span style="font-style: italic;">I</span>
-            </button>
-
-            <span class="fa fa-font text-primary" style="margin-left: 3px;"></span>
-            @* <BbTextInput @bind-Value="@StyleModel.Color" Changed="OnSettingsChanged" HtmlStyle="width:70px;"></BbTextInput> *@
-            <input type="color"
-                   @onchange="(e => OnColorChange(e))"
-                   value="@Model.Color"
-                   style="width:30px; height: 25px;"/>
-
-            <span class="fa fa-tint text-primary" style="margin-left: 3px;"></span>
-            @* <BbTextInput @bind-Value="@StyleModel.BackgroundColor" Changed="OnSettingsChanged" HtmlStyle="width:70px;"></BbTextInput> *@
-            <input type="color"
-                   @onchange="(e => OnBackgroundColorChange(e))"
-                   value="@Model.BackgroundColor"
-                   style="width:30px; height: 25px;"/>
-
-            <span class="fa fa-border text-primary" style="margin-left: 3px;"></span>
-            <BbSelect TValue="CellBorderTypes"
-                      ItemsSource="@_borderTypesSource"
-                      ValueName="Item1"
-                      TextName="Item2"
-                      HtmlStyle="height:25px;"
-                      @bind-Value="@Model.BorderType"
-                      Changed="OnSettingsChanged">
-            </BbSelect>
-
-            <BbNumberInput TValue="int"
-                           @bind-Value="@Model.BorderWidth"
-                           Changed="OnSettingsChanged"
-                           HtmlStyle="width:30px;margin-left:5px; text-align:right;">
-            </BbNumberInput>
-
-            <input type="color"
-                   @onchange="(e => OnBorderColorChange(e))"
-                   value="@Model.BorderColor"
-                   style="width:30px; height: 25px;"/>
-
-            <BbSelect TValue="CellFormatTypes"
-                      ItemsSource="@_cellFormatSource"
-                      TextName="Item1"
-                      ValueName="Item2"
-                      HtmlStyle="width:150px;margin-left:5px;margin-right:5px;height:25px;"
-                      @bind-Value="@Model.FormatType"
-                      Changed="OnCellFormatChanged">
-            </BbSelect>
-
-            @if (Model.FormatType == CellFormatTypes.Custom)
-            {
-                <BbTextInput @bind-Value="@Model.CustomFormat" Changed="OnCustomFormatInputChanged" HtmlStyle="width:150px;margin-right:5px;height:25px;"/>
-            }
-
-
-            <BbSelect TValue="CellControlKinds"
-                      ItemsSource="@_controlKindSource"
-                      ValueName="Item1"
-                      TextName="Item2"
-                      HtmlStyle="height:25px;"
-                      @bind-Value="@Model.ControlKind"
-                      Changed="OnControlKindChanged">
-            </BbSelect>
-
-            <BbSelect TValue="int"
-                      ItemsSource="@_dataTypeSource"
-                      ValueName="Item1"
-                      TextName="Item2"
-                      HtmlStyle="height:25px; margin-left:5px;"
-                      @bind-Value="@Model.DataType"
-                      Changed="OnSettingsChanged">
-            </BbSelect>
-
-            @if (Model.ControlKind == CellControlKinds.NumberInput)
-            {
-                <BbNumberInput TValue="int"
-                               @bind-Value="@Model.NumberDigits"
-                               Changed="OnSettingsChanged"
-                               HtmlStyle="width:30px;margin-left:5px; text-align:right;">
-
-                </BbNumberInput>
-            }
-
-
-            <button title="Excel export" class="btn btn-outline-success ml-1" style="padding-top:2px; padding-bottom: 2px; margin-top: -5px; margin-left: 3px;" @onclick="OnExport">
-                <span class="fa fa-file-export"></span>
-            </button>
-            <button title="Excel import" class="btn btn-outline-success mr-1" style="padding-top:2px; padding-bottom: 2px; margin-top: -5px;" @onclick="OnImport">
-                <span class="fa fa-file-import"></span>
-            </button>
-
-            <button class="btn btn-outline-primary ml-1" style="padding-top:2px; padding-bottom: 2px; margin-top: -5px; margin-left: 3px;" @onclick="OnOpenCellLinkModal">
-                <span class="fa fa-solid fa-link"></span>
-            </button>
-
-            <div class="btn-group btn-group-sm float-left">
-                <button type="button" class="btn btn-sm btn-outline-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Actions
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <button class="dropdown-item"
+                        type="button"
+                        disabled="@IsButtonSplitJoinDisabled()"
+                        @onclick="OnSplitJoinCells">
+                    @if (SelectedCellsCount > 1)
+                    {
+                        <span>Join</span>
+                    }
+                    else
+                    {
+                        <span>Split</span>
+                    }
                 </button>
-                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <button class="dropdown-item"
-                            type="button"
-                            disabled="@IsButtonSplitJoinDisabled()"
-                            @onclick="OnSplitJoinCells">
-                        @if (SelectedCellsCount > 1)
-                        {
-                            <span>Join</span>
-                        }
-                        else
-                        {
-                            <span>Split</span>
-                        }
-                    </button>
-                    <button class="dropdown-item"
-                            type="button"
-                            disabled="@(!CanRowsBeGrouped)"
-                            @onclick="OnGroupRows">
-                        Group rows
-                    </button>
-                    <button class="dropdown-item"
-                            type="button"
-                            disabled="@(!CanRowsBeUngrouped)"
-                            @onclick="OnUngroupRows">
-                        Ungroup rows
-                    </button>
-                    <button class="dropdown-item"
-                            type="button"
-                            @onclick="OnCollapseExpandAllRows">
-                        Collapse/Expand all rows
-                    </button>
+                <button class="dropdown-item"
+                        type="button"
+                        disabled="@(!CanRowsBeGrouped)"
+                        @onclick="OnGroupRows">
+                    Group rows
+                </button>
+                <button class="dropdown-item"
+                        type="button"
+                        disabled="@(!CanRowsBeUngrouped)"
+                        @onclick="OnUngroupRows">
+                    Ungroup rows
+                </button>
+                <button class="dropdown-item"
+                        type="button"
+                        @onclick="OnCollapseExpandAllRows">
+                    Collapse/Expand all rows
+                </button>
 
-                    <button class="dropdown-item"
-                            type="button"
-                            disabled="@(!CanColumnsBeGrouped)"
-                            @onclick="OnGroupColumns">
-                        Group columns
-                    </button>
-                    <button class="dropdown-item"
-                            type="button"
-                            disabled="@(!CanColumnsBeUngrouped)"
-                            @onclick="OnUngroupColumns">
-                        Ungroup columns
-                    </button>
-                    <button class="dropdown-item"
-                            type="button"
-                            @onclick="OnCollapseExpandAllColumns">
-                        Collapse/Expand all columns
-                    </button>
-                </div>
+                <button class="dropdown-item"
+                        type="button"
+                        disabled="@(!CanColumnsBeGrouped)"
+                        @onclick="OnGroupColumns">
+                    Group columns
+                </button>
+                <button class="dropdown-item"
+                        type="button"
+                        disabled="@(!CanColumnsBeUngrouped)"
+                        @onclick="OnUngroupColumns">
+                    Ungroup columns
+                </button>
+                <button class="dropdown-item"
+                        type="button"
+                        @onclick="OnCollapseExpandAllColumns">
+                    Collapse/Expand all columns
+                </button>
             </div>
         </div>
     </div>
-
-    <div class="row" style="margin-top:5px;">
-
-        <div class="col-sm-1">
-            <span class="text-primary" style="line-height: 30px;">
-                @(string.IsNullOrWhiteSpace(Model.SelectedCellAddress) ? "RC" : @Model.SelectedCellAddress)
-            </span>
-        </div>
-        <div class="col-sm-11">
-            <BbTextInput HtmlStyle="width:100%"
-                         @bind-Value="@Model.InputText"
-                         Placeholder="Formula"
-                         Changed="OnSettingsChanged">
-            </BbTextInput>
-        </div>
-
-    </div>
 </div>
+
+<div class="row" style="margin-top:5px;">
+
+    <div class="col-sm-1">
+        <span class="text-primary" style="line-height: 30px;">
+            @(string.IsNullOrWhiteSpace(Model.SelectedCellAddress) ? "RC" : @Model.SelectedCellAddress)
+        </span>
+    </div>
+    <div class="col-sm-11">
+        <BbTextInput HtmlStyle="width:100%"
+                     @bind-Value="@Model.InputText"
+                     Placeholder="Formula"
+                     Changed="OnSettingsChanged">
+        </BbTextInput>
+    </div>
+
+</div>
+</div>
+
+@if (_isEditSettingsOpen)
+{
+    <EditParametersModal ClientX="@_clientX" 
+                         ClientY="@_clientY" 
+                         EditSettings="@Model.EditSettings"
+                         DataTypeDataProvider="@DataTypeDataProvider"
+                         Closed="OnEditParametersClosed"></EditParametersModal>
+}
