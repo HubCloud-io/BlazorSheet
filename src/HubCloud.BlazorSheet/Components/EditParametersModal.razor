@@ -1,0 +1,120 @@
+﻿@using BBComponents.Components
+@using HubCloud.BlazorSheet.Core.Enums
+
+<div style="@ComponentStyle()">
+
+    <div class="text-primary" style="border-bottom: 1px solid #eeeeee; line-height: 20px;">
+        Edit settings
+    </div>
+    <div style="font-size: 12px;">
+
+        <div>
+            <div>
+                Control kind
+            </div>
+            <div>
+                <BbSelect TValue="CellControlKinds"
+                          ItemsSource="@_controlKindSource"
+                          ValueName="Item1"
+                          TextName="Item2"
+                          HtmlStyle="height:25px; width: 100%"
+                          @bind-Value="@_editSettings.ControlKind"
+                          Changed="OnControlKindChanged">
+                </BbSelect>
+            </div>
+        </div>
+
+        <div>
+            <div>
+                Data type
+            </div>
+            <div>
+                <BbSelect TValue="int"
+                          ItemsSource="@_dataTypeSource"
+                          ValueName="Item1"
+                          TextName="Item2"
+                          HtmlStyle="height:25px; width: 100%"
+                          @bind-Value="@_editSettings.CellDataType">
+                </BbSelect>
+            </div>
+        </div>
+
+        <div>
+            <div>Required</div>
+            <div>
+                <BbCheckBox @bind-Value="@_editSettings.Required"></BbCheckBox>
+            </div>
+        </div>
+
+        <div>
+            <div>
+                Auto clear method
+            </div>
+            <div>
+                <BbSelect TValue="CellAutoClearMethods"
+                          ItemsSource="@_autoClearSource"
+                          ValueName="Item1"
+                          TextName="Item2"
+                          HtmlStyle="height:25px; width: 100%"
+                          @bind-Value="@_editSettings.AutoClearMethod">
+                </BbSelect>
+            </div>
+        </div>
+
+        <div>
+            <div>Default value</div>
+            <div>
+                <BbTextInput @bind-Value="@_editSettings.DefaultValue" HtmlStyle="width: 100%"></BbTextInput>
+            </div>
+        </div>
+
+        @if (_editSettings.ControlKind == CellControlKinds.NumberInput)
+        {
+            <div>
+                <div>Number digits</div>
+                <div>
+                    <BbNumberInput TValue="int"
+                                   @bind-Value="@_editSettings.NumberDigits"
+                                   HtmlStyle="width:40px;text-align:right;">
+                    </BbNumberInput>
+                </div>
+            </div>
+        }
+
+        @if (_editSettings.CellDataType >= 20)
+        {
+            <div>
+                <div>Items source</div>
+                <div>
+                    <BbTextInput @bind-Value="@_editSettings.ItemsSource" HtmlStyle="width: 100%;"></BbTextInput>
+                </div>
+            </div>
+
+            <div>
+                <div>Autogenerate</div>
+                <div>
+                    <BbCheckBox @bind-Value="@_editSettings.AutoGenerate"></BbCheckBox>
+                </div>
+            </div>
+
+            @if (_editSettings.AutoGenerate)
+            {
+                <div>
+                    <div>Autogenerate mask</div>
+                    <div>
+                        <BbTextInput @bind-Value="@_editSettings.AutoGenerateMask" HtmlStyle="width: 100%;"></BbTextInput>
+                    </div>
+                </div>
+            }
+        }
+
+
+
+    </div>
+
+    <footer style="margin-top:3px; border-top:  1px solid #eeeeee; padding: 3px;">
+        <button class="btn btn-primary float-right btn-sm" style="font-size:12px; float: right;" @onclick="OnOkClick">OK</button>
+        <button class="btn btn-outline-secondary float-right btn-sm" style="font-size:12px; float: right; margin-right: 3px;" @onclick="OnCancelClick">Cancel</button>
+    </footer>
+
+</div>

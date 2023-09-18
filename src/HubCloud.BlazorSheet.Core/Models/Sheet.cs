@@ -443,18 +443,12 @@ namespace HubCloud.BlazorSheet.Core.Models
 
             var newStyle = new SheetCellStyle(commandPanelModel);
             SetStyle(cells, newStyle);
-
-            var newEditSettings = new SheetCellEditSettings(commandPanelModel);
-            if (!newEditSettings.IsStandard())
-            {
-                SetEditSettings(cells, newEditSettings);
-            }
-
+            
             FreezedRows = commandPanelModel.FreezedRows;
             FreezedColumns = commandPanelModel.FreezedColumns;
             IsProtected = commandPanelModel.SheetProtected;
         }
-
+        
         public void SetSettingsToCommandPanel(SheetCell cell, SheetCommandPanelModel commandPanelModel)
         {
             var style = GetStyle(cell);
