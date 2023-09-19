@@ -492,6 +492,8 @@ public partial class SheetComponent : ComponentBase
 
     private async Task OnEditorChanged(SheetCell cell)
     {
+        cell.ValidationFailed = false;
+        
         _cellEditInfo = null;
         await OnCellClicked(cell);
 
