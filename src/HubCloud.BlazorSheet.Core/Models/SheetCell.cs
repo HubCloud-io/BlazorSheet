@@ -27,6 +27,9 @@ namespace HubCloud.BlazorSheet.Core.Models
         public string Formula { get; set; }
         public string Format { get; set; } = string.Empty;
 
+        [JsonIgnore]
+        public bool ValidationFailed { get; set; }
+
         public bool HasLink => !string.IsNullOrEmpty(Link) && !string.IsNullOrWhiteSpace(Link);
 
         public CellKey GetKey()
