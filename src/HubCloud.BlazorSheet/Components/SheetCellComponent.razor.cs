@@ -123,24 +123,25 @@ public partial class SheetCellComponent : ComponentBase
         return spacing;
     }
 
-    private string ControlPresentation(CellControlKinds controlKind)
+    private string ControlPresentation(SheetCellEditSettings editSettings)
     {
         string presentation;
+        var controlKind = editSettings.ControlKind;
 
         switch (controlKind)
         {
            
             case CellControlKinds.TextInput:
-                presentation = "Text";
+                presentation = "T";
                 break;
             case CellControlKinds.NumberInput:
-                presentation = "Number";
+                presentation = $"N:{editSettings.NumberDigits}";
                 break;
             case CellControlKinds.DateInput:
-                presentation = "Date";
+                presentation = "D";
                 break;
             case CellControlKinds.DateTimeInput:
-                presentation = "DateTime";
+                presentation = "D";
                 break;
             case CellControlKinds.CheckBox:
                 presentation = "Flag";
