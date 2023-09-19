@@ -89,9 +89,6 @@ public partial class SheetCellComponent : ComponentBase
                 EditSettings = editSettings,
                 Cell = cell,
             };
-
-            if (cell.ValidationFailed)
-                cell.ValidationFailed = false;
             
             await StartEdit.InvokeAsync(cellEditInfo);
         }
