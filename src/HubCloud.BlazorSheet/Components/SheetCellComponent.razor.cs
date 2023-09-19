@@ -46,13 +46,18 @@ public partial class SheetCellComponent : ComponentBase
     {
         if (Regime == SheetRegimes.Design)
         {
+            if (cell.EditSettingsUid.HasValue)
+            {
+                return;
+            }
+            
             var jsCallService = new JsCallService(JsRuntime);
             var domRect = await jsCallService.GetElementCoordinates(Id);
 
             if (domRect == null)
                 return;
 
-            var editSettings = new SheetCellEditSettings()
+            var textInputEditSettings = new SheetCellEditSettings()
             {
                 ControlKind = CellControlKinds.TextInput,
                 CellDataType = (int)CellDataTypes.String,
@@ -61,7 +66,7 @@ public partial class SheetCellComponent : ComponentBase
             var cellEditInfo = new CellEditInfo()
             {
                 DomRect = domRect,
-                EditSettings = editSettings,
+                EditSettings = textInputEditSettings,
                 Cell = cell,
             };
 
@@ -123,24 +128,25 @@ public partial class SheetCellComponent : ComponentBase
         return spacing;
     }
 
-    private string ControlPresentation(CellControlKinds controlKind)
+    private string ControlPresentation(SheetCellEditSettings editSettings)
     {
         string presentation;
+        var controlKind = editSettings.ControlKind;
 
         switch (controlKind)
         {
            
             case CellControlKinds.TextInput:
-                presentation = "Text";
+                presentation = "T";
                 break;
             case CellControlKinds.NumberInput:
-                presentation = "Number";
+                presentation = $"N:{editSettings.NumberDigits}";
                 break;
             case CellControlKinds.DateInput:
-                presentation = "Date";
+                presentation = "D";
                 break;
             case CellControlKinds.DateTimeInput:
-                presentation = "DateTime";
+                presentation = "D";
                 break;
             case CellControlKinds.CheckBox:
                 presentation = "Flag";

@@ -97,47 +97,20 @@
         {
             <BbTextInput @bind-Value="@Model.CustomFormat" Changed="OnCustomFormatInputChanged" HtmlStyle="width:150px;margin-right:5px;height:25px;"/>
         }
-            
-        <a href="#" @onclick:preventDefault @onclick="(e=>OnEditSettingsClick(e))">Edit</a>
-
-
-        @* <BbSelect TValue="CellControlKinds" *@
-        @*           ItemsSource="@_controlKindSource" *@
-        @*           ValueName="Item1" *@
-        @*           TextName="Item2" *@
-        @*           HtmlStyle="height:25px;" *@
-        @*           @bind-Value="@Model.ControlKind" *@
-        @*           Changed="OnControlKindChanged"> *@
-        @* </BbSelect> *@
-
-        @* <BbSelect TValue="int" *@
-        @*           ItemsSource="@_dataTypeSource" *@
-        @*           ValueName="Item1" *@
-        @*           TextName="Item2" *@
-        @*           HtmlStyle="height:25px; margin-left:5px;" *@
-        @*           @bind-Value="@Model.DataType" *@
-        @*           Changed="OnSettingsChanged"> *@
-        @* </BbSelect> *@
-
-        @* @if (Model.ControlKind == CellControlKinds.NumberInput) *@
-        @* { *@
-        @*     <BbNumberInput TValue="int" *@
-        @*                    @bind-Value="@Model.NumberDigits" *@
-        @*                    Changed="OnSettingsChanged" *@
-        @*                    HtmlStyle="width:30px;margin-left:5px; text-align:right;"> *@
-        @* *@
-        @*     </BbNumberInput> *@
-        @* } *@
-
-
-        <button title="Excel export" class="btn btn-outline-success ml-1" style="padding-top:2px; padding-bottom: 2px; margin-top: -5px; margin-left: 3px;" @onclick="OnExport">
+        
+        <button class="btn btn-outline-primary btn-sm" @onclick="(e => OnEditSettingsClick(e))">
+            <span class="fa fa-edit"></span>
+            <span>Edit settings</span>
+        </button>
+        
+        <button title="Excel export" class="btn btn-outline-success btn-sm" @onclick="OnExport">
             <span class="fa fa-file-export"></span>
         </button>
-        <button title="Excel import" class="btn btn-outline-success mr-1" style="padding-top:2px; padding-bottom: 2px; margin-top: -5px;" @onclick="OnImport">
+        <button title="Excel import" class="btn btn-outline-success btn-sm" @onclick="OnImport">
             <span class="fa fa-file-import"></span>
         </button>
 
-        <button class="btn btn-outline-primary ml-1" style="padding-top:2px; padding-bottom: 2px; margin-top: -5px; margin-left: 3px;" @onclick="OnOpenCellLinkModal">
+        <button class="btn btn-outline-primary btn-sm" @onclick="OnOpenCellLinkModal">
             <span class="fa fa-solid fa-link"></span>
         </button>
 

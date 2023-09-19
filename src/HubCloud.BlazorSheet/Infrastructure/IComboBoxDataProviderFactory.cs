@@ -4,5 +4,5 @@ namespace HubCloud.BlazorSheet.Infrastructure;
 
 public interface IComboBoxDataProviderFactory
 {
-    IComboBoxDataProvider<int> Create(int cellDataType);
+    IComboBoxDataProvider<int> Create(int cellDataType, string itemsSource);
 }

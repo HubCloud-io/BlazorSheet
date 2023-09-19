@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using HubCloud.BlazorSheet.Core.Enums;
 
 namespace HubCloud.BlazorSheet.Core.Models
 {
@@ -542,6 +544,18 @@ namespace HubCloud.BlazorSheet.Core.Models
                 return;
             }
 
+            if (newEditSettings.ControlKind == CellControlKinds.Undefined)
+            {
+                // Drop edit settings.
+                foreach (var cell in cells)
+                {
+                    cell.EditSettingsUid = null;
+                }
+                
+                return;
+            }
+
+            // Set edit settings.
             var existingEditSettings = FindExistingEditSettings(newEditSettings);
 
             Guid settingsUid;
