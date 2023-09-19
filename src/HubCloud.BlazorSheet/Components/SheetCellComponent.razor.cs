@@ -90,6 +90,9 @@ public partial class SheetCellComponent : ComponentBase
                 Cell = cell,
             };
 
+            if (cell.ValidationFailed)
+                cell.ValidationFailed = false;
+            
             await StartEdit.InvokeAsync(cellEditInfo);
         }
         
@@ -104,6 +107,9 @@ public partial class SheetCellComponent : ComponentBase
     {
         var result = "hc-sheet-cell";
 
+        if (cell.ValidationFailed)
+            return result += " hc-sheet-cell__non-valid";
+        
         if (SelectedIdentifiers.Contains(cell.Uid))
             return result += " hc-sheet-cell__active";
 

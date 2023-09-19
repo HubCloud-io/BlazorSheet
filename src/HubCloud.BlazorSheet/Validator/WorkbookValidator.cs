@@ -18,12 +18,15 @@ public class WorkbookValidator : IWorkbookValidator
         {
             var isEmpty = ExpressoFunctions.FunctionLibrary.IsEmptyFunction.Eval(editCell.Value);
             if (isEmpty)
+            {
+                editCell.ValidationFailed = true;
                 resultList.Add(new CellValidationResult
                 {
                     SheetUid = sheet.Uid,
                     SheetName = sheet.Name,
                     CellAddress = sheet.CellAddress(editCell).ToString()
                 });
+            }
         }
 
         return resultList;
