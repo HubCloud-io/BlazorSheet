@@ -533,6 +533,12 @@ public partial class SheetComponent : ComponentBase
     {
         if (Regime == SheetRegimes.Design)
         {
+           
+            if (cell.EditSettingsUid.HasValue)
+            {
+                return;
+            }
+            
             var domRect = await _jsCallService.GetElementCoordinates($"cell_{cell.Uid}");
             
             if (domRect == null)
@@ -540,7 +546,8 @@ public partial class SheetComponent : ComponentBase
                 return;
             }
 
-            var editSettings = new SheetCellEditSettings()
+            // Edit settings for text input.
+            var textInputEditSettings = new SheetCellEditSettings()
             {
                 ControlKind = CellControlKinds.TextInput,
                 CellDataType = (int) CellDataTypes.String,
@@ -549,7 +556,7 @@ public partial class SheetComponent : ComponentBase
             var cellEditInfo = new CellEditInfo()
             {
                 DomRect = domRect,
-                EditSettings = editSettings,
+                EditSettings = textInputEditSettings,
                 Cell = cell,
             };
 

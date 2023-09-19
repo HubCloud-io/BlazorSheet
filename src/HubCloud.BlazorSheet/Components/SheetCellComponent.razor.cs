@@ -46,13 +46,18 @@ public partial class SheetCellComponent : ComponentBase
     {
         if (Regime == SheetRegimes.Design)
         {
+            if (cell.EditSettingsUid.HasValue)
+            {
+                return;
+            }
+            
             var jsCallService = new JsCallService(JsRuntime);
             var domRect = await jsCallService.GetElementCoordinates(Id);
 
             if (domRect == null)
                 return;
 
-            var editSettings = new SheetCellEditSettings()
+            var textInputEditSettings = new SheetCellEditSettings()
             {
                 ControlKind = CellControlKinds.TextInput,
                 CellDataType = (int)CellDataTypes.String,
@@ -61,7 +66,7 @@ public partial class SheetCellComponent : ComponentBase
             var cellEditInfo = new CellEditInfo()
             {
                 DomRect = domRect,
-                EditSettings = editSettings,
+                EditSettings = textInputEditSettings,
                 Cell = cell,
             };
 
