@@ -235,7 +235,7 @@ public partial class SheetComponent : ComponentBase
         if (ComboBoxDataProviderFactory != null)
         {
             _cellEditInfo.ComboBoxDataProvider =
-                ComboBoxDataProviderFactory.Create(_cellEditInfo.EditSettings.CellDataType);
+                ComboBoxDataProviderFactory.Create(_cellEditInfo.EditSettings.CellDataType, _cellEditInfo.EditSettings.ItemsSource);
         }
     }
 
@@ -591,7 +591,7 @@ public partial class SheetComponent : ComponentBase
 
             if (ComboBoxDataProviderFactory != null)
             {
-                cellEditInfo.ComboBoxDataProvider = ComboBoxDataProviderFactory.Create(editSettings.CellDataType);
+                cellEditInfo.ComboBoxDataProvider = ComboBoxDataProviderFactory.Create(editSettings.CellDataType, editSettings.ItemsSource);
             }
 
             _cellEditInfo = cellEditInfo;
