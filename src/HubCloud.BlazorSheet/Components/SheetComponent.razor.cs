@@ -599,7 +599,16 @@ public partial class SheetComponent : ComponentBase
 
             if (ComboBoxDataProviderFactory != null)
             {
-                cellEditInfo.ComboBoxDataProvider = ComboBoxDataProviderFactory.Create(editSettings.CellDataType, editSettings.ItemsSource);
+                
+                var itemsSource = cellEditInfo.EditSettings.ItemsSource;
+                if (!string.IsNullOrEmpty(itemsSource))
+                {
+                    var currentCellAddress = Sheet.CellAddress(cell);
+                    var helper = new ItemsSourceParametersHelper(Sheet, itemsSource, currentCellAddress.Row, currentCellAddress.Column);
+                    itemsSource = helper.Execute();
+                }
+                
+                cellEditInfo.ComboBoxDataProvider = ComboBoxDataProviderFactory.Create(editSettings.CellDataType, itemsSource);
             }
 
             _cellEditInfo = cellEditInfo;
