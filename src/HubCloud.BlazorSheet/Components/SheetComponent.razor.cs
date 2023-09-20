@@ -234,8 +234,15 @@ public partial class SheetComponent : ComponentBase
         _cellEditInfo = args;
         if (ComboBoxDataProviderFactory != null)
         {
+            var itemsSource = _cellEditInfo.EditSettings.ItemsSource;
+            if (!string.IsNullOrEmpty(itemsSource))
+            {
+                var helper = new ItemsSourceParametersHelper(Sheet, itemsSource);
+                itemsSource = helper.Execute();
+            }
+            
             _cellEditInfo.ComboBoxDataProvider =
-                ComboBoxDataProviderFactory.Create(_cellEditInfo.EditSettings.CellDataType, _cellEditInfo.EditSettings.ItemsSource);
+                ComboBoxDataProviderFactory.Create(_cellEditInfo.EditSettings.CellDataType, itemsSource);
         }
     }
 
