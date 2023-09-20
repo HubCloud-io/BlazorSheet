@@ -7,11 +7,16 @@ public class ItemsSourceParametersHelper
 {
     private readonly string _itemsSource;
     private readonly Sheet _sheet;
+    private readonly int _currentRow;
+    private readonly int _currentColumn;
     
-    public ItemsSourceParametersHelper(Sheet sheet, string itemsSource)
+    public ItemsSourceParametersHelper(Sheet sheet, string itemsSource, int currentRow, int currentColumn)
     {
         _itemsSource = itemsSource;
         _sheet = sheet;
+
+        _currentRow = currentRow;
+        _currentColumn = currentColumn;
     }
 
     public string Execute()
@@ -22,7 +27,7 @@ public class ItemsSourceParametersHelper
 
         foreach (var parameter in parameters)
         {
-            var address = new SheetCellAddress(parameter);
+            var address = new SheetCellAddress(parameter, _currentRow, _currentColumn);
             var cell =  _sheet.GetCell(address);
 
             if (cell != null)

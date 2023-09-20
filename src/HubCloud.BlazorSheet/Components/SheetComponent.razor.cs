@@ -237,7 +237,8 @@ public partial class SheetComponent : ComponentBase
             var itemsSource = _cellEditInfo.EditSettings.ItemsSource;
             if (!string.IsNullOrEmpty(itemsSource))
             {
-                var helper = new ItemsSourceParametersHelper(Sheet, itemsSource);
+                var currentCellAddress = Sheet.CellAddress(args.Cell);
+                var helper = new ItemsSourceParametersHelper(Sheet, itemsSource, currentCellAddress.Row, currentCellAddress.Column);
                 itemsSource = helper.Execute();
             }
             
