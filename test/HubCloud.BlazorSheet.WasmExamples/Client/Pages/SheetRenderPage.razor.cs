@@ -1,18 +1,30 @@
 ﻿using HubCloud.BlazorSheet.Core.Models;
 using Microsoft.AspNetCore.Components;
 
-namespace HubCloud.BlazorSheet.ServerSideExamples.Pages;
+namespace HubCloud.BlazorSheet.WasmExamples.Client.Pages;
 
 public partial class SheetRenderPage: ComponentBase
 {
+    private int _rowsCount = 100;
+    private int _columnsCount = 4;
+    
     private Sheet _sheet;
     private SheetSettings _sheetSettings;
 
-    protected override void OnInitialized()
+    protected override void OnAfterRender(bool firstRender)
     {
-        _sheetSettings = BuildSheetSettingsWithCellNames(1000, 15);
+        Console.WriteLine($"Rendered: {DateTime.Now:yyyy-MM-dd:hh:mm:ss.fff}");
+    }
+
+    private void OnRenderClick()
+    {
+        Console.WriteLine($"Start sheet build: {DateTime.Now:yyyy-MM-dd:hh:mm:ss.fff}");
+        
+        _sheetSettings = BuildSheetSettingsWithCellNames(_rowsCount, _columnsCount);
 
         _sheet = new Sheet(_sheetSettings);
+        
+        Console.WriteLine($"End sheet build: {DateTime.Now:yyyy-MM-dd:hh:mm:ss.fff}");
     }
     
     private SheetSettings BuildSheetSettingsWithCellNames(int rowsCount, int columnsCount)
@@ -21,8 +33,8 @@ public partial class SheetRenderPage: ComponentBase
         {
             RowsCount = rowsCount,
             ColumnsCount = columnsCount,
-            FreezedColumns = 3,
-            FreezedRows = 3
+           // FreezedColumns = 3,
+           // FreezedRows = 3
         };
 
         for (var r = 1; r <= rowsCount; r++)
@@ -55,4 +67,5 @@ public partial class SheetRenderPage: ComponentBase
 
         return sheetSettings;
     }
+    
 }

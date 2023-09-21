@@ -1,0 +1,36 @@
+﻿@page "/SheetRenderPage"
+
+@using BlazorSheet.Components
+@using BBComponents.Components
+@using HubCloud.BlazorSheet.Core.Enums
+
+<h3>SheetRenderPage</h3>
+<hr/>
+<div class="row">
+    <div class="col-sm-2">
+        <BbNumberInput @bind-Value="@_rowsCount" Placeholder="RowsCount"></BbNumberInput>
+    </div>
+    <div class="col-sm-2">
+        <BbNumberInput @bind-Value="@_columnsCount" Placeholder="ColumnsCount"></BbNumberInput>
+    </div>
+    <div class="col-sm-2">
+        <BbButton Clicked="OnRenderClick">Render</BbButton>
+    </div>
+</div>
+<hr/>
+
+@if (_sheet != null)
+{
+    <div class="row">
+        <div class="col-sm-12">
+
+            <HubCloud.BlazorSheet.Components.SheetComponent
+                Sheet="@_sheet"
+                MaxHeight="500px"
+                MaxWidth="1000px"
+                Regime="SheetRegimes.InputForm">
+            </HubCloud.BlazorSheet.Components.SheetComponent>
+
+        </div>
+    </div>
+}
