@@ -1,6 +1,8 @@
 ﻿@page "/SheetTestRenderPage"
 
 @using BBComponents.Components
+@using HubCloud.BlazorSheet.WasmExamples.Client.Components
+
 <h3>SheetTestRenderPage</h3>
 
 <hr/>
@@ -16,3 +18,14 @@
     </div>
 </div>
 <hr/>
+
+@if (_sheet != null)
+{
+    <div class="row">
+        <div class="col-sm-12">
+
+            <SheetTestComponent Sheet="@_sheet"></SheetTestComponent>
+
+        </div>
+    </div>
+}

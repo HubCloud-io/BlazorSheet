@@ -5,7 +5,7 @@ namespace HubCloud.BlazorSheet.WasmExamples.Client.Pages;
 
 public partial class SheetTestRenderPage: ComponentBase
 {
-    private int _rowsCount = 100;
+    private int _rowsCount = 1000;
     private int _columnsCount = 4;
     
     private Sheet _sheet;
