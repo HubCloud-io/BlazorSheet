@@ -1,7 +1,7 @@
 ﻿@page "/SheetTestRenderPage"
 
 @using BBComponents.Components
-@using HubCloud.BlazorSheet.WasmExamples.Client.Components
+@using HubCloud.BlazorSheet.Components
 
 <h3>SheetTestRenderPage</h3>
 
@@ -24,7 +24,9 @@
     <div class="row">
         <div class="col-sm-12">
 
-            <SheetTestComponent Sheet="@_sheet"></SheetTestComponent>
+            <SheetTestComponent Sheet="@_sheet" 
+                                MaxHeight="500px" 
+                                MaxWidth="1000px"></SheetTestComponent>
 
         </div>
     </div>

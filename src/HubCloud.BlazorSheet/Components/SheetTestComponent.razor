@@ -1,0 +1,92 @@
+﻿@using HubCloud.BlazorSheet.Core.Models
+@using Microsoft.AspNetCore.Components.Web.Virtualization
+
+<div class="hc-sheet-container"
+     style="overflow-y: auto; overflow-x: auto; max-height: @MaxHeight; max-width:@MaxWidth">
+
+
+    <table id="@TableId"
+           class="hc-sheet"
+           tabindex="0">
+
+        @*Rows header*@
+        <tr>
+            <td class="hc-grid-cell" style="min-width:40px; max-width:40px;"></td>
+
+            @foreach (var column in Sheet.Columns)
+            {
+                <td class="hc-grid-cell text-center" style="min-width:100px; max-width: 100px;">
+
+
+                    <span>@(Sheet.ColumnNumber(column))</span>
+
+
+                </td>
+            }
+
+        </tr>
+
+        @*Body*@
+        @* @foreach (var row in Sheet.Rows) *@
+        @* { *@
+        @*     <tr @key="@row.Uid"> *@
+        @*         <td class="hc-grid-cell" *@
+        @*             style="min-width:40px; max-width:40px;"> *@
+        @*             <span>@(Sheet.RowNumber(row))</span> *@
+        @* *@
+        @* *@
+        @*         </td> *@
+        @* *@
+        @*         @foreach (var column in Sheet.Columns) *@
+        @*         { *@
+        @*             var cell = Sheet.GetCell(row, column); *@
+        @* *@
+        @*             if (cell == null) *@
+        @*                 continue; *@
+        @* *@
+        @*             <td class="hc-sheet-cell">@cell.Value</td> *@
+        @*         } *@
+        @*     </tr> *@
+        @* } *@
+
+        <Virtualize Items="Sheet.Rows" TItem="SheetRow" Context="row" ItemSize="26">
+            <ItemContent>
+                <tr @key="@row.Uid">
+                    <td class="hc-grid-cell"
+                        style="min-width:40px; max-width:40px;">
+                        <span>@(Sheet.RowNumber(row))</span>
+
+
+                    </td>
+
+                    @foreach (var column in Sheet.Columns)
+                    {
+                        var cell = Sheet.GetCell(row, column);
+
+                        if (cell == null)
+                            continue;
+                        
+                        if (ShouldCellBeDisplayed(column, row, cell))
+                            continue;
+
+                        @* <td class="hc-sheet-cell">@cell.Value</td> *@
+                                
+                        <SheetCellComponent Sheet="@Sheet"
+                                            Regime="@Regime"
+                                            Row="@row" 
+                                            Column="@column" 
+                                            Cell="@cell" 
+                                            StyleBuilder="@_cellStyleBuilder"
+                                            IsHiddenCellsVisible="@_isHiddenCellsVisible"
+                                            SelectedIdentifiers="@_selectedIdentifiers"
+                                            Clicked="OnCellClicked"
+                                            StartEdit="OnCellStartEdit"></SheetCellComponent>
+                                                             
+                    }
+                </tr>
+            </ItemContent>
+        </Virtualize>
+
+    </table>
+
+</div>
