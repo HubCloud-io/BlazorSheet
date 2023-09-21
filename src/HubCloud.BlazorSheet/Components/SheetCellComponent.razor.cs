@@ -37,6 +37,11 @@ public partial class SheetCellComponent : ComponentBase
 
     public string Id => $"cell_{Cell.Uid}";
 
+    protected override void OnAfterRender(bool firstRender)
+    {
+        Console.WriteLine($"Cell rendered: {Cell.Value} at {DateTime.Now: yyyy-MM-dd:hh:mm:ss.fff}");
+    }
+
     private async Task OnCellClick(MouseEventArgs e, SheetCell cell)
     {
         await Clicked.InvokeAsync(Cell);
