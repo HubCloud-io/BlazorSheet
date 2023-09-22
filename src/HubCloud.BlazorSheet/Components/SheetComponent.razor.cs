@@ -519,14 +519,15 @@ public partial class SheetComponent : ComponentBase
         await CellValueChanged.InvokeAsync(cell);
 
         SheetCell nextCell = null;
-        if (Regime == SheetRegimes.Design)
-        {
-            nextCell = SheetArrowNavigationHelper.ArrowDown(Sheet, cell);
-        }
-        else if (Regime == SheetRegimes.InputForm)
-        {
-            nextCell = SheetArrowNavigationHelper.NextEditingCellDown(Sheet, cell);
-        }
+        //TODO: Add settings move direction after edit.
+        // if (Regime == SheetRegimes.Design)
+        // {
+        //     nextCell = SheetArrowNavigationHelper.ArrowDown(Sheet, cell);
+        // }
+        // else if (Regime == SheetRegimes.InputForm)
+        // {
+        //     nextCell = SheetArrowNavigationHelper.NextEditingCellDown(Sheet, cell);
+        // }
 
 
         if (nextCell != null)
