@@ -25,6 +25,7 @@ public partial class SheetComponent : ComponentBase
     private bool _isHiddenCellsVisible;
 
     private bool _cellHasChanged;
+    private bool _tryToFindFirstCell;
 
     private CellEditInfo _cellEditInfo;
 
@@ -103,23 +104,32 @@ public partial class SheetComponent : ComponentBase
         }
     }
 
+    private bool NeedToFindFirstEditingCell()
+    {
+        if (!_tryToFindFirstCell &&
+            Regime == SheetRegimes.InputForm
+            && _currentCell == null
+            && Sheet != null
+            && Sheet.EditSettings.Any())
+            return true;
+
+        return false;
+    }
+    
     protected override async Task OnParametersSetAsync()
     {
-        if (Regime == SheetRegimes.InputForm && _currentCell == null)
+        if (NeedToFindFirstEditingCell())
         {
-            if (Sheet != null)
+            _tryToFindFirstCell = true;
+            var nextCell = Sheet.Cells.FirstOrDefault(x => x.EditSettingsUid.HasValue);
+            if (nextCell != null)
             {
-                var firstCell = Sheet.GetCell(1, 1);
-                var nextCell = SheetArrowNavigationHelper.NextEditingCellDown(Sheet, firstCell);
-                if (nextCell != null)
-                {
-                    await OnCellClicked(nextCell);
-                    await _jsCallService.FocusElementAsync(TableId);
-                }
+                await OnCellClicked(nextCell);
+                await _jsCallService.FocusElementAsync(TableId);
             }
         }
     }
-    
+
     private async Task OnCellClicked(SheetCell cell)
     {
         _currentCell = cell;
@@ -142,9 +152,9 @@ public partial class SheetComponent : ComponentBase
             _selectedIdentifiers.Add(_currentCell.Uid);
         else
             _selectedIdentifiers.Remove(_currentCell.Uid);
-        
+
         await CellSelected.InvokeAsync(cell);
-        await CellsSelected.InvokeAsync(_selectedCells); 
+        await CellsSelected.InvokeAsync(_selectedCells);
         //await RowSelected.InvokeAsync(row);
         //await ColumnSelected.InvokeAsync(column);
     }
@@ -238,10 +248,11 @@ public partial class SheetComponent : ComponentBase
             if (!string.IsNullOrEmpty(itemsSource))
             {
                 var currentCellAddress = Sheet.CellAddress(args.Cell);
-                var helper = new ItemsSourceParametersHelper(Sheet, itemsSource, currentCellAddress.Row, currentCellAddress.Column);
+                var helper = new ItemsSourceParametersHelper(Sheet, itemsSource, currentCellAddress.Row,
+                    currentCellAddress.Column);
                 itemsSource = helper.Execute();
             }
-            
+
             _cellEditInfo.ComboBoxDataProvider =
                 ComboBoxDataProviderFactory.Create(_cellEditInfo.EditSettings.CellDataType, itemsSource);
         }
@@ -501,7 +512,7 @@ public partial class SheetComponent : ComponentBase
     private async Task OnEditorChanged(SheetCell cell)
     {
         cell.ValidationFailed = false;
-        
+
         _cellEditInfo = null;
         await OnCellClicked(cell);
 
@@ -510,14 +521,14 @@ public partial class SheetComponent : ComponentBase
         SheetCell nextCell = null;
         if (Regime == SheetRegimes.Design)
         {
-             nextCell = SheetArrowNavigationHelper.ArrowDown(Sheet, cell);
+            nextCell = SheetArrowNavigationHelper.ArrowDown(Sheet, cell);
         }
         else if (Regime == SheetRegimes.InputForm)
         {
-             nextCell = SheetArrowNavigationHelper.NextEditingCellDown(Sheet, cell);
+            nextCell = SheetArrowNavigationHelper.NextEditingCellDown(Sheet, cell);
         }
-        
-        
+
+
         if (nextCell != null)
         {
             await OnCellClicked(nextCell);
@@ -541,14 +552,13 @@ public partial class SheetComponent : ComponentBase
     {
         if (Regime == SheetRegimes.Design)
         {
-           
             if (cell.EditSettingsUid.HasValue)
             {
                 return;
             }
-            
+
             var domRect = await _jsCallService.GetElementCoordinates($"cell_{cell.Uid}");
-            
+
             if (domRect == null)
             {
                 return;
@@ -599,16 +609,17 @@ public partial class SheetComponent : ComponentBase
 
             if (ComboBoxDataProviderFactory != null)
             {
-                
                 var itemsSource = cellEditInfo.EditSettings.ItemsSource;
                 if (!string.IsNullOrEmpty(itemsSource))
                 {
                     var currentCellAddress = Sheet.CellAddress(cell);
-                    var helper = new ItemsSourceParametersHelper(Sheet, itemsSource, currentCellAddress.Row, currentCellAddress.Column);
+                    var helper = new ItemsSourceParametersHelper(Sheet, itemsSource, currentCellAddress.Row,
+                        currentCellAddress.Column);
                     itemsSource = helper.Execute();
                 }
-                
-                cellEditInfo.ComboBoxDataProvider = ComboBoxDataProviderFactory.Create(editSettings.CellDataType, itemsSource);
+
+                cellEditInfo.ComboBoxDataProvider =
+                    ComboBoxDataProviderFactory.Create(editSettings.CellDataType, itemsSource);
             }
 
             _cellEditInfo = cellEditInfo;
