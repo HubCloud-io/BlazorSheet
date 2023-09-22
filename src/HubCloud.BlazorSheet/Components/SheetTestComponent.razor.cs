@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using HubCloud.BlazorSheet.Core.Enums;
 using HubCloud.BlazorSheet.Core.Models;
+using HubCloud.BlazorSheet.Editors;
 using HubCloud.BlazorSheet.Infrastructure;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
@@ -13,6 +14,8 @@ public partial class SheetTestComponent: ComponentBase
     private const int LeftSideCellWidth = 40;
     private const int TopSideCellHeight = 30;
     private const string CellHiddenBackground = "#cccccc";
+    
+    private CellEditInfo _cellEditInfo;
     
     private bool _isHiddenCellsVisible;
     private HashSet<Guid> _selectedIdentifiers = new HashSet<Guid>();
@@ -47,6 +50,11 @@ public partial class SheetTestComponent: ComponentBase
                column.IsCollapsed;
     }
 
+    private void OnScroll()
+    {
+        _cellEditInfo = null;
+    }
+    
     private void OnCellClicked()
     {
         
@@ -160,5 +168,10 @@ public partial class SheetTestComponent: ComponentBase
         //
         // _isColumnContextMenuOpen = false;
         // _isRowContextMenuOpen = true;
+    }
+    
+    private bool ShouldRowBeDisplayed(SheetRow row)
+    {
+        return (!row.IsHidden || _isHiddenCellsVisible) && !row.IsCollapsed;
     }
 }
