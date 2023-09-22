@@ -8,24 +8,52 @@
 
     <table id="@TableId"
            class="hc-sheet"
+           @onkeydown="(e => OnTableKeyDown(e))"
+           @onkeyup="(e => OnTableKeyUp(e))"
            tabindex="0">
 
         @*Rows header*@
         <tr>
-            <td class="hc-grid-cell" style="min-width:40px; max-width:40px;"></td>
-
-            @foreach (var column in Sheet.Columns)
-            {
-                <td class="hc-grid-cell text-center" style="min-width:100px; max-width: 100px;">
-
-
-                    <span>@(Sheet.ColumnNumber(column))</span>
-
-
-                </td>
-            }
-
-        </tr>
+                   <td class="hc-grid-cell" style="@TopLeftEmptyCellStyle()"></td>
+       
+                   @foreach (var column in Sheet.Columns)
+                   {
+                       @if (ShouldColumnBeDisplayed(column))
+                       {
+                           <td class="hc-grid-cell text-center"
+                               @onclick="(e => OnColumnNumberCellClick(column))"
+                               @oncontextmenu="(e => OnColumnContextMenu(e, column))"
+                               @oncontextmenu:preventDefault
+                               style="@TopSideCellStyle(Sheet, column)">
+                               <span>@(Sheet.ColumnNumber(column))</span>
+       
+                               @if (column.IsGroup)
+                               {
+                                   @if (column.IsOpen)
+                                   {
+                                       <span class="fa fa-solid fa-chevron-right text-primary"
+                                             style="cursor:pointer;margin-left:5px;"
+                                             @onclick="(e => ColumnGroupOpenCloseClick(column))">
+                                       </span>
+                                   }
+                                   else
+                                   {
+                                       <span class="fa fa-solid fa-chevron-down text-primary"
+                                             style="cursor:pointer;margin-left:5px;"
+                                             @onclick="(e => ColumnGroupOpenCloseClick(column))">
+                                       </span>
+                                   }
+                               }
+                               @if (column.IsAddRemoveAllowed)
+                               {
+                                   <span>&nbsp;</span>
+                                   <span class="fa fa-plus text-success"></span>
+                               }
+                           </td>
+                       }
+                   }
+       
+               </tr>
 
         @*Body*@
         @* @foreach (var row in Sheet.Rows) *@

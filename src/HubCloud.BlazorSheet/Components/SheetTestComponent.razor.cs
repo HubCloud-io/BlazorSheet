@@ -107,9 +107,33 @@ public partial class SheetTestComponent: ComponentBase
         _cellEditInfo = null;
     }
     
-    private void OnCellClicked()
+    private async Task OnCellClicked(SheetCell cell)
     {
+        _currentCell = cell;
+        _cellEditInfo = null;
+
+        if (!_multipleSelection)
+        {
+            _selectedCells.Clear();
+            _selectedIdentifiers.Clear();
+            _selectedRowByNumberList.Clear();
+            _selectedColumnByNumberList.Clear();
+        }
+
+        if (!_selectedCells.Contains(_currentCell))
+            _selectedCells.Add(_currentCell);
+        else
+            _selectedCells.Remove(_currentCell);
+
+        if (!_selectedIdentifiers.Contains(_currentCell.Uid))
+            _selectedIdentifiers.Add(_currentCell.Uid);
+        else
+            _selectedIdentifiers.Remove(_currentCell.Uid);
         
+        await CellSelected.InvokeAsync(cell);
+        await CellsSelected.InvokeAsync(_selectedCells); 
+        //await RowSelected.InvokeAsync(row);
+        //await ColumnSelected.InvokeAsync(column);
     }
 
     private void OnCellStartEdit()
@@ -283,4 +307,317 @@ public partial class SheetTestComponent: ComponentBase
 
         await Changed.InvokeAsync(null);
     }
+    
+    public string TopLeftEmptyCellStyle()
+    {
+        var sb = new StringBuilder();
+
+        sb.Append("width:");
+        sb.Append($"{LeftSideCellWidth}px");
+        sb.Append(";");
+
+        sb.Append("max-width:");
+        sb.Append($"{LeftSideCellWidth}px");
+        sb.Append(";");
+
+        sb.Append("min-width:");
+        sb.Append($"{LeftSideCellWidth}px");
+        sb.Append(";");
+
+        sb.Append("height:");
+        sb.Append($"{TopSideCellHeight}px");
+        sb.Append(";");
+
+        sb.Append("max-height:");
+        sb.Append($"{TopSideCellHeight}px");
+        sb.Append(";");
+
+        sb.Append("min-height:");
+        sb.Append($"{TopSideCellHeight}px");
+        sb.Append(";");
+
+        sb.Append("top:");
+        sb.Append(0);
+        sb.Append(";");
+
+        sb.Append("left:");
+        sb.Append(0);
+        sb.Append(";");
+
+        sb.Append("position:");
+        sb.Append("sticky");
+        sb.Append(";");
+
+        sb.Append("z-index:");
+        sb.Append(20);
+        sb.Append(";");
+
+        return sb.ToString();
+    }
+    
+    private bool ShouldColumnBeDisplayed(SheetColumn column)
+    {
+        return (!column.IsHidden || _isHiddenCellsVisible) && !column.IsCollapsed;
+    }
+    
+    private async Task OnColumnNumberCellClick(SheetColumn column)
+    {
+        if (Regime == SheetRegimes.InputForm)
+        {
+            return;
+        }
+
+        if (!_multipleSelection)
+        {
+            _selectedCells.Clear();
+            _selectedIdentifiers.Clear();
+            _selectedColumnByNumberList.Clear();
+        }
+
+        if (!_selectedColumnByNumberList.Contains(column))
+            _selectedColumnByNumberList.Add(column);
+
+        var cells = Sheet.Cells.Where(x => x.ColumnUid == column.Uid);
+
+        if (!cells.Any())
+            return;
+
+        foreach (var cell in cells)
+        {
+            if (!_selectedCells.Contains(cell))
+                _selectedCells.Add(cell);
+
+            if (!_selectedIdentifiers.Contains(cell.Uid))
+                _selectedIdentifiers.Add(cell.Uid);
+        }
+
+        var firstCell = cells.FirstOrDefault();
+        if (firstCell != null)
+        {
+            await CellSelected.InvokeAsync(firstCell);
+        }
+
+        await CellsSelected.InvokeAsync(_selectedCells);
+        await ColumnsByNumberSelected.InvokeAsync(_selectedColumnByNumberList);
+        await ColumnSelected.InvokeAsync(column);
+    }
+    
+    private void ColumnGroupOpenCloseClick(SheetColumn column)
+    {
+        column.IsOpen = !column.IsOpen;
+        Sheet.ChangeChildrenVisibility(column, column.IsOpen);
+    }
+    
+    private void OnColumnContextMenu(MouseEventArgs e, SheetColumn column)
+    {
+        _clientX = e.ClientX;
+        _clientY = e.ClientY;
+
+        _currentColumn = column;
+        _columnMenuItems = ContextMenuBuilder.BuildColumnContextMenu("column", Regime, column.IsAddRemoveAllowed);
+
+        _isColumnContextMenuOpen = true;
+        _isRowContextMenuOpen = false;
+    }
+    
+    public string TopSideCellStyle(Sheet sheet, SheetColumn column)
+    {
+        var sb = new StringBuilder();
+
+        sb.Append("width:");
+        sb.Append(column.Width);
+        sb.Append(";");
+
+        sb.Append("max-width:");
+        sb.Append(column.Width);
+        sb.Append(";");
+
+        sb.Append("min-width:");
+        sb.Append(column.Width);
+        sb.Append(";");
+
+        sb.Append("height:");
+        sb.Append($"{TopSideCellHeight}px");
+        sb.Append(";");
+
+        sb.Append("max-height:");
+        sb.Append($"{TopSideCellHeight}px");
+        sb.Append(";");
+
+        sb.Append("min-height:");
+        sb.Append($"{TopSideCellHeight}px");
+        sb.Append(";");
+
+        sb.Append("position: ");
+        sb.Append("sticky");
+        sb.Append(";");
+
+        sb.Append("top: ");
+        sb.Append(0);
+        sb.Append(";");
+
+        _cellStyleBuilder.AddFreezedStyle(sb, sheet, column, _isHiddenCellsVisible);
+
+        if (column.IsHidden && _isHiddenCellsVisible)
+        {
+            sb.Append("background:");
+            sb.Append(CellHiddenBackground);
+            sb.Append(";");
+        }
+
+        return sb.ToString();
+    }
+    
+    private async Task OnTableKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Control")
+        {
+            _multipleSelection = true;
+        }
+
+        SheetCell nextCell = null;
+
+        switch (e.Key.ToUpper())
+        {
+            case KeyboardKeys.Tab:
+                nextCell = SheetArrowNavigationHelper.ArrowRight(Sheet, _currentCell);
+                break;
+
+            case KeyboardKeys.Escape:
+
+                _cellEditInfo = null;
+                break;
+
+            case KeyboardKeys.ArrowUp:
+
+                nextCell = SheetArrowNavigationHelper.ArrowUp(Sheet, _currentCell);
+                break;
+
+            case KeyboardKeys.ArrowDown:
+
+                nextCell = SheetArrowNavigationHelper.ArrowDown(Sheet, _currentCell);
+                break;
+
+            case KeyboardKeys.ArrowLeft:
+
+                nextCell = SheetArrowNavigationHelper.ArrowLeft(Sheet, _currentCell);
+                break;
+
+            case KeyboardKeys.ArrowRight:
+
+                nextCell = SheetArrowNavigationHelper.ArrowRight(Sheet, _currentCell);
+                break;
+
+            default:
+
+                if (IsLetterOrNumberOrEnter(e.Key))
+                {
+                    if (_currentCell != null)
+                    {
+                        await StartCellEditAsync(_currentCell);
+                    }
+                }
+
+                break;
+        }
+
+        if (nextCell != null)
+        {
+            _currentCell = nextCell;
+            await OnCellClicked(_currentCell);
+        }
+    }
+    
+    private bool IsLetterOrNumberOrEnter(string key)
+    {
+        return (key.Length == 1 && char.IsLetterOrDigit(key[0])) ||
+               (key.Length > 1 && key.StartsWith("Digit")) ||
+               key.Equals("Enter", StringComparison.OrdinalIgnoreCase);
+    }
+    
+     private async Task StartCellEditAsync(SheetCell cell)
+    {
+        if (Regime == SheetRegimes.Design)
+        {
+           
+            if (cell.EditSettingsUid.HasValue)
+            {
+                return;
+            }
+            
+            var domRect = await _jsCallService.GetElementCoordinates($"cell_{cell.Uid}");
+            
+            if (domRect == null)
+            {
+                return;
+            }
+
+            // Edit settings for text input.
+            var textInputEditSettings = new SheetCellEditSettings()
+            {
+                ControlKind = CellControlKinds.TextInput,
+                CellDataType = (int) CellDataTypes.String,
+            };
+
+            var cellEditInfo = new CellEditInfo()
+            {
+                DomRect = domRect,
+                EditSettings = textInputEditSettings,
+                Cell = cell,
+            };
+
+            _cellEditInfo = cellEditInfo;
+        }
+        else if (Regime == SheetRegimes.InputForm)
+        {
+            var editSettings = Sheet.GetEditSettings(cell);
+            if (editSettings == null)
+            {
+                return;
+            }
+
+            if (editSettings.ControlKind == CellControlKinds.Undefined)
+            {
+                return;
+            }
+
+            var domRect = await _jsCallService.GetElementCoordinates($"cell_{cell.Uid}");
+
+            if (domRect == null)
+            {
+                return;
+            }
+
+            var cellEditInfo = new CellEditInfo()
+            {
+                DomRect = domRect,
+                EditSettings = editSettings,
+                Cell = cell,
+            };
+
+            if (ComboBoxDataProviderFactory != null)
+            {
+                
+                var itemsSource = cellEditInfo.EditSettings.ItemsSource;
+                if (!string.IsNullOrEmpty(itemsSource))
+                {
+                    var currentCellAddress = Sheet.CellAddress(cell);
+                    var helper = new ItemsSourceParametersHelper(Sheet, itemsSource, currentCellAddress.Row, currentCellAddress.Column);
+                    itemsSource = helper.Execute();
+                }
+                
+                cellEditInfo.ComboBoxDataProvider = ComboBoxDataProviderFactory.Create(editSettings.CellDataType, itemsSource);
+            }
+
+            _cellEditInfo = cellEditInfo;
+        }
+    }
+     
+     private void OnTableKeyUp(KeyboardEventArgs e)
+     {
+         if (e.Key == "Control")
+         {
+             _multipleSelection = false;
+         }
+     }
 }
