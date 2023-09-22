@@ -49,41 +49,75 @@
         @*     </tr> *@
         @* } *@
 
-        <Virtualize Items="Sheet.Rows" TItem="SheetRow" Context="row" ItemSize="26">
+        <Virtualize Items="@Sheet.Rows.Skip(Sheet.FreezedRows).ToList()"
+                    TItem="SheetRow"
+                    Context="row"
+                    ItemSize="26"
+                    OverscanCount="1">
             <ItemContent>
-                <tr @key="@row.Uid">
-                    <td class="hc-grid-cell"
-                        style="min-width:40px; max-width:40px;">
-                        <span>@(Sheet.RowNumber(row))</span>
 
+                @if ((!row.IsHidden || _isHiddenCellsVisible) && !row.IsCollapsed)
+                {
+                    <tr @key="@row.Uid">
 
-                    </td>
+                        <td class="hc-grid-cell"
+                            style="@LeftSideCellStyle(Sheet, row)"
+                            @onclick="(e => OnRowNumberCellClick(row))"
+                            @oncontextmenu="(e => OnRowContextMenu(e, row))"
+                            @oncontextmenu:preventDefault>
+                            <span>@(Sheet.RowNumber(row))</span>
 
-                    @foreach (var column in Sheet.Columns)
-                    {
-                        var cell = Sheet.GetCell(row, column);
+                            @if (row.IsGroup)
+                            {
+                                @if (row.IsOpen)
+                                {
+                                    <span class="fa fa-solid fa-chevron-down text-primary"
+                                          style="cursor:pointer;margin-left:5px;"
+                                          align="center"
+                                          @onclick="(e => RowGroupOpenCloseClick(row))">
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="fa fa-solid fa-chevron-right text-primary"
+                                          style="cursor:pointer;margin-left:5px;"
+                                          @onclick="(e => RowGroupOpenCloseClick(row))">
+                                    </span>
+                                }
+                            }
+                            @if (row.IsAddRemoveAllowed)
+                            {
+                                <span>&nbsp;</span>
+                                <span class="fa fa-plus text-success" style="float:right; margin-top: 3px;"></span>
+                            }
+                        </td>
 
-                        if (cell == null)
-                            continue;
-                        
-                        if (ShouldCellBeDisplayed(column, row, cell))
-                            continue;
+                        @foreach (var column in Sheet.Columns)
+                        {
+                            var cell = Sheet.GetCell(row, column);
+
+                            if (cell == null)
+                                continue;
+
+                            if (ShouldCellBeDisplayed(column, row, cell))
+                                continue;
 
                         @* <td class="hc-sheet-cell">@cell.Value</td> *@
-                                
-                        <SheetCellComponent Sheet="@Sheet"
-                                            Regime="@Regime"
-                                            Row="@row" 
-                                            Column="@column" 
-                                            Cell="@cell" 
-                                            StyleBuilder="@_cellStyleBuilder"
-                                            IsHiddenCellsVisible="@_isHiddenCellsVisible"
-                                            SelectedIdentifiers="@_selectedIdentifiers"
-                                            Clicked="OnCellClicked"
-                                            StartEdit="OnCellStartEdit"></SheetCellComponent>
-                                                             
-                    }
-                </tr>
+
+                            <SheetCellComponent Sheet="@Sheet"
+                                                Regime="@Regime"
+                                                Row="@row"
+                                                Column="@column"
+                                                Cell="@cell"
+                                                StyleBuilder="@_cellStyleBuilder"
+                                                IsHiddenCellsVisible="@_isHiddenCellsVisible"
+                                                SelectedIdentifiers="@_selectedIdentifiers"
+                                                Clicked="OnCellClicked"
+                                                StartEdit="OnCellStartEdit">
+                            </SheetCellComponent>
+                        }
+                    </tr>
+                }
             </ItemContent>
         </Virtualize>
 
