@@ -121,64 +121,64 @@
                     OverscanCount="1">
             <ItemContent>
 
-                   @if ((!row.IsHidden || _isHiddenCellsVisible) && !row.IsCollapsed)
-                              {
-                                  <tr @key="@row.Uid">
-                                      <td class="hc-grid-cell"
-                                          style="@LeftSideCellStyle(Sheet, row)"
-                                          @onclick="(e => OnRowNumberCellClick(row))"
-                                          @oncontextmenu="(e => OnRowContextMenu(e, row))"
-                                          @oncontextmenu:preventDefault>
-                                          <span>@(Sheet.RowNumber(row))</span>
+                @if ((!row.IsHidden || _isHiddenCellsVisible) && !row.IsCollapsed)
+                {
+                    <tr @key="@row.Uid">
+                        <td class="hc-grid-cell"
+                            style="@LeftSideCellStyle(Sheet, row)"
+                            @onclick="(e => OnRowNumberCellClick(row))"
+                            @oncontextmenu="(e => OnRowContextMenu(e, row))"
+                            @oncontextmenu:preventDefault>
+                            <span>@(Sheet.RowNumber(row))</span>
               
-                                          @if (row.IsGroup)
-                                          {
-                                              @if (row.IsOpen)
-                                              {
-                                                  <span class="fa fa-solid fa-chevron-down text-primary"
-                                                        style="cursor:pointer;margin-left:5px;"
-                                                        align="center"
-                                                        @onclick="(e => RowGroupOpenCloseClick(row))">
-                                                  </span>
-                                              }
-                                              else
-                                              {
-                                                  <span class="fa fa-solid fa-chevron-right text-primary"
-                                                        style="cursor:pointer;margin-left:5px;"
-                                                        @onclick="(e => RowGroupOpenCloseClick(row))">
-                                                  </span>
-                                              }
-                                          }
-                                          @if (row.IsAddRemoveAllowed)
-                                          {
-                                              <span>&nbsp;</span>
-                                              <span class="fa fa-plus text-success" style="float:right; margin-top: 3px;"></span>
-                                          }
-                                      </td>
+                            @if (row.IsGroup)
+                            {
+                                @if (row.IsOpen)
+                                {
+                                    <span class="fa fa-solid fa-chevron-down text-primary"
+                                          style="cursor:pointer;margin-left:5px;"
+                                          align="center"
+                                          @onclick="(e => RowGroupOpenCloseClick(row))">
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="fa fa-solid fa-chevron-right text-primary"
+                                          style="cursor:pointer;margin-left:5px;"
+                                          @onclick="(e => RowGroupOpenCloseClick(row))">
+                                    </span>
+                                }
+                            }
+                            @if (row.IsAddRemoveAllowed)
+                            {
+                                <span>&nbsp;</span>
+                                <span class="fa fa-plus text-success" style="float:right; margin-top: 3px;"></span>
+                            }
+                        </td>
               
-                                      @foreach (var column in Sheet.Columns)
-                                      {
-                                          var cell = Sheet.GetCell(row, column);
+                        @foreach (var column in Sheet.Columns)
+                        {
+                            var cell = Sheet.GetCell(row, column);
               
-                                          if (cell == null)
-                                              continue;
+                            if (cell == null)
+                                continue;
               
-                                          if (ShouldCellBeDisplayed(column, row, cell))
-                                              continue;
+                            if (ShouldCellBeDisplayed(column, row, cell))
+                                continue;
                                           
-                                          <SheetCellComponent Sheet="@Sheet"
-                                                              Regime="@Regime"
-                                                              Row="@row" 
-                                                              Column="@column" 
-                                                              Cell="@cell" 
-                                                              StyleBuilder="@_cellStyleBuilder"
-                                                              IsHiddenCellsVisible="@_isHiddenCellsVisible"
-                                                              SelectedIdentifiers="@_selectedIdentifiers"
-                                                              Clicked="OnCellClicked"
-                                                              StartEdit="OnCellStartEdit"></SheetCellComponent>
-                                      }
-                                  </tr>
-                              }
+                            <SheetCellComponent Sheet="@Sheet"
+                                                Regime="@Regime"
+                                                Row="@row" 
+                                                Column="@column" 
+                                                Cell="@cell" 
+                                                StyleBuilder="@_cellStyleBuilder"
+                                                IsHiddenCellsVisible="@_isHiddenCellsVisible"
+                                                SelectedIdentifiers="@_selectedIdentifiers"
+                                                Clicked="OnCellClicked"
+                                                StartEdit="OnCellStartEdit"></SheetCellComponent>
+                        }
+                    </tr>
+                }
                 
             </ItemContent>
         </Virtualize>
@@ -186,3 +186,71 @@
     </table>
 
 </div>
+
+@if (_isColumnContextMenuOpen)
+{
+    <BbContextMenu ClientX="@_clientX"
+                   ClientY="@_clientY"
+                   Items="@_columnMenuItems"
+                   Closed="OnColumnMenuClosed">
+    </BbContextMenu>
+}
+
+@if (_isColumnWidthModalOpen)
+{
+    <ValueInputModal ClientX="@_clientX"
+                     ClientY="@_clientY"
+                     Width="150"
+                     Value="@_currentColumn.WidthValue"
+                     Closed="OnColumnWidthValueModalClosed"
+                     Title="Column width">
+    </ValueInputModal>
+}
+
+@if (_isRowContextMenuOpen)
+{
+    <BbContextMenu ClientX="@_clientX"
+                   ClientY="@_clientY"
+                   Items="@_rowMenuItems"
+                   Closed="OnRowMenuClosed">
+    </BbContextMenu>
+}
+
+@if (_isRowHeightModalOpen)
+{
+    <ValueInputModal ClientX="@_clientX"
+                     ClientY="@_clientY"
+                     Width="150"
+                     Value="@_currentRow.HeightValue"
+                     Closed="OnRowHeightValueModalClosed"
+                     Title="Row height">
+    </ValueInputModal>
+}
+
+@if (_isSheetSizeModalOpen)
+{
+    <SheetSizeInputModal ClientX="@_clientX"
+                         ClientY="@_clientY"
+                         Width="150"
+                         Closed="OnSheetSizeModalClosed"
+                         Columns="@Sheet.Columns.Count"
+                         Rows="@Sheet.Rows.Count"/>
+}
+
+@if (_isCellLinkInputModalOpen)
+{
+    <CellLinkInputModal Link="@_currentCell.Link"
+                        Text="@_currentCell.StringValue"
+                        Width="250"
+                        ClientX="@_clientX"
+                        ClientY="@_clientY"
+                        Closed="OnCellLinkInputModalClosed"/>
+}
+
+@if (_cellEditInfo != null)
+{
+    <CellEditor CellEditInfo="@_cellEditInfo" 
+                IsDisabled="@IsDisabled"
+                EditCancelled="OnCellEditCancelled"
+                Changed="OnEditorChanged"></CellEditor>
+}

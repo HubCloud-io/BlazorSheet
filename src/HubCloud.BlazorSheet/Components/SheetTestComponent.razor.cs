@@ -1,10 +1,13 @@
 ﻿using System.Text;
+using BBComponents.Abstract;
 using HubCloud.BlazorSheet.Core.Enums;
+using HubCloud.BlazorSheet.Core.Events;
 using HubCloud.BlazorSheet.Core.Models;
 using HubCloud.BlazorSheet.Editors;
 using HubCloud.BlazorSheet.Infrastructure;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.JSInterop;
 
 namespace HubCloud.BlazorSheet.Components;
 
@@ -14,19 +17,68 @@ public partial class SheetTestComponent: ComponentBase
     private const int LeftSideCellWidth = 40;
     private const int TopSideCellHeight = 30;
     private const string CellHiddenBackground = "#cccccc";
-    
-    private CellEditInfo _cellEditInfo;
-    
+
+    private bool _multipleSelection;
     private bool _isHiddenCellsVisible;
-    private HashSet<Guid> _selectedIdentifiers = new HashSet<Guid>();
+
+    private bool _cellHasChanged;
+
+    private CellEditInfo _cellEditInfo;
+
+    private SheetColumn _currentColumn;
+    private SheetRow _currentRow;
+    private SheetCell _currentCell;
     private CellStyleBuilder _cellStyleBuilder;
+    private List<SheetCell> _selectedCells = new List<SheetCell>();
+    private List<SheetRow> _selectedRowByNumberList = new List<SheetRow>();
+    private List<SheetColumn> _selectedColumnByNumberList = new List<SheetColumn>();
+    private HashSet<Guid> _selectedIdentifiers = new HashSet<Guid>();
+
+    private double _clientX;
+    private double _clientY;
+
+    private bool _isRowContextMenuOpen;
+    private bool _isRowHeightModalOpen;
+    private IEnumerable<IMenuItem> _rowMenuItems;
+
+    private bool _isColumnContextMenuOpen;
+    private bool _isColumnWidthModalOpen;
+    private IEnumerable<IMenuItem> _columnMenuItems;
+
+    private bool _isSheetSizeModalOpen;
+    private bool _isCellLinkInputModalOpen;
+
+    private IComboBoxDataProvider<int> _fakeComboBoxDataProvider = new FakeComboBoxDataProvider();
+    private JsCallService _jsCallService;
     
-    [Parameter]
-    public Sheet Sheet { get; set; }
+    [Parameter] public Sheet Sheet { get; set; }
+
     [Parameter] public SheetRegimes Regime { get; set; }
 
+    [Parameter] public bool IsDisabled { get; set; }
     [Parameter] public string MaxHeight { get; set; }
     [Parameter] public string MaxWidth { get; set; }
+
+    [Parameter] public IComboBoxDataProviderFactory ComboBoxDataProviderFactory { get; set; }
+
+    [Parameter] public EventCallback Changed { get; set; }
+
+    [Parameter] public EventCallback<SheetCell> CellSelected { get; set; }
+    [Parameter] public EventCallback<List<SheetCell>> CellsSelected { get; set; }
+    [Parameter] public EventCallback<SheetRow> RowSelected { get; set; }
+    [Parameter] public EventCallback<List<SheetRow>> RowsByNumberSelected { get; set; }
+    [Parameter] public EventCallback<List<SheetColumn>> ColumnsByNumberSelected { get; set; }
+    [Parameter] public EventCallback<SheetColumn> ColumnSelected { get; set; }
+    [Parameter] public EventCallback<SheetCell> CellValueChanged { get; set; }
+
+    [Parameter] public EventCallback<RowAddedEventArgs> RowAdded { get; set; }
+    [Parameter] public EventCallback<RowRemovedEventArgs> RowRemoved { get; set; }
+    [Parameter] public EventCallback<ColumnAddedEventArgs> ColumnAdded { get; set; }
+    [Parameter] public EventCallback<ColumnRemovedEventArgs> ColumnRemoved { get; set; }
+
+    [Inject] public IJSRuntime JsRuntime { get; set; }
+
+
     
     public string TableId => $"table_{Sheet.Uid}";
 
@@ -173,5 +225,62 @@ public partial class SheetTestComponent: ComponentBase
     private bool ShouldRowBeDisplayed(SheetRow row)
     {
         return (!row.IsHidden || _isHiddenCellsVisible) && !row.IsCollapsed;
+    }
+    
+    private async Task OnColumnWidthValueModalClosed(object args)
+    {
+        _isColumnWidthModalOpen = false;
+
+        if (_currentColumn == null)
+        {
+            return;
+        }
+
+        if (args is double widthValue)
+        {
+            _currentColumn.WidthValue = widthValue;
+            await Changed.InvokeAsync(null);
+        }
+    }
+    
+    private async Task OnRowHeightValueModalClosed(object args)
+    {
+        _isRowHeightModalOpen = false;
+
+        if (_currentRow == null)
+        {
+            return;
+        }
+
+        if (args is double heightValue)
+        {
+            _currentRow.HeightValue = heightValue;
+            await Changed.InvokeAsync(null);
+        }
+    }
+    
+    private async Task OnSheetSizeModalClosed(object args)
+    {
+        _isSheetSizeModalOpen = false;
+
+        if (args is SheetSize sheetSize)
+        {
+            Sheet.ChangeSize(sheetSize.Columns, sheetSize.Rows);
+
+            await Changed.InvokeAsync(null);
+        }
+    }
+    
+    private async void OnCellLinkInputModalClosed(CellLink cellLink)
+    {
+        _isCellLinkInputModalOpen = false;
+
+        if (cellLink == null)
+            return;
+
+        _currentCell.Link = cellLink.Link;
+        _currentCell.Value = cellLink.Text;
+
+        await Changed.InvokeAsync(null);
     }
 }
