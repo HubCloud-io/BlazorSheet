@@ -962,6 +962,7 @@ namespace HubCloud.BlazorSheet.Core.Models
 
                 if (row.IsGroup)
                 {
+                    row.IsOpen = IsVisible;
                     var childsVisible = IsVisible && row.IsOpen;
                     ChangeChildrenVisibility(row, childsVisible);
                 }
@@ -978,6 +979,7 @@ namespace HubCloud.BlazorSheet.Core.Models
 
                 if (column.IsGroup)
                 {
+                    column.IsOpen = IsVisible;
                     var childsVisible = IsVisible && column.IsOpen;
                     ChangeChildrenVisibility(column, childsVisible);
                 }
