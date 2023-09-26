@@ -1,0 +1,32 @@
+﻿@page "/sheetexpandcollapserows"
+
+@using HubCloud.BlazorSheet.Components
+@using BBComponents.Components
+@using HubCloud.BlazorSheet.Core.Enums
+
+<h3>SheetExpandCollapseRowsPage</h3>
+
+<hr />
+
+<div class="row">
+    <div class="col-sm-2">
+        <BbButton Clicked="OnRenderClick">Render</BbButton>
+    </div>
+</div>
+
+<hr />
+
+@if (_sheet != null)
+{
+    <div class="row">
+        <div class="col-sm-12">
+
+            <SheetComponent Sheet="@_sheet"
+                            MaxHeight="500px"
+                            MaxWidth="1000px"
+                            Regime="SheetRegimes.InputForm">
+            </SheetComponent>
+
+        </div>
+    </div>
+}
