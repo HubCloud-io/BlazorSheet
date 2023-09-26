@@ -4,7 +4,19 @@
 @using BBComponents.Components
 @using HubCloud.BlazorSheet.Core.Enums
 
-<h3>SheetTransferPage</h3>
+<div class="row">
+    <h3>
+        <span>SheetTransferPage</span>
+        
+        @if (_isWaiting)
+        {
+            <span>&nbsp;</span>
+            <span class="spinner-border text-primary" style="font-size: 10px;"></span>
+         
+        }
+    </h3>
+</div>
+
 
 <hr/>
 <div class="row">
@@ -15,8 +27,28 @@
         <BbNumberInput @bind-Value="@_columnsCount" Placeholder="ColumnsCount"></BbNumberInput>
     </div>
     <div class="col-sm-2">
-        <BbButton Clicked="OnGetDataClick">Get data</BbButton>
+        <BbButton Clicked="OnGetDataClick">
+           
+           
+            <span> Get data</span>
+        </BbButton>
     </div>
 </div>
 <hr/>
+
+@if (_sheet != null)
+{
+    <div class="row">
+        <div class="col-sm-12">
+
+            <HubCloud.BlazorSheet.Components.SheetComponent
+                Sheet="@_sheet"
+                MaxHeight="500px"
+                MaxWidth="1000px"
+                Regime="SheetRegimes.InputForm">
+            </HubCloud.BlazorSheet.Components.SheetComponent>
+
+        </div>
+    </div>
+}
 
