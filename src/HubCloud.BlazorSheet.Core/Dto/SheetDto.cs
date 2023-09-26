@@ -8,7 +8,7 @@ namespace HubCloud.BlazorSheet.Core.Dto
     {
         public Guid Uid { get; set; } = Guid.NewGuid();
         public string Name { get; set; }
-        public bool UseVirtualization { get; set; }
+        public bool IsVirtualizationEnabled { get; set; }
         public bool IsProtected { get; set; }
         
         public int RowsCount { get; set; }
@@ -33,7 +33,7 @@ namespace HubCloud.BlazorSheet.Core.Dto
         {
             Uid = sheet.Uid;
             Name = sheet.Name;
-            UseVirtualization = sheet.UseVirtualization;
+            IsVirtualizationEnabled = sheet.IsVirtualizationEnabled;
             IsProtected = sheet.IsProtected;
 
             RowsCount = sheet.RowsCount;

@@ -100,7 +100,7 @@ namespace HubCloud.BlazorSheet.Core.Models
         {
             Uid = dto.Uid;
             Name = dto.Name;
-            UseVirtualization = dto.UseVirtualization;
+            IsVirtualizationEnabled = dto.IsVirtualizationEnabled;
             RowsCount = dto.RowsCount;
             ColumnsCount = dto.ColumnsCount;
             FreezedColumns = dto.FreezedColumns;
