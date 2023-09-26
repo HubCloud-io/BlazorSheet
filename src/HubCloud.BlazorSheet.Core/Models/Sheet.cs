@@ -17,6 +17,7 @@ namespace HubCloud.BlazorSheet.Core.Models
         private readonly List<SheetRow> _rows = new List<SheetRow>();
         private readonly List<SheetColumn> _columns = new List<SheetColumn>();
         private readonly List<SheetCell> _cells = new List<SheetCell>();
+        private readonly SheetCellLookUp _cellsLookUp = new SheetCellLookUp();
         private readonly List<SheetCellStyle> _styles = new List<SheetCellStyle>();
         private readonly List<SheetCellEditSettings> _editSettings = new List<SheetCellEditSettings>();
 
@@ -704,6 +705,7 @@ namespace HubCloud.BlazorSheet.Core.Models
             _rows.Clear();
             _columns.Clear();
             _cells.Clear();
+            _cellsLookUp.Clear();
             //_styles.Clear();
             //_editSettings.Clear();
         }
@@ -1252,11 +1254,14 @@ namespace HubCloud.BlazorSheet.Core.Models
         public void AddCell(SheetCell cell)
         {
             _cells.Add(cell);
+            _cellsLookUp.Add(cell);
         }
 
         public void RemoveCell(SheetCell cell)
         {
+            _cellsLookUp.Remove(cell);
             _cells.Remove(cell);
+            
         }
 
         private void CopyCellProperties(SheetCell destinationCell, SheetCell sourceCell)
