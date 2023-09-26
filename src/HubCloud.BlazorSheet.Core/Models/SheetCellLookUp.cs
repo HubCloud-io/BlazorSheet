@@ -7,6 +7,16 @@ namespace HubCloud.BlazorSheet.Core.Models
     {
         private Dictionary<Guid, Dictionary<Guid, SheetCell>> _lookup = new Dictionary<Guid, Dictionary<Guid, SheetCell>>();
 
+        public void Init(IEnumerable<SheetCell> cells)
+        {
+            Clear();
+
+            foreach (var cell in cells)
+            {
+                Add(cell);
+            }
+        }
+        
         public void Add(SheetCell cell)
         {
             if (!_lookup.ContainsKey(cell.RowUid))

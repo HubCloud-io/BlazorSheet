@@ -142,6 +142,11 @@ namespace HubCloud.BlazorSheet.Core.Models
             }
         }
 
+        public void InitLookUp()
+        {
+            _cellsLookUp.Init(_cells);
+        }
+
         public void PrepareCellText()
         {
             foreach (var cell in Cells)
@@ -158,9 +163,18 @@ namespace HubCloud.BlazorSheet.Core.Models
             return cells;
         }
 
+        public SheetCell GetCell(Guid rowUid, Guid columnUid)
+        {
+            var cell = _cellsLookUp.Get(rowUid, columnUid);
+
+            return cell;
+        }
+        
         public SheetCell GetCell(SheetRow row, SheetColumn column)
         {
-            var cell = Cells.FirstOrDefault(x => x.RowUid == row.Uid && x.ColumnUid == column.Uid);
+           // var cell = Cells.FirstOrDefault(x => x.RowUid == row.Uid && x.ColumnUid == column.Uid);
+
+           var cell = GetCell(row.Uid, column.Uid);
 
             return cell;
         }
@@ -185,7 +199,9 @@ namespace HubCloud.BlazorSheet.Core.Models
             if (column == null)
                 return null;
 
-            var cell = Cells.FirstOrDefault(x => x.RowUid == row.Uid && x.ColumnUid == column.Uid);
+           // var cell = Cells.FirstOrDefault(x => x.RowUid == row.Uid && x.ColumnUid == column.Uid);
+
+           var cell = GetCell(row.Uid, column.Uid);
 
             return cell;
         }
