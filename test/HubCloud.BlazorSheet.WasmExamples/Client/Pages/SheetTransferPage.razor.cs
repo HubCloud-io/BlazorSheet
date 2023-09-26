@@ -43,4 +43,23 @@ public partial class SheetTransferPage: ComponentBase
         
         _isWaiting = false;
     }
+
+    private async Task OnGetDataDTOClick()
+    {
+        _isWaiting = true;
+        Console.WriteLine($@"{DateTime.Now:yyyy-MM-dd hh:mm:ss.fff}: Start transfer");
+        
+        var provider = new SheetTransferDataProvider(Http);
+
+        var callDto = new SheetTransferCallDto() {RowsCount = _rowsCount, ColumnsCount = _columnsCount};
+        var responseDto = await provider.BuildByDtoAsync(callDto);
+
+        Console.WriteLine($@"{DateTime.Now:yyyy-MM-dd hh:mm:ss.fff}: End transfer");
+        
+        _sheet = new Sheet(responseDto.Data);
+        
+        Console.WriteLine($@"{DateTime.Now:yyyy-MM-dd hh:mm:ss.fff}: Sheet prepared");
+        
+        _isWaiting = false;
+    }
 }

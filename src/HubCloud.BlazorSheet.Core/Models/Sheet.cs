@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using HubCloud.BlazorSheet.Core.Dto;
 using HubCloud.BlazorSheet.Core.Enums;
 
 namespace HubCloud.BlazorSheet.Core.Models
@@ -84,6 +85,39 @@ namespace HubCloud.BlazorSheet.Core.Models
 
             _styles.AddRange(settings.Styles);
             _editSettings.AddRange(settings.EditSettings);
+
+            if (!_cells.Any())
+            {
+                Init();
+            }
+            else
+            {
+                PrepareCellText();
+            }
+        }
+
+        public Sheet(SheetDto dto)
+        {
+            Uid = dto.Uid;
+            Name = dto.Name;
+            UseVirtualization = dto.UseVirtualization;
+            RowsCount = dto.RowsCount;
+            ColumnsCount = dto.ColumnsCount;
+            FreezedColumns = dto.FreezedColumns;
+            FreezedRows = dto.FreezedRows;
+            IsProtected = dto.IsProtected;
+
+            _rows.AddRange(dto.Rows);
+            _columns.AddRange(dto.Columns);
+
+            foreach (var cellDto in dto.Cells)
+            {
+                var cell = cellDto.BuildCell();
+                AddCell(cell);
+            }
+
+            _styles.AddRange(dto.Styles);
+            _editSettings.AddRange(dto.EditSettings);
 
             if (!_cells.Any())
             {
