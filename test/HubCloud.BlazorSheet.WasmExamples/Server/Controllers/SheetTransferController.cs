@@ -1,4 +1,5 @@
-﻿using HubCloud.BlazorSheet.Core.Models;
+﻿using HubCloud.BlazorSheet.Core.Dto;
+using HubCloud.BlazorSheet.Core.Models;
 using HubCloud.BlazorSheet.WasmExamples.Shared.Helpers;
 using HubCloud.BlazorSheet.WasmExamples.Shared.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -22,6 +23,26 @@ public class SheetTransferController : Controller
         var sheet = new Sheet(sheetSettings);
 
         responseDto.Data = sheet;
+        
+        Console.WriteLine($@"{DateTime.Now:yyyy-MM-dd hh:mm:ss.fff}: SheetTransfer.Back. Build finished");
+
+        return Ok(responseDto);
+    }
+    
+    [HttpPost("BuildByDto")]
+    public IActionResult BuildByDto([FromBody] SheetTransferCallDto callDto)
+    {
+        Console.WriteLine($@"{DateTime.Now:yyyy-MM-dd hh:mm:ss.fff}: SheetTransfer.Back. Build started");
+        
+        var responseDto = new ResponseDto<SheetDto>();
+        
+        var builder = new SheetWithCellNamesBuilder();
+        var sheetSettings =  builder.BuildSettings(callDto.RowsCount, callDto.ColumnsCount);
+
+        var sheet = new Sheet(sheetSettings);
+
+        var dto = new SheetDto(sheet);
+        responseDto.Data = dto;
         
         Console.WriteLine($@"{DateTime.Now:yyyy-MM-dd hh:mm:ss.fff}: SheetTransfer.Back. Build finished");
 
