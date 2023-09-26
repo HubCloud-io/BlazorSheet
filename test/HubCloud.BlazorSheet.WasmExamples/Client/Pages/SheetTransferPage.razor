@@ -1,0 +1,22 @@
+﻿@page "/SheetTransferPage"
+
+@using BlazorSheet.Components
+@using BBComponents.Components
+@using HubCloud.BlazorSheet.Core.Enums
+
+<h3>SheetTransferPage</h3>
+
+<hr/>
+<div class="row">
+    <div class="col-sm-2">
+        <BbNumberInput @bind-Value="@_rowsCount" Placeholder="RowsCount"></BbNumberInput>
+    </div>
+    <div class="col-sm-2">
+        <BbNumberInput @bind-Value="@_columnsCount" Placeholder="ColumnsCount"></BbNumberInput>
+    </div>
+    <div class="col-sm-2">
+        <BbButton Clicked="OnGetDataClick">Get data</BbButton>
+    </div>
+</div>
+<hr/>
+
