@@ -19,11 +19,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HubCloud.BlazorSheet.EvalEn
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HubCloud.BlazorSheet.ExamplesShared", "test\HubCloud.BlazorSheet.ExamplesShared\HubCloud.BlazorSheet.ExamplesShared.csproj", "{335A0B33-057A-48CE-A091-174F22044207}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HubCloud.BlazorSheet.WasmExamples.Server", "test\HubCloud.BlazorSheet.WasmExamples\Server\HubCloud.BlazorSheet.WasmExamples.Server.csproj", "{897A8053-F794-4FE9-B559-1B0003AB2EFD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HubCloud.BlazorSheet.WasmExamples.Server", "test\HubCloud.BlazorSheet.WasmExamples\Server\HubCloud.BlazorSheet.WasmExamples.Server.csproj", "{897A8053-F794-4FE9-B559-1B0003AB2EFD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HubCloud.BlazorSheet.WasmExamples.Client", "test\HubCloud.BlazorSheet.WasmExamples\Client\HubCloud.BlazorSheet.WasmExamples.Client.csproj", "{FBAB51F8-DE26-499C-9E61-BA558014D462}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HubCloud.BlazorSheet.WasmExamples.Client", "test\HubCloud.BlazorSheet.WasmExamples\Client\HubCloud.BlazorSheet.WasmExamples.Client.csproj", "{FBAB51F8-DE26-499C-9E61-BA558014D462}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HubCloud.BlazorSheet.WasmExamples.Shared", "test\HubCloud.BlazorSheet.WasmExamples\Shared\HubCloud.BlazorSheet.WasmExamples.Shared.csproj", "{9DE2E525-B02C-4FA5-BA38-5ACB6561CD47}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HubCloud.BlazorSheet.WasmExamples.Shared", "test\HubCloud.BlazorSheet.WasmExamples\Shared\HubCloud.BlazorSheet.WasmExamples.Shared.csproj", "{9DE2E525-B02C-4FA5-BA38-5ACB6561CD47}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
