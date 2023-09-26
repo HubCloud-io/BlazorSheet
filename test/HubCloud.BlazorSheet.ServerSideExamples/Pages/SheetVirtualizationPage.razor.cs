@@ -58,7 +58,7 @@ namespace HubCloud.BlazorSheet.ServerSideExamples.Pages
 
         private void CheckboxClicked(ChangeEventArgs e)
         {
-            _sheet.UseVirtualization = (bool)e.Value;
+            _sheet.IsVirtualizationEnabled = (bool)e.Value;
         }
     }
 }
