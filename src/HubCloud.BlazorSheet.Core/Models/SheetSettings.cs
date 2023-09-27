@@ -8,7 +8,6 @@ namespace HubCloud.BlazorSheet.Core.Models
     {
         public Guid Uid { get; set; }
         public string Name { get; set; }
-        public bool IsVirtualizationEnabled { get; set; }
         public bool IsProtected { get; set; }
 
         public int RowsCount { get; set; }
