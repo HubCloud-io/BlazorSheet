@@ -22,36 +22,14 @@
             {
                 @if (ShouldColumnBeDisplayed(column))
                 {
-                    <td class="hc-grid-cell text-center"
-                        @onclick="(e => OnColumnNumberCellClick(column))"
-                        @oncontextmenu="(e => OnColumnContextMenu(e, column))"
-                        @oncontextmenu:preventDefault
-                        style="@TopSideCellStyle(Sheet, column)">
-                        <span>@(Sheet.ColumnNumber(column))</span>
-
-                        @if (column.IsGroup)
-                        {
-                            @if (column.IsOpen)
-                            {
-                                <span class="fa fa-solid fa-chevron-right text-primary"
-                                      style="cursor:pointer;margin-left:5px;"
-                                      @onclick="(e => ColumnGroupOpenCloseClick(column))">
-                                </span>
-                            }
-                            else
-                            {
-                                <span class="fa fa-solid fa-chevron-down text-primary"
-                                      style="cursor:pointer;margin-left:5px;"
-                                      @onclick="(e => ColumnGroupOpenCloseClick(column))">
-                                </span>
-                            }
-                        }
-                        @if (column.IsAddRemoveAllowed)
-                        {
-                            <span>&nbsp;</span>
-                            <span class="fa fa-plus text-success"></span>
-                        }
-                    </td>
+                    <SheetColumnHeaderCellComponent Column="column" 
+                                                    Sheet="Sheet" 
+                                                    CellStyleBuilder="@_cellStyleBuilder"
+                                                    TopSideCellHeight="@TopSideCellHeight"
+                                                    CellHiddenBackground="@CellHiddenBackground" 
+                                                    IsHiddenCellsVisible="@_isHiddenCellsVisible"
+                                                    Click="() => OnColumnNumberCellClick(column)"
+                                                    ColumnContextMenu="(e) => OnColumnContextMenu(e, column)"/>
                 }
             }
 
