@@ -25,7 +25,6 @@ namespace HubCloud.BlazorSheet.Core.Models
         public Guid Uid { get; set; } = Guid.NewGuid();
         public string Name { get; set; }
         public bool IsProtected { get; set; }
-        public bool IsVirtualizationEnabled { get; set; } = true;
 
         public int RowsCount
         {
@@ -68,7 +67,6 @@ namespace HubCloud.BlazorSheet.Core.Models
         {
             Uid = settings.Uid;
             Name = settings.Name;
-            IsVirtualizationEnabled = settings.IsVirtualizationEnabled;
             RowsCount = settings.RowsCount;
             ColumnsCount = settings.ColumnsCount;
             FreezedColumns = settings.FreezedColumns;
@@ -100,7 +98,6 @@ namespace HubCloud.BlazorSheet.Core.Models
         {
             Uid = dto.Uid;
             Name = dto.Name;
-            IsVirtualizationEnabled = dto.IsVirtualizationEnabled;
             RowsCount = dto.RowsCount;
             ColumnsCount = dto.ColumnsCount;
             FreezedColumns = dto.FreezedColumns;
@@ -693,7 +690,6 @@ namespace HubCloud.BlazorSheet.Core.Models
             {
                 Uid = Uid,
                 Name = Name,
-                IsVirtualizationEnabled = IsVirtualizationEnabled,
                 RowsCount = RowsCount,
                 ColumnsCount = ColumnsCount,
                 FreezedColumns = FreezedColumns,

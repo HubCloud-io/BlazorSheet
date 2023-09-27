@@ -8,7 +8,7 @@
 
 <div class="row">
     <div class="form-check">
-        <input class="form-check-input" type="checkbox" value="" id="checkVirtualisation" @onchange="(e) => CheckboxClicked(e)">
+        <input class="form-check-input" type="checkbox" value="" id="checkVirtualisation" @onchange="(e) => _isVirtualizationEnabled = (bool)e.Value">
         <label class="form-check-label" for="checkVirtualisation">
             Virtualisation enabled
         </label>
@@ -20,6 +20,7 @@
         <HubCloud.BlazorSheet.Components.SheetComponent Sheet="@_sheet"
                                                         MaxHeight="500px"
                                                         MaxWidth="1000px"
+                                                        IsVirtualizationEnabled="@_isVirtualizationEnabled"
                                                         Regime="SheetRegimes.InputForm"></HubCloud.BlazorSheet.Components.SheetComponent>
 
     </div>

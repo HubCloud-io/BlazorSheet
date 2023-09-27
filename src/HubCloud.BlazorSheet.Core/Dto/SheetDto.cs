@@ -33,7 +33,6 @@ namespace HubCloud.BlazorSheet.Core.Dto
         {
             Uid = sheet.Uid;
             Name = sheet.Name;
-            IsVirtualizationEnabled = sheet.IsVirtualizationEnabled;
             IsProtected = sheet.IsProtected;
 
             RowsCount = sheet.RowsCount;
