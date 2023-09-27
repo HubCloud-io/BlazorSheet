@@ -67,37 +67,13 @@
                     @if (ShouldRowBeDisplayed(row))
                     {
                         <tr @key="@row.Uid">
-                            <td class="hc-grid-cell"
-                                style="@LeftSideCellStyle(Sheet, row)"
-                                @oncontextmenu="(e => OnRowContextMenu(e, row))"
-                                @oncontextmenu:preventDefault>
-                                <span>@(Sheet.RowNumber(row))</span>
-
-                                @if (row.IsGroup)
-                                {
-                                    @if (row.IsOpen)
-                                    {
-                                        <span class="fa fa-solid fa-chevron-down text-primary"
-                                              style="cursor:pointer;margin-left:5px;"
-                                              @onclick="(e => RowGroupOpenCloseClick(row))">
-                                        </span>
-                                    }
-                                    else
-                                    {
-                                        <span class="fa fa-solid fa-chevron-right text-primary"
-                                              style="cursor:pointer;margin-left:5px;"
-                                              @onclick="(e => RowGroupOpenCloseClick(row))">
-                                        </span>
-                                    }
-                                }
-                                @if (row.IsAddRemoveAllowed)
-                                {
-                                    <span>&nbsp;</span>
-                                    <span class="fa fa-plus text-success" 
-                                          style="float:right; margin-top: 3px;">
-                                    </span>
-                                }
-                            </td>
+                            <SheetRowHeaderCellComponent Row="row" 
+                                                         Sheet="Sheet" 
+                                                         CellHiddenBackground="@CellHiddenBackground" 
+                                                         LeftSideCellWidth="@LeftSideCellWidth"
+                                                         IsHiddenCellsVisible="@_isHiddenCellsVisible"
+                                                         CellStyleBuilder="@_cellStyleBuilder"
+                                                         RowContextMenu="e => OnRowContextMenu(e, row)"/>
 
                             @foreach (var column in Sheet.Columns)
                             {
@@ -134,39 +110,14 @@
                     @if ((!row.IsHidden || _isHiddenCellsVisible) && !row.IsCollapsed)
                     {
                         <tr @key="@row.Uid">
-                            <td class="hc-grid-cell"
-                                style="@LeftSideCellStyle(Sheet, row)"
-                                @onclick="(e => OnRowNumberCellClick(row))"
-                                @oncontextmenu="(e => OnRowContextMenu(e, row))"
-                                @oncontextmenu:preventDefault>
-                                <span>@(Sheet.RowNumber(row))</span>
-
-                                @if (row.IsGroup)
-                                {
-                                    @if (row.IsOpen)
-                                    {
-                                        <span class="fa fa-solid fa-chevron-down text-primary"
-                                              style="cursor:pointer;margin-left:5px;"
-                                              align="center"
-                                              @onclick="(e => RowGroupOpenCloseClick(row))">
-                                        </span>
-                                    }
-                                    else
-                                    {
-                                        <span class="fa fa-solid fa-chevron-right text-primary"
-                                              style="cursor:pointer;margin-left:5px;"
-                                              @onclick="(e => RowGroupOpenCloseClick(row))">
-                                        </span>
-                                    }
-                                }
-                                @if (row.IsAddRemoveAllowed)
-                                {
-                                    <span>&nbsp;</span>
-                                    <span class="fa fa-plus text-success" 
-                                          style="float:right; margin-top: 3px;">
-                                    </span>
-                                }
-                            </td>
+                            <SheetRowHeaderCellComponent Row="row"
+                                                         Sheet="Sheet"
+                                                         CellHiddenBackground="@CellHiddenBackground"
+                                                         LeftSideCellWidth="@LeftSideCellWidth"
+                                                         IsHiddenCellsVisible="@_isHiddenCellsVisible"
+                                                         CellStyleBuilder="@_cellStyleBuilder"
+                                                         Click="() => OnRowNumberCellClick(row)"
+                                                         RowContextMenu="e => OnRowContextMenu(e, row)" />
 
                             @foreach (var column in Sheet.Columns)
                             {
@@ -202,39 +153,14 @@
                 @if ((!row.IsHidden || _isHiddenCellsVisible) && !row.IsCollapsed)
                 {
                     <tr @key="@row.Uid">
-                        <td class="hc-grid-cell"
-                            style="@LeftSideCellStyle(Sheet, row)"
-                            @onclick="(e => OnRowNumberCellClick(row))"
-                            @oncontextmenu="(e => OnRowContextMenu(e, row))"
-                            @oncontextmenu:preventDefault>
-                            <span>@(Sheet.RowNumber(row))</span>
-
-                            @if (row.IsGroup)
-                            {
-                                @if (row.IsOpen)
-                                {
-                                    <span class="fa fa-solid fa-chevron-down text-primary"
-                                          style="cursor:pointer;margin-left:5px;"
-                                          align="center"
-                                          @onclick="(e => RowGroupOpenCloseClick(row))">
-                                    </span>
-                                }
-                                else
-                                {
-                                    <span class="fa fa-solid fa-chevron-right text-primary"
-                                          style="cursor:pointer;margin-left:5px;"
-                                          @onclick="(e => RowGroupOpenCloseClick(row))">
-                                    </span>
-                                }
-                            }
-                            @if (row.IsAddRemoveAllowed)
-                            {
-                                <span>&nbsp;</span>
-                                <span class="fa fa-plus text-success" 
-                                      style="float:right; margin-top: 3px;">
-                                </span>
-                            }
-                        </td>
+                        <SheetRowHeaderCellComponent Row="row"
+                                                     Sheet="Sheet"
+                                                     CellHiddenBackground="@CellHiddenBackground"
+                                                     LeftSideCellWidth="@LeftSideCellWidth"
+                                                     IsHiddenCellsVisible="@_isHiddenCellsVisible"
+                                                     CellStyleBuilder="@_cellStyleBuilder"
+                                                     Click="() => OnRowNumberCellClick(row)"
+                                                     RowContextMenu="e => OnRowContextMenu(e, row)" />
 
                         @foreach (var column in Sheet.Columns)
                         {
