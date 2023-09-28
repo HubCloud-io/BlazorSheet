@@ -1,4 +1,5 @@
-﻿using HubCloud.BlazorSheet.Core.Models;
+﻿using HubCloud.BlazorSheet.Core.Consts;
+using HubCloud.BlazorSheet.Core.Models;
 using HubCloud.BlazorSheet.Infrastructure;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
@@ -12,9 +13,7 @@ namespace HubCloud.BlazorSheet.Components
 {
     public partial class SheetRowHeaderCellComponent
     {
-        [Parameter] public int LeftSideCellWidth { get; set; }
         [Parameter] public bool IsHiddenCellsVisible { get; set; }
-        [Parameter] public string CellHiddenBackground { get; set; }
         [Parameter] public Sheet Sheet { get; set; }
         [Parameter] public SheetRow Row { get; set; }
         [Parameter] public CellStyleBuilder CellStyleBuilder { get; set; }
@@ -35,15 +34,15 @@ namespace HubCloud.BlazorSheet.Components
             sb.Append(";");
 
             sb.Append("width:");
-            sb.Append($"{LeftSideCellWidth}px");
+            sb.Append($"{SheetConsts.LeftSideCellWidth}px");
             sb.Append(";");
 
             sb.Append("max-width:");
-            sb.Append($"{LeftSideCellWidth}px");
+            sb.Append($"{SheetConsts.LeftSideCellWidth}px");
             sb.Append(";");
 
             sb.Append("min-width:");
-            sb.Append($"{LeftSideCellWidth}px");
+            sb.Append($"{SheetConsts.LeftSideCellWidth}px");
             sb.Append(";");
 
             sb.Append("height:");
@@ -63,7 +62,7 @@ namespace HubCloud.BlazorSheet.Components
             if (Row.IsHidden && IsHiddenCellsVisible)
             {
                 sb.Append("background:");
-                sb.Append(CellHiddenBackground);
+                sb.Append(SheetConsts.CellHiddenBackground);
                 sb.Append(";");
             }
 
