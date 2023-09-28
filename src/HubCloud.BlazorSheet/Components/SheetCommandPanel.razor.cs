@@ -28,6 +28,10 @@ public partial class SheetCommandPanel:ComponentBase
     
     [Parameter]
     public EventCallback Changed { get; set; }
+    [Parameter]
+    public EventCallback<int> FreezedRowsChanged { get; set; }
+    [Parameter]
+    public EventCallback<int> FreezedColumnsChanged { get; set; }
 
     [Parameter]
     public EventCallback ExportClicked { get; set; }
@@ -160,7 +164,17 @@ public partial class SheetCommandPanel:ComponentBase
     {
         await Changed.InvokeAsync(null);
     }
-    
+
+    private async Task OnFreezedRowsChanged()
+    {
+        await FreezedRowsChanged.InvokeAsync(Model.FreezedRows);
+    }
+
+    private async Task OnFreezedColumnsChanged()
+    {
+        await FreezedColumnsChanged.InvokeAsync(Model.FreezedColumns);
+    }
+
     private static string ToggleButtonStyle(bool flag)
     {
         var sb = new StringBuilder();
