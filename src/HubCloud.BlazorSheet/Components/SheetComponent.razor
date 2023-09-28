@@ -8,7 +8,7 @@
 
 <div class="hc-sheet-container" @onscroll="OnScroll" style="overflow-y: auto; overflow-x: auto; max-height: @MaxHeight; max-width:@MaxWidth">
 
-    <table id="@TableId" 
+    <table id="@TableId"
            class="hc-sheet"
            tabindex="0"
            @onkeydown="(e => OnTableKeyDown(e))"
@@ -18,112 +18,60 @@
         <tr>
             <td class="hc-grid-cell" style="@TopLeftEmptyCellStyle()"></td>
 
-            @foreach (var column in Sheet.Columns)
+            @foreach (var column in Sheet.GetVisibleColumns(_isHiddenCellsVisible))
             {
-                @if (ShouldColumnBeDisplayed(column))
-                {
-                    <SheetColumnHeaderCellComponent Column="column" 
-                                                    Sheet="Sheet" 
-                                                    CellStyleBuilder="@_cellStyleBuilder"
-                                                    IsHiddenCellsVisible="@_isHiddenCellsVisible"
-                                                    Click="() => OnColumnNumberCellClick(column)"
-                                                    ColumnContextMenu="(e) => OnColumnContextMenu(e, column)"/>
-                }
+                <SheetColumnHeaderCellComponent Column="column"
+                                                Sheet="Sheet"
+                                                CellStyleBuilder="@_cellStyleBuilder"
+                                                IsHiddenCellsVisible="@_isHiddenCellsVisible"
+                                                Click="() => OnColumnNumberCellClick(column)"
+                                                ColumnContextMenu="(e) => OnColumnContextMenu(e, column)" />
             }
 
         </tr>
 
         @*Sheet body*@
+        @foreach (var row in Sheet.GetFreezedVisibleRows(_isHiddenCellsVisible))
+        {
+            <tr @key="@row.Uid">
+                <SheetRowHeaderCellComponent Row="row"
+                                             Sheet="Sheet"
+                                             IsHiddenCellsVisible="@_isHiddenCellsVisible"
+                                             CellStyleBuilder="@_cellStyleBuilder"
+                                             RowContextMenu="e => OnRowContextMenu(e, row)" />
+
+                @foreach (var column in Sheet.Columns)
+                {
+                    var cell = Sheet.GetCell(row, column);
+                    if (cell == null)
+                        continue;
+
+                    if (ShouldCellBeDisplayed(column, row, cell))
+                        continue;
+
+                    <SheetCellComponent Sheet="@Sheet"
+                                        Regime="@Regime"
+                                        Row="@row"
+                                        Column="@column"
+                                        Cell="@cell"
+                                        StyleBuilder="@_cellStyleBuilder"
+                                        IsHiddenCellsVisible="@_isHiddenCellsVisible"
+                                        SelectedIdentifiers="@_selectedIdentifiers"
+                                        Clicked="OnCellClicked"
+                                        StartEdit="OnCellStartEdit"></SheetCellComponent>
+                }
+            </tr>
+        }
+
         @if (IsVirtualizationEnabled)
         {
-            @if (Sheet.FreezedRows > 0)
-            {
-                foreach (var row in Sheet.Rows.Take(Sheet.FreezedRows))
-                {
-                    @if (ShouldRowBeDisplayed(row))
-                    {
-                        <tr @key="@row.Uid">
-                            <SheetRowHeaderCellComponent Row="row" 
-                                                         Sheet="Sheet" 
-                                                         IsHiddenCellsVisible="@_isHiddenCellsVisible"
-                                                         CellStyleBuilder="@_cellStyleBuilder"
-                                                         RowContextMenu="e => OnRowContextMenu(e, row)"/>
-
-                            @foreach (var column in Sheet.Columns)
-                            {
-                                var cell = Sheet.GetCell(row, column);
-
-                                if (cell == null)
-                                    continue;
-
-                                if (ShouldCellBeDisplayed(column, row, cell))
-                                    continue;
-
-                                <SheetCellComponent Sheet="@Sheet"
-                                                    Regime="@Regime"
-                                                    Row="@row"
-                                                    Column="@column"
-                                                    Cell="@cell"
-                                                    StyleBuilder="@_cellStyleBuilder"
-                                                    IsHiddenCellsVisible="@_isHiddenCellsVisible"
-                                                    SelectedIdentifiers="@_selectedIdentifiers"
-                                                    Clicked="OnCellClicked"
-                                                    StartEdit="OnCellStartEdit"></SheetCellComponent>
-                            }
-                        </tr>
-                    }
-                }
-            }
-            <Virtualize Items="@Sheet.Rows.Skip(Sheet.FreezedRows).ToList()"
+            <Virtualize Items="@Sheet.GetVisibleRows(_isHiddenCellsVisible)"
                         TItem="SheetRow"
                         Context="row"
                         OverscanCount="1"
                         ItemSize="26">
                 <ItemContent>
 
-                    @if ((!row.IsHidden || _isHiddenCellsVisible) && !row.IsCollapsed)
-                    {
-                        <tr @key="@row.Uid">
-                            <SheetRowHeaderCellComponent Row="row"
-                                                         Sheet="Sheet"
-                                                         IsHiddenCellsVisible="@_isHiddenCellsVisible"
-                                                         CellStyleBuilder="@_cellStyleBuilder"
-                                                         Click="() => OnRowNumberCellClick(row)"
-                                                         RowContextMenu="e => OnRowContextMenu(e, row)" />
-
-                            @foreach (var column in Sheet.Columns)
-                            {
-                                var cell = Sheet.GetCell(row, column);
-
-                                if (cell == null)
-                                    continue;
-
-                                if (ShouldCellBeDisplayed(column, row, cell))
-                                    continue;
-
-                                <SheetCellComponent Sheet="@Sheet"
-                                                    Regime="@Regime"
-                                                    Row="@row"
-                                                    Column="@column"
-                                                    Cell="@cell"
-                                                    StyleBuilder="@_cellStyleBuilder"
-                                                    IsHiddenCellsVisible="@_isHiddenCellsVisible"
-                                                    SelectedIdentifiers="@_selectedIdentifiers"
-                                                    Clicked="OnCellClicked"
-                                                    StartEdit="OnCellStartEdit" />
-                            }
-                        </tr>
-                    }
-
-                </ItemContent>
-            </Virtualize>
-        }
-        else
-        {
-            foreach (var row in Sheet.Rows)
-            {
-                @if ((!row.IsHidden || _isHiddenCellsVisible) && !row.IsCollapsed)
-                {
                     <tr @key="@row.Uid">
                         <SheetRowHeaderCellComponent Row="row"
                                                      Sheet="Sheet"
@@ -135,7 +83,6 @@
                         @foreach (var column in Sheet.Columns)
                         {
                             var cell = Sheet.GetCell(row, column);
-
                             if (cell == null)
                                 continue;
 
@@ -154,7 +101,43 @@
                                                 StartEdit="OnCellStartEdit" />
                         }
                     </tr>
-                }
+
+                </ItemContent>
+            </Virtualize>
+        }
+        else
+        {
+            foreach (var row in Sheet.GetVisibleRows(_isHiddenCellsVisible))
+            {
+                <tr @key="@row.Uid">
+                    <SheetRowHeaderCellComponent Row="row"
+                                                 Sheet="Sheet"
+                                                 IsHiddenCellsVisible="@_isHiddenCellsVisible"
+                                                 CellStyleBuilder="@_cellStyleBuilder"
+                                                 Click="() => OnRowNumberCellClick(row)"
+                                                 RowContextMenu="e => OnRowContextMenu(e, row)" />
+
+                    @foreach (var column in Sheet.Columns)
+                    {
+                        var cell = Sheet.GetCell(row, column);
+                        if (cell == null)
+                            continue;
+
+                        if (ShouldCellBeDisplayed(column, row, cell))
+                            continue;
+
+                        <SheetCellComponent Sheet="@Sheet"
+                                            Regime="@Regime"
+                                            Row="@row"
+                                            Column="@column"
+                                            Cell="@cell"
+                                            StyleBuilder="@_cellStyleBuilder"
+                                            IsHiddenCellsVisible="@_isHiddenCellsVisible"
+                                            SelectedIdentifiers="@_selectedIdentifiers"
+                                            Clicked="OnCellClicked"
+                                            StartEdit="OnCellStartEdit" />
+                    }
+                </tr>
             }
         }
 
@@ -209,7 +192,7 @@
                          Width="150"
                          Closed="OnSheetSizeModalClosed"
                          Columns="@Sheet.Columns.Count"
-                         Rows="@Sheet.Rows.Count"/>
+                         Rows="@Sheet.Rows.Count" />
 }
 
 @if (_isCellLinkInputModalOpen)
@@ -219,12 +202,12 @@
                         Width="250"
                         ClientX="@_clientX"
                         ClientY="@_clientY"
-                        Closed="OnCellLinkInputModalClosed"/>
+                        Closed="OnCellLinkInputModalClosed" />
 }
 
 @if (_cellEditInfo != null)
 {
-    <CellEditor CellEditInfo="@_cellEditInfo" 
+    <CellEditor CellEditInfo="@_cellEditInfo"
                 IsDisabled="@IsDisabled"
                 EditCancelled="OnCellEditCancelled"
                 Changed="OnEditorChanged"></CellEditor>

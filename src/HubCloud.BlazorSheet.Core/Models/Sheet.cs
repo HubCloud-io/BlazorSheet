@@ -1443,5 +1443,28 @@ namespace HubCloud.BlazorSheet.Core.Models
                 ChangeChildrenVisibility(headColumn, headColumn.IsOpen);
             }
         }
+
+        public IEnumerable<SheetColumn> GetVisibleColumns(bool isHiddenCellsVisible)
+        {
+            return Columns.Where(x => (!x.IsHidden || isHiddenCellsVisible) && !x.IsCollapsed);
+        }
+
+        public List<SheetRow> GetVisibleRows(bool isHiddenCellsVisible)
+        {
+            var rows = Rows
+                .Skip(FreezedRows)
+                .Where(x => (!x.IsHidden || isHiddenCellsVisible) && !x.IsCollapsed)
+                .ToList();
+
+            return rows;
+        }
+
+        public IEnumerable<SheetRow> GetFreezedVisibleRows(bool isHiddenCellsVisible)
+        {
+            var rows = Rows.Take(FreezedRows)
+                .Where(x => (!x.IsHidden || isHiddenCellsVisible) && !x.IsCollapsed);
+
+            return rows;
+        }
     }
 }
