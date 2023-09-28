@@ -62,7 +62,18 @@ namespace HubCloud.BlazorSheet.WasmExamples.Client.Pages
             if (_selectedCell == null)
                 return;
 
+
             _sheet.SetSettingsFromCommandPanel(_selectedCells, _selectedCell, _commandPanelModel);
+        }
+
+        private void OnFormatChanged()
+        {
+            _sheet.SetFormat(_selectedCells, _commandPanelModel.FormatType, _commandPanelModel.CustomFormat);
+        }
+
+        private void OnFormulaChanged()
+        {
+            _sheet.SetFormula(_selectedCells, _commandPanelModel.InputText);
         }
 
         private void OnFreezedRowsChanged(int freezedRowsCount)

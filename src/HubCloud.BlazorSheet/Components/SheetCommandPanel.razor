@@ -90,7 +90,7 @@
                   ValueName="Item2"
                   HtmlStyle="width:150px;margin-left:5px;margin-right:5px;height:25px;"
                   @bind-Value="@Model.FormatType"
-                  Changed="OnCellFormatChanged">
+                  Changed="OnFormatChanged">
         </BbSelect>
 
         @if (Model.FormatType == CellFormatTypes.Custom)
@@ -183,7 +183,7 @@
         <BbTextInput HtmlStyle="width:100%"
                      @bind-Value="@Model.InputText"
                      Placeholder="Formula"
-                     Changed="OnSettingsChanged">
+                     Changed="OnFormulaChanged">
         </BbTextInput>
     </div>
 
