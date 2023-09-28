@@ -498,6 +498,24 @@ namespace HubCloud.BlazorSheet.Core.Models
             FreezedColumns = commandPanelModel.FreezedColumns;
             IsProtected = commandPanelModel.SheetProtected;
         }
+
+        public void SetFormat(List<SheetCell> cells, CellFormatTypes formatType, string customFormat)
+        {
+            if (cells == null)
+                return;
+
+            foreach (var item in cells)
+                item.SetFormat(formatType, customFormat);
+        }
+
+        public void SetFormula(List<SheetCell> cells, string formula)
+        {
+            if (cells == null)
+                return;
+
+            foreach (var item in cells)
+                item.Formula = formula;
+        }
         
         public void SetSettingsToCommandPanel(SheetCell cell, SheetCommandPanelModel commandPanelModel)
         {

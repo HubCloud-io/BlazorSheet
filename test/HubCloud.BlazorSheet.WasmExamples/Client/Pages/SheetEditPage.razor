@@ -6,23 +6,25 @@
 
 <h3>Sheet Edit</h3>
 
-<hr/>
+<hr />
 
 <SheetCommandPanel Model="@_commandPanelModel"
                    SelectedCellsCount="@SelectedCellsCount"
                    CanCellsBeJoined="@_canCellsBeJoined"
                    OpenCellLinkModal="() => _sheetComponent.OpenCellLinkModal()"
                    SplitJoinCells="() => _sheetComponent.SplitJoinCells()"
-                   Changed="OnStyleChanged">
+                   Changed="OnStyleChanged"
+                   FormatChanged="OnFormatChanged"
+                   FormulaChanged="OnFormulaChanged">
 </SheetCommandPanel>
 
-<hr/>
+<hr />
 
 <div class="row">
 
     <div class="col-sm-12">
 
-        <SheetComponent @ref="_sheetComponent" 
+        <SheetComponent @ref="_sheetComponent"
                         Sheet="@_sheet"
                         MaxHeight="500px"
                         MaxWidth="1000px"

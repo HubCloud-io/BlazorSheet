@@ -30,6 +30,12 @@ public partial class SheetCommandPanel:ComponentBase
     public EventCallback Changed { get; set; }
 
     [Parameter]
+    public EventCallback FormatChanged { get; set; }
+
+    [Parameter]
+    public EventCallback FormulaChanged { get; set; }
+
+    [Parameter]
     public EventCallback ExportClicked { get; set; }
 
     [Parameter]
@@ -188,13 +194,18 @@ public partial class SheetCommandPanel:ComponentBase
         await Changed.InvokeAsync(null);
     }
 
-    private async Task OnCellFormatChanged(CellFormatTypes formatType)
+    private async Task OnFormatChanged(CellFormatTypes formatType)
     {
         if (formatType == CellFormatTypes.Custom)
             return;
 
         Model.CustomFormat = string.Empty;
-        await Changed.InvokeAsync(null);
+        await FormatChanged.InvokeAsync();
+    }
+
+    private async Task OnFormulaChanged()
+    {
+        await FormulaChanged.InvokeAsync();
     }
 
     private async void OnOpenCellLinkModal()

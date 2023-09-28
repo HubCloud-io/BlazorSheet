@@ -115,6 +115,16 @@ public partial class SheetEditPage: ComponentBase
         _sheet.SetSettingsFromCommandPanel(_selectedCells, _selectedCell, _commandPanelModel);
     }
 
+    private void OnFormatChanged()
+    {
+        _sheet.SetFormat(_selectedCells, _commandPanelModel.FormatType, _commandPanelModel.CustomFormat);
+    }
+
+    private void OnFormulaChanged()
+    {
+        _sheet.SetFormula(_selectedCells, _commandPanelModel.InputText);
+    }
+
     private void OnEditSettingsChanged(SheetCellEditSettings editSettings)
     {
         if (_selectedCell == null)
