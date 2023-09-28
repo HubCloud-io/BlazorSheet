@@ -11,11 +11,14 @@
 <SheetCommandPanel Model="@_commandPanelModel"
                    SelectedCellsCount="@SelectedCellsCount"
                    CanCellsBeJoined="@_canCellsBeJoined"
-                   OpenCellLinkModal="() => _sheetComponent.OpenCellLinkModal()"
+                   Changed="OnStyleChanged"
+                   FreezedRowsChanged="OnFreezedRowsChanged"
+                   FreezedColumnsChanged="OnFreezedColumnsChanged"
                    SplitJoinCells="() => _sheetComponent.SplitJoinCells()"
                    Changed="OnStyleChanged"
                    FormatChanged="OnFormatChanged"
                    FormulaChanged="OnFormulaChanged">
+                   OpenCellLinkModal="() =>_sheetComponent.OpenCellLinkModal()">
 </SheetCommandPanel>
 
 <hr />

@@ -1247,35 +1247,20 @@ namespace HubCloud.BlazorSheet.Core.Models
             return true;
         }
 
-        private bool CanFreezedRowsBeSet(int freezedRows, List<CellWithAddress> cellWithAddressList)
+        public bool SetFreezedRows(int freezedRows)
         {
-            foreach (var cell in cellWithAddressList)
-            {
-                var joinedCellsCount = cell.Address.Row + cell.Cell.Rowspan - 1;
+            var result = CanFreezedRowsBeSet(freezedRows);
+            if (!result)
+                return false;
 
-                if (cell.Address.Row <= freezedRows && joinedCellsCount > freezedRows)
-                    return false;
-            }
+            FreezedRows = freezedRows;
 
             return true;
         }
 
-        private bool CanFreezedColumnsBeSet(int freezedColumns, List<CellWithAddress> cellWithAddressList)
+        private bool CanFreezedRowsBeSet(int freezedRows)
         {
-            foreach (var cell in cellWithAddressList)
-            {
-                var joinedCellsCount = cell.Address.Column + cell.Cell.Colspan - 1;
-
-                if (cell.Address.Column <= freezedColumns && joinedCellsCount > freezedColumns)
-                    return false;
-            }
-
-            return true;
-        }
-
-        public bool CheckFreezedRowsAndColumns(SheetCommandPanelModel commandPanelModel)
-        {
-            if (commandPanelModel.FreezedRows > 0)
+            if (freezedRows > 0)
             {
                 var cellWithAddressList = Cells
                     .Where(cell => cell.Rowspan > 1)
@@ -1286,11 +1271,32 @@ namespace HubCloud.BlazorSheet.Core.Models
                     })
                     .ToList();
 
-                if (!CanFreezedRowsBeSet(commandPanelModel.FreezedRows, cellWithAddressList))
-                    return false;
+                foreach (var cell in cellWithAddressList)
+                {
+                    var joinedCellsCount = cell.Address.Row + cell.Cell.Rowspan - 1;
+
+                    if (cell.Address.Row <= freezedRows && joinedCellsCount > freezedRows)
+                        return false;
+                }
             }
 
-            if (commandPanelModel.FreezedColumns > 0)
+            return true;
+        }
+
+        public bool SetFreezedColumns(int freezedColumns)
+        {
+            var result = CanFreezedColumnsBeSet(freezedColumns);
+            if (!result)
+                return false;
+
+            FreezedColumns = freezedColumns;
+
+            return true;
+        }
+
+        private bool CanFreezedColumnsBeSet(int freezedColumns)
+        {
+            if (freezedColumns > 0)
             {
                 var cellWithAddressList = Cells
                     .Where(cell => cell.Colspan > 1)
@@ -1301,8 +1307,13 @@ namespace HubCloud.BlazorSheet.Core.Models
                     })
                     .ToList();
 
-                if (!CanFreezedColumnsBeSet(commandPanelModel.FreezedColumns, cellWithAddressList))
-                    return false;
+                foreach (var cell in cellWithAddressList)
+                {
+                    var joinedCellsCount = cell.Address.Column + cell.Cell.Colspan - 1;
+
+                    if (cell.Address.Column <= freezedColumns && joinedCellsCount > freezedColumns)
+                        return false;
+                }
             }
 
             return true;

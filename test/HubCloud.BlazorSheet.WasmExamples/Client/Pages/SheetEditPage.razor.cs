@@ -62,15 +62,6 @@ namespace HubCloud.BlazorSheet.WasmExamples.Client.Pages
             if (_selectedCell == null)
                 return;
 
-            var result = _sheet.CheckFreezedRowsAndColumns(_commandPanelModel);
-
-            if (!result)
-            {
-                _commandPanelModel.FreezedColumns = _sheet.FreezedColumns;
-                _commandPanelModel.FreezedRows = _sheet.FreezedRows;
-
-                AlertService.Add("Rows or columns can't be freezed", BBComponents.Enums.BootstrapColors.Warning);
-            }
 
             _sheet.SetSettingsFromCommandPanel(_selectedCells, _selectedCell, _commandPanelModel);
         }
@@ -83,6 +74,26 @@ namespace HubCloud.BlazorSheet.WasmExamples.Client.Pages
         private void OnFormulaChanged()
         {
             _sheet.SetFormula(_selectedCells, _commandPanelModel.InputText);
+        }
+
+        private void OnFreezedRowsChanged(int freezedRowsCount)
+        {
+            var result = _sheet.SetFreezedRows(freezedRowsCount);
+            if (!result)
+            {
+                _commandPanelModel.FreezedRows = _sheet.FreezedRows;
+                AlertService.Add("Rows can't be freezed", BBComponents.Enums.BootstrapColors.Warning);
+            }
+        }
+
+        private void OnFreezedColumnsChanged(int freezedColumnsCount)
+        {
+            var result = _sheet.SetFreezedColumns(freezedColumnsCount);
+            if (!result)
+            {
+                _commandPanelModel.FreezedColumns = _sheet.FreezedColumns;
+                AlertService.Add("Columns can't be freezed", BBComponents.Enums.BootstrapColors.Warning);
+            }
         }
     }
 }

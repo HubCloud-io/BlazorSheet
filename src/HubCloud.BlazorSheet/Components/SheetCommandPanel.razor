@@ -10,13 +10,13 @@
         <span class="text-primary">R</span>
         <BbNumberInput TValue="int"
                        @bind-Value="@Model.FreezedRows"
-                       Changed="OnSettingsChanged"
+                       Changed="OnFreezedRowsChanged"
                        HtmlStyle="width:30px;margin-left:5px; text-align:right;">
         </BbNumberInput>
         <span class="text-primary">С</span>
         <BbNumberInput TValue="int"
                        @bind-Value="@Model.FreezedColumns"
-                       Changed="OnSettingsChanged"
+                       Changed="OnFreezedColumnsChanged"
                        HtmlStyle="width:30px;margin-left:5px; text-align:right;">
         </BbNumberInput>
 
