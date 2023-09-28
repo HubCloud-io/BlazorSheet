@@ -773,16 +773,6 @@ public partial class SheetComponent : ComponentBase
                column.IsCollapsed;
     }
 
-    private bool ShouldColumnBeDisplayed(SheetColumn column)
-    {
-        return (!column.IsHidden || _isHiddenCellsVisible) && !column.IsCollapsed;
-    }
-
-    private bool ShouldRowBeDisplayed(SheetRow row)
-    {
-        return (!row.IsHidden || _isHiddenCellsVisible) && !row.IsCollapsed;
-    }
-
     public void OpenCellLinkModal()
     {
         if (_clientX != 0 && _clientY != 0 && _currentCell != null)
@@ -810,18 +800,6 @@ public partial class SheetComponent : ComponentBase
         {
             Sheet.SplitCells(_currentCell);
         }
-    }
-
-    private void RowGroupOpenCloseClick(SheetRow row)
-    {
-        row.IsOpen = !row.IsOpen;
-        Sheet.ChangeChildrenVisibility(row, row.IsOpen);
-    }
-
-    private void ColumnGroupOpenCloseClick(SheetColumn column)
-    {
-        column.IsOpen = !column.IsOpen;
-        Sheet.ChangeChildrenVisibility(column, column.IsOpen);
     }
 
     private string GetHtmlSpacing(int indent)
