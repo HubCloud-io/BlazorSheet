@@ -485,17 +485,9 @@ namespace HubCloud.BlazorSheet.Core.Models
             if (commandPanelModel == null)
                 return;
 
-            foreach (var item in cells)
-            {
-                item.Formula = commandPanelModel.InputText;
-                item.SetFormat(commandPanelModel.FormatType, commandPanelModel.CustomFormat);
-            }
-
             var newStyle = new SheetCellStyle(commandPanelModel);
             SetStyle(cells, newStyle);
             
-            FreezedRows = commandPanelModel.FreezedRows;
-            FreezedColumns = commandPanelModel.FreezedColumns;
             IsProtected = commandPanelModel.SheetProtected;
         }
 
