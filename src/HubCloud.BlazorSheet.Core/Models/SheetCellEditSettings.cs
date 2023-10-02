@@ -12,9 +12,9 @@ namespace HubCloud.BlazorSheet.Core.Models
         public string ItemsSource { get; set; } = string.Empty;
         public int NumberDigits { get; set; }
         public bool Required { get; set; }
-        public string DefaultValue { get; set; }
+        public string DefaultValue { get; set; } = string.Empty;
         public bool AutoGenerate { get; set; }
-        public string AutoGenerateMask { get; set; }
+        public string AutoGenerateMask { get; set; } = string.Empty;
         public CellAutoClearMethods AutoClearMethod { get; set; }
         
 
