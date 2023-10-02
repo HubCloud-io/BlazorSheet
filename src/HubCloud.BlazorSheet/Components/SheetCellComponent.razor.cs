@@ -22,7 +22,7 @@ public partial class SheetCellComponent : ComponentBase
     [Parameter] public SheetColumn Column { get; set; }
 
     [Parameter] public SheetCell Cell { get; set; }
-    
+
     [Parameter] public SheetRegimes Regime { get; set; }
 
     [Parameter] public bool IsHiddenCellsVisible { get; set; }
@@ -36,7 +36,12 @@ public partial class SheetCellComponent : ComponentBase
     [Parameter] public EventCallback<SheetCell> Clicked { get; set; }
 
     public string Id => $"cell_{Cell.Uid}";
-    
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        Console.WriteLine($"{DateTime.Now:yyyy-MM-dd:hh:mm:ss.fff} - Cell {Cell.Value} Rendered.");
+    }
+
     private async Task OnCellClick(MouseEventArgs e, SheetCell cell)
     {
         await Clicked.InvokeAsync(Cell);
@@ -50,7 +55,7 @@ public partial class SheetCellComponent : ComponentBase
             {
                 return;
             }
-            
+
             var jsCallService = new JsCallService(JsRuntime);
             var domRect = await jsCallService.GetElementCoordinates(Id);
 
@@ -60,9 +65,9 @@ public partial class SheetCellComponent : ComponentBase
             var textInputEditSettings = new SheetCellEditSettings()
             {
                 ControlKind = CellControlKinds.TextInput,
-                CellDataType = (int)CellDataTypes.String,
+                CellDataType = (int) CellDataTypes.String,
             };
-            
+
             var cellEditInfo = new CellEditInfo()
             {
                 DomRect = domRect,
@@ -94,10 +99,9 @@ public partial class SheetCellComponent : ComponentBase
                 EditSettings = editSettings,
                 Cell = cell,
             };
-            
+
             await StartEdit.InvokeAsync(cellEditInfo);
         }
-        
     }
 
     private string CellStyle(SheetRow row, SheetColumn column, SheetCell cell)
@@ -111,7 +115,7 @@ public partial class SheetCellComponent : ComponentBase
 
         if (cell.ValidationFailed)
             return result += " hc-sheet-cell__non-valid";
-        
+
         if (SelectedIdentifiers.Contains(cell.Uid))
             return result += " hc-sheet-cell__active";
 
@@ -135,7 +139,6 @@ public partial class SheetCellComponent : ComponentBase
 
         switch (controlKind)
         {
-           
             case CellControlKinds.TextInput:
                 presentation = "T";
                 break;

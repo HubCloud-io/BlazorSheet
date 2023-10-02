@@ -1,10 +1,10 @@
-﻿@page "/SheetRenderPage"
+﻿@page "/SheetViewPage"
 
 @using BlazorSheet.Components
 @using BBComponents.Components
 @using HubCloud.BlazorSheet.Core.Enums
 
-<h3>SheetRenderPage</h3>
+<h3>SheetViewPage</h3>
 <hr/>
 <div class="row">
     <div class="col-sm-2">
@@ -28,13 +28,13 @@
     <div class="row">
         <div class="col-sm-12">
 
-            <HubCloud.BlazorSheet.Components.SheetComponent
+            <HubCloud.BlazorSheet.Components.SheetViewComponent
                 IsVirtualizationEnabled = "@_isVirtualizationUsed"
                 Sheet="@_sheet"
                 MaxHeight="500px"
                 MaxWidth="1000px"
                 Regime="SheetRegimes.InputForm">
-            </HubCloud.BlazorSheet.Components.SheetComponent>
+            </HubCloud.BlazorSheet.Components.SheetViewComponent>
 
         </div>
     </div>
