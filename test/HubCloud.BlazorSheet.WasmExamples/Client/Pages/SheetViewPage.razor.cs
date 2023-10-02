@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Components;
 
 namespace HubCloud.BlazorSheet.WasmExamples.Client.Pages;
 
-public partial class SheetRenderPage: ComponentBase
+public partial class SheetViewPage: ComponentBase
 {
     private int _rowsCount = 2000;
     private int _columnsCount = 20;
@@ -12,7 +12,7 @@ public partial class SheetRenderPage: ComponentBase
     
     private Sheet _sheet;
     private SheetSettings _sheetSettings;
-
+    
     protected override void OnAfterRender(bool firstRender)
     {
         Console.WriteLine($"{DateTime.Now:yyyy-MM-dd:hh:mm:ss.fff} - Sheet Rendered.");
@@ -29,7 +29,5 @@ public partial class SheetRenderPage: ComponentBase
         
         Console.WriteLine($"{DateTime.Now:yyyy-MM-dd:hh:mm:ss.fff} - End sheet build.");
     }
-    
-    
     
 }
