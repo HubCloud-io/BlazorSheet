@@ -39,7 +39,9 @@ public partial class SheetCellComponent : ComponentBase
 
     protected override void OnAfterRender(bool firstRender)
     {
+#if (DEBUG)
         Console.WriteLine($"{DateTime.Now:yyyy-MM-dd:hh:mm:ss.fff} - Cell {Cell.Value} Rendered.");
+#endif
     }
 
     private async Task OnCellClick(MouseEventArgs e, SheetCell cell)
