@@ -150,7 +150,9 @@ public class SheetTests
     [TestCase(1, 0, 2, 2, 0)]
     [TestCase(1, 1, 0, 2, 0)]
     [TestCase(1, 1, 2, 0, 0)]
-    [TestCase(2, 2, 6, 6, 36)]
+    [TestCase(2, 2, 6, 6, 25)]
+    [TestCase(2, 2, 3, 4, 6)]
+    [TestCase(1, 2, 1, 4, 3)]
     public void GetCellsByRange_ReturnListCells(int fromRow, int fromCol, int toRow, int toCol, int expectedCount)
     {
         var sheet = new Sheet(10, 10);
