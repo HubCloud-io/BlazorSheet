@@ -31,7 +31,7 @@ public partial class SheetCellComponent : ComponentBase
 
     [Parameter] public CellStyleBuilder StyleBuilder { get; set; }
 
-    [Parameter] public EventCallback<CellEditInfo> StartEdit { get; set; }
+    [Parameter] public EventCallback<SheetCell> StartEdit { get; set; }
 
     [Parameter] public EventCallback<SheetCell> Clicked { get; set; }
 
@@ -51,59 +51,7 @@ public partial class SheetCellComponent : ComponentBase
 
     private async Task OnCellDblClick(MouseEventArgs e, SheetCell cell)
     {
-        if (Regime == SheetRegimes.Design)
-        {
-            if (cell.EditSettingsUid.HasValue)
-            {
-                return;
-            }
-
-            var jsCallService = new JsCallService(JsRuntime);
-            var domRect = await jsCallService.GetElementCoordinates(Id);
-
-            if (domRect == null)
-                return;
-
-            var textInputEditSettings = new SheetCellEditSettings()
-            {
-                ControlKind = CellControlKinds.TextInput,
-                CellDataType = (int) CellDataTypes.String,
-            };
-
-            var cellEditInfo = new CellEditInfo()
-            {
-                DomRect = domRect,
-                EditSettings = textInputEditSettings,
-                Cell = cell,
-            };
-
-            await StartEdit.InvokeAsync(cellEditInfo);
-        }
-        else if (Regime == SheetRegimes.InputForm)
-        {
-            if (!cell.EditSettingsUid.HasValue)
-            {
-                return;
-            }
-
-            var jsCallService = new JsCallService(JsRuntime);
-            var domRect = await jsCallService.GetElementCoordinates(Id);
-
-            if (domRect == null)
-                return;
-
-
-            var editSettings = Sheet.GetEditSettings(cell);
-
-            var cellEditInfo = new CellEditInfo()
-            {
-                DomRect = domRect,
-                EditSettings = editSettings,
-                Cell = cell,
-            };
-
-            await StartEdit.InvokeAsync(cellEditInfo);
-        }
+        await StartEdit.InvokeAsync(cell);
     }
 
     private string CellStyle(SheetRow row, SheetColumn column, SheetCell cell)

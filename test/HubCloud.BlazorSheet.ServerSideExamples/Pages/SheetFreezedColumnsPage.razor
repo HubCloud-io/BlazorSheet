@@ -1,0 +1,23 @@
+﻿@page "/SheetFreezedColumnsPage"
+@using HubCloud.BlazorSheet.Core.Enums
+<h3>SheetFreezedColumnsPage</h3>
+
+<hr/>
+
+@if (_sheet != null)
+{
+    <div class="row">
+        <div class="col-sm-12">
+
+            <HubCloud.BlazorSheet.Components.SheetComponent
+                ComboBoxDataProviderFactory="@_dataProviderFactory"
+                IsVirtualizationEnabled = "true"
+                Sheet="@_sheet"
+                MaxHeight="500px"
+                MaxWidth="1000px"
+                Regime="SheetRegimes.InputForm">
+            </HubCloud.BlazorSheet.Components.SheetComponent>
+
+        </div>
+    </div>
+}
