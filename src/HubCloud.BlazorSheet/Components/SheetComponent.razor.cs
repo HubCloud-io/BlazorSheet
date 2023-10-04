@@ -237,26 +237,9 @@ public partial class SheetComponent : ComponentBase
         }
     }
 
-    private async Task OnCellStartEdit(CellEditInfo args)
+    private async Task OnCellStartEdit(SheetCell cell)
     {
-
-        await StartCellEditAsync(args.Cell);
-
-        // _cellEditInfo = args;
-        // if (ComboBoxDataProviderFactory != null)
-        // {
-        //     var itemsSource = _cellEditInfo.EditSettings.ItemsSource;
-        //     if (!string.IsNullOrEmpty(itemsSource))
-        //     {
-        //         var currentCellAddress = Sheet.CellAddress(args.Cell);
-        //         var helper = new ItemsSourceParametersHelper(Sheet, itemsSource, currentCellAddress.Row,
-        //             currentCellAddress.Column);
-        //         itemsSource = helper.Execute();
-        //     }
-        //
-        //     _cellEditInfo.ComboBoxDataProvider =
-        //         ComboBoxDataProviderFactory.Create(_cellEditInfo.EditSettings.CellDataType, itemsSource);
-        // }
+        await StartCellEditAsync(cell);
     }
 
     private void OnRowContextMenu(MouseEventArgs e, SheetRow row)
