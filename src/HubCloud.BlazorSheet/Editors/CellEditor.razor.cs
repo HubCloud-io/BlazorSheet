@@ -33,7 +33,7 @@ public partial class CellEditor : ComponentBase
             var topStr = CellEditInfo.DomRect.Top.ToString(CultureInfo.InvariantCulture);
             var leftStr = CellEditInfo.DomRect.Left.ToString(CultureInfo.InvariantCulture);
             
-            var style = $"border: 1px solid blue;  position: fixed; width: " +
+            var style = $"border: 1px solid blue;  position: fixed; z-index:100000; width: " +
                         $"{width}px; height: {height}px; top: {topStr}px; left: {leftStr}px;";
             
             return style;

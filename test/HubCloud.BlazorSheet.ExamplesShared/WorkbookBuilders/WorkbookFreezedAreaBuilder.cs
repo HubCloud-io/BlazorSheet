@@ -10,7 +10,7 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
             var sheetSettings = new SheetSettings();
             sheetSettings.RowsCount = 10;
             sheetSettings.ColumnsCount = 10;
-            //sheetSettings.FreezedColumns = 4;
+            sheetSettings.FreezedColumns = 4;
             
             var sheet = new Sheet(sheetSettings);
             var column = sheet.GetColumn(1);
