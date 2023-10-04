@@ -36,6 +36,17 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
             cell = sheet.GetCell(1, 2);
             sheet.SetEditSettings(cell, editSettings);
             sheet.SetStyle(cell, editStyle);
+
+            cell = sheet.GetCell(2, 1);
+            cell.Value = "Date start";
+
+            var dateEditSettings = new SheetCellEditSettings()
+            {
+                ControlKind = CellControlKinds.DateInput,
+            };
+            cell = sheet.GetCell(2, 2);
+            sheet.SetEditSettings(cell, dateEditSettings);
+            sheet.SetStyle(cell, editStyle);
             
             sheet.PrepareCellText();
             
