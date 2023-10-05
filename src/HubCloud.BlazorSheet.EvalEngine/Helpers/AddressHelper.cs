@@ -33,27 +33,76 @@ namespace HubCloud.BlazorSheet.EvalEngine.Helpers
             return resultAddress.ToString();
         }
 
-        public static string ConvertR1C1ToA1Address(string sheetAddress)
+        public static string ConvertR1C1ToA1Address(string sheetAddress, int currentRow, int currentCol)
         {
             if (string.IsNullOrEmpty(sheetAddress) || !AddressRegex.IsMatch(sheetAddress))
                 return sheetAddress;
-            
-            var arr = sheetAddress
+
+            var address = ProcessR1C1Address(sheetAddress, currentRow, currentCol);
+            var arr = address
                 .TrimStart('"')
                 .TrimEnd('"')
                 .Split(new[] {'R', 'C', 'r', 'c'}, StringSplitOptions.RemoveEmptyEntries);
             
             if (arr.Length != 2)
-                return sheetAddress;
+                return address;
 
             var row = arr[0];
             var col = arr[1];
 
-            var address = $"{GetColumnLetter(col)}{row}";
-            return address;
+            return $"{GetColumnLetter(col)}{row}";
+        }
+
+        public static string ProcessR1C1Address(string sheetAddress, int currentRow, int currentCol)
+        {
+            var rcValues = GetRCValues(sheetAddress);
+            
+            var r = ProcessValues(rcValues.Item1, currentRow);
+            var c = ProcessValues(rcValues.Item2, currentCol);
+            
+            return $"R{r}C{c}";
         }
 
         #region private methods
+        private static string ProcessValues(string value, int current)
+        {
+            // RC1 case
+            if (string.IsNullOrEmpty(value))
+                return current.ToString();
+            
+            // R[1]C1 case
+            if (value.Contains("[") && value.Contains("]"))
+            {
+                var trimmedValue = value.Trim(new[] {'[', ']'});
+                if (!int.TryParse(trimmedValue, out var intValue))
+                    return value;
+
+                return (current + intValue).ToString();
+            }
+
+            return value;
+        }
+
+        /// <summary>
+        /// item1 - row, item2 - col
+        /// </summary>
+        /// <param name="addressR1C1"></param>
+        /// <returns></returns>
+        private static Tuple<string, string> GetRCValues(string addressR1C1)
+        {
+            var address = addressR1C1?.ToUpper().Trim().Trim('\"');
+            if (string.IsNullOrEmpty(address) || !address.Contains("R") || !address.Contains("C"))
+                return null;
+
+            var cIndex = address.IndexOf("C", StringComparison.InvariantCulture);
+            var rVal = address.Substring(0, cIndex).Trim('R');
+            var cVal = string.Empty;
+            if (cIndex < address.Length - 1)
+                cVal = address.Substring(cIndex, address.Length - cIndex).Trim('C');
+
+            return new Tuple<string, string>(rVal, cVal);
+        }
+        
         private static string GetColumnNumber(string columnName)
         {
             double result = 0;
