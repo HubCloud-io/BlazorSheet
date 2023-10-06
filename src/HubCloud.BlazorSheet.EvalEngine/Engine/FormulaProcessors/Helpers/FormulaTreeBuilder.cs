@@ -49,7 +49,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaProcessors.Helpers
             while (index != 0)
             {
                 if ((formula[index] == 'C' || formula[index] == 'c') && index < i - 1)
-                    return true;
+                    return false;
 
                 st.Append(formula[index]);
                 if (formula[index] == 'R' || formula[index] == 'r')
