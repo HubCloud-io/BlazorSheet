@@ -127,92 +127,134 @@ namespace HubCloud.BlazorSheet.Core.Models
         {
             return PerformComparisonOperation(v1,
                 v2,
+                (a, b) => a > b,
                 (a, b) => a > b);
         }
 
         public static UniversalValue operator >(UniversalValue v1, object v2)
         {
-            return PerformComparisonOperation(v1, new UniversalValue(v2), (a, b) => a > b);
+            return PerformComparisonOperation(v1,
+                new UniversalValue(v2), (a, b) => a > b,
+                (a, b) => a > b);
         }
 
         public static UniversalValue operator >(object v1, UniversalValue v2)
         {
-            return PerformComparisonOperation(new UniversalValue(v1), v2, (a, b) => a > b);
+            return PerformComparisonOperation(new UniversalValue(v1),
+                v2,
+                (a, b) => a > b,
+                (a, b) => a > b);
         }
 
         public static UniversalValue operator <(UniversalValue v1, UniversalValue v2)
         {
-            return PerformComparisonOperation(v1, v2, (a, b) => a < b);
+            return PerformComparisonOperation(v1,
+                v2,
+                (a, b) => a < b,
+                (a, b) => a < b);
         }
 
         public static UniversalValue operator <(UniversalValue v1, object v2)
         {
-            return PerformComparisonOperation(v1, new UniversalValue(v2), (a, b) => a < b);
+            return PerformComparisonOperation(v1,
+                new UniversalValue(v2),
+                (a, b) => a < b,
+                (a, b) => a < b);
         }
 
         public static UniversalValue operator <(object v1, UniversalValue v2)
         {
-            return PerformComparisonOperation(new UniversalValue(v1), v2, (a, b) => a < b);
+            return PerformComparisonOperation(new UniversalValue(v1),
+                v2, (a, b) => a < b,
+                (a, b) => a < b);
         }
 
         public static UniversalValue operator >=(UniversalValue v1, UniversalValue v2)
         {
-            return PerformComparisonOperation(v1, v2, (a, b) => a >= b);
+            return PerformComparisonOperation(v1,
+                v2, (a, b) => a >= b,
+                (a, b) => a >= b);
         }
 
         public static UniversalValue operator >=(UniversalValue v1, object v2)
         {
-            return PerformComparisonOperation(v1, new UniversalValue(v2), (a, b) => a >= b);
+            return PerformComparisonOperation(v1,
+                new UniversalValue(v2),
+                (a, b) => a >= b,
+                (a, b) => a >= b);
         }
 
         public static UniversalValue operator >=(object v1, UniversalValue v2)
         {
-            return PerformComparisonOperation(new UniversalValue(v1), v2, (a, b) => a >= b);
+            return PerformComparisonOperation(new UniversalValue(v1),
+                v2, (a, b) => a >= b,
+                (a, b) => a >= b);
         }
 
         public static UniversalValue operator <=(UniversalValue v1, UniversalValue v2)
         {
-            return PerformComparisonOperation(v1, v2, (a, b) => a <= b);
+            return PerformComparisonOperation(v1,
+                v2,
+                (a, b) => a <= b,
+                (a, b) => a <= b);
         }
 
         public static UniversalValue operator <=(UniversalValue v1, object v2)
         {
-            return PerformComparisonOperation(v1, new UniversalValue(v2), (a, b) => a <= b);
+            return PerformComparisonOperation(v1,
+                new UniversalValue(v2), (a, b) => a <= b,
+                (a, b) => a <= b);
         }
 
         public static UniversalValue operator <=(object v1, UniversalValue v2)
         {
-            return PerformComparisonOperation(new UniversalValue(v1), v2, (a, b) => a <= b);
+            return PerformComparisonOperation(new UniversalValue(v1),
+                v2, (a, b) => a <= b,
+                (a, b) => a <= b);
         }
 
         public static UniversalValue operator ==(UniversalValue v1, UniversalValue v2)
         {
-            return PerformComparisonOperation(v1, v2, (a, b) => a == b);
+            return PerformComparisonOperation(v1,
+                v2,
+                (a, b) => a == b,
+                (a, b) => a == b);
         }
 
         public static UniversalValue operator ==(UniversalValue v1, object v2)
         {
-            return PerformComparisonOperation(v1, new UniversalValue(v2), (a, b) => a == b);
+            return PerformComparisonOperation(v1, 
+                new UniversalValue(v2), 
+                (a, b) => a == b, 
+                (a, b) => a == b);
         }
 
         public static UniversalValue operator ==(object v1, UniversalValue v2)
         {
-            return PerformComparisonOperation(new UniversalValue(v1), v2, (a, b) => a == b);
+            return PerformComparisonOperation(new UniversalValue(v1), 
+                v2, (a, b) => a == b, 
+                (a, b) => a == b);
         }
 
         public static UniversalValue operator !=(UniversalValue v1, UniversalValue v2)
         {
-            return PerformComparisonOperation(v1, v2, (a, b) => a != b);
+            return PerformComparisonOperation(v1, 
+                v2, (a, b) => a != b, 
+                (a, b) => a != b);
         }
 
         public static UniversalValue operator !=(UniversalValue v1, object v2)
         {
-            return PerformComparisonOperation(v1, new UniversalValue(v2), (a, b) => a != b);
+            return PerformComparisonOperation(v1, 
+                new UniversalValue(v2), (a, b) => a != b, 
+                (a, b) => a != b);
         }
 
         public static UniversalValue operator !=(object v1, UniversalValue v2)
         {
-            return PerformComparisonOperation(new UniversalValue(v1), v2, (a, b) => a != b);
+            return PerformComparisonOperation(new UniversalValue(v1), 
+                v2, (a, b) => a != b, 
+                (a, b) => a != b);
         }
 
         public static UniversalValue operator &(UniversalValue v1, UniversalValue v2)
@@ -392,13 +434,12 @@ namespace HubCloud.BlazorSheet.Core.Models
 
         public bool ToBool()
         {
-            if(Value is bool boolValue)
+            if (Value is bool boolValue)
             {
                 return boolValue;
             }
 
             return IsNotEmptyFunction.Eval(Value);
-
         }
 
         public UniversalValue AddQuarters(int quarter)
@@ -504,7 +545,6 @@ namespace HubCloud.BlazorSheet.Core.Models
             Func<decimal, decimal, object> decimalOperation,
             Func<int, int, object> intOperation)
         {
-          
             if (string.IsNullOrEmpty(v1.Value?.ToString()))
             {
                 return v2;
@@ -536,12 +576,12 @@ namespace HubCloud.BlazorSheet.Core.Models
                 {
                     return new UniversalValue(decimalOperation((decimal) v1.Value, (decimal) v2Int));
                 }
-                
+
                 if (v2.Value is float v2Float)
                 {
                     return new UniversalValue(decimalOperation((decimal) v1.Value, (decimal) v2Float));
                 }
-                
+
                 if (v2.Value is double v2Double)
                 {
                     return new UniversalValue(decimalOperation((decimal) v1.Value, (decimal) v2Double));
@@ -560,28 +600,80 @@ namespace HubCloud.BlazorSheet.Core.Models
         }
 
         private static UniversalValue PerformComparisonOperation(UniversalValue v1, UniversalValue v2,
-            Func<decimal, decimal, bool> func)
+            Func<decimal, decimal, bool> decimalOperation,
+            Func<int, int, bool> intOperation)
         {
-            if (v1.Value == null || v2.Value == null)
+            // if (v1.Value == null || v2.Value == null)
+            //     return new UniversalValue(false);
+            //
+            // if (v1.Value is decimal || v2.Value is decimal)
+            // {
+            //     if (v1.Value is int v1Int)
+            //     {
+            //         return new UniversalValue(decimalOperation(v1Int, (decimal) v2.Value));
+            //     }
+            //     else if (v2.Value is int v2Int)
+            //     {
+            //         return new UniversalValue(decimalOperation((decimal) v1.Value, v2Int));
+            //     }
+            //     else
+            //     {
+            //         return new UniversalValue(decimalOperation((decimal) v1.Value, (decimal) v2.Value));
+            //     }
+            // }
+            
+            if (string.IsNullOrEmpty(v1.Value?.ToString()))
+            {
                 return new UniversalValue(false);
+            }
 
+            if (string.IsNullOrEmpty(v2.Value?.ToString()))
+            {
+                return new UniversalValue(false);
+            }
+            
             if (v1.Value is decimal || v2.Value is decimal)
             {
                 if (v1.Value is int v1Int)
                 {
-                    return new UniversalValue(func(v1Int, (decimal) v2.Value));
+                    return new UniversalValue(decimalOperation((decimal) v1Int, (decimal) v2.Value));
                 }
-                else if (v2.Value is int v2Int)
+
+                if (v1.Value is float v1Float)
                 {
-                    return new UniversalValue(func((decimal) v1.Value, v2Int));
+                    return new UniversalValue(decimalOperation((decimal) v1Float, (decimal) v2.Value));
                 }
-                else
+
+                if (v1.Value is double v1Double)
                 {
-                    return new UniversalValue(func((decimal) v1.Value, (decimal) v2.Value));
+                    return new UniversalValue(decimalOperation((decimal) v1Double, (decimal) v2.Value));
                 }
+
+                if (v2.Value is int v2Int)
+                {
+                    return new UniversalValue(decimalOperation((decimal) v1.Value, (decimal) v2Int));
+                }
+
+                if (v2.Value is float v2Float)
+                {
+                    return new UniversalValue(decimalOperation((decimal) v1.Value, (decimal) v2Float));
+                }
+
+                if (v2.Value is double v2Double)
+                {
+                    return new UniversalValue(decimalOperation((decimal) v1.Value, (decimal) v2Double));
+                }
+
+
+                return new UniversalValue(decimalOperation((decimal) v1.Value, (decimal) v2.Value));
             }
 
-            return new UniversalValue(v1.Value?.ToString() + v2.Value?.ToString());
+            if (v1.Value is int || v2.Value is int)
+            {
+                return new UniversalValue(intOperation((int) v1.Value, (int) v2.Value));
+            }
+
+            return new UniversalValue(false);
         }
     }
 }
