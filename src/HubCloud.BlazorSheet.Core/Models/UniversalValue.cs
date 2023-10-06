@@ -128,6 +128,7 @@ namespace HubCloud.BlazorSheet.Core.Models
             return PerformComparisonOperation(v1,
                 v2,
                 (a, b) => a > b,
+                (a, b) => a > b, 
                 (a, b) => a > b);
         }
 
@@ -135,6 +136,7 @@ namespace HubCloud.BlazorSheet.Core.Models
         {
             return PerformComparisonOperation(v1,
                 new UniversalValue(v2), (a, b) => a > b,
+                (a, b) => a > b, 
                 (a, b) => a > b);
         }
 
@@ -143,6 +145,7 @@ namespace HubCloud.BlazorSheet.Core.Models
             return PerformComparisonOperation(new UniversalValue(v1),
                 v2,
                 (a, b) => a > b,
+                (a, b) => a > b, 
                 (a, b) => a > b);
         }
 
@@ -151,6 +154,7 @@ namespace HubCloud.BlazorSheet.Core.Models
             return PerformComparisonOperation(v1,
                 v2,
                 (a, b) => a < b,
+                (a, b) => a < b, 
                 (a, b) => a < b);
         }
 
@@ -159,6 +163,7 @@ namespace HubCloud.BlazorSheet.Core.Models
             return PerformComparisonOperation(v1,
                 new UniversalValue(v2),
                 (a, b) => a < b,
+                (a, b) => a < b, 
                 (a, b) => a < b);
         }
 
@@ -166,6 +171,7 @@ namespace HubCloud.BlazorSheet.Core.Models
         {
             return PerformComparisonOperation(new UniversalValue(v1),
                 v2, (a, b) => a < b,
+                (a, b) => a < b, 
                 (a, b) => a < b);
         }
 
@@ -173,6 +179,7 @@ namespace HubCloud.BlazorSheet.Core.Models
         {
             return PerformComparisonOperation(v1,
                 v2, (a, b) => a >= b,
+                (a, b) => a >= b, 
                 (a, b) => a >= b);
         }
 
@@ -181,6 +188,7 @@ namespace HubCloud.BlazorSheet.Core.Models
             return PerformComparisonOperation(v1,
                 new UniversalValue(v2),
                 (a, b) => a >= b,
+                (a, b) => a >= b, 
                 (a, b) => a >= b);
         }
 
@@ -188,6 +196,7 @@ namespace HubCloud.BlazorSheet.Core.Models
         {
             return PerformComparisonOperation(new UniversalValue(v1),
                 v2, (a, b) => a >= b,
+                (a, b) => a >= b, 
                 (a, b) => a >= b);
         }
 
@@ -196,6 +205,7 @@ namespace HubCloud.BlazorSheet.Core.Models
             return PerformComparisonOperation(v1,
                 v2,
                 (a, b) => a <= b,
+                (a, b) => a <= b, 
                 (a, b) => a <= b);
         }
 
@@ -203,6 +213,7 @@ namespace HubCloud.BlazorSheet.Core.Models
         {
             return PerformComparisonOperation(v1,
                 new UniversalValue(v2), (a, b) => a <= b,
+                (a, b) => a <= b, 
                 (a, b) => a <= b);
         }
 
@@ -210,6 +221,7 @@ namespace HubCloud.BlazorSheet.Core.Models
         {
             return PerformComparisonOperation(new UniversalValue(v1),
                 v2, (a, b) => a <= b,
+                (a, b) => a <= b, 
                 (a, b) => a <= b);
         }
 
@@ -218,6 +230,7 @@ namespace HubCloud.BlazorSheet.Core.Models
             return PerformComparisonOperation(v1,
                 v2,
                 (a, b) => a == b,
+                (a, b) => a == b, 
                 (a, b) => a == b);
         }
 
@@ -226,6 +239,7 @@ namespace HubCloud.BlazorSheet.Core.Models
             return PerformComparisonOperation(v1, 
                 new UniversalValue(v2), 
                 (a, b) => a == b, 
+                (a, b) => a == b, 
                 (a, b) => a == b);
         }
 
@@ -233,6 +247,7 @@ namespace HubCloud.BlazorSheet.Core.Models
         {
             return PerformComparisonOperation(new UniversalValue(v1), 
                 v2, (a, b) => a == b, 
+                (a, b) => a == b, 
                 (a, b) => a == b);
         }
 
@@ -240,6 +255,7 @@ namespace HubCloud.BlazorSheet.Core.Models
         {
             return PerformComparisonOperation(v1, 
                 v2, (a, b) => a != b, 
+                (a, b) => a != b, 
                 (a, b) => a != b);
         }
 
@@ -247,6 +263,7 @@ namespace HubCloud.BlazorSheet.Core.Models
         {
             return PerformComparisonOperation(v1, 
                 new UniversalValue(v2), (a, b) => a != b, 
+                (a, b) => a != b, 
                 (a, b) => a != b);
         }
 
@@ -254,6 +271,7 @@ namespace HubCloud.BlazorSheet.Core.Models
         {
             return PerformComparisonOperation(new UniversalValue(v1), 
                 v2, (a, b) => a != b, 
+                (a, b) => a != b, 
                 (a, b) => a != b);
         }
 
@@ -288,17 +306,34 @@ namespace HubCloud.BlazorSheet.Core.Models
 
         public static bool operator true(UniversalValue uv)
         {
-            if (bool.TryParse(uv.ToString(), out bool valBool))
-                return valBool;
-
-            return false;
+            // if (bool.TryParse(uv.ToString(), out bool valBool))
+            //     return valBool;
+            //
+            // return false;
+            return uv.ToBool();
         }
-
+        
         public static bool operator false(UniversalValue uv)
         {
             return false;
+           //return uv.ToBool();
         }
-
+        
+        public static implicit operator bool(UniversalValue uv)
+        {
+            if (uv.Value is bool boolValue)
+            {
+                return boolValue;
+            }
+        
+            return IsNotEmptyFunction.Eval(uv.Value);
+        }
+        
+        public static implicit operator UniversalValue(bool boolValue)
+        {
+            return new UniversalValue(boolValue);
+        }
+        
         public UniversalValue Substring(int startIndex)
         {
             var stringValue = ToString();
@@ -601,26 +636,9 @@ namespace HubCloud.BlazorSheet.Core.Models
 
         private static UniversalValue PerformComparisonOperation(UniversalValue v1, UniversalValue v2,
             Func<decimal, decimal, bool> decimalOperation,
-            Func<int, int, bool> intOperation)
+            Func<int, int, bool> intOperation, 
+            Func<DateTime, DateTime, bool> dateTimeOperation)
         {
-            // if (v1.Value == null || v2.Value == null)
-            //     return new UniversalValue(false);
-            //
-            // if (v1.Value is decimal || v2.Value is decimal)
-            // {
-            //     if (v1.Value is int v1Int)
-            //     {
-            //         return new UniversalValue(decimalOperation(v1Int, (decimal) v2.Value));
-            //     }
-            //     else if (v2.Value is int v2Int)
-            //     {
-            //         return new UniversalValue(decimalOperation((decimal) v1.Value, v2Int));
-            //     }
-            //     else
-            //     {
-            //         return new UniversalValue(decimalOperation((decimal) v1.Value, (decimal) v2.Value));
-            //     }
-            // }
             
             if (string.IsNullOrEmpty(v1.Value?.ToString()))
             {
@@ -671,6 +689,11 @@ namespace HubCloud.BlazorSheet.Core.Models
             if (v1.Value is int || v2.Value is int)
             {
                 return new UniversalValue(intOperation((int) v1.Value, (int) v2.Value));
+            }
+
+            if (v1.Value is DateTime && v2.Value is DateTime)
+            {
+                return new UniversalValue(dateTimeOperation((DateTime)v1.Value, (DateTime)v2.Value));
             }
 
             return new UniversalValue(false);
