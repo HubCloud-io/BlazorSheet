@@ -39,47 +39,16 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.FormulaProcessors.Helpers
 
         private bool IsAddressWithMinus(int i, StringBuilder formula)
         {
-            if (formula[i] != '-')
+            if (formula[i] != '-' || i == 0 || i == formula.Length - 1)
                 return false;
 
-            // backward from minus
-            var index = i;
-            var st = new StringBuilder();
-            var isR = false;
-            while (index != 0)
-            {
-                if ((formula[index] == 'C' || formula[index] == 'c') && index < i - 1)
-                    return false;
+            var prevSymbol = formula[i - 1];
+            var nextSymbol = formula[i + 1];
 
-                st.Append(formula[index]);
-                if (formula[index] == 'R' || formula[index] == 'r')
-                {
-                    isR = true;
-                    break;
-                }
-
-                index--;
-            }
-
-            if (!isR) return true;
-
-            st = Reverse(st);
-
-            // forward from minus
-            index = i + 1;
-            while (index != formula.Length)
-            {
-                if (_operatorChars.Contains(formula[index]))
-                {
-                    break;
-                }
-
-                st.Append(formula[index]);
-                index++;
-            }
-
-            var type = GetStatementType(st);
-            return type == ElementType.Address;
+            if (prevSymbol == '[' && int.TryParse(nextSymbol.ToString(), out _))
+                return true;
+            
+            return false;
         }
 
         public StringBuilder Reverse(StringBuilder sb)
