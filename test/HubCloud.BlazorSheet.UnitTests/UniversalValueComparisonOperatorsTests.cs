@@ -11,6 +11,29 @@ namespace HubCloud.BlazorSheet.UnitTests
     [TestFixture]
     public class UniversalValueComparisonOperatorsTests
     {
+        
+        [Test]
+        public void Equal_UvIndAndUvInt_BoolValue()
+        {
+            var uValue1 = new UniversalValue(1);
+            var uValue2 = new UniversalValue(1);
+
+            var result = uValue1 == uValue2;
+
+            Assert.AreEqual(true, result.Value);
+        }
+        
+        [Test]
+        public void Equal_UvIndAndInt_BoolValue()
+        {
+            var uValue1 = new UniversalValue(1);
+            var value2 = 1;
+
+            var result = uValue1 == value2;
+
+            Assert.AreEqual(true, result.Value);
+        }
+        
         [Test]
         public void MoreThan_DecimalAndDecimal_MoreThanValue()
         {
