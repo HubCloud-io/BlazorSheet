@@ -149,14 +149,14 @@ namespace HubCloud.BlazorSheet.Core.Models
                 string.IsNullOrEmpty(Format))
                 return;
 
-            if (DateTime.TryParse(StringValue, out var date))
-                Text = date.ToString(Format);
-            else if (decimal.TryParse(
+            if (decimal.TryParse(
                 StringValue.Replace(',', '.'),
                 NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingSign,
                 new NumberFormatInfo { NumberDecimalSeparator = "." },
                 out var decimalValue))
                 Text = decimalValue.ToString(Format, CultureInfo.InvariantCulture);
+            else if (DateTime.TryParse(StringValue, out var date))
+                Text = date.ToString(Format);
         }
 
         public void SetFormat(CellFormatTypes formatType, string customFormat)
