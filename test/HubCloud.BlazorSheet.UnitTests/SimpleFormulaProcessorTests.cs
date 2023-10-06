@@ -24,16 +24,16 @@ public class SimpleFormulaProcessorTests
     [TestCase(@"FOO(FOO2(FOO3(""R1C1"") + FOO2(""R1C1"" + ""R1C1"")))",
               @"FOO(FOO2(FOO3(VAL(""R1C1"")) + FOO2(VAL(""R1C1"") + VAL(""R1C1""))))")]
     [TestCase(@"PascalCaseName(""R1C1"", ""R1C2"")", @"PascalCaseName(VAL(""R1C1""), VAL(""R1C2""))")]
-    [TestCase("R-1C10 - R-1C11", @"VAL(""R-1C10"") - VAL(""R-1C11"")")]
-    [TestCase("(R8C10 + R-1C-1) - R8C10",
-              @"(VAL(""R8C10"") + VAL(""R-1C-1"")) - VAL(""R8C10"")")]
+    [TestCase("R[-1]C10 - R[-1]C11", @"VAL(""R[-1]C10"") - VAL(""R[-1]C11"")")]
+    [TestCase("(R8C10 + R[-1]C[-1]) - R8C10",
+              @"(VAL(""R8C10"") + VAL(""R[-1]C[-1]"")) - VAL(""R8C10"")")]
     [TestCase(@"VAL(""R8C10"").ToUpper()", @"VAL(""R8C10"").ToUpper()")]
     [TestCase(@"VAL(""R8C10"").IndexOf(""w"")", @"VAL(""R8C10"").IndexOf(""w"")")]
     [TestCase(@"VAL(""R34C3"").Day", @"VAL(""R34C3"").Day")]
     [TestCase(@"VAL(""R57C3"") && VAL(""R57C4"")", @"VAL(""R57C3"") && VAL(""R57C4"")")]
     [TestCase(@"(VAL(""R55C3"") < 5) + (VAL(""R55C4"") > 10)",
               @"(VAL(""R55C3"") < 5) + (VAL(""R55C4"") > 10)")]
-    [TestCase(@"VAL(""R8C10"") + VAL(""R-1C10"") && VAL(""RC10"")", @"VAL(""R8C10"") + VAL(""R-1C10"") && VAL(""RC10"")")]
+    [TestCase(@"VAL(""R8C10"") + VAL(""R[-1]C10"") && VAL(""RC10"")", @"VAL(""R8C10"") + VAL(""R[-1]C10"") && VAL(""RC10"")")]
     public void Process_Tests(string formulaIn, string expected)
     {
         var exceptionList = new List<string> { "SUM" };

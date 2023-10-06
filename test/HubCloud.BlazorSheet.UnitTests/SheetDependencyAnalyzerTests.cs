@@ -79,9 +79,9 @@ public class SheetDependencyAnalyzerTests
             Column = 2
         };
         
-        var normalizedAddress1 = SheetDependencyAnalyzer.NormalizeAddress("R-1C1", cellAddress);
-        var normalizedAddress2 = SheetDependencyAnalyzer.NormalizeAddress("R1C-1", cellAddress);
-        var normalizedAddress3 = SheetDependencyAnalyzer.NormalizeAddress("R-1C-1", cellAddress);
+        var normalizedAddress1 = SheetDependencyAnalyzer.NormalizeAddress("R[-1]C1", cellAddress);
+        var normalizedAddress2 = SheetDependencyAnalyzer.NormalizeAddress("R1C[-1]", cellAddress);
+        var normalizedAddress3 = SheetDependencyAnalyzer.NormalizeAddress("R[-1]C[-1]", cellAddress);
         
         Assert.AreEqual(normalizedAddress1, "R1C1");
         Assert.AreEqual(normalizedAddress2, "R1C1");
