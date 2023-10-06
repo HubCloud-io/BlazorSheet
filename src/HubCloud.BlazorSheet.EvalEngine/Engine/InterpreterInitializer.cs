@@ -14,6 +14,8 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
             interpreter.Reference(typeof(DateTime));
             interpreter.Reference(typeof(MidpointRounding));
             interpreter.Reference(typeof(System.Linq.Enumerable));
+            interpreter.Reference(typeof(UniversalValue));
+            
 
             Func<string, UniversalValue> sumFunction = data.Sum;
             interpreter.SetFunction("SUM", sumFunction);
