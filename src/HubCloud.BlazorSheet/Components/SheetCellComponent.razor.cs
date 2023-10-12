@@ -95,29 +95,29 @@ public partial class SheetCellComponent : ComponentBase
 #endif
     }
 
-    private async Task OnCellClick(MouseEventArgs e, SheetCell cell)
+    private async Task OnCellClick(MouseEventArgs e)
     {
         await Clicked.InvokeAsync(Cell);
     }
 
-    private async Task OnCellDblClick(MouseEventArgs e, SheetCell cell)
+    private async Task OnCellDblClick(MouseEventArgs e)
     {
-        await StartEdit.InvokeAsync(cell);
+        await StartEdit.InvokeAsync(Cell);
     }
 
-    private string CellStyle(SheetRow row, SheetColumn column, SheetCell cell)
+    private string CellStyle()
     {
-        return StyleBuilder.GetCellStyle(Sheet, row, column, cell, IsHiddenCellsVisible);
+        return StyleBuilder.GetCellStyle(Sheet, Row, Column, Cell, IsHiddenCellsVisible);
     }
 
-    public string CellClass(SheetCell cell)
+    public string CellClass()
     {
         var result = "hc-sheet-cell";
 
-        if (cell.ValidationFailed)
+        if (Cell.ValidationFailed)
             return result += " hc-sheet-cell__non-valid";
 
-        if (SelectedIdentifiers.Contains(cell.Uid))
+        if (SelectedIdentifiers.Contains(Cell.Uid))
             return result += " hc-sheet-cell__active";
 
         return result;
