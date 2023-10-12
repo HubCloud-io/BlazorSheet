@@ -11,6 +11,19 @@ namespace HubCloud.BlazorSheet.Components;
 
 public partial class SheetCellComponent : ComponentBase
 {
+    private int _prevIndent = 0;
+    private int _prevColspan = 0;
+    private int _prevRowspan = 0;
+    private bool _prevRowIsHidden = false;
+    private bool _prevColumnIsHidden = false;
+    private bool _prevValidationFailed = false;
+    private bool _prevIsHiddenCellsVisible = false;
+    private string _prevText = string.Empty;
+    private string _prevRowHeight = string.Empty;
+    private string _prevStringValue = string.Empty;
+    private string _prevColumnWidth = string.Empty;
+    
+    private bool _shouldRender;
     private ElementReference _cellElement;
 
     [Inject] public IJSRuntime JsRuntime { get; set; }
@@ -36,6 +49,44 @@ public partial class SheetCellComponent : ComponentBase
     [Parameter] public EventCallback<SheetCell> Clicked { get; set; }
 
     public string Id => $"cell_{Cell.Uid}";
+
+    protected override bool ShouldRender() => _shouldRender;
+
+    protected override void OnParametersSet()
+    {
+        if (Regime == SheetRegimes.InputForm && 
+            Cell != null && 
+            Column != null &&
+            Row != null)
+        {
+            _shouldRender = Cell.Text != _prevText ||
+                            Cell.StringValue != _prevStringValue ||
+                            Cell.Indent != _prevIndent ||
+                            Cell.Colspan != _prevColspan ||
+                            Cell.Rowspan != _prevRowspan ||
+                            Cell.ValidationFailed != _prevValidationFailed ||
+                            Column?.Width != _prevColumnWidth ||
+                            Column?.IsHidden != _prevColumnIsHidden ||
+                            Row?.Height != _prevRowHeight ||
+                            Row?.IsHidden != _prevRowIsHidden ||
+                            !SelectedIdentifiers.Contains(Cell.Uid) ||
+                            IsHiddenCellsVisible != _prevIsHiddenCellsVisible;
+
+            _prevIndent = Cell?.Indent ?? 0;
+            _prevColspan = Cell?.Colspan ?? 0;
+            _prevRowspan = Cell?.Rowspan ?? 0;
+            _prevText = Cell?.Text ?? string.Empty;
+            _prevStringValue = Cell?.StringValue ?? string.Empty;
+            _prevColumnIsHidden = Column?.IsHidden ?? false;
+            _prevColumnWidth = Column?.Width ?? string.Empty;
+            _prevRowIsHidden = Row?.IsHidden ?? false;
+            _prevRowHeight = Row?.Height ?? string.Empty;
+            _prevIsHiddenCellsVisible = IsHiddenCellsVisible;
+            _prevValidationFailed = Cell?.ValidationFailed ?? false;
+        }
+        else
+            _shouldRender = true;
+    }
 
     protected override void OnAfterRender(bool firstRender)
     {
