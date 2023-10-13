@@ -65,11 +65,11 @@ public partial class SheetCellComponent : ComponentBase
                             Cell.Colspan != _prevColspan ||
                             Cell.Rowspan != _prevRowspan ||
                             Cell.ValidationFailed != _prevValidationFailed ||
-                            Column?.Width != _prevColumnWidth ||
-                            Column?.IsHidden != _prevColumnIsHidden ||
-                            Row?.Height != _prevRowHeight ||
-                            Row?.IsHidden != _prevRowIsHidden ||
-                            !SelectedIdentifiers.Contains(Cell.Uid) ||
+                            Column.Width != _prevColumnWidth ||
+                            Column.IsHidden != _prevColumnIsHidden ||
+                            Row.Height != _prevRowHeight ||
+                            Row.IsHidden != _prevRowIsHidden ||
+                            (SelectedIdentifiers.Any() && !SelectedIdentifiers.Contains(Cell.Uid)) ||
                             IsHiddenCellsVisible != _prevIsHiddenCellsVisible;
 
             _prevIndent = Cell?.Indent ?? 0;
