@@ -374,23 +374,6 @@ public partial class SheetComponent : ComponentBase
 
                 break;
 
-            case ContextMenuBuilder.AddAfterItemName:
-
-                var newRowAfter = Sheet.AddRow(_currentRow, 1, true);
-                newRowAfter.ParentUid = _currentRow.ParentUid;
-                newRowAfter.HeightValue = _currentRow.HeightValue;
-
-                await RowAdded.InvokeAsync(new RowAddedEventArgs()
-                {
-                    SourceUid = _currentRow.Uid,
-                    RowUid = newRowAfter.Uid,
-                    RowNumber = Sheet.RowNumber(newRowAfter),
-                    Position = 1
-                });
-                await Changed.InvokeAsync(null);
-
-                break;
-
             case ContextMenuBuilder.RemoveItemName:
 
                 var removeArgs = new RowRemovedEventArgs()
@@ -796,5 +779,26 @@ public partial class SheetComponent : ComponentBase
             spacing += "\u00A0";
 
         return spacing;
+    }
+
+    private async Task OnAddRowAfter(SheetRow row)
+    {
+        _currentRow = row;
+
+        if (_currentRow == null)
+            return;
+
+        var newRowAfter = Sheet.AddRow(_currentRow, 1, true);
+        newRowAfter.ParentUid = _currentRow.ParentUid;
+        newRowAfter.HeightValue = _currentRow.HeightValue;
+
+        await RowAdded.InvokeAsync(new RowAddedEventArgs()
+        {
+            SourceUid = _currentRow.Uid,
+            RowUid = newRowAfter.Uid,
+            RowNumber = Sheet.RowNumber(newRowAfter),
+            Position = 1
+        });
+        await Changed.InvokeAsync(null);
     }
 }
