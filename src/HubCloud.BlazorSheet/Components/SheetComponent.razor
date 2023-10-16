@@ -38,7 +38,8 @@
                                              Sheet="Sheet"
                                              IsHiddenCellsVisible="@_isHiddenCellsVisible"
                                              CellStyleBuilder="@_cellStyleBuilder"
-                                             RowContextMenu="e => OnRowContextMenu(e, row)" />
+                                             RowContextMenu="e => OnRowContextMenu(e, row)"
+                                             AddRowAfter="() => OnAddRowAfter(row)" />
 
                 @foreach (var column in Sheet.Columns)
                 {
@@ -78,7 +79,8 @@
                                                      IsHiddenCellsVisible="@_isHiddenCellsVisible"
                                                      CellStyleBuilder="@_cellStyleBuilder"
                                                      Click="() => OnRowNumberCellClick(row)"
-                                                     RowContextMenu="e => OnRowContextMenu(e, row)" />
+                                                     RowContextMenu="e => OnRowContextMenu(e, row)"
+                                                     AddRowAfter="() => OnAddRowAfter(row)" />
 
                         @foreach (var column in Sheet.Columns)
                         {
@@ -115,7 +117,8 @@
                                                  IsHiddenCellsVisible="@_isHiddenCellsVisible"
                                                  CellStyleBuilder="@_cellStyleBuilder"
                                                  Click="() => OnRowNumberCellClick(row)"
-                                                 RowContextMenu="e => OnRowContextMenu(e, row)" />
+                                                 RowContextMenu="e => OnRowContextMenu(e, row)"
+                                                 AddRowAfter="() => OnAddRowAfter(row)" />
 
                     @foreach (var column in Sheet.Columns)
                     {
