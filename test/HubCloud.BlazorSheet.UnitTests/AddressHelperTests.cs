@@ -45,16 +45,11 @@ public class AddressHelperTests
     [TestCase]
     public void GetColumnLetter_Tests()
     {
-        var c1 = AddressHelper.GetColumnLetter("1");
-        var c2 = AddressHelper.GetColumnLetter("2");
-        
         var c25 = AddressHelper.GetColumnLetter("25");
         var c26 = AddressHelper.GetColumnLetter("26");
         var c27 = AddressHelper.GetColumnLetter("27");
         var c28 = AddressHelper.GetColumnLetter("28");
         
-        var c400 = AddressHelper.GetColumnLetter("400");
-
         Assert.AreEqual(c25, "Y");
         Assert.AreEqual(c26, "Z");
         Assert.AreEqual(c27, "AA");
