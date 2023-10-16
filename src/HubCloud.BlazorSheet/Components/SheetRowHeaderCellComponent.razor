@@ -25,8 +25,10 @@
     @if (Row.IsAddRemoveAllowed)
     {
         <span>&nbsp;</span>
-        <span class="fa fa-plus text-success"
-              style="float:right; margin-top: 3px;">
-        </span>
+        <a href="#" @onclick="async () => await AddRowAfter.InvokeAsync()" @onclick:preventDefault>
+            <span class="fa fa-plus text-success"
+                  style="float:right; margin-top: 3px;">
+            </span>
+        </a>
     }
 </td>

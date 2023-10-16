@@ -19,7 +19,8 @@ namespace HubCloud.BlazorSheet.Components
         [Parameter] public CellStyleBuilder CellStyleBuilder { get; set; }
         [Parameter] public EventCallback Click { get; set; }
         [Parameter] public EventCallback<MouseEventArgs> RowContextMenu { get; set; }
-        
+        [Parameter] public EventCallback AddRowAfter { get; set; }
+
 
         private string LeftSideCellStyle()
         {
