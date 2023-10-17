@@ -9,7 +9,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Helpers
     public static class AddressHelper
     {
         private static readonly Regex AddressRegex = RegexHelper.AddressRegex;
-        
+
         public static string ConvertExcelToRowCellAddress(string excelAddress)
         {
             if (string.IsNullOrEmpty(excelAddress) || AddressRegex.IsMatch(excelAddress))
@@ -24,12 +24,12 @@ namespace HubCloud.BlazorSheet.EvalEngine.Helpers
                 colAddress.Append(excelAddress[i++]);
             }
 
-            if (colAddress.Length == 0 || 
+            if (colAddress.Length == 0 ||
                 !int.TryParse(excelAddress.Substring(i, excelAddress.Length - i), out var rowAddress))
                 return excelAddress;
 
             resultAddress.Append($"R{rowAddress}C{GetColumnNumber(colAddress.ToString())}");
-            
+
             return resultAddress.ToString();
         }
 
@@ -43,33 +43,35 @@ namespace HubCloud.BlazorSheet.EvalEngine.Helpers
                 .TrimStart('"')
                 .TrimEnd('"')
                 .Split(new[] {'R', 'C', 'r', 'c'}, StringSplitOptions.RemoveEmptyEntries);
-            
+
             if (arr.Length != 2)
                 return address;
 
             var row = arr[0];
             var col = arr[1];
 
-            return $"{GetColumnLetter(col)}{row}";
+            var columnLetter = GetColumnLetter(col);
+            return $"{columnLetter}{row}";
         }
 
         public static string ProcessR1C1Address(string sheetAddress, int currentRow, int currentCol)
         {
             var rcValues = GetRCValues(sheetAddress);
-            
+
             var r = ProcessValues(rcValues.Item1, currentRow);
             var c = ProcessValues(rcValues.Item2, currentCol);
-            
+
             return $"R{r}C{c}";
         }
 
         #region private methods
+
         private static string ProcessValues(string value, int current)
         {
             // RC1 case
             if (string.IsNullOrEmpty(value))
                 return current.ToString();
-            
+
             // R[1]C1 case
             if (value.Contains("[") && value.Contains("]"))
             {
@@ -102,7 +104,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Helpers
 
             return new Tuple<string, string>(rVal, cVal);
         }
-        
+
         private static string GetColumnNumber(string columnName)
         {
             double result = 0;
@@ -113,34 +115,26 @@ namespace HubCloud.BlazorSheet.EvalEngine.Helpers
                 var currentCharVal = columnName[i] - 64;
                 result += currentCharVal * Math.Pow(26, currentNumber--);
             }
-            
+
             return result.ToString("#");
         }
-
-        private static string GetColumnLetter(string column)
+        
+        public static string GetColumnLetter(string column)
         {
             if (!int.TryParse(column, out var colNum))
                 return "";
 
-            var list = new List<int>();
-            var d = colNum;
-            do
+            var columnName = "";
+            while (colNum > 0)
             {
-                list.Add(d % 26);
-                d = d / 26;
-            } while (d != 0);
-            
-            list.Reverse();
+                var m = (colNum - 1) % 26;
+                columnName = Convert.ToChar('A' + m) + columnName;
+                colNum = (colNum - m) / 26;
+            } 
 
-            var sb = new StringBuilder();
-            foreach (var item in list)
-            {
-                var ch = (char) (item + 64);
-                sb.Append(ch);
-            }
-
-            return sb.ToString();
+            return columnName;
         }
+
         #endregion
     }
 }
