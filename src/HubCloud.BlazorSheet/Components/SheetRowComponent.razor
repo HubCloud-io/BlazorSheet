@@ -15,7 +15,8 @@
         if (ShouldCellBeDisplayed(column, cell))
             continue;
 
-        <SheetCellComponent Sheet="@Sheet"
+        <SheetCellComponent @key="@cell" 
+                            Sheet="@Sheet"
                             Regime="@Regime"
                             Row="@Row"
                             Column="@column"

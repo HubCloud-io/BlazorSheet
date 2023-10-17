@@ -33,7 +33,8 @@
         @*Sheet body*@
         @foreach (var row in Sheet.GetFreezedVisibleRows(_isHiddenCellsVisible))
         {
-            <SheetRowComponent Row="row"
+            <SheetRowComponent @key="@row"
+                               Row="row"
                                Sheet="@Sheet"
                                Regime="@Regime"
                                IsHiddenCellsVisible="@_isHiddenCellsVisible"
@@ -52,7 +53,8 @@
                         OverscanCount="1"
                         ItemSize="26">
                 <ItemContent>
-                    <SheetRowComponent Row="row"
+                    <SheetRowComponent @key="@row" 
+                                       Row="row"
                                        Sheet="@Sheet"
                                        Regime="@Regime"
                                        IsHiddenCellsVisible="@_isHiddenCellsVisible"
@@ -70,7 +72,8 @@
         {
             foreach (var row in Sheet.GetVisibleRows(_isHiddenCellsVisible))
             {
-                <SheetRowComponent Row="row" 
+                <SheetRowComponent @key="@row" 
+                                   Row="row" 
                                    Sheet="@Sheet" 
                                    Regime="@Regime" 
                                    IsHiddenCellsVisible="@_isHiddenCellsVisible" 

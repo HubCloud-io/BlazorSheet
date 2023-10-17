@@ -42,7 +42,7 @@ namespace HubCloud.BlazorSheet.Components
                     var cell = Sheet.GetCell(Row, column);
                     if(cell == null)
                         continue;
-
+                
                     if (cell.ShouldRender)
                     {
                         _shouldRender = true;
