@@ -29,5 +29,12 @@ namespace HubCloud.BlazorSheet.Components
             return ((column.IsHidden || Row.IsHidden) && !IsHiddenCellsVisible) || cell.HiddenByJoin || Row.IsCollapsed ||
                    column.IsCollapsed;
         }
+        
+        protected override void OnAfterRender(bool firstRender)
+        {
+#if (DEBUG)
+            Console.WriteLine($"{DateTime.Now:yyyy-MM-dd:hh:mm:ss.fff} - Row {Sheet.RowNumber(Row)} Rendered.");
+#endif
+        }
     }
 }
