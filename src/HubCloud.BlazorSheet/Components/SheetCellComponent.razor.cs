@@ -16,12 +16,15 @@ public partial class SheetCellComponent : ComponentBase
     private int _prevRowspan = 0;
     private bool _prevRowIsHidden = false;
     private bool _prevColumnIsHidden = false;
-    private bool _prevValidationFailed = false;
-    private bool _prevIsHiddenCellsVisible = false;
     private string _prevText = string.Empty;
     private string _prevRowHeight = string.Empty;
     private string _prevStringValue = string.Empty;
     private string _prevColumnWidth = string.Empty;
+    private string _prevCellClass = string.Empty;
+    private string _prevCellStyle = string.Empty;
+
+    private string _currentCellClass = string.Empty;
+    private string _currentCellStyle = string.Empty;
     
     private bool _shouldRender;
     private ElementReference _cellElement;
@@ -54,6 +57,9 @@ public partial class SheetCellComponent : ComponentBase
 
     protected override void OnParametersSet()
     {
+        _currentCellClass = CellClass();
+        _currentCellStyle = CellStyle();
+
         if (Regime == SheetRegimes.InputForm && 
             Cell != null && 
             Column != null &&
@@ -64,25 +70,26 @@ public partial class SheetCellComponent : ComponentBase
                             Cell.Indent != _prevIndent ||
                             Cell.Colspan != _prevColspan ||
                             Cell.Rowspan != _prevRowspan ||
-                            Cell.ValidationFailed != _prevValidationFailed ||
                             Column.Width != _prevColumnWidth ||
                             Column.IsHidden != _prevColumnIsHidden ||
                             Row.Height != _prevRowHeight ||
                             Row.IsHidden != _prevRowIsHidden ||
-                            (SelectedIdentifiers.Any() && !SelectedIdentifiers.Contains(Cell.Uid)) ||
-                            IsHiddenCellsVisible != _prevIsHiddenCellsVisible;
+                            _currentCellClass != _prevCellClass ||
+                            _currentCellStyle != _prevCellStyle;
 
-            _prevIndent = Cell?.Indent ?? 0;
-            _prevColspan = Cell?.Colspan ?? 0;
-            _prevRowspan = Cell?.Rowspan ?? 0;
-            _prevText = Cell?.Text ?? string.Empty;
-            _prevStringValue = Cell?.StringValue ?? string.Empty;
-            _prevColumnIsHidden = Column?.IsHidden ?? false;
-            _prevColumnWidth = Column?.Width ?? string.Empty;
-            _prevRowIsHidden = Row?.IsHidden ?? false;
-            _prevRowHeight = Row?.Height ?? string.Empty;
-            _prevIsHiddenCellsVisible = IsHiddenCellsVisible;
-            _prevValidationFailed = Cell?.ValidationFailed ?? false;
+            _prevIndent = Cell.Indent;
+            _prevColspan = Cell.Colspan;
+            _prevRowspan = Cell.Rowspan;
+            _prevText = Cell.Text;
+            _prevStringValue = Cell.StringValue;
+            _prevColumnIsHidden = Column.IsHidden;
+            _prevColumnWidth = Column.Width;
+            _prevRowIsHidden = Row.IsHidden;
+            _prevRowHeight = Row.Height;
+            _prevCellClass = _currentCellClass;
+            _prevCellStyle = _currentCellStyle;
+
+            _prevText = Cell?.Text;
         }
         else
             _shouldRender = true;
