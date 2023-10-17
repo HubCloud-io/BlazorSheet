@@ -13,6 +13,8 @@ namespace HubCloud.BlazorSheet.Components
 {
     public partial class SheetRowComponent
     {
+        private bool _shouldRender;
+        
         [Parameter] public bool IsHiddenCellsVisible { get; set; }
         [Parameter] public Sheet Sheet { get; set; }
         [Parameter] public SheetRow Row { get; set; }
@@ -29,12 +31,39 @@ namespace HubCloud.BlazorSheet.Components
             return ((column.IsHidden || Row.IsHidden) && !IsHiddenCellsVisible) || cell.HiddenByJoin || Row.IsCollapsed ||
                    column.IsCollapsed;
         }
-        
+
+        protected override void OnParametersSet()
+        {
+            _shouldRender = false;
+            if (Regime == SheetRegimes.InputForm )
+            {
+                foreach (var column in Sheet.Columns)
+                {
+                    var cell = Sheet.GetCell(Row, column);
+                    if(cell == null)
+                        continue;
+
+                    if (cell.ShouldRender)
+                    {
+                        _shouldRender = true;
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                _shouldRender = true;
+            }
+        }
+
         protected override void OnAfterRender(bool firstRender)
         {
 #if (DEBUG)
             Console.WriteLine($"{DateTime.Now:yyyy-MM-dd:hh:mm:ss.fff} - Row {Sheet.RowNumber(Row)} Rendered.");
 #endif
         }
+        
+        protected override bool ShouldRender() => _shouldRender;
+        
     }
 }
