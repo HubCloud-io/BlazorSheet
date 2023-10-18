@@ -33,7 +33,7 @@ public partial class SheetComponent : ComponentBase
     private List<SheetCell> _selectedCells = new List<SheetCell>();
     private List<SheetRow> _selectedRowByNumberList = new List<SheetRow>();
     private List<SheetColumn> _selectedColumnByNumberList = new List<SheetColumn>();
-    private HashSet<Guid> _selectedIdentifiers = new HashSet<Guid>();
+   private SelectedCellIdentifiers _selectedIdentifiers = new SelectedCellIdentifiers();
 
     private double _clientX;
     private double _clientY;
@@ -136,7 +136,7 @@ public partial class SheetComponent : ComponentBase
         if (!_multipleSelection)
         {
             _selectedCells.Clear();
-            _selectedIdentifiers.Clear();
+            _selectedIdentifiers.Clear(Sheet);
             _selectedRowByNumberList.Clear();
             _selectedColumnByNumberList.Clear();
         }
@@ -146,10 +146,10 @@ public partial class SheetComponent : ComponentBase
         else
             _selectedCells.Remove(_currentCell);
 
-        if (!_selectedIdentifiers.Contains(_currentCell.Uid))
-            _selectedIdentifiers.Add(_currentCell.Uid);
+        if (!_selectedIdentifiers.Contains(_currentCell))
+            _selectedIdentifiers.Add(_currentCell);
         else
-            _selectedIdentifiers.Remove(_currentCell.Uid);
+            _selectedIdentifiers.Remove(_currentCell);
 
         await CellSelected.InvokeAsync(cell);
         await CellsSelected.InvokeAsync(_selectedCells);
@@ -608,7 +608,7 @@ public partial class SheetComponent : ComponentBase
         if (!_multipleSelection)
         {
             _selectedCells.Clear();
-            _selectedIdentifiers.Clear();
+            _selectedIdentifiers.Clear(Sheet);
             _selectedColumnByNumberList.Clear();
         }
 
@@ -625,8 +625,8 @@ public partial class SheetComponent : ComponentBase
             if (!_selectedCells.Contains(cell))
                 _selectedCells.Add(cell);
 
-            if (!_selectedIdentifiers.Contains(cell.Uid))
-                _selectedIdentifiers.Add(cell.Uid);
+            if (!_selectedIdentifiers.Contains(cell))
+                _selectedIdentifiers.Add(cell);
         }
 
         var firstCell = cells.FirstOrDefault();
@@ -648,7 +648,7 @@ public partial class SheetComponent : ComponentBase
         if (!_multipleSelection)
         {
             _selectedCells.Clear();
-            _selectedIdentifiers.Clear();
+            _selectedIdentifiers.Clear(Sheet);
             _selectedRowByNumberList.Clear();
         }
 
@@ -665,8 +665,8 @@ public partial class SheetComponent : ComponentBase
             if (!_selectedCells.Contains(cell))
                 _selectedCells.Add(cell);
 
-            if (!_selectedIdentifiers.Contains(cell.Uid))
-                _selectedIdentifiers.Add(cell.Uid);
+            if (!_selectedIdentifiers.Contains(cell))
+                _selectedIdentifiers.Add(cell);
         }
 
         var firstCell = cells.FirstOrDefault();
@@ -682,7 +682,7 @@ public partial class SheetComponent : ComponentBase
     {
         var result = "hc-sheet-cell";
 
-        if (_selectedIdentifiers.Contains(cell.Uid))
+        if (_selectedIdentifiers.Contains(cell))
             return result += " hc-sheet-cell__active";
 
         return result;

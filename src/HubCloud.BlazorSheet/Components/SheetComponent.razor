@@ -33,12 +33,12 @@
         @*Sheet body*@
         @foreach (var row in Sheet.GetFreezedVisibleRows(_isHiddenCellsVisible))
         {
-            <SheetRowComponent Row="row"
+            <SheetRowComponent @key="@row"
+                               Row="row"
                                Sheet="@Sheet"
                                Regime="@Regime"
                                IsHiddenCellsVisible="@_isHiddenCellsVisible"
                                StyleBuilder="@_cellStyleBuilder"
-                               SelectedIdentifiers="@_selectedIdentifiers"
                                CellClicked="OnCellClicked"
                                CellStartEdit="OnCellStartEdit"
                                RowContextMenu="(e) => OnRowContextMenu(e, row)" />
@@ -52,12 +52,12 @@
                         OverscanCount="1"
                         ItemSize="26">
                 <ItemContent>
-                    <SheetRowComponent Row="row"
+                    <SheetRowComponent @key="@row" 
+                                       Row="row"
                                        Sheet="@Sheet"
                                        Regime="@Regime"
                                        IsHiddenCellsVisible="@_isHiddenCellsVisible"
                                        StyleBuilder="@_cellStyleBuilder"
-                                       SelectedIdentifiers="@_selectedIdentifiers"
                                        CellClicked="OnCellClicked"
                                        CellStartEdit="OnCellStartEdit"
                                        RowContextMenu="(e) => OnRowContextMenu(e, row)"
@@ -70,12 +70,12 @@
         {
             foreach (var row in Sheet.GetVisibleRows(_isHiddenCellsVisible))
             {
-                <SheetRowComponent Row="row" 
+                <SheetRowComponent @key="@row" 
+                                   Row="row" 
                                    Sheet="@Sheet" 
                                    Regime="@Regime" 
                                    IsHiddenCellsVisible="@_isHiddenCellsVisible" 
                                    StyleBuilder="@_cellStyleBuilder"
-                                   SelectedIdentifiers="@_selectedIdentifiers"
                                    CellClicked="OnCellClicked"
                                    CellStartEdit="OnCellStartEdit"
                                    RowContextMenu="(e) => OnRowContextMenu(e, row)" 

@@ -11,19 +11,7 @@ namespace HubCloud.BlazorSheet.Components;
 
 public partial class SheetCellComponent : ComponentBase
 {
-    private int _prevIndent = 0;
-    private int _prevColspan = 0;
-    private int _prevRowspan = 0;
-    private bool _prevRowIsHidden = false;
-    private bool _prevColumnIsHidden = false;
-    private string _prevText = string.Empty;
-    private string _prevRowHeight = string.Empty;
-    private string _prevStringValue = string.Empty;
-    private string _prevColumnWidth = string.Empty;
-    private string _prevCellClass = string.Empty;
-    private string _prevCellStyle = string.Empty;
-
-    private string _currentCellClass = string.Empty;
+    
     private string _currentCellStyle = string.Empty;
     
     private bool _shouldRender;
@@ -42,9 +30,7 @@ public partial class SheetCellComponent : ComponentBase
     [Parameter] public SheetRegimes Regime { get; set; }
 
     [Parameter] public bool IsHiddenCellsVisible { get; set; }
-
-    [Parameter] public HashSet<Guid> SelectedIdentifiers { get; set; }
-
+    
     [Parameter] public CellStyleBuilder StyleBuilder { get; set; }
 
     [Parameter] public EventCallback<SheetCell> StartEdit { get; set; }
@@ -57,48 +43,29 @@ public partial class SheetCellComponent : ComponentBase
 
     protected override void OnParametersSet()
     {
-        _currentCellClass = CellClass();
         _currentCellStyle = CellStyle();
-
+        
         if (Regime == SheetRegimes.InputForm && 
-            Cell != null && 
-            Column != null &&
-            Row != null)
+            Cell != null)
         {
-            _shouldRender = Cell.Text != _prevText ||
-                            Cell.StringValue != _prevStringValue ||
-                            Cell.Indent != _prevIndent ||
-                            Cell.Colspan != _prevColspan ||
-                            Cell.Rowspan != _prevRowspan ||
-                            Column.Width != _prevColumnWidth ||
-                            Column.IsHidden != _prevColumnIsHidden ||
-                            Row.Height != _prevRowHeight ||
-                            Row.IsHidden != _prevRowIsHidden ||
-                            _currentCellClass != _prevCellClass ||
-                            _currentCellStyle != _prevCellStyle;
-
-            _prevIndent = Cell.Indent;
-            _prevColspan = Cell.Colspan;
-            _prevRowspan = Cell.Rowspan;
-            _prevText = Cell.Text;
-            _prevStringValue = Cell.StringValue;
-            _prevColumnIsHidden = Column.IsHidden;
-            _prevColumnWidth = Column.Width;
-            _prevRowIsHidden = Row.IsHidden;
-            _prevRowHeight = Row.Height;
-            _prevCellClass = _currentCellClass;
-            _prevCellStyle = _currentCellStyle;
-
-            _prevText = Cell?.Text;
+            _shouldRender = Cell.ShouldRender;
+            
+            if (_shouldRender)
+            {
+                Cell.ShouldRender = false;
+            }
+            
         }
         else
+        {
             _shouldRender = true;
+        }
     }
 
     protected override void OnAfterRender(bool firstRender)
     {
 #if (DEBUG)
-        Console.WriteLine($"{DateTime.Now:yyyy-MM-dd:hh:mm:ss.fff} - Cell {Cell.Value} Rendered.");
+       // Console.WriteLine($"{DateTime.Now:yyyy-MM-dd:hh:mm:ss.fff} - Cell {Cell.Value} Rendered.");
 #endif
     }
 
@@ -117,18 +84,7 @@ public partial class SheetCellComponent : ComponentBase
         return StyleBuilder.GetCellStyle(Sheet, Row, Column, Cell, IsHiddenCellsVisible);
     }
 
-    public string CellClass()
-    {
-        var result = "hc-sheet-cell";
-
-        if (Cell.ValidationFailed)
-            return result += " hc-sheet-cell__non-valid";
-
-        if (SelectedIdentifiers.Contains(Cell.Uid))
-            return result += " hc-sheet-cell__active";
-
-        return result;
-    }
+   
 
     private string GetHtmlSpacing(int indent)
     {
