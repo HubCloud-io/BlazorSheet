@@ -9,6 +9,11 @@ namespace HubCloud.BlazorSheet.Core.Models
 {
     public class SheetCell
     {
+        private string _text;
+        private object _value;
+        private bool _validationFailed;
+        private bool _isSelected;
+
         public Guid Uid { get; set; } = Guid.NewGuid();
         public Guid RowUid { get; set; }
         public Guid ColumnUid { get; set; }
@@ -22,13 +27,55 @@ namespace HubCloud.BlazorSheet.Core.Models
         public bool Locked { get; set; } = true;
         public int Indent { get; set; }
 
-        [JsonIgnore] public string Text { get; set; }
-        public object Value { get; set; }
+        [JsonIgnore]
+        public string Text
+        {
+            get => _text;
+            set
+            {
+                _text = value;
+                ShouldRender = true;
+            }
+        }
+
+        [JsonIgnore] public bool ShouldRender { get; set; }
+
+        public object Value
+        {
+            get => _value;
+            set
+            {
+                _value = value;
+                ShouldRender = true;
+            }
+        }
+
         public string Formula { get; set; }
         public string Format { get; set; } = string.Empty;
 
         [JsonIgnore]
-        public bool ValidationFailed { get; set; }
+        public bool ValidationFailed
+        {
+            get => _validationFailed;
+            set
+            {
+                _validationFailed = value;
+                ShouldRender = true;
+            }
+        }
+        
+        [JsonIgnore]
+        public bool IsSelected
+        {
+            get => _isSelected;
+            set
+            {
+                _isSelected = value;
+                ShouldRender = true;
+            }
+        }
+
+        [JsonIgnore] public string HtmlClass => CellClass();
 
         public bool HasLink => !string.IsNullOrEmpty(Link) && !string.IsNullOrWhiteSpace(Link);
 
@@ -150,10 +197,10 @@ namespace HubCloud.BlazorSheet.Core.Models
                 return;
 
             if (decimal.TryParse(
-                StringValue.Replace(',', '.'),
-                NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingSign,
-                new NumberFormatInfo { NumberDecimalSeparator = "." },
-                out var decimalValue))
+                    StringValue.Replace(',', '.'),
+                    NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingSign,
+                    new NumberFormatInfo {NumberDecimalSeparator = "."},
+                    out var decimalValue))
                 Text = decimalValue.ToString(Format, CultureInfo.InvariantCulture);
             else if (DateTime.TryParse(StringValue, out var date))
                 Text = date.ToString(Format);
@@ -188,6 +235,19 @@ namespace HubCloud.BlazorSheet.Core.Models
                     Format = string.Empty;
                     break;
             }
+        }
+        
+        private string CellClass()
+        {
+            var result = "hc-sheet-cell";
+
+            if (ValidationFailed)
+                return result += " hc-sheet-cell__non-valid";
+
+            if (IsSelected)
+                return result += " hc-sheet-cell__active";
+
+            return result;
         }
     }
 }

@@ -2,10 +2,10 @@
 <td @key="@Cell.Uid"
     @ref="_cellElement"
     id="@Id"
-    class="@CellClass(Cell)"
-    style="@CellStyle(Row, Column, Cell)"
-    @onclick="(e => OnCellClick(e, Cell))"
-    @ondblclick="(e => OnCellDblClick(e, Cell))"
+    class="@Cell.HtmlClass"
+    style="@_currentCellStyle"
+    @onclick="(e => OnCellClick(e))"
+    @ondblclick="(e => OnCellDblClick(e))"
     colspan="@Cell.Colspan"
     rowspan="@Cell.Rowspan">
 

@@ -11,6 +11,10 @@ namespace HubCloud.BlazorSheet.Components;
 
 public partial class SheetCellComponent : ComponentBase
 {
+    
+    private string _currentCellStyle = string.Empty;
+    
+    private bool _shouldRender;
     private ElementReference _cellElement;
 
     [Inject] public IJSRuntime JsRuntime { get; set; }
@@ -26,9 +30,7 @@ public partial class SheetCellComponent : ComponentBase
     [Parameter] public SheetRegimes Regime { get; set; }
 
     [Parameter] public bool IsHiddenCellsVisible { get; set; }
-
-    [Parameter] public HashSet<Guid> SelectedIdentifiers { get; set; }
-
+    
     [Parameter] public CellStyleBuilder StyleBuilder { get; set; }
 
     [Parameter] public EventCallback<SheetCell> StartEdit { get; set; }
@@ -37,40 +39,52 @@ public partial class SheetCellComponent : ComponentBase
 
     public string Id => $"cell_{Cell.Uid}";
 
+    protected override bool ShouldRender() => _shouldRender;
+
+    protected override void OnParametersSet()
+    {
+        _currentCellStyle = CellStyle();
+        
+        if (Regime == SheetRegimes.InputForm && 
+            Cell != null)
+        {
+            _shouldRender = Cell.ShouldRender;
+            
+            if (_shouldRender)
+            {
+                Cell.ShouldRender = false;
+            }
+            
+        }
+        else
+        {
+            _shouldRender = true;
+        }
+    }
+
     protected override void OnAfterRender(bool firstRender)
     {
 #if (DEBUG)
-        Console.WriteLine($"{DateTime.Now:yyyy-MM-dd:hh:mm:ss.fff} - Cell {Cell.Value} Rendered.");
+       // Console.WriteLine($"{DateTime.Now:yyyy-MM-dd:hh:mm:ss.fff} - Cell {Cell.Value} Rendered.");
 #endif
     }
 
-    private async Task OnCellClick(MouseEventArgs e, SheetCell cell)
+    private async Task OnCellClick(MouseEventArgs e)
     {
         await Clicked.InvokeAsync(Cell);
     }
 
-    private async Task OnCellDblClick(MouseEventArgs e, SheetCell cell)
+    private async Task OnCellDblClick(MouseEventArgs e)
     {
-        await StartEdit.InvokeAsync(cell);
+        await StartEdit.InvokeAsync(Cell);
     }
 
-    private string CellStyle(SheetRow row, SheetColumn column, SheetCell cell)
+    private string CellStyle()
     {
-        return StyleBuilder.GetCellStyle(Sheet, row, column, cell, IsHiddenCellsVisible);
+        return StyleBuilder.GetCellStyle(Sheet, Row, Column, Cell, IsHiddenCellsVisible);
     }
 
-    public string CellClass(SheetCell cell)
-    {
-        var result = "hc-sheet-cell";
-
-        if (cell.ValidationFailed)
-            return result += " hc-sheet-cell__non-valid";
-
-        if (SelectedIdentifiers.Contains(cell.Uid))
-            return result += " hc-sheet-cell__active";
-
-        return result;
-    }
+   
 
     private string GetHtmlSpacing(int indent)
     {
