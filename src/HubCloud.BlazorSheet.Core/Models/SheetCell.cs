@@ -12,6 +12,7 @@ namespace HubCloud.BlazorSheet.Core.Models
         private string _text;
         private object _value;
         private bool _validationFailed;
+        private bool _isSelected;
 
         public Guid Uid { get; set; } = Guid.NewGuid();
         public Guid RowUid { get; set; }
@@ -62,6 +63,19 @@ namespace HubCloud.BlazorSheet.Core.Models
                 ShouldRender = true;
             }
         }
+        
+        [JsonIgnore]
+        public bool IsSelected
+        {
+            get => _isSelected;
+            set
+            {
+                _isSelected = value;
+                ShouldRender = true;
+            }
+        }
+
+        [JsonIgnore] public string HtmlClass => CellClass();
 
         public bool HasLink => !string.IsNullOrEmpty(Link) && !string.IsNullOrWhiteSpace(Link);
 
@@ -221,6 +235,19 @@ namespace HubCloud.BlazorSheet.Core.Models
                     Format = string.Empty;
                     break;
             }
+        }
+        
+        private string CellClass()
+        {
+            var result = "hc-sheet-cell";
+
+            if (ValidationFailed)
+                return result += " hc-sheet-cell__non-valid";
+
+            if (IsSelected)
+                return result += " hc-sheet-cell__active";
+
+            return result;
         }
     }
 }

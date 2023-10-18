@@ -11,11 +11,7 @@ namespace HubCloud.BlazorSheet.Components;
 
 public partial class SheetCellComponent : ComponentBase
 {
-   
-  
-    private string _prevCellClass = string.Empty;
     
-    private string _currentCellClass = string.Empty;
     private string _currentCellStyle = string.Empty;
     
     private bool _shouldRender;
@@ -34,9 +30,7 @@ public partial class SheetCellComponent : ComponentBase
     [Parameter] public SheetRegimes Regime { get; set; }
 
     [Parameter] public bool IsHiddenCellsVisible { get; set; }
-
-    [Parameter] public HashSet<Guid> SelectedIdentifiers { get; set; }
-
+    
     [Parameter] public CellStyleBuilder StyleBuilder { get; set; }
 
     [Parameter] public EventCallback<SheetCell> StartEdit { get; set; }
@@ -49,17 +43,13 @@ public partial class SheetCellComponent : ComponentBase
 
     protected override void OnParametersSet()
     {
-        _currentCellClass = CellClass();
         _currentCellStyle = CellStyle();
         
         if (Regime == SheetRegimes.InputForm && 
             Cell != null)
         {
-            _shouldRender = Cell.ShouldRender ||
-                            _currentCellClass != _prevCellClass;
+            _shouldRender = Cell.ShouldRender;
             
-            _prevCellClass = _currentCellClass;
-
             if (_shouldRender)
             {
                 Cell.ShouldRender = false;
@@ -94,18 +84,7 @@ public partial class SheetCellComponent : ComponentBase
         return StyleBuilder.GetCellStyle(Sheet, Row, Column, Cell, IsHiddenCellsVisible);
     }
 
-    public string CellClass()
-    {
-        var result = "hc-sheet-cell";
-
-        if (Cell.ValidationFailed)
-            return result += " hc-sheet-cell__non-valid";
-
-        if (SelectedIdentifiers.Contains(Cell.Uid))
-            return result += " hc-sheet-cell__active";
-
-        return result;
-    }
+   
 
     private string GetHtmlSpacing(int indent)
     {

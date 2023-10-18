@@ -19,7 +19,6 @@ namespace HubCloud.BlazorSheet.Components
         [Parameter] public Sheet Sheet { get; set; }
         [Parameter] public SheetRow Row { get; set; }
         [Parameter] public CellStyleBuilder StyleBuilder { get; set; }
-        [Parameter] public HashSet<Guid> SelectedIdentifiers { get; set; }
         [Parameter] public SheetRegimes Regime { get; set; }
         [Parameter] public EventCallback RowHeaderCellClick { get; set; }
         [Parameter] public EventCallback<SheetCell> CellClicked { get; set; }
