@@ -187,6 +187,12 @@ namespace HubCloud.BlazorSheet.Core.Models
             }
         }
 
+        public void PrepareCellText(SheetCell cell)
+        {
+            cell.Text = cell.Value?.ToString();
+            cell.ApplyFormat();
+        }
+
         public List<SheetCell> GetRowCells(SheetRow row)
         {
             var cells = Cells.Where(x => x.RowUid == row.Uid).ToList();

@@ -192,9 +192,11 @@ namespace HubCloud.BlazorSheet.Core.Models
             if (Value == null)
                 return;
 
-            if (string.IsNullOrEmpty(StringValue) ||
-                string.IsNullOrEmpty(Format))
+            if (string.IsNullOrEmpty(StringValue))
                 return;
+
+            if (string.IsNullOrEmpty(Format))
+                Text = StringValue;
 
             if (decimal.TryParse(
                     StringValue.Replace(',', '.'),
