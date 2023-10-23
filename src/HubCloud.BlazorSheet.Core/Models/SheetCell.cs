@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Xml.Serialization;
 using HubCloud.BlazorSheet.Core.Consts;
 using HubCloud.BlazorSheet.Core.Enums;
+using HubCloud.BlazorSheet.Core.Helpers;
 using Newtonsoft.Json;
 
 namespace HubCloud.BlazorSheet.Core.Models
@@ -203,7 +204,7 @@ namespace HubCloud.BlazorSheet.Core.Models
                     NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingSign,
                     new NumberFormatInfo {NumberDecimalSeparator = "."},
                     out var decimalValue))
-                Text = decimalValue.ToString(Format, CultureInfo.InvariantCulture);
+                Text = CellValueFormatHelper.ToStringWithFormat(decimalValue, Format);
             else if (DateTime.TryParse(StringValue, out var date))
                 Text = date.ToString(Format);
         }
