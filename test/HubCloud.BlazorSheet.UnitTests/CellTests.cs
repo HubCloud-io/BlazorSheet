@@ -33,6 +33,9 @@ namespace HubCloud.BlazorSheet.UnitTests
         [TestCase("-1000000,3388", "(1 000 000)", CellFormatConsts.IntegerNegativeWithSpaces)]
         [TestCase("-1000000,3388", "(1 000 000.34)", CellFormatConsts.IntegerNegativeWithSpacesTwoDecimalPlaces)]
         [TestCase("-1000000,3388", "(1 000 000.339)", CellFormatConsts.IntegerNegativeWithSpacesThreeDecimalPlaces)]
+        [TestCase("1000000,3388", "1 000 000", CellFormatConsts.IntegerNegativeWithSpaces)]
+        [TestCase("1000000,3388", "1 000 000.34", CellFormatConsts.IntegerNegativeWithSpacesTwoDecimalPlaces)]
+        [TestCase("1000000,3388", "1 000 000.339", CellFormatConsts.IntegerNegativeWithSpacesThreeDecimalPlaces)]
         public void ApplyFormat_AreCellTextEqualExpected_True(string input, string expected, string format)
         {
             var cell = new SheetCell();
