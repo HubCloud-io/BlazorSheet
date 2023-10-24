@@ -209,6 +209,32 @@ namespace HubCloud.BlazorSheet.Core.Models
                 Text = date.ToString(Format);
         }
 
+        public void ApplyFormat(CellControlKinds controlKind)
+        {
+            if (controlKind != CellControlKinds.DateInput &&
+                controlKind != CellControlKinds.DateTimeInput &&
+                controlKind != CellControlKinds.NumberInput)
+                return;
+
+            if (Value == null)
+                return;
+
+            if (string.IsNullOrEmpty(StringValue))
+                return;
+
+            if (string.IsNullOrEmpty(Format))
+                Text = StringValue;
+
+            if (decimal.TryParse(
+                    StringValue.Replace(',', '.'),
+                    NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingSign,
+                    new NumberFormatInfo { NumberDecimalSeparator = "." },
+                    out var decimalValue))
+                Text = CellValueFormatHelper.ToStringWithFormat(decimalValue, Format);
+            else if (DateTime.TryParse(StringValue, out var date))
+                Text = date.ToString(Format);
+        }
+
         public void SetFormat(CellFormatTypes formatType, string customFormat)
         {
             switch (formatType)
