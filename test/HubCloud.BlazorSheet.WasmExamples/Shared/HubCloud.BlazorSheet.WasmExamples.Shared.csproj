@@ -9,4 +9,8 @@
   <ItemGroup>
     <SupportedPlatform Include="browser" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\HubCloud.BlazorSheet.Core\HubCloud.BlazorSheet.Core.csproj" />
+  </ItemGroup>
 </Project>

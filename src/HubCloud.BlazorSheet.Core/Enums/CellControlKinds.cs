@@ -8,7 +8,7 @@
         DateInput = 3,
         DateTimeInput = 4,
         CheckBox = 5,
-        ComboBox = 6
-        
+        ComboBox = 6,
+        Select = 7
     }
 }

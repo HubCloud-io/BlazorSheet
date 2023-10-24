@@ -106,10 +106,14 @@ namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders
 
         private string GetTotalFormula(int column, List<int> groupTotalRows)
         {
-            var addresses = groupTotalRows
-                .Select(row => $"R{row}C{column}")
-                .Aggregate((x,y)=> $@"""{x}"",""{y}""");
+            var addresses = string.Empty;
+            foreach (var address in groupTotalRows.Select(row => $"R{row}C{column}"))
+            {
+                addresses += $@"""{address}"",";
+            }
 
+            addresses = addresses.TrimEnd(',');
+            
             var formula = $"SUM({addresses})";
             return formula;
         }

@@ -1,0 +1,14 @@
+﻿<select id="@Id" 
+        style="width: 100%"
+        disabled=@IsDisabled
+        value="@_value"
+        @onkeydown="(e=>OnInputKeyDown(e))"
+        @onchange="(e => OnValueChanged(e))">
+
+    @foreach (var item in _source)
+    {
+        <option value="@item.Item1">@item.Item2</option>
+    }
+
+</select>
+

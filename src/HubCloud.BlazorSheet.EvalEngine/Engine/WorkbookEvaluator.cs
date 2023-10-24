@@ -41,6 +41,11 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
             _interpreter = InterpreterInitializer.CreateInterpreter(_data);
             _interpreter.SetVariable(ContextName, _data);
         }
+
+        public void SetVariable(string name, object data)
+        {
+            _interpreter.SetVariable(name, data);
+        }
         
         public object Eval(string expression, int row, int column)
         {
@@ -143,10 +148,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
                 cell.Value = evalResult;
                
             cell.Text = cell.Value?.ToString();
-
-            var style = sheet.GetStyle(cell);
-            if (style != null)
-                cell.ApplyFormat(style.Format);
+            cell.ApplyFormat();
 
             cells[cellAddress.Row, cellAddress.Column] = cell.Value;
         }

@@ -1,0 +1,53 @@
+﻿@using HubCloud.BlazorSheet.Core.Enums
+<td @key="@Cell.Uid"
+    @ref="_cellElement"
+    id="@Id"
+    class="@Cell.HtmlClass"
+    style="@_currentCellStyle"
+    @onclick="(e => OnCellClick(e))"
+    @ondblclick="(e => OnCellDblClick(e))"
+    colspan="@Cell.Colspan"
+    rowspan="@Cell.Rowspan">
+
+    @if (Cell.HasLink)
+    {
+        <a href="@Cell.Link" target="_blank">@Cell.StringValue</a>
+    }
+    else
+    {
+        if (Cell.Indent > 0)
+        {
+            <span>@GetHtmlSpacing(Cell.Indent)</span>
+            <span>@Cell.Text</span>
+        }
+        else
+        {
+            @Cell.Text
+        }
+
+        @if (Regime == SheetRegimes.Design)
+        {
+            
+            if (Cell.EditSettingsUid.HasValue)
+            {
+                var editSettings = Sheet.GetEditSettings(Cell);
+                <span>&laquo;</span>
+                <span>@ControlPresentation(editSettings)</span>
+                <span>&raquo;</span>                               
+            }
+            
+            @if (!string.IsNullOrEmpty(@Cell.Format))
+            {
+                <span>:</span>
+                <span>@Cell.Format</span>
+            }
+
+            @if (!string.IsNullOrEmpty(Cell.Formula))
+            {
+                <span>=</span>
+                <small>@Cell.Formula</small>
+            }
+        }
+    }
+
+</td>

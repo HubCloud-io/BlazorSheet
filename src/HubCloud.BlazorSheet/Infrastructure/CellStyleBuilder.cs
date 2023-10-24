@@ -22,27 +22,27 @@ namespace HubCloud.BlazorSheet.Infrastructure
             var sb = new StringBuilder();
 
             sb.Append("overflow: hidden; white-space: nowrap;");
-
+            
             sb.Append("width:");
             sb.Append(column.Width);
             sb.Append(";");
-
+            
             sb.Append("max-width:");
             sb.Append(column.Width);
             sb.Append(";");
-
+            
             sb.Append("min-width:");
             sb.Append(column.Width);
             sb.Append(";");
-
+            
             sb.Append("height:");
             sb.Append(row.Height);
             sb.Append(";");
-
+            
             sb.Append("max-height:");
             sb.Append(row.Height);
             sb.Append(";");
-
+            
             sb.Append("min-height:");
             sb.Append(row.Height);
             sb.Append(";");

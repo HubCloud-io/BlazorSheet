@@ -10,7 +10,7 @@ public partial class SheetRenderPage: ComponentBase
 
     protected override void OnInitialized()
     {
-        _sheetSettings = BuildSheetSettingsWithCellNames(25, 25);
+        _sheetSettings = BuildSheetSettingsWithCellNames(1000, 15);
 
         _sheet = new Sheet(_sheetSettings);
     }

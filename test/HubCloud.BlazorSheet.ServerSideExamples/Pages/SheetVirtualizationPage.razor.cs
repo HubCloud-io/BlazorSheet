@@ -5,6 +5,7 @@ namespace HubCloud.BlazorSheet.ServerSideExamples.Pages
 {
     public partial class SheetVirtualizationPage : ComponentBase
     {
+        private bool _isVirtualizationEnabled;
         private Sheet _sheet;
         private SheetSettings _sheetSettings;
 
@@ -54,11 +55,6 @@ namespace HubCloud.BlazorSheet.ServerSideExamples.Pages
             }
 
             return sheetSettings;
-        }
-
-        private void CheckboxClicked(ChangeEventArgs e)
-        {
-            _sheet.UseVirtualization = (bool)e.Value;
         }
     }
 }

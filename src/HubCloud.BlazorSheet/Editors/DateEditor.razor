@@ -1,0 +1,8 @@
+﻿<input id="@Id" 
+       type="date" 
+       disabled="@IsDisabled"
+       value="@_value"
+       style="width: 100%; height: 100%; border: none;"
+       @onkeydown="(e=>OnInputKeyDown(e))"
+       @onchange="(e=>OnValueChange(e))"/>
+

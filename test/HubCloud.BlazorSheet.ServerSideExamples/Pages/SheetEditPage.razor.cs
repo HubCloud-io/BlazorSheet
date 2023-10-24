@@ -9,7 +9,7 @@ namespace HubCloud.BlazorSheet.ServerSideExamples.Pages;
 
 public partial class SheetEditPage: ComponentBase
 {
-    private IItemsSourceDataProvider _itemSourceDataProvider = new ItemsSourceProvider();
+    private IDataTypeDataProvider _dataTypeDataProvider = new DataTypeDataProvider();
 
     private SheetComponent _sheetComponent;
     private Sheet _sheet;
@@ -82,16 +82,7 @@ public partial class SheetEditPage: ComponentBase
     private void OnCellSelected(SheetCell cell)
     {
         _selectedCell = cell;
-        var style = _sheet.GetStyle(cell);
-        _commandPanelModel.CopyFrom(style);
-
-        var cellAddress = _sheet.CellAddress(cell);
-        _commandPanelModel.SelectedCellAddress = $"R{cellAddress.Row}C{cellAddress.Column}";
-        _commandPanelModel.InputText = cell.Formula;
-
-        var editSettings = _sheet.GetEditSettings(cell);
-        _commandPanelModel.SetEditSettings(editSettings);
-
+        _sheet.SetSettingsToCommandPanel(cell, _commandPanelModel);
         _canRowsBeGrouped = false;
         _canRowsBeUngrouped = false;
     }
@@ -111,17 +102,45 @@ public partial class SheetEditPage: ComponentBase
         if (_selectedCell == null)
             return;
 
-        var result = _sheet.CheckFreezedRowsAndColumns(_commandPanelModel);
+        _sheet.SetSettingsFromCommandPanel(_selectedCells, _selectedCell, _commandPanelModel);
+    }
 
+    private void OnFreezedRowsChanged(int freezedRowsCount)
+    {
+        var result = _sheet.SetFreezedRows(freezedRowsCount);
+        if (!result)
+        {
+            _commandPanelModel.FreezedRows = _sheet.FreezedRows;
+            AlertService.Add("Rows can't be freezed", BBComponents.Enums.BootstrapColors.Warning);
+        }
+    }
+
+    private void OnFreezedColumnsChanged(int freezedColumnsCount)
+    {
+        var result = _sheet.SetFreezedColumns(freezedColumnsCount);
         if (!result)
         {
             _commandPanelModel.FreezedColumns = _sheet.FreezedColumns;
-            _commandPanelModel.FreezedRows = _sheet.FreezedRows;
-
-            AlertService.Add("Rows or columns can't be freezed", BBComponents.Enums.BootstrapColors.Warning);
+            AlertService.Add("Columns can't be freezed", BBComponents.Enums.BootstrapColors.Warning);
         }
+    }
 
-        _sheet.SetSettingsFromCommandPanel(_selectedCells, _selectedCell, _commandPanelModel);
+    private void OnFormatChanged()
+    {
+        _sheet.SetFormat(_selectedCells, _commandPanelModel.FormatType, _commandPanelModel.CustomFormat);
+    }
+
+    private void OnFormulaChanged()
+    {
+        _sheet.SetFormula(_selectedCells, _commandPanelModel.InputText);
+    }
+
+    private void OnEditSettingsChanged(SheetCellEditSettings editSettings)
+    {
+        if (_selectedCell == null)
+            return;
+        
+        _sheet.SetEditSettings(_selectedCells, editSettings.ConcreteClone());
     }
 
     private void OnGroupRows()
@@ -146,37 +165,11 @@ public partial class SheetEditPage: ComponentBase
 
     private void OnCollapseExpandAllRows(bool isExpand)
     {
-        var headRows = _sheet.Rows
-            .Where(x => x.IsGroup)
-            .ToList();
-
-        foreach (var headRow in headRows)
-        {
-            headRow.IsOpen = isExpand;
-
-            var groupedRows = _sheet.Rows
-                .Where(x => x.ParentUid == headRow.Uid)
-                .ToList();
-
-            groupedRows.ForEach(x => x.IsHidden = isExpand ? false : true);
-        }
+        _sheet.CollapseExpandRows(isExpand);
     }
 
     private void OnCollapseExpandAllColumns(bool isExpand)
     {
-        var headColumns = _sheet.Columns
-            .Where(x => x.IsGroup)
-            .ToList();
-
-        foreach (var headColumn in headColumns)
-        {
-            headColumn.IsOpen = isExpand;
-
-            var groupedColumns = _sheet.Columns
-                .Where(x => x.ParentUid == headColumn.Uid)
-                .ToList();
-
-            groupedColumns.ForEach(x => x.IsHidden = isExpand ? false : true);
-        }
+        _sheet.CollapseExpandColumns(isExpand);
     }
 }

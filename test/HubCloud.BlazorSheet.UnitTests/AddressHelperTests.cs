@@ -24,7 +24,35 @@ public class AddressHelperTests
     [TestCase("R3C41", "AO3")]
     public void RowCellToExcelAddress_Tests(string inputAddress, string expected)
     {
-        var outputAddress = AddressHelper.ConvertR1C1ToA1Address(inputAddress);
+        var outputAddress = AddressHelper.ConvertR1C1ToA1Address(inputAddress, 0 , 0);
         Assert.AreEqual(outputAddress, expected);
+    }
+
+    [TestCase("R1C", "R1C5", 4, 5)]
+    [TestCase("RC1", "R4C1", 4, 5)]
+    [TestCase("R[0]C1", "R4C1", 4, 5)]
+    [TestCase("R1C[0]", "R1C5", 4, 5)]
+    [TestCase("R[-1]C5", "R3C5", 4, 5)]
+    [TestCase("R3C[-2]", "R3C3", 4, 5)]
+    [TestCase("R[-1]C", "R3C5", 4, 5)]
+    [TestCase("RC[-2]", "R4C3", 4, 5)]
+    public void ProcessR1C1Address_Tests(string inputAddress, string expected, int currentRow, int currentCol)
+    {
+        var outputAddress = AddressHelper.ProcessR1C1Address(inputAddress, currentRow, currentCol);
+        Assert.AreEqual(outputAddress, expected);
+    }
+
+    [TestCase]
+    public void GetColumnLetter_Tests()
+    {
+        var c25 = AddressHelper.GetColumnLetter("25");
+        var c26 = AddressHelper.GetColumnLetter("26");
+        var c27 = AddressHelper.GetColumnLetter("27");
+        var c28 = AddressHelper.GetColumnLetter("28");
+        
+        Assert.AreEqual(c25, "Y");
+        Assert.AreEqual(c26, "Z");
+        Assert.AreEqual(c27, "AA");
+        Assert.AreEqual(c28, "AB");
     }
 }

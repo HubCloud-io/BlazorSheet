@@ -4,13 +4,14 @@ using System.Text;
 using HubCloud.BlazorSheet.EvalEngine.Engine.ExcelFormulaConverter.Models;
 using HubCloud.BlazorSheet.EvalEngine.Engine.ExcelFormulaConverters.Abstractions;
 using HubCloud.BlazorSheet.EvalEngine.Engine.ExcelFormulaConverters.Helpers;
-using HubCloud.BlazorSheet.EvalEngine.Engine.FormulaProcessors;
 using HubCloud.BlazorSheet.EvalEngine.Engine.FormulaProcessors.Helpers;
 using HubCloud.BlazorSheet.EvalEngine.Engine.FormulaProcessors.Models;
-using HubCloud.BlazorSheet.EvalEngine.Helpers;
 
 namespace HubCloud.BlazorSheet.EvalEngine.Engine.ExcelFormulaConverters
 {
+    /// <summary>
+    /// Convert formula from Excel to BlazorSheet
+    /// </summary>
     public class ExcelFormulaConverter : IExcelToSheetConverter
     {
         public ConvertResult Convert(string excelFormula)

@@ -5,22 +5,30 @@ using HubCloud.BlazorSheet.EvalEngine.Engine.ExcelFormulaConverter.Models;
 using HubCloud.BlazorSheet.EvalEngine.Engine.ExcelFormulaConverters.Abstractions;
 using HubCloud.BlazorSheet.EvalEngine.Engine.ExcelFormulaConverters.Helpers;
 using HubCloud.BlazorSheet.EvalEngine.Engine.ExcelFormulaConverters.Models;
-using HubCloud.BlazorSheet.EvalEngine.Engine.FormulaProcessors;
 using HubCloud.BlazorSheet.EvalEngine.Engine.FormulaProcessors.Helpers;
 using HubCloud.BlazorSheet.EvalEngine.Engine.FormulaProcessors.Models;
 using HubCloud.BlazorSheet.EvalEngine.Helpers;
 
 namespace HubCloud.BlazorSheet.EvalEngine.Engine.ExcelFormulaConverters
 {
+    /// <summary>
+    /// Convert formula from BlazorSheet to Excel format
+    /// </summary>
     public class SheetFormulaConverter : ISheetToExcelConverter
     {
         public ConvertResult Convert(string excelFormula,
-            CellAddressFormat cellAddressFormat = CellAddressFormat.A1Format)
+            CellAddressFormat cellAddressFormat = CellAddressFormat.A1Format,
+            int currentRow = 0,
+            int currentCol = 0)
         {
             var treeBuilder = new FormulaTreeBuilder();
             var statementTree = treeBuilder.BuildStatementTree(excelFormula.Trim());
             
-            statementTree = ProcessTree(statementTree, cellAddressFormat, out var exceptionList);
+            statementTree = ProcessTree(statementTree,
+                cellAddressFormat,
+                out var exceptionList,
+                currentRow,
+                currentCol);
             
             var convertResult = new ConvertResult();
             var formula = treeBuilder
@@ -35,7 +43,9 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.ExcelFormulaConverters
         #region private methods
         private List<Statement> ProcessTree(List<Statement> statementTree,
             CellAddressFormat excelAddressFormat,
-            out List<ConvertException> exceptionList)
+            out List<ConvertException> exceptionList,
+            int currentRow = 0,
+            int currentCol = 0)
         {
             exceptionList = new List<ConvertException>();
             foreach (var statement in statementTree)
@@ -43,15 +53,18 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.ExcelFormulaConverters
                 switch (statement.Type)
                 {
                     case ElementType.Function:
-                        statement.ProcessedStatement = ProcessFunction(statement, excelAddressFormat, out var functionExceptionList);
+                        statement.ProcessedStatement = ProcessFunction(statement, excelAddressFormat, out var functionExceptionList, currentRow, currentCol);
                         if (functionExceptionList?.Any() == true)
                             exceptionList.AddRange(functionExceptionList);
                         break;
                     case ElementType.Address when excelAddressFormat == CellAddressFormat.A1Format:
-                        statement.ProcessedStatement = AddressHelper.ConvertR1C1ToA1Address(statement.OriginStatement);
+                        statement.ProcessedStatement = AddressHelper.ConvertR1C1ToA1Address(statement.OriginStatement, currentRow, currentCol);
+                        break;
+                    case ElementType.Address when excelAddressFormat == CellAddressFormat.R1C1Format:
+                        statement.ProcessedStatement = AddressHelper.ProcessR1C1Address(statement.OriginStatement, currentRow, currentCol);
                         break;
                     case ElementType.AddressRange when excelAddressFormat == CellAddressFormat.A1Format:
-                        statement.ProcessedStatement = ProcessAddressRange(statement.OriginStatement, out var convertException);
+                        statement.ProcessedStatement = ProcessAddressRange(statement.OriginStatement, out var convertException, currentRow, currentCol);
                         if (convertException != null)
                             exceptionList.Add(convertException);
                         break;
@@ -64,7 +77,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.ExcelFormulaConverters
             return statementTree;
         }
         
-        private string ProcessAddressRange(string addressRange, out ConvertException exception)
+        private string ProcessAddressRange(string addressRange, out ConvertException exception, int currentRow, int currentCol)
         {
             exception = null;
             var arr = addressRange.Split(':');
@@ -78,12 +91,17 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.ExcelFormulaConverters
                 return addressRange;
             }
 
-            return $"{AddressHelper.ConvertR1C1ToA1Address(arr.First())}:{AddressHelper.ConvertR1C1ToA1Address(arr.Last())}";
+            var rangeStart = AddressHelper.ConvertR1C1ToA1Address(arr.First(), currentRow, currentCol);
+            var rangeEnd = AddressHelper.ConvertR1C1ToA1Address(arr.Last(), currentRow, currentCol);
+
+            return $"{rangeStart}:{rangeEnd}";
         }
 
         private string ProcessFunction(Statement statement,
             CellAddressFormat cellAddressFormat,
-            out List<ConvertException> exceptionList)
+            out List<ConvertException> exceptionList,
+            int currentRow,
+            int currentCol)
         {
             exceptionList = new List<ConvertException>();
             var processedStatement = new StringBuilder();
@@ -109,7 +127,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.ExcelFormulaConverters
                 
                 foreach (var innerStatement in p.InnerStatements)
                 {
-                    var st = ProcessTree(new List<Statement> {innerStatement}, cellAddressFormat, out var innerExceptionList);
+                    var st = ProcessTree(new List<Statement> {innerStatement}, cellAddressFormat, out var innerExceptionList, currentRow, currentCol);
                     if (innerExceptionList?.Any() == true)
                         exceptionList.AddRange(innerExceptionList);
 

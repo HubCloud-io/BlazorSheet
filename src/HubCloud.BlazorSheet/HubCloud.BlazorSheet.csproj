@@ -4,7 +4,7 @@
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>disable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Version>0.1.38</Version>
+    <Version>0.2.33</Version>
     <Authors>HubCloud</Authors>
     <Description>Sheet component for Blazor</Description>
     <PackageId>HubCloud.BlazorSheet</PackageId>
@@ -23,12 +23,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="HubCloud.BBComponents" Version="6.0.34" />
+    <PackageReference Include="HubCloud.BBComponents" Version="6.0.37" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.5" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\HubCloud.BlazorSheet.Core\HubCloud.BlazorSheet.Core.csproj" />
   </ItemGroup>
+
 
 </Project>

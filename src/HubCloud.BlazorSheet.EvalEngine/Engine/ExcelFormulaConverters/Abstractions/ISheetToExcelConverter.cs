@@ -5,6 +5,9 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.ExcelFormulaConverters.Abstract
 {
     public interface ISheetToExcelConverter
     {
-        ConvertResult Convert(string excelFormula, CellAddressFormat cellAddressFormat = CellAddressFormat.A1Format);
+        ConvertResult Convert(string excelFormula,
+            CellAddressFormat cellAddressFormat = CellAddressFormat.A1Format,
+            int currentRow = 0,
+            int currentCol = 0);
     }
 }

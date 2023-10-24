@@ -101,10 +101,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
                 }
                
                 cell.Text = cell.Value?.ToString();
-
-                var style = _sheet.GetStyle(cell);
-                if (style != null)
-                    cell.ApplyFormat(style.Format);
+                cell.ApplyFormat();
 
                 _cells[cellAddress.Row, cellAddress.Column] = cell.Value;
             }

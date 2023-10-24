@@ -27,13 +27,15 @@ namespace HubCloud.BlazorSheet.Core.Models
         public int BorderWidth { get; set; } = 1;
         public string BorderColor { get; set; } = "#000000";
         
-        public string ItemsSource { get; set; }
-        public CellControlKinds ControlKind { get; set; }
-        public int NumberDigits { get; set; }
+        // public int DataType { get; set; }
+        // public string ItemsSource { get; set; }
+        // public CellControlKinds ControlKind { get; set; }
+        // public int NumberDigits { get; set; }
+
+        public SheetCellEditSettings EditSettings { get; set; } = new SheetCellEditSettings();
         
         public string SelectedCellAddress { get; set; }
         public string InputText { get; set; }
-        public bool CellLocked { get; set; } = true;
         public bool SheetProtected { get; set; }
 
         public void CopyFrom(SheetCommandPanelModel clone)
@@ -53,7 +55,6 @@ namespace HubCloud.BlazorSheet.Core.Models
             this.BorderColor = clone.BorderColor;
             this.FormatType = clone.FormatType;
             this.CustomFormat = clone.CustomFormat;
-            this.CellLocked = clone.CellLocked;
             this.SheetProtected = clone.SheetProtected;
         }
         
@@ -96,42 +97,20 @@ namespace HubCloud.BlazorSheet.Core.Models
             {
                 TextAlign = DefaultTextAlign;
             }
-
-            switch (cellStyle.Format)
-            {
-                case "":
-                case null:
-                    this.FormatType = CellFormatTypes.None;
-                    break;
-                case CellFormatConsts.Integer:
-                    this.FormatType = CellFormatTypes.Integer;
-                    break;
-                case CellFormatConsts.IntegerTwoDecimalPlaces:
-                    this.FormatType = CellFormatTypes.IntegerTwoDecimalPlaces;
-                    break;
-                case CellFormatConsts.IntegerThreeDecimalPlaces:
-                    this.FormatType = CellFormatTypes.IntegerThreeDecimalPlaces;
-                    break;
-                case CellFormatConsts.Date:
-                    this.FormatType = CellFormatTypes.Date;
-                    break;
-                case CellFormatConsts.DateTime:
-                    this.FormatType = CellFormatTypes.DateTime;
-                    break;
-                default:
-                    this.FormatType = CellFormatTypes.Custom;
-                    this.CustomFormat = cellStyle.Format;
-                    break;
-            }
-
-            this.CellLocked = cellStyle.Locked;
         }
 
         public void SetEditSettings(SheetCellEditSettings editSettings)
         {
-            ControlKind = editSettings.ControlKind;
-            NumberDigits = editSettings.NumberDigits;
-            ItemsSource = editSettings.ItemsSource;
+            EditSettings.ControlKind = editSettings.ControlKind;
+            EditSettings.NumberDigits = editSettings.NumberDigits;
+            EditSettings.ItemsSource = editSettings.ItemsSource;
+            EditSettings.CellDataType = editSettings.CellDataType;
+
+            EditSettings.Required = editSettings.Required;
+            EditSettings.DefaultValue = editSettings.DefaultValue;
+            EditSettings.AutoGenerate = editSettings.AutoGenerate;
+            EditSettings.AutoGenerateMask = editSettings.AutoGenerateMask;
+            EditSettings.AutoClearMethod = editSettings.AutoClearMethod;
         }
 
         private int ParseFontSize(string fontSizePx)
@@ -150,6 +129,36 @@ namespace HubCloud.BlazorSheet.Core.Models
             else
             {
                 return DefaultFontSize;
+            }
+        }
+
+        public void SetFromatType(string format)
+        {
+            switch (format)
+            {
+                case "":
+                case null:
+                    FormatType = CellFormatTypes.None;
+                    break;
+                case CellFormatConsts.Integer:
+                    FormatType = CellFormatTypes.Integer;
+                    break;
+                case CellFormatConsts.IntegerTwoDecimalPlaces:
+                    FormatType = CellFormatTypes.IntegerTwoDecimalPlaces;
+                    break;
+                case CellFormatConsts.IntegerThreeDecimalPlaces:
+                    FormatType = CellFormatTypes.IntegerThreeDecimalPlaces;
+                    break;
+                case CellFormatConsts.Date:
+                    FormatType = CellFormatTypes.Date;
+                    break;
+                case CellFormatConsts.DateTime:
+                    FormatType = CellFormatTypes.DateTime;
+                    break;
+                default:
+                    FormatType = CellFormatTypes.Custom;
+                    CustomFormat = format;
+                    break;
             }
         }
     }

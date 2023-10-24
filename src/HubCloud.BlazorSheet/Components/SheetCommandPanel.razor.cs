@@ -4,6 +4,7 @@ using HubCloud.BlazorSheet.Core.Interfaces;
 using HubCloud.BlazorSheet.Core.Models;
 using HubCloud.BlazorSheet.Infrastructure;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
 
 namespace HubCloud.BlazorSheet.Components;
 
@@ -11,18 +12,32 @@ public partial class SheetCommandPanel:ComponentBase
 {
     private bool _isCollapseExpandAllRows;
     private bool _isCollapseExpandAllColumns;
+    
+    private bool _isEditSettingsOpen;
+    private double _clientX;
+    private double _clientY;
 
     private List<Tuple<string, string>> _textAlignSource;
     private List<Tuple<string, CellFormatTypes>> _cellFormatSource;
     private List<Tuple<CellBorderTypes, string>> _borderTypesSource;
     private List<Tuple<CellControlKinds, string>> _controlKindSource;
-    private List<Tuple<string, string>> _itemsSourceSource;
+    private List<Tuple<int, string>> _dataTypeSource;
 
     [Parameter]
     public SheetCommandPanelModel Model { get; set; }
     
     [Parameter]
     public EventCallback Changed { get; set; }
+    [Parameter]
+    public EventCallback<int> FreezedRowsChanged { get; set; }
+    [Parameter]
+    public EventCallback<int> FreezedColumnsChanged { get; set; }
+
+    [Parameter]
+    public EventCallback FormatChanged { get; set; }
+
+    [Parameter]
+    public EventCallback FormulaChanged { get; set; }
 
     [Parameter]
     public EventCallback ExportClicked { get; set; }
@@ -53,6 +68,9 @@ public partial class SheetCommandPanel:ComponentBase
 
     [Parameter]
     public EventCallback<bool> CollapseExpandAllColumns { get; set; }
+    
+    [Parameter]
+    public EventCallback<SheetCellEditSettings> EditSettingsChanged { get; set; }
 
     [Parameter]
     public bool CanCellsBeJoined { get; set; }
@@ -71,8 +89,10 @@ public partial class SheetCommandPanel:ComponentBase
 
     [Parameter]
     public int SelectedCellsCount { get; set; }
-
-    [Parameter] public IItemsSourceDataProvider ItemsSourceDataProvider { get; set; } 
+    
+    [Parameter]
+    public IDataTypeDataProvider DataTypeDataProvider { get; set; }
+    
     
     protected override void OnInitialized()
     {
@@ -98,9 +118,9 @@ public partial class SheetCommandPanel:ComponentBase
         _cellFormatSource.Add(new Tuple<string, CellFormatTypes>("Date&Time", CellFormatTypes.DateTime));
         _cellFormatSource.Add(new Tuple<string, CellFormatTypes>("Custom", CellFormatTypes.Custom));
 
-        if (ItemsSourceDataProvider != null)
+        if (DataTypeDataProvider != null)
         {
-            _itemsSourceSource = ItemsSourceDataProvider.GetItems().ToList();
+            _dataTypeSource = DataTypeDataProvider.GetItems().ToList();
         }
         
         _controlKindSource = new List<Tuple<CellControlKinds, string>>();
@@ -108,9 +128,8 @@ public partial class SheetCommandPanel:ComponentBase
         _controlKindSource.Add(new Tuple<CellControlKinds, string>(CellControlKinds.TextInput, "Text input"));
         _controlKindSource.Add(new Tuple<CellControlKinds, string>(CellControlKinds.NumberInput, "Number input"));
         _controlKindSource.Add(new Tuple<CellControlKinds, string>(CellControlKinds.DateInput, "Date input"));
-        _controlKindSource.Add(new Tuple<CellControlKinds, string>(CellControlKinds.DateTimeInput, "Date&Time input"));
         _controlKindSource.Add(new Tuple<CellControlKinds, string>(CellControlKinds.CheckBox, "Check box"));
-        _controlKindSource.Add(new Tuple<CellControlKinds, string>(CellControlKinds.ComboBox, "Combo box"));
+        _controlKindSource.Add(new Tuple<CellControlKinds, string>(CellControlKinds.Select, "Select"));
     }
 
     protected override void OnParametersSet()
@@ -146,12 +165,22 @@ public partial class SheetCommandPanel:ComponentBase
         Model.BorderColor = e.Value?.ToString();
         await Changed.InvokeAsync(null);
     }
-
+    
     private async Task OnSettingsChanged()
     {
         await Changed.InvokeAsync(null);
     }
-    
+
+    private async Task OnFreezedRowsChanged()
+    {
+        await FreezedRowsChanged.InvokeAsync(Model.FreezedRows);
+    }
+
+    private async Task OnFreezedColumnsChanged()
+    {
+        await FreezedColumnsChanged.InvokeAsync(Model.FreezedColumns);
+    }
+
     private static string ToggleButtonStyle(bool flag)
     {
         var sb = new StringBuilder();
@@ -179,13 +208,18 @@ public partial class SheetCommandPanel:ComponentBase
         await Changed.InvokeAsync(null);
     }
 
-    private async Task OnCellFormatChanged(CellFormatTypes formatType)
+    private async Task OnFormatChanged(CellFormatTypes formatType)
     {
         if (formatType == CellFormatTypes.Custom)
             return;
 
         Model.CustomFormat = string.Empty;
-        await Changed.InvokeAsync(null);
+        await FormatChanged.InvokeAsync();
+    }
+
+    private async Task OnFormulaChanged()
+    {
+        await FormulaChanged.InvokeAsync();
     }
 
     private async void OnOpenCellLinkModal()
@@ -242,5 +276,24 @@ public partial class SheetCommandPanel:ComponentBase
     {
         _isCollapseExpandAllColumns = !_isCollapseExpandAllColumns;
         await CollapseExpandAllColumns.InvokeAsync(_isCollapseExpandAllColumns);
+    }
+
+    private void OnEditSettingsClick(MouseEventArgs e)
+    {
+        _isEditSettingsOpen = true;
+
+        _clientX = e.ClientX;
+        _clientY = e.ClientY;
+    }
+
+    private async Task OnEditParametersClosed(SheetCellEditSettings editSettings)
+    {
+        _isEditSettingsOpen = false;
+
+        if (editSettings != null)
+        {
+            Model.EditSettings = editSettings;
+            await EditSettingsChanged.InvokeAsync(Model.EditSettings);
+        }
     }
 }

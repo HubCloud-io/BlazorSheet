@@ -1,0 +1,34 @@
+﻿<td class="hc-grid-cell"
+    style="@LeftSideCellStyle()"
+    @onclick="(async () => await Click.InvokeAsync())"
+    @oncontextmenu="(async (e) => await RowContextMenu.InvokeAsync(e))"
+    @oncontextmenu:preventDefault>
+    <span>@(Sheet.RowNumber(Row))</span>
+
+    @if (Row.IsGroup)
+    {
+        @if (Row.IsOpen)
+        {
+            <span class="fa fa-solid fa-chevron-down text-primary"
+                  style="cursor:pointer;margin-left:5px;"
+                  @onclick="(e => RowGroupOpenCloseClick())">
+            </span>
+        }
+        else
+        {
+            <span class="fa fa-solid fa-chevron-right text-primary"
+                  style="cursor:pointer;margin-left:5px;"
+                  @onclick="(e => RowGroupOpenCloseClick())">
+            </span>
+        }
+    }
+    @if (Row.IsAddRemoveAllowed)
+    {
+        <span>&nbsp;</span>
+        <a href="#" @onclick="async () => await AddRowAfter.InvokeAsync()" @onclick:preventDefault>
+            <span class="fa fa-plus text-success"
+                  style="float:right; margin-top: 3px;">
+            </span>
+        </a>
+    }
+</td>

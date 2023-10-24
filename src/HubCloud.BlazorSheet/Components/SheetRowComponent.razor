@@ -1,0 +1,29 @@
+﻿<tr @key="@Row.Uid">
+    <SheetRowHeaderCellComponent Row="Row"
+                                 Sheet="Sheet"
+                                 IsHiddenCellsVisible="@IsHiddenCellsVisible"
+                                 CellStyleBuilder="@StyleBuilder"
+                                 Click="async () => await RowHeaderCellClick.InvokeAsync()"
+                                 RowContextMenu="async (args) => await RowContextMenu.InvokeAsync(args)" />
+
+    @foreach (var column in Sheet.Columns)
+    {
+        var cell = Sheet.GetCell(Row, column);
+        if (cell == null)
+            continue;
+
+        if (ShouldCellBeDisplayed(column, cell))
+            continue;
+
+        <SheetCellComponent @key="@cell" 
+                            Sheet="@Sheet"
+                            Regime="@Regime"
+                            Row="@Row"
+                            Column="@column"
+                            Cell="@cell"
+                            StyleBuilder="@StyleBuilder"
+                            IsHiddenCellsVisible="@IsHiddenCellsVisible"
+                            Clicked="async (sheetCell) => await CellClicked.InvokeAsync(sheetCell)"
+                            StartEdit="async (sheetCell) => await CellStartEdit.InvokeAsync(sheetCell)" />
+    }
+</tr>
