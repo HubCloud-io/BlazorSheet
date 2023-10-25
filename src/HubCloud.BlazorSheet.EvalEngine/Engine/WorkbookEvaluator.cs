@@ -146,9 +146,9 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
                 cell.Value = uValue.Value;
             else
                 cell.Value = evalResult;
-               
-            cell.Text = cell.Value?.ToString();
-            cell.ApplyFormat();
+            
+            var editSettings = sheet.GetEditSettings(cell); 
+            cell.ApplyFormat(editSettings.CellDataType);
 
             cells[cellAddress.Row, cellAddress.Column] = cell.Value;
         }
