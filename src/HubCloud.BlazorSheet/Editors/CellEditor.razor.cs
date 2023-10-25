@@ -55,7 +55,7 @@ public partial class CellEditor : ComponentBase
 
     public async Task OnChanged()
     {
-        CellEditInfo.Cell.ApplyFormat();
+        CellEditInfo.Cell.ApplyFormat(CellEditInfo.EditSettings.CellDataType);
         if (string.IsNullOrEmpty(CellEditInfo.Cell.Text))
         {
             CellEditInfo.Cell.Text = CellEditInfo.Cell.Value.ToString();

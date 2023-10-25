@@ -182,15 +182,14 @@ namespace HubCloud.BlazorSheet.Core.Models
         {
             foreach (var cell in Cells)
             {
-                cell.Text = cell.Value?.ToString();
-                cell.ApplyFormat();
+                PrepareCellText(cell);
             }
         }
 
         public void PrepareCellText(SheetCell cell)
         {
-            cell.Text = cell.Value?.ToString();
-            cell.ApplyFormat();
+            var editSettings = GetEditSettings(cell);
+            cell.ApplyFormat(editSettings?.CellDataType ?? 0);
         }
 
         public List<SheetCell> GetRowCells(SheetRow row)
@@ -267,16 +266,17 @@ namespace HubCloud.BlazorSheet.Core.Models
 
         public SheetCellEditSettings GetEditSettings(SheetCell cell)
         {
-            SheetCellEditSettings editSettings = null;
+            SheetCellEditSettings editSettings;
 
             if (cell.EditSettingsUid.HasValue)
+            {
                 editSettings = EditSettings.FirstOrDefault(x => x.Uid == cell.EditSettingsUid);
-
-            if (editSettings == null)
+            }
+            else
             {
                 editSettings = new SheetCellEditSettings();
             }
-
+            
             return editSettings;
         }
 
