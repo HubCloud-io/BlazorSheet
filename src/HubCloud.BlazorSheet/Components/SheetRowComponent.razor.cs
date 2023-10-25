@@ -21,6 +21,7 @@ namespace HubCloud.BlazorSheet.Components
         [Parameter] public CellStyleBuilder StyleBuilder { get; set; }
         [Parameter] public SheetRegimes Regime { get; set; }
         [Parameter] public EventCallback RowHeaderCellClick { get; set; }
+        [Parameter] public EventCallback AddRowAfter { get; set; }
         [Parameter] public EventCallback<SheetCell> CellClicked { get; set; }
         [Parameter] public EventCallback<SheetCell> CellStartEdit { get; set; }
         [Parameter] public EventCallback<MouseEventArgs> RowContextMenu { get; set; }

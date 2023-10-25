@@ -4,7 +4,8 @@
                                  IsHiddenCellsVisible="@IsHiddenCellsVisible"
                                  CellStyleBuilder="@StyleBuilder"
                                  Click="async () => await RowHeaderCellClick.InvokeAsync()"
-                                 RowContextMenu="async (args) => await RowContextMenu.InvokeAsync(args)" />
+                                 RowContextMenu="async (args) => await RowContextMenu.InvokeAsync(args)" 
+                                 AddRowAfter="async () => await AddRowAfter.InvokeAsync()" />
 
     @foreach (var column in Sheet.Columns)
     {
