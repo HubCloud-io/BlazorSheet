@@ -41,7 +41,8 @@
                                StyleBuilder="@_cellStyleBuilder"
                                CellClicked="OnCellClicked"
                                CellStartEdit="OnCellStartEdit"
-                               RowContextMenu="(e) => OnRowContextMenu(e, row)" />
+                               RowContextMenu="(e) => OnRowContextMenu(e, row)"
+                               AddRowAfter="() => OnAddRowAfter(row)"/>
         }
 
         @if (IsVirtualizationEnabled)
@@ -61,7 +62,8 @@
                                        CellClicked="OnCellClicked"
                                        CellStartEdit="OnCellStartEdit"
                                        RowContextMenu="(e) => OnRowContextMenu(e, row)"
-                                       RowHeaderCellClick="() => OnRowNumberCellClick(row)" />
+                                       RowHeaderCellClick="() => OnRowNumberCellClick(row)"
+                                       AddRowAfter="() => OnAddRowAfter(row)" />
 
                 </ItemContent>
             </Virtualize>
@@ -79,7 +81,8 @@
                                    CellClicked="OnCellClicked"
                                    CellStartEdit="OnCellStartEdit"
                                    RowContextMenu="(e) => OnRowContextMenu(e, row)" 
-                                   RowHeaderCellClick="() => OnRowNumberCellClick(row)" />
+                                   RowHeaderCellClick="() => OnRowNumberCellClick(row)"
+                                   AddRowAfter="() => OnAddRowAfter(row)" />
             }
         }
 
