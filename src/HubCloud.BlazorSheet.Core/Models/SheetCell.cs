@@ -188,23 +188,70 @@ namespace HubCloud.BlazorSheet.Core.Models
             return ConcreteClone();
         }
 
+        //public void ApplyFormat(int cellDataType = 0)
+        //{
+        //    if (cellDataType >= 20 ||
+        //        string.IsNullOrEmpty(StringValue))
+        //        return;
+
+        //    if (string.IsNullOrEmpty(Format))
+        //        Text = StringValue;
+
+        //    if (decimal.TryParse(
+        //            StringValue.Replace(',', '.'),
+        //            NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingSign,
+        //            new NumberFormatInfo { NumberDecimalSeparator = "." },
+        //            out var decimalValue))
+        //        Text = CellValueFormatHelper.ToStringWithFormat(decimalValue, Format);
+        //    else if (DateTime.TryParse(StringValue, out var date))
+        //        Text = date.ToString(Format);
+        //}
+
         public void ApplyFormat(int cellDataType = 0)
         {
             if (cellDataType >= 20 ||
                 string.IsNullOrEmpty(StringValue))
                 return;
 
-            if (string.IsNullOrEmpty(Format))
-                Text = StringValue;
-
-            if (decimal.TryParse(
-                    StringValue.Replace(',', '.'),
-                    NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingSign,
-                    new NumberFormatInfo { NumberDecimalSeparator = "." },
-                    out var decimalValue))
-                Text = CellValueFormatHelper.ToStringWithFormat(decimalValue, Format);
-            else if (DateTime.TryParse(StringValue, out var date))
-                Text = date.ToString(Format);
+            if (Value is decimal decimalValue)
+            {
+                if (string.IsNullOrEmpty(Format))
+                    Text = decimalValue.ToString(new NumberFormatInfo { NumberDecimalSeparator = "." });
+                else
+                    Text = CellValueFormatHelper.ToStringWithFormat(decimalValue, Format);
+            }
+            else if (Value is double doublelValue)
+            {
+                if (string.IsNullOrEmpty(Format))
+                    Text = doublelValue.ToString(new NumberFormatInfo { NumberDecimalSeparator = "." });
+                else
+                    Text = CellValueFormatHelper.ToStringWithFormat(Convert.ToDecimal(doublelValue), Format);
+            }
+            else if (Value is DateTime dateTimeValue)
+            {
+                if (string.IsNullOrEmpty(Format))
+                    Text = dateTimeValue.ToString(CellFormatConsts.Date);
+                else
+                    Text = dateTimeValue.ToString(Format);
+            }
+            else
+            {
+                if (string.IsNullOrEmpty(Format))
+                    Text = StringValue;
+                else
+                {
+                    if (decimal.TryParse(
+                            StringValue.Replace(',', '.'),
+                            NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingSign,
+                            new NumberFormatInfo { NumberDecimalSeparator = "." },
+                            out decimalValue))
+                        Text = CellValueFormatHelper.ToStringWithFormat(decimalValue, Format);
+                    else if (DateTime.TryParse(StringValue, out dateTimeValue))
+                        Text = dateTimeValue.ToString(Format);
+                    else
+                        Text = StringValue;
+                }
+            }
         }
 
         public void SetFormat(CellFormatTypes formatType, string customFormat)
