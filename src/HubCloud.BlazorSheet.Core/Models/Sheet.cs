@@ -311,12 +311,16 @@ namespace HubCloud.BlazorSheet.Core.Models
             return _rows.FirstOrDefault(x => x.Uid == uid);
         }
 
-        public SheetRow AddRow(SheetRow baseRow, int position, bool copySettings)
+        public SheetRow AddRow(SheetRow baseRow, int position, bool copySettings, Guid? rowUid = null)
         {
             var baseRowNumber = RowNumber(baseRow);
             var baseRowIndex = baseRowNumber - 1;
 
             var newRow = new SheetRow();
+            if (rowUid.HasValue)
+            {
+                newRow.Uid = rowUid.Value;
+            }
 
             if (copySettings)
             {
@@ -335,8 +339,10 @@ namespace HubCloud.BlazorSheet.Core.Models
                 if (copySettings)
                 {
                     // Copy style and edit settings.
-                    var baseCell = _cells.FirstOrDefault(x => x.RowUid == baseRow.Uid
-                                                              && x.ColumnUid == column.Uid);
+                    // var baseCell = _cells.FirstOrDefault(x => x.RowUid == baseRow.Uid
+                    //                                           && x.ColumnUid == column.Uid);
+
+                    var baseCell = _cellsLookUp.Get(baseRow.Uid, column.Uid);
                     CopyCellProperties(newCell, baseCell);
                 }
                 
@@ -381,12 +387,16 @@ namespace HubCloud.BlazorSheet.Core.Models
             return _columns.FirstOrDefault(x => x.Uid == uid);
         }
 
-        public SheetColumn AddColumn(SheetColumn baseColumn, int position, bool copySettings)
+        public SheetColumn AddColumn(SheetColumn baseColumn, int position, bool copySettings, Guid? columnUid = null)
         {
             var baseColumnNumber = ColumnNumber(baseColumn);
             var baseColumnIndex = baseColumnNumber - 1;
 
             var newColumn = new SheetColumn();
+            if (columnUid.HasValue)
+            {
+                newColumn.Uid = columnUid.Value;
+            }
 
             if (copySettings)
             {
@@ -405,8 +415,10 @@ namespace HubCloud.BlazorSheet.Core.Models
                 if (copySettings)
                 {
                     // Copy style and edit settings.
-                    var baseCell = _cells.FirstOrDefault(x => x.RowUid == row.Uid
-                                                              && x.ColumnUid == baseColumn.Uid);
+                    // var baseCell = _cells.FirstOrDefault(x => x.RowUid == row.Uid
+                    //                                           && x.ColumnUid == baseColumn.Uid);
+
+                    var baseCell = _cellsLookUp.Get(row.Uid, baseColumn.Uid);
                     CopyCellProperties(newCell, baseCell);
                 }
 
@@ -738,7 +750,7 @@ namespace HubCloud.BlazorSheet.Core.Models
         }
 
         private void ChangeSize<T>(int addRemoveCount, IReadOnlyCollection<T> collection, Action<T> removeAction,
-            Func<T, int, bool, T> addAction) where T : class
+            Func<T, int, bool, Guid?, T> addAction) where T : class
         {
             if (addRemoveCount > 0)
             {
@@ -757,7 +769,7 @@ namespace HubCloud.BlazorSheet.Core.Models
                     var lastItem = collection.LastOrDefault();
 
                     if (lastItem != null)
-                        addAction(lastItem, 1, false);
+                        addAction(lastItem, 1, false, null);
                 }
             }
         }
