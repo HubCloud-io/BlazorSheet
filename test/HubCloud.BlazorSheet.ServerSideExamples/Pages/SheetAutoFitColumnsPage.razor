@@ -1,0 +1,19 @@
+﻿@page "/sheetautofitcolumns"
+
+@using HubCloud.BlazorSheet.Components
+@using HubCloud.BlazorSheet.Core.Enums;
+
+<h3>SheetAutoFitColumnsPage</h3>
+
+<hr />
+
+<div class="row">
+    <div class="col-sm-12">
+
+        <SheetViewComponent Sheet="@_sheet"
+                        MaxHeight="500px"
+                        MaxWidth="1000px"
+                        Regime="SheetRegimes.InputForm"></SheetViewComponent>
+
+    </div>
+</div>

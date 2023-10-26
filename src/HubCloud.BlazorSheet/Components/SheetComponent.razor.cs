@@ -735,17 +735,6 @@ public partial class SheetComponent : ComponentBase
         return sb.ToString();
     }
 
-    public string CellStyle(SheetRow row, SheetColumn column, SheetCell cell)
-    {
-        return _cellStyleBuilder.GetCellStyle(Sheet, row, column, cell, _isHiddenCellsVisible);
-    }
-
-    private bool ShouldCellBeDisplayed(SheetColumn column, SheetRow row, SheetCell cell)
-    {
-        return ((column.IsHidden || row.IsHidden) && !_isHiddenCellsVisible) || cell.HiddenByJoin || row.IsCollapsed ||
-               column.IsCollapsed;
-    }
-
     public void OpenCellLinkModal()
     {
         if (_clientX != 0 && _clientY != 0 && _currentCell != null)

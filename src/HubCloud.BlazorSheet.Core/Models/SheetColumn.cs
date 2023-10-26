@@ -12,6 +12,7 @@ namespace HubCloud.BlazorSheet.Core.Models
         public bool IsHidden { get; set; }
         public bool IsCollapsed { get; set; }
         public bool IsAddRemoveAllowed { get; set; }
+        public bool IsAutoFitColumn { get; set; }
         public double WidthValue { get; set; } = 100;
         public string Width => (WidthValue.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)) + "px";
         public string Key => string.IsNullOrWhiteSpace(Name) ? Uid.ToString() : Name;
