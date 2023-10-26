@@ -24,13 +24,18 @@ namespace HubCloud.BlazorSheet.Components
         {
             var sb = new StringBuilder();
 
-            sb.Append("width:");
-            sb.Append(Column.Width);
-            sb.Append(";");
+            if (Column.IsAutoFitColumn)
+                sb.Append("max-width:fit-content;");
+            else
+            {
+                sb.Append("width:");
+                sb.Append(Column.Width);
+                sb.Append(";");
 
-            sb.Append("max-width:");
-            sb.Append(Column.Width);
-            sb.Append(";");
+                sb.Append("max-width:");
+                sb.Append(Column.Width);
+                sb.Append(";");
+            }
 
             sb.Append("min-width:");
             sb.Append(Column.Width);
