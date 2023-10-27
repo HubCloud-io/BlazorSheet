@@ -1,12 +1,18 @@
 ﻿@page "/sheetautofitcolumns"
 
 @using HubCloud.BlazorSheet.Components
+@using BBComponents.Components
 @using HubCloud.BlazorSheet.Core.Enums;
 
 <h3>SheetAutoFitColumnsPage</h3>
 
 <hr />
-
+<div class="row">
+    <div class="col-sm-12">
+        <BbCheckBox Changed="res => OnFreezedColumnsOnChanged(res)"></BbCheckBox>
+        <label>First two column freezed on/off</label>
+    </div>
+</div>
 <div class="row">
     <div class="col-sm-12">
 

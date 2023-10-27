@@ -10,7 +10,7 @@ namespace HubCloud.BlazorSheet.ServerSideExamples.Pages
 
         protected override void OnInitialized()
         {
-            _sheetSettings = BuildSheetSettingsWithCellNames(3, 3);
+            _sheetSettings = BuildSheetSettingsWithCellNames(3, 20);
             _sheet = new Sheet(_sheetSettings);
 
             var cell = _sheet.GetCell(1, 1);
@@ -34,6 +34,9 @@ namespace HubCloud.BlazorSheet.ServerSideExamples.Pages
             column.IsAutoFitColumn = true;
 
             column = _sheet.GetColumn(2);
+            column.IsAutoFitColumn = true;
+
+            column = _sheet.GetColumn(3);
             column.IsAutoFitColumn = true;
         }
 
@@ -74,6 +77,14 @@ namespace HubCloud.BlazorSheet.ServerSideExamples.Pages
             }
 
             return sheetSettings;
+        }
+
+        private void OnFreezedColumnsOnChanged(bool indicator)
+        {
+            if (indicator)
+                _sheet.FreezedColumns = 2;
+            else
+                _sheet.FreezedColumns = 0;
         }
     }
 }
