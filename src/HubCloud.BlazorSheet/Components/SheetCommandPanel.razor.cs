@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using HubCloud.BlazorSheet.Core.Consts;
 using HubCloud.BlazorSheet.Core.Enums;
 using HubCloud.BlazorSheet.Core.Interfaces;
 using HubCloud.BlazorSheet.Core.Models;
@@ -111,11 +112,17 @@ public partial class SheetCommandPanel:ComponentBase
 
         _cellFormatSource = new List<Tuple<string, CellFormatTypes>>();
         _cellFormatSource.Add(new Tuple<string, CellFormatTypes>("No format", CellFormatTypes.None));
-        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>("Number 100", CellFormatTypes.Integer));
-        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>("Number 100.12", CellFormatTypes.IntegerTwoDecimalPlaces));
-        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>("Number 100.123", CellFormatTypes.IntegerThreeDecimalPlaces));
-        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>("Date", CellFormatTypes.Date));
-        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>("Date&Time", CellFormatTypes.DateTime));
+        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>($"Number: {CellFormatConsts.Integer}", CellFormatTypes.Integer));
+        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>($"Number: {CellFormatConsts.IntegerTwoDecimalPlaces}", CellFormatTypes.IntegerTwoDecimalPlaces));
+        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>($"Number: {CellFormatConsts.IntegerThreeDecimalPlaces}", CellFormatTypes.IntegerThreeDecimalPlaces));
+        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>($"Number: {CellFormatConsts.IntegerWithSpaces}", CellFormatTypes.IntegerWithSpaces));
+        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>($"Number: {CellFormatConsts.IntegerWithSpacesTwoDecimalPlaces}", CellFormatTypes.IntegerWithSpacesTwoDecimalPlaces));
+        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>($"Number: {CellFormatConsts.IntegerWithSpacesThreeDecimalPlaces}", CellFormatTypes.IntegerWithSpacesThreeDecimalPlaces));
+        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>($"Number: {CellFormatConsts.IntegerNegativeWithSpaces}", CellFormatTypes.IntegerNegativeWithSpaces));
+        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>($"Number: {CellFormatConsts.IntegerNegativeWithSpacesTwoDecimalPlaces}", CellFormatTypes.IntegerNegativeWithSpacesTwoDecimalPlaces));
+        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>($"Number: {CellFormatConsts.IntegerNegativeWithSpacesThreeDecimalPlaces}", CellFormatTypes.IntegerNegativeWithSpacesThreeDecimalPlaces));
+        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>($"Date: {CellFormatConsts.Date}", CellFormatTypes.Date));
+        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>($"Date&Time: {CellFormatConsts.DateTime}", CellFormatTypes.DateTime));
         _cellFormatSource.Add(new Tuple<string, CellFormatTypes>("Custom", CellFormatTypes.Custom));
 
         if (DataTypeDataProvider != null)
