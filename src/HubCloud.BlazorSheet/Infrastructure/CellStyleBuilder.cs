@@ -22,8 +22,9 @@ namespace HubCloud.BlazorSheet.Infrastructure
             var sb = new StringBuilder();
 
             sb.Append("overflow: hidden; white-space: nowrap;");
-            
-            if (column.IsAutoFitColumn)
+
+            var columnNumber = sheet.ColumnNumber(column);
+            if (column.IsAutoFitColumn && columnNumber > sheet.FreezedColumns)
                 sb.Append("max-width:fit-content;");
             else
             {

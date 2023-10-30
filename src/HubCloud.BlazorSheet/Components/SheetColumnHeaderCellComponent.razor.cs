@@ -24,7 +24,8 @@ namespace HubCloud.BlazorSheet.Components
         {
             var sb = new StringBuilder();
 
-            if (Column.IsAutoFitColumn)
+            var columnNumber = Sheet.ColumnNumber(Column);
+            if (Column.IsAutoFitColumn && columnNumber > Sheet.FreezedColumns)
                 sb.Append("max-width:fit-content;");
             else
             {
