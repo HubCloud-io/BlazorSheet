@@ -149,6 +149,24 @@ namespace HubCloud.BlazorSheet.Core.Models
                 case CellFormatConsts.IntegerThreeDecimalPlaces:
                     FormatType = CellFormatTypes.IntegerThreeDecimalPlaces;
                     break;
+                case CellFormatConsts.IntegerWithSpaces:
+                    FormatType = CellFormatTypes.IntegerWithSpaces;
+                    break;
+                case CellFormatConsts.IntegerWithSpacesTwoDecimalPlaces:
+                    FormatType = CellFormatTypes.IntegerWithSpacesTwoDecimalPlaces;
+                    break;
+                case CellFormatConsts.IntegerWithSpacesThreeDecimalPlaces:
+                    FormatType = CellFormatTypes.IntegerWithSpacesThreeDecimalPlaces;
+                    break;
+                case CellFormatConsts.IntegerNegativeWithSpaces:
+                    FormatType = CellFormatTypes.IntegerNegativeWithSpaces;
+                    break;
+                case CellFormatConsts.IntegerNegativeWithSpacesTwoDecimalPlaces:
+                    FormatType = CellFormatTypes.IntegerNegativeWithSpacesTwoDecimalPlaces;
+                    break;
+                case CellFormatConsts.IntegerNegativeWithSpacesThreeDecimalPlaces:
+                    FormatType = CellFormatTypes.IntegerNegativeWithSpacesThreeDecimalPlaces;
+                    break;
                 case CellFormatConsts.Date:
                     FormatType = CellFormatTypes.Date;
                     break;

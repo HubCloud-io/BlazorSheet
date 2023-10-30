@@ -1,4 +1,5 @@
-﻿using HubCloud.BlazorSheet.Core.Enums;
+﻿using HubCloud.BlazorSheet.Core.Consts;
+using HubCloud.BlazorSheet.Core.Enums;
 using HubCloud.BlazorSheet.Core.Models;
 
 namespace HubCloud.BlazorSheet.ExamplesShared.WorkbookBuilders

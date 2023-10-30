@@ -12,6 +12,12 @@ namespace HubCloud.BlazorSheet.Core.Enums
         IntegerThreeDecimalPlaces = 3,
         Date = 4,
         DateTime = 5,
-        Custom = 6
+        Custom = 6,
+        IntegerWithSpaces = 7,
+        IntegerWithSpacesTwoDecimalPlaces = 8,
+        IntegerWithSpacesThreeDecimalPlaces = 9,
+        IntegerNegativeWithSpaces = 10,
+        IntegerNegativeWithSpacesTwoDecimalPlaces = 11,
+        IntegerNegativeWithSpacesThreeDecimalPlaces = 12
     }
 }
