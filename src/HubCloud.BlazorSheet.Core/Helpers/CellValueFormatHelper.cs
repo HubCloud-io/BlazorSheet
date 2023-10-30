@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace HubCloud.BlazorSheet.Core.Helpers
 {
@@ -15,43 +16,61 @@ namespace HubCloud.BlazorSheet.Core.Helpers
 
             switch (cellFormat)
             {
-                case CellFormatConsts.Integer:
-                    result = value.ToString("##0", CultureInfo.InvariantCulture);
+                case CellDisplayFormatConsts.Integer:
+                    result = value.ToString(CellToStringFormatConsts.Integer, CultureInfo.InvariantCulture);
                     break;
-                case CellFormatConsts.IntegerTwoDecimalPlaces:
-                    result = value.ToString("##0.00", new CultureInfo(127) { NumberFormat = new NumberFormatInfo { NumberDecimalSeparator = "." } });
+                case CellDisplayFormatConsts.IntegerTwoDecimalPlaces:
+                    result = value.ToString(CellToStringFormatConsts.IntegerTwoDecimalPlaces, new CultureInfo(127) { NumberFormat = new NumberFormatInfo { NumberDecimalSeparator = "." } });
                     break;
-                case CellFormatConsts.IntegerThreeDecimalPlaces:
-                    result = value.ToString("##0.000", new CultureInfo(127) { NumberFormat = new NumberFormatInfo { NumberDecimalSeparator = "." } });
+                case CellDisplayFormatConsts.IntegerThreeDecimalPlaces:
+                    result = value.ToString(CellToStringFormatConsts.IntegerThreeDecimalPlaces, new CultureInfo(127) { NumberFormat = new NumberFormatInfo { NumberDecimalSeparator = "." } });
                     break;
-                case CellFormatConsts.IntegerWithSpaces:
-                    result = value.ToString("#,##0", new CultureInfo(127) { NumberFormat = new NumberFormatInfo { NumberGroupSeparator = " " } });
+                case CellDisplayFormatConsts.IntegerWithSpaces:
+                    result = value.ToString(CellToStringFormatConsts.IntegerWithSpaces, new CultureInfo(127) { NumberFormat = new NumberFormatInfo { NumberGroupSeparator = " " } });
                     break;
-                case CellFormatConsts.IntegerWithSpacesTwoDecimalPlaces:
-                    result = value.ToString("#,##0.00", new CultureInfo(127) { NumberFormat = new NumberFormatInfo { NumberGroupSeparator = " ", NumberDecimalSeparator = "." } });
+                case CellDisplayFormatConsts.IntegerWithSpacesTwoDecimalPlaces:
+                    result = value.ToString(CellToStringFormatConsts.IntegerWithSpacesTwoDecimalPlaces, new CultureInfo(127) { NumberFormat = new NumberFormatInfo { NumberGroupSeparator = " ", NumberDecimalSeparator = "." } });
                     break;
-                case CellFormatConsts.IntegerWithSpacesThreeDecimalPlaces:
-                    result = value.ToString("#,##0.000", new CultureInfo(127) { NumberFormat = new NumberFormatInfo { NumberGroupSeparator = " ", NumberDecimalSeparator = "." } });
+                case CellDisplayFormatConsts.IntegerWithSpacesThreeDecimalPlaces:
+                    result = value.ToString(CellToStringFormatConsts.IntegerWithSpacesThreeDecimalPlaces, new CultureInfo(127) { NumberFormat = new NumberFormatInfo { NumberGroupSeparator = " ", NumberDecimalSeparator = "." } });
                     break;
-                case CellFormatConsts.IntegerNegativeWithSpaces:
-                    var format = value < 0 ? "0:#,##0;(#,##0)" : "#,##0";
+                case CellDisplayFormatConsts.IntegerNegativeWithSpaces:
+                    var format = value < 0 ? CellToStringFormatConsts.IntegerNegativeWithSpaces : CellToStringFormatConsts.IntegerWithSpaces;
                     result = value.ToString(format, new CultureInfo(127) { NumberFormat = new NumberFormatInfo { NumberGroupSeparator = " " } });
                     break;
-                case CellFormatConsts.IntegerNegativeWithSpacesTwoDecimalPlaces:
-                    format = value < 0 ? "0:#,##0.00;(#,##0.00)" : "#,##0.00";
+                case CellDisplayFormatConsts.IntegerNegativeWithSpacesTwoDecimalPlaces:
+                    format = value < 0 ? CellToStringFormatConsts.IntegerNegativeWithSpacesTwoDecimalPlaces : CellToStringFormatConsts.IntegerWithSpacesTwoDecimalPlaces;
                     result = value.ToString(format, new CultureInfo(127) { NumberFormat = new NumberFormatInfo { NumberGroupSeparator = " ", NumberDecimalSeparator = "." } });
                     break;
-                case CellFormatConsts.IntegerNegativeWithSpacesThreeDecimalPlaces:
-                    format = value < 0 ? "0:#,##0.00;(#,##0.000)" : "#,##0.000";
+                case CellDisplayFormatConsts.IntegerNegativeWithSpacesThreeDecimalPlaces:
+                    format = value < 0 ? CellToStringFormatConsts.IntegerNegativeWithSpacesThreeDecimalPlaces : CellToStringFormatConsts.IntegerWithSpacesThreeDecimalPlaces;
                     result = value.ToString(format, new CultureInfo(127) { NumberFormat = new NumberFormatInfo { NumberGroupSeparator = " ", NumberDecimalSeparator = "." } });
                     break;
-                case CellFormatConsts.None:
+                case CellDisplayFormatConsts.None:
                     result = value.ToString(new CultureInfo(127) { NumberFormat = new NumberFormatInfo { NumberDecimalSeparator = "." } });
                     break;
                 default:
                     result = value.ToString(cellFormat, CultureInfo.InvariantCulture);
                     break;
             }
+
+            return result;
+        }
+
+        public static string ToStringWithFormat(string value, string cellFormat)
+        {
+            var result = string.Empty;
+
+            if (decimal.TryParse(
+                            value.Replace(',', '.'),
+                            NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingSign,
+                            new NumberFormatInfo { NumberDecimalSeparator = "." },
+                            out var decimalValue))
+                result = CellValueFormatHelper.ToStringWithFormat(decimalValue, cellFormat);
+            else if (DateTime.TryParse(value, out var dateTimeValue))
+                result = dateTimeValue.ToString(cellFormat);
+            else
+                result = value;
 
             return result;
         }

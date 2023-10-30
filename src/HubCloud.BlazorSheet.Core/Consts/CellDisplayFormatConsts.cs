@@ -4,7 +4,7 @@ using System.Text;
 
 namespace HubCloud.BlazorSheet.Core.Consts
 {
-    public static class CellFormatConsts
+    public static class CellDisplayFormatConsts
     {
         public const string None = "";
 
