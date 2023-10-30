@@ -230,7 +230,7 @@ namespace HubCloud.BlazorSheet.Core.Models
             else if (Value is DateTime dateTimeValue)
             {
                 if (string.IsNullOrEmpty(Format))
-                    Text = dateTimeValue.ToString(CellFormatConsts.Date);
+                    Text = dateTimeValue.ToString(CellDisplayFormatConsts.Date);
                 else
                     Text = dateTimeValue.ToString(Format);
             }
@@ -239,18 +239,7 @@ namespace HubCloud.BlazorSheet.Core.Models
                 if (string.IsNullOrEmpty(Format))
                     Text = StringValue;
                 else
-                {
-                    if (decimal.TryParse(
-                            StringValue.Replace(',', '.'),
-                            NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingSign,
-                            new NumberFormatInfo { NumberDecimalSeparator = "." },
-                            out decimalValue))
-                        Text = CellValueFormatHelper.ToStringWithFormat(decimalValue, Format);
-                    else if (DateTime.TryParse(StringValue, out dateTimeValue))
-                        Text = dateTimeValue.ToString(Format);
-                    else
-                        Text = StringValue;
-                }
+                    Text = CellValueFormatHelper.ToStringWithFormat(StringValue, Format);
             }
         }
 
@@ -262,40 +251,40 @@ namespace HubCloud.BlazorSheet.Core.Models
                     Format = customFormat;
                     break;
                 case CellFormatTypes.None:
-                    Format = CellFormatConsts.None;
+                    Format = CellDisplayFormatConsts.None;
                     break;
                 case CellFormatTypes.Integer:
-                    Format = CellFormatConsts.Integer;
+                    Format = CellDisplayFormatConsts.Integer;
                     break;
                 case CellFormatTypes.IntegerTwoDecimalPlaces:
-                    Format = CellFormatConsts.IntegerTwoDecimalPlaces;
+                    Format = CellDisplayFormatConsts.IntegerTwoDecimalPlaces;
                     break;
                 case CellFormatTypes.IntegerThreeDecimalPlaces:
-                    Format = CellFormatConsts.IntegerThreeDecimalPlaces;
+                    Format = CellDisplayFormatConsts.IntegerThreeDecimalPlaces;
                     break;
                 case CellFormatTypes.IntegerWithSpaces:
-                    Format = CellFormatConsts.IntegerWithSpaces;
+                    Format = CellDisplayFormatConsts.IntegerWithSpaces;
                     break;
                 case CellFormatTypes.IntegerWithSpacesTwoDecimalPlaces:
-                    Format = CellFormatConsts.IntegerWithSpacesTwoDecimalPlaces;
+                    Format = CellDisplayFormatConsts.IntegerWithSpacesTwoDecimalPlaces;
                     break;
                 case CellFormatTypes.IntegerWithSpacesThreeDecimalPlaces:
-                    Format = CellFormatConsts.IntegerWithSpacesThreeDecimalPlaces;
+                    Format = CellDisplayFormatConsts.IntegerWithSpacesThreeDecimalPlaces;
                     break;
                 case CellFormatTypes.IntegerNegativeWithSpaces:
-                    Format = CellFormatConsts.IntegerNegativeWithSpaces;
+                    Format = CellDisplayFormatConsts.IntegerNegativeWithSpaces;
                     break;
                 case CellFormatTypes.IntegerNegativeWithSpacesTwoDecimalPlaces:
-                    Format = CellFormatConsts.IntegerNegativeWithSpacesTwoDecimalPlaces;
+                    Format = CellDisplayFormatConsts.IntegerNegativeWithSpacesTwoDecimalPlaces;
                     break;
                 case CellFormatTypes.IntegerNegativeWithSpacesThreeDecimalPlaces:
-                    Format = CellFormatConsts.IntegerNegativeWithSpacesThreeDecimalPlaces;
+                    Format = CellDisplayFormatConsts.IntegerNegativeWithSpacesThreeDecimalPlaces;
                     break;
                 case CellFormatTypes.Date:
-                    Format = CellFormatConsts.Date;
+                    Format = CellDisplayFormatConsts.Date;
                     break;
                 case CellFormatTypes.DateTime:
-                    Format = CellFormatConsts.DateTime;
+                    Format = CellDisplayFormatConsts.DateTime;
                     break;
                 default:
                     Format = string.Empty;

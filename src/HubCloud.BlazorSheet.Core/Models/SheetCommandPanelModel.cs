@@ -140,37 +140,37 @@ namespace HubCloud.BlazorSheet.Core.Models
                 case null:
                     FormatType = CellFormatTypes.None;
                     break;
-                case CellFormatConsts.Integer:
+                case CellDisplayFormatConsts.Integer:
                     FormatType = CellFormatTypes.Integer;
                     break;
-                case CellFormatConsts.IntegerTwoDecimalPlaces:
+                case CellDisplayFormatConsts.IntegerTwoDecimalPlaces:
                     FormatType = CellFormatTypes.IntegerTwoDecimalPlaces;
                     break;
-                case CellFormatConsts.IntegerThreeDecimalPlaces:
+                case CellDisplayFormatConsts.IntegerThreeDecimalPlaces:
                     FormatType = CellFormatTypes.IntegerThreeDecimalPlaces;
                     break;
-                case CellFormatConsts.IntegerWithSpaces:
+                case CellDisplayFormatConsts.IntegerWithSpaces:
                     FormatType = CellFormatTypes.IntegerWithSpaces;
                     break;
-                case CellFormatConsts.IntegerWithSpacesTwoDecimalPlaces:
+                case CellDisplayFormatConsts.IntegerWithSpacesTwoDecimalPlaces:
                     FormatType = CellFormatTypes.IntegerWithSpacesTwoDecimalPlaces;
                     break;
-                case CellFormatConsts.IntegerWithSpacesThreeDecimalPlaces:
+                case CellDisplayFormatConsts.IntegerWithSpacesThreeDecimalPlaces:
                     FormatType = CellFormatTypes.IntegerWithSpacesThreeDecimalPlaces;
                     break;
-                case CellFormatConsts.IntegerNegativeWithSpaces:
+                case CellDisplayFormatConsts.IntegerNegativeWithSpaces:
                     FormatType = CellFormatTypes.IntegerNegativeWithSpaces;
                     break;
-                case CellFormatConsts.IntegerNegativeWithSpacesTwoDecimalPlaces:
+                case CellDisplayFormatConsts.IntegerNegativeWithSpacesTwoDecimalPlaces:
                     FormatType = CellFormatTypes.IntegerNegativeWithSpacesTwoDecimalPlaces;
                     break;
-                case CellFormatConsts.IntegerNegativeWithSpacesThreeDecimalPlaces:
+                case CellDisplayFormatConsts.IntegerNegativeWithSpacesThreeDecimalPlaces:
                     FormatType = CellFormatTypes.IntegerNegativeWithSpacesThreeDecimalPlaces;
                     break;
-                case CellFormatConsts.Date:
+                case CellDisplayFormatConsts.Date:
                     FormatType = CellFormatTypes.Date;
                     break;
-                case CellFormatConsts.DateTime:
+                case CellDisplayFormatConsts.DateTime:
                     FormatType = CellFormatTypes.DateTime;
                     break;
                 default:

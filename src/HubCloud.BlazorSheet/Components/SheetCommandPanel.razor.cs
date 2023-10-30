@@ -112,17 +112,17 @@ public partial class SheetCommandPanel:ComponentBase
 
         _cellFormatSource = new List<Tuple<string, CellFormatTypes>>();
         _cellFormatSource.Add(new Tuple<string, CellFormatTypes>("No format", CellFormatTypes.None));
-        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>($"Number: {CellFormatConsts.Integer}", CellFormatTypes.Integer));
-        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>($"Number: {CellFormatConsts.IntegerTwoDecimalPlaces}", CellFormatTypes.IntegerTwoDecimalPlaces));
-        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>($"Number: {CellFormatConsts.IntegerThreeDecimalPlaces}", CellFormatTypes.IntegerThreeDecimalPlaces));
-        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>($"Number: {CellFormatConsts.IntegerWithSpaces}", CellFormatTypes.IntegerWithSpaces));
-        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>($"Number: {CellFormatConsts.IntegerWithSpacesTwoDecimalPlaces}", CellFormatTypes.IntegerWithSpacesTwoDecimalPlaces));
-        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>($"Number: {CellFormatConsts.IntegerWithSpacesThreeDecimalPlaces}", CellFormatTypes.IntegerWithSpacesThreeDecimalPlaces));
-        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>($"Number: {CellFormatConsts.IntegerNegativeWithSpaces}", CellFormatTypes.IntegerNegativeWithSpaces));
-        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>($"Number: {CellFormatConsts.IntegerNegativeWithSpacesTwoDecimalPlaces}", CellFormatTypes.IntegerNegativeWithSpacesTwoDecimalPlaces));
-        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>($"Number: {CellFormatConsts.IntegerNegativeWithSpacesThreeDecimalPlaces}", CellFormatTypes.IntegerNegativeWithSpacesThreeDecimalPlaces));
-        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>($"Date: {CellFormatConsts.Date}", CellFormatTypes.Date));
-        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>($"Date&Time: {CellFormatConsts.DateTime}", CellFormatTypes.DateTime));
+        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>($"Number: {CellDisplayFormatConsts.Integer}", CellFormatTypes.Integer));
+        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>($"Number: {CellDisplayFormatConsts.IntegerTwoDecimalPlaces}", CellFormatTypes.IntegerTwoDecimalPlaces));
+        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>($"Number: {CellDisplayFormatConsts.IntegerThreeDecimalPlaces}", CellFormatTypes.IntegerThreeDecimalPlaces));
+        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>($"Number: {CellDisplayFormatConsts.IntegerWithSpaces}", CellFormatTypes.IntegerWithSpaces));
+        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>($"Number: {CellDisplayFormatConsts.IntegerWithSpacesTwoDecimalPlaces}", CellFormatTypes.IntegerWithSpacesTwoDecimalPlaces));
+        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>($"Number: {CellDisplayFormatConsts.IntegerWithSpacesThreeDecimalPlaces}", CellFormatTypes.IntegerWithSpacesThreeDecimalPlaces));
+        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>($"Number: {CellDisplayFormatConsts.IntegerNegativeWithSpaces}", CellFormatTypes.IntegerNegativeWithSpaces));
+        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>($"Number: {CellDisplayFormatConsts.IntegerNegativeWithSpacesTwoDecimalPlaces}", CellFormatTypes.IntegerNegativeWithSpacesTwoDecimalPlaces));
+        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>($"Number: {CellDisplayFormatConsts.IntegerNegativeWithSpacesThreeDecimalPlaces}", CellFormatTypes.IntegerNegativeWithSpacesThreeDecimalPlaces));
+        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>($"Date: {CellDisplayFormatConsts.Date}", CellFormatTypes.Date));
+        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>($"Date&Time: {CellDisplayFormatConsts.DateTime}", CellFormatTypes.DateTime));
         _cellFormatSource.Add(new Tuple<string, CellFormatTypes>("Custom", CellFormatTypes.Custom));
 
         if (DataTypeDataProvider != null)

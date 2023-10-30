@@ -8,12 +8,12 @@ namespace HubCloud.BlazorSheet.UnitTests
     [TestFixture]
     public class SheetCellFormatTests
     {
-        [TestCase(CellFormatTypes.None, CellFormatConsts.None)]
-        [TestCase(CellFormatTypes.Integer, CellFormatConsts.Integer)]
-        [TestCase(CellFormatTypes.IntegerTwoDecimalPlaces, CellFormatConsts.IntegerTwoDecimalPlaces)]
-        [TestCase(CellFormatTypes.IntegerThreeDecimalPlaces, CellFormatConsts.IntegerThreeDecimalPlaces)]
-        [TestCase(CellFormatTypes.Date, CellFormatConsts.Date)]
-        [TestCase(CellFormatTypes.DateTime, CellFormatConsts.DateTime)]
+        [TestCase(CellFormatTypes.None, CellDisplayFormatConsts.None)]
+        [TestCase(CellFormatTypes.Integer, CellDisplayFormatConsts.Integer)]
+        [TestCase(CellFormatTypes.IntegerTwoDecimalPlaces, CellDisplayFormatConsts.IntegerTwoDecimalPlaces)]
+        [TestCase(CellFormatTypes.IntegerThreeDecimalPlaces, CellDisplayFormatConsts.IntegerThreeDecimalPlaces)]
+        [TestCase(CellFormatTypes.Date, CellDisplayFormatConsts.Date)]
+        [TestCase(CellFormatTypes.DateTime, CellDisplayFormatConsts.DateTime)]
         public void SetFormat_IsFormatEqualExpected_True(CellFormatTypes formatType, string expected)
         {
             var cell = new SheetCell();
