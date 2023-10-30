@@ -14,10 +14,14 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.CellShiftFormulaHelper
     public class CellShiftFormulaHelper : IFormulaShifter
     {
         private readonly Sheet _sheet;
+        private readonly List<SheetCell> _formulaCells;
 
         public CellShiftFormulaHelper(Sheet sheet)
         {
             _sheet = sheet;
+            _formulaCells = _sheet.Cells
+                .Where(x => !string.IsNullOrEmpty(x.Formula))
+                .ToList();
         }
 
         public List<ShiftLogModel> OnRowAdd(int insertedRowNumber)
@@ -332,7 +336,8 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.CellShiftFormulaHelper
         private IEnumerable<SheetCell> GetFormulaCells(int? exceptRowNumber = null,
             int? exceptColumnNumber = null)
         {
-            var query = _sheet.Cells.Where(x => !string.IsNullOrEmpty(x.Formula));
+            // var query = _sheet.Cells.Where(x => !string.IsNullOrEmpty(x.Formula));
+            var query = _formulaCells.AsEnumerable();
 
             if (exceptRowNumber != null)
                 query = query.Where(x => _sheet.CellAddress(x).Row != exceptRowNumber);
