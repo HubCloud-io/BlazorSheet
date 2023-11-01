@@ -96,8 +96,12 @@ public partial class SheetCellComponent : ComponentBase
         return spacing;
     }
 
-    private string ControlPresentation(SheetCellEditSettings editSettings)
+    private string ControlPresentation()
     {
+        var editSettings = Sheet.GetEditSettings(Cell);
+        if (editSettings == null)
+            return string.Empty;
+
         string presentation;
         var controlKind = editSettings.ControlKind;
 
