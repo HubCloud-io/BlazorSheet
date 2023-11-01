@@ -16,7 +16,9 @@ namespace HubCloud.BlazorSheet.Core.Models
         private int _rowsCount = DefaultRowsCount;
         private int _columnsCount = DefaultColumnsCount;
         private readonly List<SheetRow> _rows = new List<SheetRow>();
+        private readonly Dictionary<Guid, SheetRow> _rowsDict = new Dictionary<Guid, SheetRow>();
         private readonly List<SheetColumn> _columns = new List<SheetColumn>();
+        private readonly Dictionary<Guid, SheetColumn> _columnsDict = new Dictionary<Guid, SheetColumn>();
         private readonly List<SheetCell> _cells = new List<SheetCell>();
         private readonly SheetCellLookUp _cellsLookUp = new SheetCellLookUp();
         private readonly List<SheetCellStyle> _styles = new List<SheetCellStyle>();
@@ -74,7 +76,9 @@ namespace HubCloud.BlazorSheet.Core.Models
             IsProtected = settings.IsProtected;
 
             _rows.AddRange(settings.Rows);
+            _rowsDict = _rows.ToDictionary(k => k.Uid, v => v);
             _columns.AddRange(settings.Columns);
+            _columnsDict = _columns.ToDictionary(k => k.Uid, v => v);
 
             foreach (var cell in settings.Cells)
             {
@@ -105,7 +109,9 @@ namespace HubCloud.BlazorSheet.Core.Models
             IsProtected = dto.IsProtected;
 
             _rows.AddRange(dto.Rows);
+            _rowsDict = _rows.ToDictionary(k => k.Uid, v => v);
             _columns.AddRange(dto.Columns);
+            _columnsDict = _columns.ToDictionary(k => k.Uid, v => v);
 
             foreach (var cellDto in dto.Cells)
             {
@@ -156,6 +162,7 @@ namespace HubCloud.BlazorSheet.Core.Models
                     {
                         column = new SheetColumn();
                         _columns.Add(column);
+                        _columnsDict.Add(column.Uid, column);
                     }
                     else
                     {
@@ -170,6 +177,7 @@ namespace HubCloud.BlazorSheet.Core.Models
                 }
 
                 _rows.Add(row);
+                _rowsDict.Add(row.Uid, row);
             }
         }
 
@@ -300,6 +308,17 @@ namespace HubCloud.BlazorSheet.Core.Models
 
             return new SheetCellAddress(rowNumber, columnNumber);
         }
+        
+        public SheetCellAddress CellAddressSlim(SheetCell cell)
+        {
+            var row = _rowsDict[cell.RowUid];
+            var column = _columnsDict[cell.ColumnUid];
+
+            var rowNumber = RowNumber(row);
+            var columnNumber = ColumnNumber(column);
+
+            return new SheetCellAddress(rowNumber, columnNumber);
+        }
 
         public SheetRow GetRow(int r)
         {
@@ -374,6 +393,7 @@ namespace HubCloud.BlazorSheet.Core.Models
 
             _rowsCount++;
 
+            _rowsDict.Add(newRow.Uid, newRow);
             return newRow;
         }
 
@@ -450,6 +470,7 @@ namespace HubCloud.BlazorSheet.Core.Models
 
             _columnsCount++;
 
+            _columnsDict.Add(newColumn.Uid, newColumn);
             return newColumn;
         }
 
@@ -468,6 +489,8 @@ namespace HubCloud.BlazorSheet.Core.Models
                 RemoveCell(cell);
             }
 
+            if (_rowsDict.ContainsKey(row.Uid))
+                _rowsDict.Remove(row.Uid);
             if (_rows.Remove(row))
             {
                 RowsCount -= 1;
@@ -488,6 +511,8 @@ namespace HubCloud.BlazorSheet.Core.Models
                 RemoveCell(cell);
             }
 
+            if (_columnsDict.ContainsKey(column.Uid))
+                _columnsDict.Remove(column.Uid);
             if (_columns.Remove(column))
             {
                 ColumnsCount -= 1;
