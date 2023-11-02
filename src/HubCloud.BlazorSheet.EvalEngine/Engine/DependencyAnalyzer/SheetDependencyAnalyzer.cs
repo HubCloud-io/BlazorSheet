@@ -3,6 +3,8 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -21,58 +23,73 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
         public SheetDependencyAnalyzer(Sheet sheet)
         {
             _sheet = sheet;
-            
-            var sw1 = new Stopwatch();
-            sw1.Start();
 
-            _dependencyFormulaDict = new Dictionary<ValueAddress, List<SheetCell>>();
-            
-            var formulaCells = _sheet.Cells.Where(x => !string.IsNullOrEmpty(x.Formula));
+            var sw = new Stopwatch();
+            sw.Start();
+            _dependencyFormulaDict = GetDependencyDict(_sheet);
+            sw.Stop();
+            var el = sw.Elapsed;
+        }
+
+        private Dictionary<ValueAddress, List<SheetCell>> GetDependencyDict(Sheet sheet)
+        {
+            var dependencyFormulaDict = new Dictionary<ValueAddress, List<SheetCell>>();
+
+            var formulaCells = sheet.Cells
+                .Where(x => !string.IsNullOrEmpty(x.Formula))
+                .ToList();
+
+            // var listSw = new List<TimeSpan>();
+            // var sw = new Stopwatch();
+
             foreach (var formulaCell in formulaCells)
             {
-                var allFormulaAddresses = GetAllFormulaAddresses(formulaCell);
-                foreach (var formulaAddress in allFormulaAddresses)
+                // sw.Reset();
+                // sw.Start();
+                var addressesInFormula = GetAllFormulaAddresses(formulaCell);
+                foreach (var address in addressesInFormula)
                 {
-                    if (!_dependencyFormulaDict.ContainsKey(formulaAddress))
+                    if (!dependencyFormulaDict.ContainsKey(address))
                     {
-                        var list = new List<SheetCell>();
-                        list.Add(formulaCell);
-                        _dependencyFormulaDict.Add(formulaAddress, list);
+                        var list = new List<SheetCell>()
+                        {
+                            formulaCell
+                        };
+                        dependencyFormulaDict.Add(address, list);
                     }
                     else
                     {
-                        var currentList = _dependencyFormulaDict[formulaAddress];
-                        currentList.Add(formulaCell);
-                        _dependencyFormulaDict[formulaAddress] = currentList;
+                        dependencyFormulaDict[address].Add(formulaCell);
                     }
                 }
+
+                // sw.Stop();
+                // listSw.Add(sw.Elapsed);
             }
-            
-            sw1.Stop();
-            var t = _regexTimeSpan;
-            var el1 = sw1.Elapsed;
+
+            // var str = JsonConvert.SerializeObject(listSw);
+            // var timeSpanList = new TimeSpan(0);
+            // foreach (var timeSpan in listSw)
+            // {
+            //     timeSpanList = timeSpanList.Add(timeSpan);
+            // }
+
+            return dependencyFormulaDict;
         }
 
-        private TimeSpan _regexTimeSpan = new TimeSpan(0);
         private IEnumerable<ValueAddress> GetAllFormulaAddresses(SheetCell formulaCell)
         {
             var addressDict = new Dictionary<ValueAddress, ValueAddress>();
             var formulaCellAddress = _sheet.CellAddressSlim(formulaCell);
-            var formula = new StringBuilder(formulaCell.Formula);
 
             // check address ranges
             var rangeRegex = RegexHelper.AddressRangeRegex;
-            var sw = new Stopwatch();
-            sw.Start();
-            var rangeMatches = rangeRegex.Matches(formula.ToString())
+            var rangeMatches = rangeRegex.Matches(formulaCell.Formula)
                 .Cast<Match>()
                 .Select(m => m.Value)
                 .Distinct()
                 .ToArray();
-            sw.Stop();
-            _regexTimeSpan = _regexTimeSpan.Add(sw.Elapsed);
 
-            var i = 0;
             foreach (var match in rangeMatches)
             {
                 var arr = match.Split(':');
@@ -90,22 +107,16 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
                         addressDict.Add(currentAddress, currentAddress);
                     }
                 }
-
-                // formula.Replace(match, $"RNG{i}");
             }
 
             // check simple addresses
             var addressRegex = RegexHelper.AddressRegex;
-            sw = new Stopwatch();
-            sw.Start();
-            var addressMatches = addressRegex.Matches(formula.ToString())
+            var addressMatches = addressRegex.Matches(formulaCell.Formula)
                 .Cast<Match>()
                 .Select(m => m.Value)
                 .Distinct()
                 .ToArray();
-            sw.Stop();
-            _regexTimeSpan = _regexTimeSpan.Add(sw.Elapsed);
-            
+
             foreach (var match in addressMatches)
             {
                 var addr = new ValueAddress(NormalizeAddress(match, formulaCellAddress));
@@ -120,12 +131,12 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
         public List<SheetCell> GetDependencyCells(SheetCellAddress cellAddress)
         {
             var processedCells = new List<string>(GetNoFormulaCells(_sheet));
-        
+
             var dependCellsDict = GetDependencyCellsInner(cellAddress);
-        
+
             var notDependedFormulas = GetNotDependedFormulaCells(_sheet, dependCellsDict);
             processedCells.AddRange(notDependedFormulas);
-        
+
             var orderedCells = OrderCellsForCalc(processedCells, dependCellsDict);
             return orderedCells;
         }
