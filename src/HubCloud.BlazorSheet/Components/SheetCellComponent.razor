@@ -30,10 +30,9 @@
             
             if (Cell.EditSettingsUid.HasValue)
             {
-                var editSettings = Sheet.GetEditSettings(Cell);
                 <span>&laquo;</span>
-                <span>@ControlPresentation(editSettings)</span>
-                <span>&raquo;</span>                               
+                <span>@ControlPresentation()</span>
+                <span>&raquo;</span>
             }
             
             @if (!string.IsNullOrEmpty(@Cell.Format))
