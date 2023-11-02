@@ -24,11 +24,11 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
         {
             _sheet = sheet;
 
-            var sw = new Stopwatch();
-            sw.Start();
+            // var sw = new Stopwatch();
+            // sw.Start();
             _dependencyFormulaDict = GetDependencyDict(_sheet);
-            sw.Stop();
-            var el = sw.Elapsed;
+            // sw.Stop();
+            // var el = sw.Elapsed;
         }
 
         private Dictionary<ValueAddress, List<SheetCell>> GetDependencyDict(Sheet sheet)
@@ -39,13 +39,8 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
                 .Where(x => !string.IsNullOrEmpty(x.Formula))
                 .ToList();
 
-            // var listSw = new List<TimeSpan>();
-            // var sw = new Stopwatch();
-
             foreach (var formulaCell in formulaCells)
             {
-                // sw.Reset();
-                // sw.Start();
                 var addressesInFormula = GetAllFormulaAddresses(formulaCell);
                 foreach (var address in addressesInFormula)
                 {
@@ -62,24 +57,13 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
                         dependencyFormulaDict[address].Add(formulaCell);
                     }
                 }
-
-                // sw.Stop();
-                // listSw.Add(sw.Elapsed);
             }
-
-            // var str = JsonConvert.SerializeObject(listSw);
-            // var timeSpanList = new TimeSpan(0);
-            // foreach (var timeSpan in listSw)
-            // {
-            //     timeSpanList = timeSpanList.Add(timeSpan);
-            // }
-
+            
             return dependencyFormulaDict;
         }
 
         private IEnumerable<ValueAddress> GetAllFormulaAddresses(SheetCell formulaCell)
         {
-            var addressDict = new Dictionary<ValueAddress, ValueAddress>();
             var formulaCellAddress = _sheet.CellAddressSlim(formulaCell);
 
             // check address ranges
@@ -90,6 +74,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
                 .Distinct()
                 .ToArray();
 
+            var tmpList = new List<ValueAddress>();
             foreach (var match in rangeMatches)
             {
                 var arr = match.Split(':');
@@ -98,16 +83,17 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
 
                 var start = new ValueAddress(NormalizeAddress(arr[0], formulaCellAddress));
                 var end = new ValueAddress(NormalizeAddress(arr[1], formulaCellAddress));
-
+                
                 for (var r = start.Row; r <= end.Row; r++)
                 {
                     for (var c = start.Column; c <= end.Column; c++)
                     {
-                        var currentAddress = new ValueAddress(r, c);
-                        addressDict.Add(currentAddress, currentAddress);
+                        tmpList.Add(new ValueAddress(r, c));
                     }
                 }
             }
+
+            var addressDict = tmpList.Distinct().ToDictionary(x => x, x => x);
 
             // check simple addresses
             var addressRegex = RegexHelper.AddressRegex;
@@ -399,6 +385,43 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
             return false;
         }
 
+        public static string NormalizeAddress(string address, ValueAddress formulaCellAddress)
+        {
+            var rowVal = GetRowValue(address, formulaCellAddress);
+            var colVal = GetColValue(address, formulaCellAddress);
+
+            if (rowVal is null || colVal is null)
+                return null;
+
+            var normalizedAddress = new StringBuilder("R");
+
+            // row
+            if (rowVal == string.Empty)
+                normalizedAddress.Append(formulaCellAddress.Row);
+            else if (rowVal.Contains("-"))
+            {
+                var d = int.Parse(rowVal);
+                normalizedAddress.Append(formulaCellAddress.Row + d);
+            }
+            else
+                normalizedAddress.Append(rowVal);
+
+            normalizedAddress.Append("C");
+
+            // col
+            if (colVal == string.Empty)
+                normalizedAddress.Append(formulaCellAddress.Column);
+            else if (colVal.Contains("-"))
+            {
+                var d = int.Parse(colVal);
+                normalizedAddress.Append(formulaCellAddress.Column + d);
+            }
+            else
+                normalizedAddress.Append(colVal);
+
+            return normalizedAddress.ToString();
+        }
+        
         public static string NormalizeAddress(string address, SheetCellAddress formulaCellAddress)
         {
             var rowVal = GetRowValue(address, formulaCellAddress);
@@ -436,6 +459,18 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
             return normalizedAddress.ToString();
         }
 
+        private static string GetRowValue(string address, ValueAddress formulaCellAddress)
+        {
+            if (string.IsNullOrEmpty(address))
+                return null;
+
+            var addressModel = new AddressModel(address, formulaCellAddress);
+            if (addressModel.IsRowRelative)
+                return (formulaCellAddress.Row + addressModel.RowValue).ToString();
+            else
+                return addressModel.RowValue.ToString();
+        }
+        
         private static string GetRowValue(string address, SheetCellAddress formulaCellAddress)
         {
             if (string.IsNullOrEmpty(address))
@@ -448,6 +483,18 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
                 return addressModel.RowValue.ToString();
         }
 
+        private static string GetColValue(string address, ValueAddress formulaCellAddress)
+        {
+            if (string.IsNullOrEmpty(address))
+                return null;
+
+            var addressModel = new AddressModel(address, formulaCellAddress);
+            if (addressModel.IsColumnRelative)
+                return (formulaCellAddress.Column + addressModel.ColumnValue).ToString();
+            else
+                return addressModel.ColumnValue.ToString();
+        }
+        
         private static string GetColValue(string address, SheetCellAddress formulaCellAddress)
         {
             if (string.IsNullOrEmpty(address))
