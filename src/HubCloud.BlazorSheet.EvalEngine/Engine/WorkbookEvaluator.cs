@@ -127,22 +127,22 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
         // for recalc full sheet
         private void EvalSheet(Sheet sheet, SheetData cells)
         {
-            var formulaCells = sheet.Cells
-                .Where(x => !string.IsNullOrWhiteSpace(x.Formula))
-                .ToList();
+            // var formulaCells = sheet.Cells
+            //     .Where(x => !string.IsNullOrWhiteSpace(x.Formula))
+            //     .ToList();
 
-            var valueCells = SheetDependencyAnalyzer.GetNoFormulaCells(sheet);
-            var nonNullValueCells = sheet.Cells
-                .Where(x => x.Value != null)
-                .Select(x => SheetDependencyAnalyzer.GetCellAddress(sheet.CellAddress(x)));
+            // var valueCells = SheetDependencyAnalyzer.GetNoFormulaCells(sheet);
+            // var nonNullValueCells = sheet.Cells
+            //     .Where(x => x.Value != null)
+            //     .Select(x => SheetDependencyAnalyzer.GetCellAddress(sheet.CellAddress(x)));
+            //
+            // valueCells.AddRange(nonNullValueCells);
 
-            valueCells.AddRange(nonNullValueCells);
+            // var dict = formulaCells
+            //     .ToDictionary(k => SheetDependencyAnalyzer.GetCellAddress(sheet.CellAddress(k)), v => v);
 
-            var dict = formulaCells
-                .ToDictionary(k => SheetDependencyAnalyzer.GetCellAddress(sheet.CellAddress(k)), v => v);
-
-            //var analyzer = new SheetDependencyAnalyzer(sheet);
-            var dependencyCells = _analyzer.OrderCellsForCalc(valueCells, dict);
+            // var dependencyCells = _analyzer.OrderCellsForCalc(valueCells, dict);
+            var dependencyCells = _analyzer.OrderCellsForCalc2();
 
             foreach (var cell in dependencyCells)
             {
@@ -152,7 +152,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
 
         private void EvalCell(SheetCell cell, Sheet sheet, SheetData cells)
         {
-            var cellAddress = sheet.CellAddress(cell);
+            var cellAddress = sheet.CellAddressSlim(cell);
             var evalResult = Eval(cell.Formula, cellAddress.Row, cellAddress.Column);
 
             if (evalResult is UniversalValue uValue)
