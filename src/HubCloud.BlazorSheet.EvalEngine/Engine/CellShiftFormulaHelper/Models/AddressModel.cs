@@ -27,6 +27,43 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.CellShiftFormulaHelper.Models
         /// </summary>
         public bool IsColumnCurrent { get; set; }
 
+        public AddressModel(string address, ValueAddress cellAddress)
+        {
+            var rIndex = address.IndexOf("R", StringComparison.OrdinalIgnoreCase);
+            var cIndex = address.IndexOf("C", StringComparison.OrdinalIgnoreCase);
+
+            var rowValue = address.Substring(1, cIndex - rIndex - 1);
+            var columnValue = address.Substring(cIndex + 1);
+
+            // row
+            if (!string.IsNullOrEmpty(rowValue))
+            {
+                if (rowValue.Contains("[") && rowValue.Contains("]"))
+                    IsRowRelative = true;
+                if (int.TryParse(rowValue.Trim(new[] {'[', ']'}), out var row))
+                    RowValue = row;
+            }
+            else
+            {
+                IsRowCurrent = true;
+                RowValue = cellAddress.Row;
+            }
+            
+            // column
+            if (!string.IsNullOrEmpty(columnValue))
+            {
+                if (columnValue.Contains("[") && columnValue.Contains("["))
+                    IsColumnRelative = true;
+                if (int.TryParse(columnValue.Trim(new[] {'[', ']'}), out var column))
+                    ColumnValue = column;
+            }
+            else
+            {
+                IsColumnCurrent = true;
+                ColumnValue = cellAddress.Column;
+            }
+        }
+        
         public AddressModel(string address, SheetCellAddress cellAddress)
         {
             address = address.Trim();

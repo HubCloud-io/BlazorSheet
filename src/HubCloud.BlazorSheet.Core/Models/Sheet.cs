@@ -309,7 +309,7 @@ namespace HubCloud.BlazorSheet.Core.Models
             return new SheetCellAddress(rowNumber, columnNumber);
         }
         
-        public SheetCellAddress CellAddressSlim(SheetCell cell)
+        public ValueAddress CellAddressSlim(SheetCell cell)
         {
             var row = _rowsDict[cell.RowUid];
             var column = _columnsDict[cell.ColumnUid];
@@ -317,7 +317,7 @@ namespace HubCloud.BlazorSheet.Core.Models
             var rowNumber = RowNumber(row);
             var columnNumber = ColumnNumber(column);
 
-            return new SheetCellAddress(rowNumber, columnNumber);
+            return new ValueAddress(rowNumber, columnNumber);
         }
 
         public SheetRow GetRow(int r)
