@@ -1,6 +1,4 @@
-﻿using HubCloud.BlazorSheet.Core.Models;
-using Microsoft.AspNetCore.Components;
-using ExpressoFunctions.FunctionLibrary;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 
 namespace HubCloud.BlazorSheet.Editors;
@@ -8,6 +6,7 @@ namespace HubCloud.BlazorSheet.Editors;
 public partial class DateEditor : ComponentBase
 {
     private string _value;
+    private string _valueBeforeChanging;
     private bool _wasInit;
    
     [Parameter]
@@ -40,28 +39,51 @@ public partial class DateEditor : ComponentBase
             _value = Value.ToString("yyyy'-'MM'-'dd");
         }
 
+        _valueBeforeChanging = _value;
+
         _wasInit = true;
     }
 
-    private async Task OnValueChange(ChangeEventArgs e)
+    private void OnValueChange(ChangeEventArgs e)
     {
-
-        var strValue = e.Value?.ToString();
-        
-        if (DateTime.TryParse(strValue, out var dateTimeValue))
-        {
-            _value = strValue;
-
-            await ValueChanged.InvokeAsync(dateTimeValue);
-            await Changed.InvokeAsync(dateTimeValue);
-        }
+        _value = e.Value?.ToString();
     }
 
     private async Task OnInputKeyDown(KeyboardEventArgs e)
     {
         if (e.Key.ToUpper() == "ESCAPE")
+            await InputValueCancelled();
+        if (e.Key.ToUpper() == "ENTER")
+            await InputValueFinished();
+    }
+
+    private async Task OnFocusOut()
+    {
+        if (_value == _valueBeforeChanging)
+            return;
+
+        await InputValueFinished();
+    }
+
+    private async Task InputValueFinished()
+    {
+        if (_value == _valueBeforeChanging)
+            return;
+
+        if (DateTime.TryParse(_value, out var dateTimeValue))
         {
-            await EditCancelled.InvokeAsync(null);
+            await ValueChanged.InvokeAsync(dateTimeValue);
+            await Changed.InvokeAsync(dateTimeValue);
         }
+    }
+
+    private async Task InputValueCancelled()
+    {
+        if (Value == DateTime.MinValue)
+            _value = "";
+        else
+            _value = Value.ToString("yyyy'-'MM'-'dd");
+
+        await EditCancelled.InvokeAsync();
     }
 }
