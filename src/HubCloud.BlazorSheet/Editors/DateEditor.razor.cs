@@ -6,6 +6,7 @@ namespace HubCloud.BlazorSheet.Editors;
 public partial class DateEditor : ComponentBase
 {
     private string _value;
+    private string _valueBeforeChanging;
     private bool _wasInit;
    
     [Parameter]
@@ -38,6 +39,8 @@ public partial class DateEditor : ComponentBase
             _value = Value.ToString("yyyy'-'MM'-'dd");
         }
 
+        _valueBeforeChanging = _value;
+
         _wasInit = true;
     }
 
@@ -49,22 +52,38 @@ public partial class DateEditor : ComponentBase
     private async Task OnInputKeyDown(KeyboardEventArgs e)
     {
         if (e.Key.ToUpper() == "ESCAPE")
-            await EditCancelled.InvokeAsync(null);
+            await InputValueCancelled();
         if (e.Key.ToUpper() == "ENTER")
             await InputValueFinished();
     }
 
     private async Task OnFocusOut()
     {
+        if (_value == _valueBeforeChanging)
+            return;
+
         await InputValueFinished();
     }
 
     private async Task InputValueFinished()
     {
+        if (_value == _valueBeforeChanging)
+            return;
+
         if (DateTime.TryParse(_value, out var dateTimeValue))
         {
             await ValueChanged.InvokeAsync(dateTimeValue);
             await Changed.InvokeAsync(dateTimeValue);
         }
+    }
+
+    private async Task InputValueCancelled()
+    {
+        if (Value == DateTime.MinValue)
+            _value = "";
+        else
+            _value = Value.ToString("yyyy'-'MM'-'dd");
+
+        await EditCancelled.InvokeAsync();
     }
 }
