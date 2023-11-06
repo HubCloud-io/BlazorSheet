@@ -11,6 +11,49 @@ namespace HubCloud.BlazorSheet.UnitTests;
 public class SheetDependencyAnalyzerTests
 {
     [Test]
+    public void GetOrderCells2_Test()
+    {
+        // Arrange
+        var sheetSettings = new SheetSettings
+        {
+            RowsCount = 5,
+            ColumnsCount = 5
+        };
+        
+        var sheet = new Sheet(sheetSettings)
+        {
+            Name = "main"
+        };
+
+        sheet.GetCell(1, 1).Value = 100;
+        
+        var cell12 = sheet.GetCell(1, 2);
+        cell12.Formula = @"VAL(""R1C1"") + 10";
+        
+        var cell13 = sheet.GetCell(1, 3);
+        cell13.Formula = @"VAL(""R1C4"") + 30";
+        
+        var cell14 = sheet.GetCell(1, 4);
+        cell14.Formula = @"VAL(""R1C2"") + 20";
+        
+        var cell15 = sheet.GetCell(1, 5);
+        cell15.Formula = @"VAL(""R1C1"") + 50";
+       
+        var workbook = new Workbook();
+        workbook.AddSheet(sheet);
+        
+        // Act
+        var analyzer = new SheetDependencyAnalyzer(workbook.FirstSheet);
+        var orderedCells = analyzer.OrderCellsForCalc2();
+        
+        // Assert
+        Assert.AreEqual(orderedCells[0].Uid, cell12.Uid);
+        Assert.AreEqual(orderedCells[1].Uid, cell14.Uid);
+        Assert.AreEqual(orderedCells[2].Uid, cell15.Uid);
+        Assert.AreEqual(orderedCells[3].Uid, cell13.Uid);
+    }
+    
+    [Test]
     public void DependencyCells_Order_Test()
     {
         var workbook = BuildTestWorkbook();
