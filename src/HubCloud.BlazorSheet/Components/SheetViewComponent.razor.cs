@@ -603,9 +603,11 @@ public partial class SheetViewComponent : ComponentBase
         return _cellStyleBuilder.GetCellStyle(Sheet, row, column, cell, _isHiddenCellsVisible);
     }
 
-    private bool ShouldCellBeDisplayed(SheetColumn column, SheetRow row, SheetCell cell)
+    private bool ShouldCellBeNotDisplayed(SheetColumn column, SheetRow row, SheetCell cell)
     {
-        return ((column.IsHidden || row.IsHidden) && !_isHiddenCellsVisible) || cell.HiddenByJoin || row.IsCollapsed ||
+        return ((column.IsHidden || row.IsHidden) && !_isHiddenCellsVisible) || 
+               cell.HiddenByJoin || 
+               row.IsCollapsed ||
                column.IsCollapsed;
     }
 

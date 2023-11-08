@@ -14,6 +14,7 @@ namespace HubCloud.BlazorSheet.Core.Models
         public Guid ParentUid { get; set; }
         public bool IsGroup { get; set; }
 
+        // Rows can be head of group rows. This property indicates that current row is open and children rows which are head of group rows are open too or contrary
         public bool IsOpen
         {
             get => _isOpen;
@@ -24,6 +25,7 @@ namespace HubCloud.BlazorSheet.Core.Models
             }
         }
 
+        // Indicates that current row was hidden or displayed via context menu
         public bool IsHidden
         {
             get => _isHidden;
@@ -34,6 +36,7 @@ namespace HubCloud.BlazorSheet.Core.Models
             }
         }
 
+        // Indicates that current row not displayed because head group row not open or contrary
         public bool IsCollapsed
         {
             get => _isCollapsed;

@@ -26,9 +26,10 @@ namespace HubCloud.BlazorSheet.Components
         [Parameter] public EventCallback<SheetCell> CellStartEdit { get; set; }
         [Parameter] public EventCallback<MouseEventArgs> RowContextMenu { get; set; }
 
-        private bool ShouldCellBeDisplayed(SheetColumn column, SheetCell cell)
+        private bool ShouldCellBeNotDisplayed(SheetColumn column, SheetCell cell)
         {
-            return ((column.IsHidden || Row.IsHidden) && !IsHiddenCellsVisible) || cell.HiddenByJoin ||
+            return ((column.IsHidden || Row.IsHidden) && !IsHiddenCellsVisible) || 
+                   cell.HiddenByJoin ||
                    Row.IsCollapsed ||
                    column.IsCollapsed;
         }

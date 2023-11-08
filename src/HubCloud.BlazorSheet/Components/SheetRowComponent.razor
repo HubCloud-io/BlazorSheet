@@ -13,7 +13,7 @@
         if (cell == null)
             continue;
 
-        if (ShouldCellBeDisplayed(column, cell))
+        if (ShouldCellBeNotDisplayed(column, cell))
             continue;
 
         <SheetCellComponent @key="@cell" 

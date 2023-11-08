@@ -1148,7 +1148,7 @@ namespace HubCloud.BlazorSheet.Core.Models
                 {
                     child.ParentUid = lastRow.Uid;
                     child.IsOpen = lastRow.IsOpen;
-                    child.IsHidden = !lastRow.IsOpen;
+                    child.IsCollapsed = !lastRow.IsOpen;
                 }
             }
             else
