@@ -44,7 +44,7 @@
                     if (cell == null)
                         continue;
 
-                    if (ShouldCellBeDisplayed(column, row, cell))
+                    if (ShouldCellBeNotDisplayed(column, row, cell))
                         continue;
 
                     <td @key="@cell.Uid"
@@ -98,7 +98,7 @@
                             if (cell == null)
                                 continue;
 
-                            if (ShouldCellBeDisplayed(column, row, cell))
+                            if (ShouldCellBeNotDisplayed(column, row, cell))
                                 continue;
 
                             <td @key="@cell.Uid"
@@ -149,7 +149,7 @@
                         if (cell == null)
                             continue;
 
-                        if (ShouldCellBeDisplayed(column, row, cell))
+                        if (ShouldCellBeNotDisplayed(column, row, cell))
                             continue;
 
 
