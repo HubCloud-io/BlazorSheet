@@ -4,26 +4,60 @@ namespace HubCloud.BlazorSheet.Core.Models
 {
     public struct ValueAddress
     {
+        private bool _isRowRelative;
+        private bool _isColumnRelative;
+        
         public int Row { get; set; }
         public int Column { get; set; }
+        public string SheetName { get; set; }
 
-        public ValueAddress(int row, int column)
+        public ValueAddress(int row, int column, string sheetName = null)
         {
+            _isRowRelative = false;
+            _isColumnRelative = false;
+            
             Row = row;
             Column = column;
+            SheetName = sheetName ?? string.Empty;
+        }
+        
+        public ValueAddress(string address)
+        {
+            _isRowRelative = false;
+            _isColumnRelative = false;
+            
+            Row = 0;
+            Column = 0;
+            SheetName = string.Empty;
+            Parse(address);
+        }
+
+        public ValueAddress(string address, int currentRow, int currentColumn)
+        {
+            _isRowRelative = false;
+            _isColumnRelative = false;
+            
+            Row = 0;
+            Column = 0;
+            SheetName = string.Empty;
+            
+            Parse(address);
+
+            if (Row == 0 || _isRowRelative)
+                Row += currentRow;
+
+            if (Column == 0 || _isColumnRelative)
+                Column += currentColumn;
         }
         
         public ValueAddress(SheetCellAddress sheetCellAddress)
         {
+            _isRowRelative = false;
+            _isColumnRelative = false;
+            
             Row = sheetCellAddress.Row;
             Column = sheetCellAddress.Column;
-        }
-
-        public ValueAddress(string address)
-        {
-            Row = 0;
-            Column = 0;
-            Parse(address);
+            SheetName = sheetCellAddress.SheetName;
         }
         
         private void Parse(string address)
@@ -36,6 +70,7 @@ namespace HubCloud.BlazorSheet.Core.Models
             if (address.Contains("!"))
             {
                 var separatorIndex = address.IndexOf('!');
+                SheetName = address.Substring(0, separatorIndex);
                 address = address.Substring(separatorIndex + 1);
             }
 
