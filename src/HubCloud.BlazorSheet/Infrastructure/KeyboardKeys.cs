@@ -9,4 +9,5 @@ public class KeyboardKeys
     public const string Enter = "ENTER";
     public const string Escape = "ESCAPE";
     public const string Tab = "TAB";
+    public const string Shift = "SHIFT";
 }
