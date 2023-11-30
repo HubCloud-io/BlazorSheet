@@ -24,7 +24,7 @@ namespace HubCloud.BlazorSheet.UnitTests
         public void SetFromatType_AreFormatTypeEqualExpected_True(string format, CellFormatTypes expected)
         {
             var styleModel = new SheetCommandPanelModel();
-            styleModel.SetFromatType(format);
+            styleModel.SetFormatType(format);
 
             Assert.AreEqual(expected, styleModel.FormatType);
         }

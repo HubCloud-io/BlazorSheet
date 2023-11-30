@@ -11,6 +11,7 @@ public partial class SheetEditPage: ComponentBase
 {
     private IDataTypeDataProvider _dataTypeDataProvider = new DataTypeDataProvider();
 
+    private SheetCellCopiedSettings _cellCopiedSettings;
     private SheetComponent _sheetComponent;
     private Sheet _sheet;
     private SheetCommandPanelModel _commandPanelModel { get; set; } = new SheetCommandPanelModel();
@@ -122,6 +123,35 @@ public partial class SheetEditPage: ComponentBase
         {
             _commandPanelModel.FreezedColumns = _sheet.FreezedColumns;
             AlertService.Add("Columns can't be freezed", BBComponents.Enums.BootstrapColors.Warning);
+        }
+    }
+
+    private void OnRememberCellSettings()
+    {
+        if (_selectedCell == null)
+            return;
+
+        _cellCopiedSettings = new SheetCellCopiedSettings
+        {
+            EditSettingsUid = _selectedCell.EditSettingsUid,
+            Format = _selectedCell.Format,
+            StyleUid = _selectedCell.StyleUid
+        };
+    }
+
+    private void OnApplyRememberedCellSettings()
+    {
+        if (_cellCopiedSettings == null)
+            return;
+
+        if (!_selectedCells.Any())
+            return;
+
+        foreach (var cell in _selectedCells)
+        {
+            cell.EditSettingsUid = _cellCopiedSettings.EditSettingsUid;
+            cell.Format = _cellCopiedSettings.Format;
+            cell.StyleUid = _cellCopiedSettings.StyleUid;
         }
     }
 

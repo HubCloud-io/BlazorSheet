@@ -560,7 +560,7 @@ namespace HubCloud.BlazorSheet.Core.Models
             var cellAddress = CellAddress(cell);
             commandPanelModel.SelectedCellAddress = $"R{cellAddress.Row}C{cellAddress.Column}";
             commandPanelModel.InputText = cell.Formula;
-            commandPanelModel.SetFromatType(cell.Format);
+            commandPanelModel.SetFormatType(cell.Format);
 
             var editSettings = GetEditSettings(cell);
             commandPanelModel.SetEditSettings(editSettings);

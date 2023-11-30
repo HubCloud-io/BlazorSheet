@@ -132,7 +132,7 @@ namespace HubCloud.BlazorSheet.Core.Models
             }
         }
 
-        public void SetFromatType(string format)
+        public void SetFormatType(string format)
         {
             switch (format)
             {
