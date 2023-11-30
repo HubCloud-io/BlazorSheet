@@ -24,6 +24,8 @@ public partial class SheetComponent : ComponentBase
     private bool _cellHasChanged;
     private bool _tryToFindFirstCell;
 
+    private bool _isShiftKeyPressed;
+
     private CellEditInfo _cellEditInfo;
 
     private SheetColumn _currentColumn;
@@ -151,10 +153,37 @@ public partial class SheetComponent : ComponentBase
         else
             _selectedIdentifiers.Remove(_currentCell);
 
+        if (_isShiftKeyPressed)
+            SelectSpecificAreaByShift(cell);
+
         await CellSelected.InvokeAsync(cell);
         await CellsSelected.InvokeAsync(_selectedCells);
         //await RowSelected.InvokeAsync(row);
         //await ColumnSelected.InvokeAsync(column);
+    }
+
+    private void SelectSpecificAreaByShift(SheetCell lastSelectedCell)
+    {
+        if (_selectedCells.Count == 1)
+            return;
+
+        var valueAddresses = _selectedCells
+            .Select(cell => Sheet.CellAddressSlim(cell))
+            .ToList();
+
+        var fromRow = valueAddresses.Min(m => m.Row);
+        var fromColumn = valueAddresses.Min(m => m.Column);
+        var toRow = valueAddresses.Max(m => m.Row);
+        var toColumn = valueAddresses.Max(m => m.Column);
+
+        var area = Sheet.GetCellsByRange(fromRow, fromColumn, toRow, toColumn);
+        foreach (var cell in area)
+        {
+            if (!_selectedCells.Contains(cell))
+                _selectedCells.Add(cell);
+            if (!_selectedIdentifiers.Contains(cell))
+                _selectedIdentifiers.Add(cell);
+        }
     }
 
     private void OnScroll()
@@ -164,7 +193,7 @@ public partial class SheetComponent : ComponentBase
 
     private async Task OnTableKeyDown(KeyboardEventArgs e)
     {
-        if (e.Key == "Control")
+        if (e.Key == "Control" || e.Key == "Shift")
         {
             _multipleSelection = true;
         }
@@ -202,6 +231,11 @@ public partial class SheetComponent : ComponentBase
                 nextCell = SheetArrowNavigationHelper.ArrowRight(Sheet, _currentCell);
                 break;
 
+            case KeyboardKeys.Shift:
+
+                _isShiftKeyPressed = true;
+                break;
+
             default:
 
                 if (IsLetterOrNumberOrEnter(e.Key))
@@ -231,10 +265,13 @@ public partial class SheetComponent : ComponentBase
 
     private void OnTableKeyUp(KeyboardEventArgs e)
     {
-        if (e.Key == "Control")
+        if (e.Key == "Control" || e.Key == "Shift")
         {
             _multipleSelection = false;
         }
+
+        if (e.Key == "Shift")
+            _isShiftKeyPressed = false;
     }
 
     private async Task OnCellStartEdit(SheetCell cell)
