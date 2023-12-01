@@ -25,9 +25,6 @@ public partial class SheetCommandPanel:ComponentBase
     private List<Tuple<int, string>> _dataTypeSource;
 
     [Parameter]
-    public SheetCommandPanelModel Model { get; set; }
-    
-    [Parameter]
     public EventCallback Changed { get; set; }
     [Parameter]
     public EventCallback<int> FreezedRowsChanged { get; set; }
@@ -72,6 +69,15 @@ public partial class SheetCommandPanel:ComponentBase
     
     [Parameter]
     public EventCallback<SheetCellEditSettings> EditSettingsChanged { get; set; }
+
+    [Parameter]
+    public EventCallback RememberCellSettings { get; set; }
+
+    [Parameter]
+    public EventCallback ApplyRememberedCellSettings { get; set; }
+
+    [Parameter]
+    public SheetCommandPanelModel Model { get; set; }
 
     [Parameter]
     public bool CanCellsBeJoined { get; set; }
