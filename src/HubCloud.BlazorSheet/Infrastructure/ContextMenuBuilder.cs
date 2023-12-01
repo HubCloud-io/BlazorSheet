@@ -43,8 +43,8 @@ public class ContextMenuBuilder
 
         items.AddRange(new[]
         {
-            CreateMenuItem(MenuItemKinds.Item, AddBeforeItemName, "Add before", "fa fa-plus text-primary"),
-            CreateMenuItem(MenuItemKinds.Item, AddAfterItemName, "Add after", "fa fa-plus text-primary")
+           // CreateMenuItem(MenuItemKinds.Item, AddBeforeItemName, "Add before", "fa fa-plus text-primary"),
+            CreateMenuItem(MenuItemKinds.Item, AddAfterItemName, "Add", "fa fa-plus text-primary")
         });
     }
     
