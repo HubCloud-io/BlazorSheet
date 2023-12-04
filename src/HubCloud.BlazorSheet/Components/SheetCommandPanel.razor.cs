@@ -59,7 +59,13 @@ public partial class SheetCommandPanel:ComponentBase
     public EventCallback UngroupRows { get; set; }
 
     [Parameter]
+    public EventCallback UngroupAllRows { get; set; }
+
+    [Parameter]
     public EventCallback UngroupColumns { get; set; }
+
+    [Parameter]
+    public EventCallback UngroupAllColumns { get; set; }
 
     [Parameter]
     public EventCallback<bool> CollapseExpandAllRows { get; set; }
@@ -274,9 +280,19 @@ public partial class SheetCommandPanel:ComponentBase
         await UngroupRows.InvokeAsync();
     }
 
+    private async void OnUngroupAllRows()
+    {
+        await UngroupAllRows.InvokeAsync();
+    }
+
     private async void OnUngroupColumns()
     {
         await UngroupColumns.InvokeAsync();
+    }
+
+    private async void OnUngroupAllColumns()
+    {
+        await UngroupAllColumns.InvokeAsync();
     }
 
     private async void OnCollapseExpandAllRows()

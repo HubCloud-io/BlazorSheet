@@ -146,6 +146,11 @@
                     </button>
                     <button class="dropdown-item"
                             type="button"
+                            @onclick="OnUngroupAllRows">
+                        Ungroup all rows
+                    </button>
+                    <button class="dropdown-item"
+                            type="button"
                             @onclick="OnCollapseExpandAllRows">
                         Collapse/Expand all rows
                     </button>
@@ -161,6 +166,11 @@
                             disabled="@(!CanColumnsBeUngrouped)"
                             @onclick="OnUngroupColumns">
                         Ungroup columns
+                    </button>
+                    <button class="dropdown-item"
+                            type="button"
+                            @onclick="OnUngroupAllColumns">
+                        Ungroup all columns
                     </button>
                     <button class="dropdown-item"
                             type="button"

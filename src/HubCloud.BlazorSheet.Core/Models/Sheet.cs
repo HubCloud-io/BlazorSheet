@@ -1159,6 +1159,17 @@ namespace HubCloud.BlazorSheet.Core.Models
             }
         }
 
+        public void UngroupAllRows()
+        {
+            foreach (var row in Rows)
+            {
+                row.ParentUid = Guid.Empty;
+                row.IsOpen = false;
+                row.IsGroup = false;
+                row.IsCollapsed = false;
+            }
+        }
+
         public void UngroupColumns(List<SheetColumn> columns)
         {
             columns = columns
@@ -1204,6 +1215,17 @@ namespace HubCloud.BlazorSheet.Core.Models
                 parentChildren = Columns.Where(x => x.ParentUid == parentColumn.Uid);
                 if (parentChildren.Except(columns).Count() == 0)
                     parentColumn.IsGroup = false;
+            }
+        }
+
+        public void UngroupAllColumns()
+        {
+            foreach (var column in Columns)
+            {
+                column.ParentUid = Guid.Empty;
+                column.IsOpen = false;
+                column.IsGroup = false;
+                column.IsCollapsed = false;
             }
         }
 

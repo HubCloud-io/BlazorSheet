@@ -188,9 +188,19 @@ public partial class SheetEditPage: ComponentBase
         _sheet.UngroupRows(_selectedRowByNumberList);
     }
 
+    private void OnUngroupAllRows()
+    {
+        _sheet.UngroupAllRows();
+    }
+
     private void OnUngroupColumns()
     {
         _sheet.UngroupColumns(_selectedColumnByNumberList);
+    }
+
+    private void OnUngroupAllColumns()
+    {
+        _sheet.UngroupAllColumns();
     }
 
     private void OnCollapseExpandAllRows(bool isExpand)
