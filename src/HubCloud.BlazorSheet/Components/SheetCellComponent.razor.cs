@@ -44,22 +44,16 @@ public partial class SheetCellComponent : ComponentBase
     protected override void OnParametersSet()
     {
         _currentCellStyle = CellStyle();
-        
-        if (Regime == SheetRegimes.InputForm && 
-            Cell != null)
+        _shouldRender = false;
+
+        if (Cell != null)
         {
             _shouldRender = Cell.ShouldRender;
-            
             if (_shouldRender)
-            {
                 Cell.ShouldRender = false;
-            }
-            
         }
         else
-        {
             _shouldRender = true;
-        }
     }
 
     protected override void OnAfterRender(bool firstRender)
