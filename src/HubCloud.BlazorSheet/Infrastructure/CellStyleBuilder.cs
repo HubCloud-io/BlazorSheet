@@ -1,4 +1,5 @@
-﻿using HubCloud.BlazorSheet.Core.Models;
+﻿using HubCloud.BlazorSheet.Core.Consts;
+using HubCloud.BlazorSheet.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,7 @@ namespace HubCloud.BlazorSheet.Infrastructure
         private const string CellHiddenBackground = "#cccccc";
 
         public int LeftSideCellWidth { get; set; } = 30;
+        public int ChevronPlusCellWidth { get; set; } = 30;
         public int TopSideCellHeight { get; set; } = 30;
 
         public string GetCellStyle(Sheet sheet, SheetRow row, SheetColumn column, SheetCell cell, bool isHiddenCellsVisible)
@@ -254,7 +256,7 @@ namespace HubCloud.BlazorSheet.Infrastructure
             double left = 0;
 
             if (columnNumber > 0)
-                left = LeftSideCellWidth;
+                left = SheetConsts.LeftSideCellWidth + SheetConsts.ChevronPlusCellWidth;
 
             for (int i = 1; i < columnNumber; i++)
             {

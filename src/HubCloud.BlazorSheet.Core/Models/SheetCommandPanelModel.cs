@@ -7,7 +7,7 @@ namespace HubCloud.BlazorSheet.Core.Models
     public class SheetCommandPanelModel
     {
         public const int DefaultFontSize = 12;
-        public const string DefaultBackgroundColor = "#ffffff";
+        public const string DefaultBackgroundColor = SheetConsts.WhiteBackground;
         public const string DefaultColor = "#000000";
         public const string DefaultTextAlign = "left";
         

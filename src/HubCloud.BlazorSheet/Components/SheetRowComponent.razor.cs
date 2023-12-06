@@ -3,11 +3,6 @@ using HubCloud.BlazorSheet.Core.Models;
 using HubCloud.BlazorSheet.Infrastructure;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HubCloud.BlazorSheet.Components
 {
@@ -22,6 +17,7 @@ namespace HubCloud.BlazorSheet.Components
         [Parameter] public SheetRegimes Regime { get; set; }
         [Parameter] public EventCallback RowHeaderCellClick { get; set; }
         [Parameter] public EventCallback AddRowAfter { get; set; }
+        [Parameter] public EventCallback RowGroupOpenCloseClick { get; set; }
         [Parameter] public EventCallback<SheetCell> CellClicked { get; set; }
         [Parameter] public EventCallback<SheetCell> CellStartEdit { get; set; }
         [Parameter] public EventCallback<MouseEventArgs> RowContextMenu { get; set; }

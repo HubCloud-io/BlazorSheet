@@ -1,11 +1,17 @@
 ﻿<tr @key="@Row.Uid">
+    <SheetRowChevronPlusCellComponent Row="Row"
+                                      Sheet="Sheet"
+                                      IsHiddenCellsVisible="IsHiddenCellsVisible"
+                                      CellStyleBuilder="StyleBuilder"
+                                      AddRowAfter="async () => await AddRowAfter.InvokeAsync()" 
+                                      GroupOpenCloseClick="async () => await RowGroupOpenCloseClick.InvokeAsync()" />
+
     <SheetRowHeaderCellComponent Row="Row"
                                  Sheet="Sheet"
                                  IsHiddenCellsVisible="@IsHiddenCellsVisible"
                                  CellStyleBuilder="@StyleBuilder"
                                  Click="async () => await RowHeaderCellClick.InvokeAsync()"
-                                 RowContextMenu="async (args) => await RowContextMenu.InvokeAsync(args)" 
-                                 AddRowAfter="async () => await AddRowAfter.InvokeAsync()" />
+                                 RowContextMenu="async (args) => await RowContextMenu.InvokeAsync(args)" />
 
     @foreach (var column in Sheet.Columns)
     {

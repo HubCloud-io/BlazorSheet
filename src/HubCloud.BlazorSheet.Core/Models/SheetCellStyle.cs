@@ -1,4 +1,5 @@
 ﻿using System;
+using HubCloud.BlazorSheet.Core.Consts;
 using HubCloud.BlazorSheet.Core.Enums;
 
 namespace HubCloud.BlazorSheet.Core.Models
@@ -8,7 +9,7 @@ namespace HubCloud.BlazorSheet.Core.Models
         public const string DefaultCellStyleUid = "{dc0e92be-1f30-45e0-990e-dd1a0c0bdf2c}";
         
         public Guid Uid { get; set; } = Guid.NewGuid();
-        public string BackgroundColor { get; set; } = "#ffffff";
+        public string BackgroundColor { get; set; } = SheetConsts.WhiteBackground;
         public string Color { get; set; } = "#000000";
 
         public string FontWeight { get; set; } = "normal";

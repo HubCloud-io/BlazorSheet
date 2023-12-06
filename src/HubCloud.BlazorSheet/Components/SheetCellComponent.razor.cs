@@ -15,7 +15,6 @@ public partial class SheetCellComponent : ComponentBase
     private string _currentCellStyle = string.Empty;
     
     private bool _shouldRender;
-    private ElementReference _cellElement;
 
     [Inject] public IJSRuntime JsRuntime { get; set; }
 

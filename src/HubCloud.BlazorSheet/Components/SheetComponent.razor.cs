@@ -90,6 +90,7 @@ public partial class SheetComponent : ComponentBase
         _cellStyleBuilder = new CellStyleBuilder
         {
             LeftSideCellWidth = SheetConsts.LeftSideCellWidth,
+            ChevronPlusCellWidth = SheetConsts.ChevronPlusCellWidth,
             TopSideCellHeight = SheetConsts.TopSideCellHeight
         };
 
@@ -715,6 +716,12 @@ public partial class SheetComponent : ComponentBase
         await RowSelected.InvokeAsync(row);
     }
 
+    private void RowGroupOpenCloseClick(SheetRow row)
+    {
+        row.IsOpen = !row.IsOpen;
+        Sheet.ChangeChildrenVisibility(row, row.IsOpen);
+    }
+
     public string CellClass(SheetCell cell)
     {
         var result = "hc-sheet-cell";
@@ -725,7 +732,7 @@ public partial class SheetComponent : ComponentBase
         return result;
     }
 
-    public string TopLeftEmptyCellStyle()
+    public string TopLeftEmptyCellStyle(int zIndex, int left)
     {
         var sb = new StringBuilder();
 
@@ -758,7 +765,7 @@ public partial class SheetComponent : ComponentBase
         sb.Append(";");
 
         sb.Append("left:");
-        sb.Append(0);
+        sb.Append($"{left}px");
         sb.Append(";");
 
         sb.Append("position:");
@@ -766,7 +773,20 @@ public partial class SheetComponent : ComponentBase
         sb.Append(";");
 
         sb.Append("z-index:");
-        sb.Append(20);
+        sb.Append(zIndex);
+        sb.Append(";");
+
+        return sb.ToString();
+    }
+
+    public string TopLeftChevronPlusEmptyCellStyle()
+    {
+        var sb = new StringBuilder();
+
+        sb.Append(TopLeftEmptyCellStyle(30, 0));
+
+        sb.Append("background:");
+        sb.Append(SheetConsts.WhiteBackground);
         sb.Append(";");
 
         return sb.ToString();

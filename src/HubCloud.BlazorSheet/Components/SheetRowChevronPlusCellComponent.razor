@@ -1,0 +1,29 @@
+﻿<td style="@GetCellStyle()">
+    <div style="text-align: right;">
+        @if (Row.IsAddRemoveAllowed)
+        {
+            <a href="#" @onclick="async () => await AddRowAfter.InvokeAsync()" @onclick:preventDefault>
+                <span class="fa fa-plus text-success mr-1"
+                      style="float:left;margin-top:3px;">
+                </span>
+            </a>
+        }
+        @if (Row.IsGroup)
+        {
+            @if (Row.IsOpen)
+            {
+                <span class="fa fa-solid fa-chevron-down text-primary"
+                      style="cursor:pointer;margin-right:3px;"
+                      @onclick="async () => await GroupOpenCloseClick.InvokeAsync()">
+                </span>
+            }
+            else
+            {
+                <span class="fa fa-solid fa-chevron-right text-primary"
+                      style="cursor:pointer;margin-right:6px;"
+                      @onclick="async () => await GroupOpenCloseClick.InvokeAsync()">
+                </span>
+            }
+        }
+    </div>
+</td>
