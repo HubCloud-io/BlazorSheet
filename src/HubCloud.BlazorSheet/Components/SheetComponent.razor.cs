@@ -716,10 +716,16 @@ public partial class SheetComponent : ComponentBase
         await RowSelected.InvokeAsync(row);
     }
 
-    private void RowGroupOpenCloseClick(SheetRow row)
+    private void OnRowGroupOpenCloseClick(SheetRow row)
     {
         row.IsOpen = !row.IsOpen;
         Sheet.ChangeChildrenVisibility(row, row.IsOpen);
+    }
+
+    private void OnColumnGroupOpenCloseClick(SheetColumn column)
+    {
+        column.IsOpen = !column.IsOpen;
+        Sheet.ChangeChildrenVisibility(column, column.IsOpen);
     }
 
     public string CellClass(SheetCell cell)
@@ -732,7 +738,7 @@ public partial class SheetComponent : ComponentBase
         return result;
     }
 
-    public string TopLeftEmptyCellStyle(int zIndex, int left)
+    public string TopLeftEmptyCellStyle(int left, int top)
     {
         var sb = new StringBuilder();
 
@@ -761,7 +767,7 @@ public partial class SheetComponent : ComponentBase
         sb.Append(";");
 
         sb.Append("top:");
-        sb.Append(0);
+        sb.Append($"{top}px");
         sb.Append(";");
 
         sb.Append("left:");
@@ -773,17 +779,17 @@ public partial class SheetComponent : ComponentBase
         sb.Append(";");
 
         sb.Append("z-index:");
-        sb.Append(zIndex);
+        sb.Append(30);
         sb.Append(";");
 
         return sb.ToString();
     }
 
-    public string TopLeftChevronPlusEmptyCellStyle()
+    public string TopLeftChevronPlusEmptyCellStyle(int left, int top)
     {
         var sb = new StringBuilder();
 
-        sb.Append(TopLeftEmptyCellStyle(30, 0));
+        sb.Append(TopLeftEmptyCellStyle(left, top));
 
         sb.Append("background:");
         sb.Append(SheetConsts.WhiteBackground);

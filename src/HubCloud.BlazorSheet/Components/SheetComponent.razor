@@ -17,8 +17,21 @@
 
         @*Sheet rows*@
         <tr>
-            <td style="@TopLeftChevronPlusEmptyCellStyle()"></td>
-            <td class="hc-grid-cell" style="@TopLeftEmptyCellStyle(20, SheetConsts.ChevronPlusCellWidth)"></td>
+            <td style="@TopLeftChevronPlusEmptyCellStyle(0, 0)"></td>
+            <td style="@TopLeftChevronPlusEmptyCellStyle(SheetConsts.ChevronPlusCellWidth, 0)"></td>
+
+            @foreach (var column in Sheet.GetVisibleColumns(_isHiddenCellsVisible))
+            {
+                <SheetColumnChevronPlusCellComponent Column="column"
+                                                     Sheet="Sheet"
+                                                     CellStyleBuilder="_cellStyleBuilder"
+                                                     IsHiddenCellsVisible="_isSheetSizeModalOpen"
+                                                     GroupOpenCloseClick="() => OnColumnGroupOpenCloseClick(column)" />
+            }
+        </tr>
+        <tr>
+            <td style="@TopLeftChevronPlusEmptyCellStyle(0, SheetConsts.TopSideCellHeight)"></td>
+            <td class="hc-grid-cell" style="@TopLeftEmptyCellStyle(SheetConsts.ChevronPlusCellWidth, SheetConsts.TopSideCellHeight)"></td>
 
             @foreach (var column in Sheet.GetVisibleColumns(_isHiddenCellsVisible))
             {
@@ -45,7 +58,7 @@
                                CellStartEdit="OnCellStartEdit"
                                RowContextMenu="(e) => OnRowContextMenu(e, row)"
                                AddRowAfter="() => OnAddRowAfter(row)"
-                               RowGroupOpenCloseClick="() => RowGroupOpenCloseClick(row)" />
+                               GroupOpenCloseClick="() => OnRowGroupOpenCloseClick(row)" />
         }
 
         @if (IsVirtualizationEnabled)
@@ -56,7 +69,7 @@
                         OverscanCount="1"
                         ItemSize="26">
                 <ItemContent>
-                    <SheetRowComponent @key="@row" 
+                    <SheetRowComponent @key="@row"
                                        Row="row"
                                        Sheet="@Sheet"
                                        Regime="@Regime"
@@ -67,7 +80,7 @@
                                        RowContextMenu="(e) => OnRowContextMenu(e, row)"
                                        RowHeaderCellClick="() => OnRowNumberCellClick(row)"
                                        AddRowAfter="() => OnAddRowAfter(row)"
-                                       RowGroupOpenCloseClick="() => RowGroupOpenCloseClick(row)" />
+                                       GroupOpenCloseClick="() => OnRowGroupOpenCloseClick(row)" />
 
                 </ItemContent>
             </Virtualize>
@@ -76,18 +89,18 @@
         {
             foreach (var row in Sheet.GetVisibleRows(_isHiddenCellsVisible))
             {
-                <SheetRowComponent @key="@row" 
-                                   Row="row" 
-                                   Sheet="@Sheet" 
-                                   Regime="@Regime" 
-                                   IsHiddenCellsVisible="@_isHiddenCellsVisible" 
+                <SheetRowComponent @key="@row"
+                                   Row="row"
+                                   Sheet="@Sheet"
+                                   Regime="@Regime"
+                                   IsHiddenCellsVisible="@_isHiddenCellsVisible"
                                    StyleBuilder="@_cellStyleBuilder"
                                    CellClicked="OnCellClicked"
                                    CellStartEdit="OnCellStartEdit"
                                    RowContextMenu="(e) => OnRowContextMenu(e, row)"
                                    RowHeaderCellClick="() => OnRowNumberCellClick(row)"
                                    AddRowAfter="() => OnAddRowAfter(row)"
-                                   RowGroupOpenCloseClick="() => RowGroupOpenCloseClick(row)" />
+                                   GroupOpenCloseClick="() => OnRowGroupOpenCloseClick(row)" />
             }
         }
 

@@ -1,5 +1,5 @@
 ﻿<td style="@GetCellStyle()">
-    <div style="text-align: right;">
+    <div style="text-align:right;">
         @if (Row.IsAddRemoveAllowed)
         {
             <a href="#" @onclick="async () => await AddRowAfter.InvokeAsync()" @onclick:preventDefault>
