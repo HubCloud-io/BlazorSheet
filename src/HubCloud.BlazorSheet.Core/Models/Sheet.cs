@@ -540,7 +540,10 @@ namespace HubCloud.BlazorSheet.Core.Models
                 return;
 
             foreach (var item in cells)
+            {
                 item.SetFormat(formatType, customFormat);
+                item.ShouldRender = true;
+            }
         }
 
         public void SetFormula(List<SheetCell> cells, string formula)
@@ -614,6 +617,7 @@ namespace HubCloud.BlazorSheet.Core.Models
             foreach (var cell in cells)
             {
                 cell.StyleUid = styleUid;
+                cell.ShouldRender = true;
             }
         }
 
@@ -673,6 +677,7 @@ namespace HubCloud.BlazorSheet.Core.Models
             foreach (var cell in cells)
             {
                 cell.EditSettingsUid = settingsUid;
+                cell.ShouldRender = true;
             }
         }
 

@@ -37,14 +37,7 @@ namespace HubCloud.BlazorSheet.Components
         protected override void OnParametersSet()
         {
             _shouldRender = false;
-            if (Regime == SheetRegimes.InputForm)
-            {
-                CheckRowShouldRender();
-            }
-            else
-            {
-                _shouldRender = true;
-            }
+            CheckRowShouldRender();
         }
 
         protected override void OnAfterRender(bool firstRender)

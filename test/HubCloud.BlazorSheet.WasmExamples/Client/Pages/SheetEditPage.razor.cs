@@ -66,6 +66,14 @@ namespace HubCloud.BlazorSheet.WasmExamples.Client.Pages
             _sheet.SetSettingsFromCommandPanel(_selectedCells, _selectedCell, _commandPanelModel);
         }
 
+        private void OnEditSettingsChanged(SheetCellEditSettings editSettings)
+        {
+            if (_selectedCell == null)
+                return;
+
+            _sheet.SetEditSettings(_selectedCells, editSettings.ConcreteClone());
+        }
+
         private void OnFormatChanged()
         {
             _sheet.SetFormat(_selectedCells, _commandPanelModel.FormatType, _commandPanelModel.CustomFormat);
