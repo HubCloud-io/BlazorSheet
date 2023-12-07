@@ -837,7 +837,12 @@ public partial class SheetComponent : ComponentBase
             return;
 
         var newRowAfter = Sheet.AddRow(row, 1, true);
-        newRowAfter.ParentUid = row.ParentUid;
+
+        if (row.IsGroup)
+            newRowAfter.ParentUid = row.Uid;
+        else
+            newRowAfter.ParentUid = row.ParentUid;
+
         newRowAfter.HeightValue = row.HeightValue;
 
         await RowAdded.InvokeAsync(new RowAddedEventArgs()
