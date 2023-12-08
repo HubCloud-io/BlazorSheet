@@ -16,22 +16,36 @@
            @onkeyup="(e => OnTableKeyUp(e))">
 
         @*Sheet rows*@
-        <tr>
-            <td style="@TopLeftChevronPlusEmptyCellStyle(0, 0)"></td>
-            <td style="@TopLeftChevronPlusEmptyCellStyle(SheetConsts.ChevronPlusCellWidth, 0)"></td>
+        @if (IsChevronPlusAreaColumns)
+        {
+            <tr>
+                @if (IsChevronPlusAreaRows)
+                {
+                    <td style="@ChevronPlusEmptyCellStyle(SheetConsts.ChevronPlusCellWidth, SheetConsts.ChevronPlusCellHeight, 0, 0)"></td>
+                }
 
-            @foreach (var column in Sheet.GetVisibleColumns(_isHiddenCellsVisible))
-            {
-                <SheetColumnChevronPlusCellComponent Column="column"
-                                                     Sheet="Sheet"
-                                                     CellStyleBuilder="_cellStyleBuilder"
-                                                     IsHiddenCellsVisible="_isSheetSizeModalOpen"
-                                                     GroupOpenCloseClick="() => OnColumnGroupOpenCloseClick(column)" />
-            }
-        </tr>
+                <td style="@ChevronPlusEmptyCellStyle(SheetConsts.LeftSideCellWidth, SheetConsts.ChevronPlusCellHeight, IsChevronPlusAreaRows ? SheetConsts.ChevronPlusCellWidth : 0, 0)"></td>
+
+                @foreach (var column in Sheet.GetVisibleColumns(_isHiddenCellsVisible))
+                {
+                    <SheetColumnChevronPlusCellComponent Column="column"
+                                                         Sheet="Sheet"
+                                                         CellStyleBuilder="_cellStyleBuilder"
+                                                         IsHiddenCellsVisible="_isSheetSizeModalOpen"
+                                                         GroupOpenCloseClick="() => OnColumnGroupOpenCloseClick(column)" />
+                }
+            </tr>
+        }
+
         <tr>
-            <td style="@TopLeftChevronPlusEmptyCellStyle(0, SheetConsts.TopSideCellHeight)"></td>
-            <td class="hc-grid-cell" style="@TopLeftEmptyCellStyle(SheetConsts.ChevronPlusCellWidth, SheetConsts.TopSideCellHeight)"></td>
+            @if (IsChevronPlusAreaRows)
+            {
+                <td style="@ChevronPlusEmptyCellStyle(SheetConsts.ChevronPlusCellWidth, SheetConsts.TopSideCellHeight, 0, IsChevronPlusAreaColumns ? SheetConsts.TopSideCellHeight : 0)"></td>
+            }
+            
+            <td class="hc-grid-cell"
+                style="@TopLeftEmptyCellStyle(SheetConsts.LeftSideCellWidth, SheetConsts.TopSideCellHeight, IsChevronPlusAreaRows ? SheetConsts.ChevronPlusCellWidth : 0, IsChevronPlusAreaColumns ? SheetConsts.TopSideCellHeight : 0)">
+            </td>
 
             @foreach (var column in Sheet.GetVisibleColumns(_isHiddenCellsVisible))
             {

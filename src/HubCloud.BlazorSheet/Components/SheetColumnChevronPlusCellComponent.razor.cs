@@ -2,12 +2,7 @@
 using HubCloud.BlazorSheet.Core.Models;
 using HubCloud.BlazorSheet.Infrastructure;
 using Microsoft.AspNetCore.Components;
-using System;
-using System.Collections.Generic;
-using System.Data.Common;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace HubCloud.BlazorSheet.Components
 {
@@ -19,7 +14,7 @@ namespace HubCloud.BlazorSheet.Components
         [Parameter] public CellStyleBuilder CellStyleBuilder { get; set; }
         [Parameter] public EventCallback GroupOpenCloseClick { get; set; }
 
-        private string TopSideCellStyle()
+        private string GetCellStyle()
         {
             var sb = new StringBuilder();
 
@@ -61,7 +56,7 @@ namespace HubCloud.BlazorSheet.Components
             sb.Append(0);
             sb.Append(";");
 
-            CellStyleBuilder.AddFreezedStyle(sb, Sheet, Column, IsHiddenCellsVisible);
+            CellStyleBuilder.AddFreezedStyle(sb, Sheet, Column, IsHiddenCellsVisible, false);
 
             sb.Append("background:");
             if (Column.IsHidden && IsHiddenCellsVisible)

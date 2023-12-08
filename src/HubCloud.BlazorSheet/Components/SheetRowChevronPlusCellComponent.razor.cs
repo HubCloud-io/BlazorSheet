@@ -51,7 +51,7 @@ namespace HubCloud.BlazorSheet.Components
             sb.Append(Row.Height);
             sb.Append(";");
 
-            CellStyleBuilder.AddFreezedStyle(sb, Sheet, Row, IsHiddenCellsVisible);
+            CellStyleBuilder.AddFreezedStyle(sb, Sheet, Row, IsHiddenCellsVisible, false);
 
             sb.Append("background:");
             if (Row.IsHidden && IsHiddenCellsVisible)

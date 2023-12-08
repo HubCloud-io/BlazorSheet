@@ -16,12 +16,16 @@ namespace HubCloud.BlazorSheet.Components
         [Parameter] public EventCallback Click { get; set; }
         [Parameter] public EventCallback<MouseEventArgs> RowContextMenu { get; set; }
 
-        private string LeftSideCellStyle()
+        private string GetCellStyle()
         {
             var sb = new StringBuilder();
 
             sb.Append("left:");
-            sb.Append($"{SheetConsts.ChevronPlusCellWidth}px");
+            var isChevronPlusAreaRows = Sheet.Rows.Any(x => x.IsGroup || x.IsAddRemoveAllowed);
+            if (isChevronPlusAreaRows)
+                sb.Append($"{SheetConsts.ChevronPlusCellWidth}px");
+            else
+                sb.Append(0);
             sb.Append(";");
 
             sb.Append("position:");
@@ -52,7 +56,7 @@ namespace HubCloud.BlazorSheet.Components
             sb.Append(Row.Height);
             sb.Append(";");
 
-            CellStyleBuilder.AddFreezedStyle(sb, Sheet, Row, IsHiddenCellsVisible);
+            CellStyleBuilder.AddFreezedStyle(sb, Sheet, Row, IsHiddenCellsVisible, true);
 
             if (Row.IsHidden && IsHiddenCellsVisible)
             {

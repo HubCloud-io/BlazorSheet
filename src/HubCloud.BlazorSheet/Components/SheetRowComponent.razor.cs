@@ -22,6 +22,8 @@ namespace HubCloud.BlazorSheet.Components
         [Parameter] public EventCallback<SheetCell> CellStartEdit { get; set; }
         [Parameter] public EventCallback<MouseEventArgs> RowContextMenu { get; set; }
 
+        public bool IsChevronPlusAreaRows => Sheet.Rows.Any(x => x.IsGroup || x.IsAddRemoveAllowed);
+
         private bool ShouldCellBeNotDisplayed(SheetColumn column, SheetCell cell)
         {
             return ((column.IsHidden || Row.IsHidden) && !IsHiddenCellsVisible) || 

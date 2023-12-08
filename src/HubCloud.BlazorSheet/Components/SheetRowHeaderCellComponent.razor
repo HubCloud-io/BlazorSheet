@@ -1,5 +1,5 @@
 ﻿<td class="hc-grid-cell"
-    style="@LeftSideCellStyle()"
+    style="@GetCellStyle()"
     @onclick="(async () => await Click.InvokeAsync())"
     @oncontextmenu="(async (e) => await RowContextMenu.InvokeAsync(e))"
     @oncontextmenu:preventDefault>

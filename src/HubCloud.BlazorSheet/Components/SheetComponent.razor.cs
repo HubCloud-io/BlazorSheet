@@ -83,7 +83,8 @@ public partial class SheetComponent : ComponentBase
     [Inject] public IJSRuntime JsRuntime { get; set; }
 
     public string TableId => $"table_{Sheet.Uid}";
-
+    public bool IsChevronPlusAreaRows => Sheet.Rows.Any(x => x.IsGroup || x.IsAddRemoveAllowed);
+    public bool IsChevronPlusAreaColumns => Sheet.Columns.Any(x => x.IsGroup || x.IsAddRemoveAllowed);
 
     protected override void OnInitialized()
     {
@@ -738,32 +739,32 @@ public partial class SheetComponent : ComponentBase
         return result;
     }
 
-    public string TopLeftEmptyCellStyle(int left, int top)
+    public string TopLeftEmptyCellStyle(int width, int height, int left, int top)
     {
         var sb = new StringBuilder();
 
         sb.Append("width:");
-        sb.Append($"{SheetConsts.LeftSideCellWidth}px");
+        sb.Append($"{width}px");
         sb.Append(";");
 
         sb.Append("max-width:");
-        sb.Append($"{SheetConsts.LeftSideCellWidth}px");
+        sb.Append($"{width}px");
         sb.Append(";");
 
         sb.Append("min-width:");
-        sb.Append($"{SheetConsts.LeftSideCellWidth}px");
+        sb.Append($"{width}px");
         sb.Append(";");
 
         sb.Append("height:");
-        sb.Append($"{SheetConsts.TopSideCellHeight}px");
+        sb.Append($"{height}px");
         sb.Append(";");
 
         sb.Append("max-height:");
-        sb.Append($"{SheetConsts.TopSideCellHeight}px");
+        sb.Append($"{height}px");
         sb.Append(";");
 
         sb.Append("min-height:");
-        sb.Append($"{SheetConsts.TopSideCellHeight}px");
+        sb.Append($"{height}px");
         sb.Append(";");
 
         sb.Append("top:");
@@ -785,11 +786,11 @@ public partial class SheetComponent : ComponentBase
         return sb.ToString();
     }
 
-    public string TopLeftChevronPlusEmptyCellStyle(int left, int top)
+    public string ChevronPlusEmptyCellStyle(int width, int height, int left, int top)
     {
         var sb = new StringBuilder();
 
-        sb.Append(TopLeftEmptyCellStyle(left, top));
+        sb.Append(TopLeftEmptyCellStyle(width, height, left, top));
 
         sb.Append("background:");
         sb.Append(SheetConsts.WhiteBackground);

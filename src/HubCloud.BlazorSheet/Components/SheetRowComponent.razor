@@ -1,10 +1,13 @@
 ﻿<tr @key="@Row.Uid">
-    <SheetRowChevronPlusCellComponent Row="Row"
-                                      Sheet="Sheet"
-                                      IsHiddenCellsVisible="IsHiddenCellsVisible"
-                                      CellStyleBuilder="StyleBuilder"
-                                      AddRowAfter="async () => await AddRowAfter.InvokeAsync()" 
-                                      GroupOpenCloseClick="async () => await GroupOpenCloseClick.InvokeAsync()" />
+    @if (IsChevronPlusAreaRows)
+    {
+        <SheetRowChevronPlusCellComponent Row="Row"
+                                          Sheet="Sheet"
+                                          IsHiddenCellsVisible="IsHiddenCellsVisible"
+                                          CellStyleBuilder="StyleBuilder"
+                                          AddRowAfter="async () => await AddRowAfter.InvokeAsync()"
+                                          GroupOpenCloseClick="async () => await GroupOpenCloseClick.InvokeAsync()" />
+    }
 
     <SheetRowHeaderCellComponent Row="Row"
                                  Sheet="Sheet"
@@ -22,7 +25,7 @@
         if (ShouldCellBeNotDisplayed(column, cell))
             continue;
 
-        <SheetCellComponent @key="@cell" 
+        <SheetCellComponent @key="@cell"
                             Sheet="@Sheet"
                             Regime="@Regime"
                             Row="@Row"

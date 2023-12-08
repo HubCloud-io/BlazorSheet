@@ -2,6 +2,6 @@
     @onclick="(async () => await Click.InvokeAsync())"
     @oncontextmenu="(async (e) => await ColumnContextMenu.InvokeAsync(e))"
     @oncontextmenu:preventDefault
-    style="@TopSideCellStyle()">
+    style="@GetCellStyle()">
     <span>@(Sheet.ColumnNumber(Column))</span>
 </td>
