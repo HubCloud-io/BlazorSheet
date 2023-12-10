@@ -80,6 +80,7 @@ public partial class SheetViewComponent : ComponentBase
         _cellStyleBuilder = new CellStyleBuilder
         {
             LeftSideCellWidth = SheetConsts.LeftSideCellWidth,
+            ChevronPlusCellWidth = SheetConsts.ChevronPlusCellWidth,
             TopSideCellHeight = SheetConsts.TopSideCellHeight
         };
 

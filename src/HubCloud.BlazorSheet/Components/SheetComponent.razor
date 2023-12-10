@@ -1,4 +1,5 @@
-﻿@using HubCloud.BlazorSheet.Core.Enums
+﻿@using HubCloud.BlazorSheet.Core.Consts
+@using HubCloud.BlazorSheet.Core.Enums
 @using HubCloud.BlazorSheet.Components
 @using HubCloud.BlazorSheet.Core.Models
 @using HubCloud.BlazorSheet.Editors
@@ -15,8 +16,36 @@
            @onkeyup="(e => OnTableKeyUp(e))">
 
         @*Sheet rows*@
+        @if (IsChevronPlusAreaColumns)
+        {
+            <tr>
+                @if (IsChevronPlusAreaRows)
+                {
+                    <td style="@ChevronPlusEmptyCellStyle(SheetConsts.ChevronPlusCellWidth, SheetConsts.ChevronPlusCellHeight, 0, 0)"></td>
+                }
+
+                <td style="@ChevronPlusEmptyCellStyle(SheetConsts.LeftSideCellWidth, SheetConsts.ChevronPlusCellHeight, IsChevronPlusAreaRows ? SheetConsts.ChevronPlusCellWidth : 0, 0)"></td>
+
+                @foreach (var column in Sheet.GetVisibleColumns(_isHiddenCellsVisible))
+                {
+                    <SheetColumnChevronPlusCellComponent Column="column"
+                                                         Sheet="Sheet"
+                                                         CellStyleBuilder="_cellStyleBuilder"
+                                                         IsHiddenCellsVisible="_isSheetSizeModalOpen"
+                                                         GroupOpenCloseClick="() => OnColumnGroupOpenCloseClick(column)" />
+                }
+            </tr>
+        }
+
         <tr>
-            <td class="hc-grid-cell" style="@TopLeftEmptyCellStyle()"></td>
+            @if (IsChevronPlusAreaRows)
+            {
+                <td style="@ChevronPlusEmptyCellStyle(SheetConsts.ChevronPlusCellWidth, SheetConsts.TopSideCellHeight, 0, IsChevronPlusAreaColumns ? SheetConsts.TopSideCellHeight : 0)"></td>
+            }
+            
+            <td class="hc-grid-cell"
+                style="@TopLeftEmptyCellStyle(SheetConsts.LeftSideCellWidth, SheetConsts.TopSideCellHeight, IsChevronPlusAreaRows ? SheetConsts.ChevronPlusCellWidth : 0, IsChevronPlusAreaColumns ? SheetConsts.TopSideCellHeight : 0)">
+            </td>
 
             @foreach (var column in Sheet.GetVisibleColumns(_isHiddenCellsVisible))
             {
@@ -42,7 +71,8 @@
                                CellClicked="OnCellClicked"
                                CellStartEdit="OnCellStartEdit"
                                RowContextMenu="(e) => OnRowContextMenu(e, row)"
-                               AddRowAfter="() => OnAddRowAfter(row)"/>
+                               AddRowAfter="() => OnAddRowAfter(row)"
+                               GroupOpenCloseClick="() => OnRowGroupOpenCloseClick(row)" />
         }
 
         @if (IsVirtualizationEnabled)
@@ -53,7 +83,7 @@
                         OverscanCount="1"
                         ItemSize="26">
                 <ItemContent>
-                    <SheetRowComponent @key="@row" 
+                    <SheetRowComponent @key="@row"
                                        Row="row"
                                        Sheet="@Sheet"
                                        Regime="@Regime"
@@ -63,7 +93,8 @@
                                        CellStartEdit="OnCellStartEdit"
                                        RowContextMenu="(e) => OnRowContextMenu(e, row)"
                                        RowHeaderCellClick="() => OnRowNumberCellClick(row)"
-                                       AddRowAfter="() => OnAddRowAfter(row)" />
+                                       AddRowAfter="() => OnAddRowAfter(row)"
+                                       GroupOpenCloseClick="() => OnRowGroupOpenCloseClick(row)" />
 
                 </ItemContent>
             </Virtualize>
@@ -72,17 +103,18 @@
         {
             foreach (var row in Sheet.GetVisibleRows(_isHiddenCellsVisible))
             {
-                <SheetRowComponent @key="@row" 
-                                   Row="row" 
-                                   Sheet="@Sheet" 
-                                   Regime="@Regime" 
-                                   IsHiddenCellsVisible="@_isHiddenCellsVisible" 
+                <SheetRowComponent @key="@row"
+                                   Row="row"
+                                   Sheet="@Sheet"
+                                   Regime="@Regime"
+                                   IsHiddenCellsVisible="@_isHiddenCellsVisible"
                                    StyleBuilder="@_cellStyleBuilder"
                                    CellClicked="OnCellClicked"
                                    CellStartEdit="OnCellStartEdit"
-                                   RowContextMenu="(e) => OnRowContextMenu(e, row)" 
+                                   RowContextMenu="(e) => OnRowContextMenu(e, row)"
                                    RowHeaderCellClick="() => OnRowNumberCellClick(row)"
-                                   AddRowAfter="() => OnAddRowAfter(row)" />
+                                   AddRowAfter="() => OnAddRowAfter(row)"
+                                   GroupOpenCloseClick="() => OnRowGroupOpenCloseClick(row)" />
             }
         }
 

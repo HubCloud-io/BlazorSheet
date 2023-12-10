@@ -1,4 +1,5 @@
-﻿using HubCloud.BlazorSheet.Core.Models;
+﻿using HubCloud.BlazorSheet.Core.Consts;
+using HubCloud.BlazorSheet.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,7 @@ namespace HubCloud.BlazorSheet.Infrastructure
         private const string CellHiddenBackground = "#cccccc";
 
         public int LeftSideCellWidth { get; set; } = 30;
+        public int ChevronPlusCellWidth { get; set; } = 30;
         public int TopSideCellHeight { get; set; } = 30;
 
         public string GetCellStyle(Sheet sheet, SheetRow row, SheetColumn column, SheetCell cell, bool isHiddenCellsVisible)
@@ -137,13 +139,12 @@ namespace HubCloud.BlazorSheet.Infrastructure
             return sb.ToString();
         }
 
-        public void AddFreezedStyle(StringBuilder sb, Sheet sheet, SheetRow row, bool isHiddenCellsVisible)
+        public void AddFreezedStyle(StringBuilder sb, Sheet sheet, SheetRow row, bool isHiddenCellsVisible, bool needBorderBottom)
         {
             if (sheet.FreezedRows == 0)
                 return;
 
             var rowNumber = sheet.RowNumber(row);
-
             if (rowNumber <= sheet.FreezedRows)
             {
                 sb.Append("z-index:");
@@ -151,7 +152,6 @@ namespace HubCloud.BlazorSheet.Infrastructure
                 sb.Append(";");
 
                 var topPosition = TopPosition(sheet, rowNumber, isHiddenCellsVisible);
-
                 if (!string.IsNullOrEmpty(topPosition))
                 {
                     sb.Append("top: ");
@@ -160,17 +160,17 @@ namespace HubCloud.BlazorSheet.Infrastructure
                 }
             }
 
-            if (rowNumber == sheet.FreezedRows || NeedSetBorderBottom(sheet, rowNumber, isHiddenCellsVisible))
-                sb.Append("border-bottom: 2px solid navy;");
+            if (needBorderBottom)
+                if (rowNumber == sheet.FreezedRows || NeedSetBorderBottom(sheet, rowNumber, isHiddenCellsVisible))
+                    sb.Append("border-bottom: 2px solid navy;");
         }
 
-        public void AddFreezedStyle(StringBuilder sb, Sheet sheet, SheetColumn column, bool isHiddenCellsVisible)
+        public void AddFreezedStyle(StringBuilder sb, Sheet sheet, SheetColumn column, bool isHiddenCellsVisible, bool needBorderRight)
         {
             if (sheet.FreezedColumns == 0)
                 return;
 
             var columnNumber = sheet.ColumnNumber(column);
-
             if (columnNumber <= sheet.FreezedColumns)
             {
                 sb.Append("z-index: ");
@@ -178,7 +178,6 @@ namespace HubCloud.BlazorSheet.Infrastructure
                 sb.Append(";");
 
                 var leftPosition = LeftPosition(sheet, columnNumber, isHiddenCellsVisible);
-
                 if (!string.IsNullOrEmpty(leftPosition))
                 {
                     sb.Append("left: ");
@@ -187,10 +186,9 @@ namespace HubCloud.BlazorSheet.Infrastructure
                 }
             }
 
-            if (columnNumber == sheet.FreezedColumns || NeedSetBorderRight(sheet, columnNumber, isHiddenCellsVisible))
-            {
-                sb.Append("border-right: 2px solid navy;");
-            }
+            if (needBorderRight)
+                if (columnNumber == sheet.FreezedColumns || NeedSetBorderRight(sheet, columnNumber, isHiddenCellsVisible))
+                    sb.Append("border-right: 2px solid navy;");
         }
 
         private void AddFreezedStyle(StringBuilder sb, Sheet sheet, SheetRow row, SheetColumn column, bool isHiddenCellsVisible)
@@ -254,7 +252,13 @@ namespace HubCloud.BlazorSheet.Infrastructure
             double left = 0;
 
             if (columnNumber > 0)
-                left = LeftSideCellWidth;
+            {
+                var isChevronPlusAreaRows = sheet.Rows.Any(x => x.IsGroup || x.IsAddRemoveAllowed);
+                if (isChevronPlusAreaRows)
+                    left = SheetConsts.LeftSideCellWidth + SheetConsts.ChevronPlusCellWidth;
+                else
+                    left = SheetConsts.LeftSideCellWidth;
+            }
 
             for (int i = 1; i < columnNumber; i++)
             {
@@ -274,12 +278,17 @@ namespace HubCloud.BlazorSheet.Infrastructure
             double top = 0;
 
             if (rowNumber > 0)
-                top = TopSideCellHeight;
+            {
+                var isChevronPlusAreaColumns = sheet.Columns.Any(x => x.IsGroup || x.IsAddRemoveAllowed);
+                if (isChevronPlusAreaColumns)
+                    top = SheetConsts.TopSideCellHeight + SheetConsts.ChevronPlusCellHeight;
+                else
+                    top = SheetConsts.TopSideCellHeight;
+            }
 
             for (int i = 1; i < rowNumber; i++)
             {
                 var row = sheet.GetRow(i);
-
                 if (row.IsHidden && !isHiddenCellsVisible)
                     continue;
 

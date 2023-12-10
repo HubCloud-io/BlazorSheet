@@ -83,13 +83,15 @@ public partial class SheetComponent : ComponentBase
     [Inject] public IJSRuntime JsRuntime { get; set; }
 
     public string TableId => $"table_{Sheet.Uid}";
-
+    public bool IsChevronPlusAreaRows => Sheet.Rows.Any(x => x.IsGroup || x.IsAddRemoveAllowed);
+    public bool IsChevronPlusAreaColumns => Sheet.Columns.Any(x => x.IsGroup || x.IsAddRemoveAllowed);
 
     protected override void OnInitialized()
     {
         _cellStyleBuilder = new CellStyleBuilder
         {
             LeftSideCellWidth = SheetConsts.LeftSideCellWidth,
+            ChevronPlusCellWidth = SheetConsts.ChevronPlusCellWidth,
             TopSideCellHeight = SheetConsts.TopSideCellHeight
         };
 
@@ -715,6 +717,18 @@ public partial class SheetComponent : ComponentBase
         await RowSelected.InvokeAsync(row);
     }
 
+    private void OnRowGroupOpenCloseClick(SheetRow row)
+    {
+        row.IsOpen = !row.IsOpen;
+        Sheet.ChangeChildrenVisibility(row, row.IsOpen);
+    }
+
+    private void OnColumnGroupOpenCloseClick(SheetColumn column)
+    {
+        column.IsOpen = !column.IsOpen;
+        Sheet.ChangeChildrenVisibility(column, column.IsOpen);
+    }
+
     public string CellClass(SheetCell cell)
     {
         var result = "hc-sheet-cell";
@@ -725,40 +739,40 @@ public partial class SheetComponent : ComponentBase
         return result;
     }
 
-    public string TopLeftEmptyCellStyle()
+    public string TopLeftEmptyCellStyle(int width, int height, int left, int top)
     {
         var sb = new StringBuilder();
 
         sb.Append("width:");
-        sb.Append($"{SheetConsts.LeftSideCellWidth}px");
+        sb.Append($"{width}px");
         sb.Append(";");
 
         sb.Append("max-width:");
-        sb.Append($"{SheetConsts.LeftSideCellWidth}px");
+        sb.Append($"{width}px");
         sb.Append(";");
 
         sb.Append("min-width:");
-        sb.Append($"{SheetConsts.LeftSideCellWidth}px");
+        sb.Append($"{width}px");
         sb.Append(";");
 
         sb.Append("height:");
-        sb.Append($"{SheetConsts.TopSideCellHeight}px");
+        sb.Append($"{height}px");
         sb.Append(";");
 
         sb.Append("max-height:");
-        sb.Append($"{SheetConsts.TopSideCellHeight}px");
+        sb.Append($"{height}px");
         sb.Append(";");
 
         sb.Append("min-height:");
-        sb.Append($"{SheetConsts.TopSideCellHeight}px");
+        sb.Append($"{height}px");
         sb.Append(";");
 
         sb.Append("top:");
-        sb.Append(0);
+        sb.Append($"{top}px");
         sb.Append(";");
 
         sb.Append("left:");
-        sb.Append(0);
+        sb.Append($"{left}px");
         sb.Append(";");
 
         sb.Append("position:");
@@ -766,7 +780,20 @@ public partial class SheetComponent : ComponentBase
         sb.Append(";");
 
         sb.Append("z-index:");
-        sb.Append(20);
+        sb.Append(30);
+        sb.Append(";");
+
+        return sb.ToString();
+    }
+
+    public string ChevronPlusEmptyCellStyle(int width, int height, int left, int top)
+    {
+        var sb = new StringBuilder();
+
+        sb.Append(TopLeftEmptyCellStyle(width, height, left, top));
+
+        sb.Append("background:");
+        sb.Append(SheetConsts.WhiteBackground);
         sb.Append(";");
 
         return sb.ToString();
@@ -817,7 +844,12 @@ public partial class SheetComponent : ComponentBase
             return;
 
         var newRowAfter = Sheet.AddRow(row, 1, true);
-        newRowAfter.ParentUid = row.ParentUid;
+
+        if (row.IsGroup)
+            newRowAfter.ParentUid = row.Uid;
+        else
+            newRowAfter.ParentUid = row.ParentUid;
+
         newRowAfter.HeightValue = row.HeightValue;
 
         await RowAdded.InvokeAsync(new RowAddedEventArgs()

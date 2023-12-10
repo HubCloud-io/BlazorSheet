@@ -2,19 +2,17 @@
 using HubCloud.BlazorSheet.Core.Models;
 using HubCloud.BlazorSheet.Infrastructure;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
 using System.Text;
 
 namespace HubCloud.BlazorSheet.Components
 {
-    public partial class SheetColumnHeaderCellComponent
+    public partial class SheetColumnChevronPlusCellComponent
     {
         [Parameter] public bool IsHiddenCellsVisible { get; set; }
         [Parameter] public Sheet Sheet { get; set; }
         [Parameter] public SheetColumn Column { get; set; }
         [Parameter] public CellStyleBuilder CellStyleBuilder { get; set; }
-        [Parameter] public EventCallback Click { get; set; }
-        [Parameter] public EventCallback<MouseEventArgs> ColumnContextMenu { get; set; }
+        [Parameter] public EventCallback GroupOpenCloseClick { get; set; }
 
         private string GetCellStyle()
         {
@@ -55,21 +53,17 @@ namespace HubCloud.BlazorSheet.Components
             sb.Append(";");
 
             sb.Append("top:");
-            var isChevronPlusAreaColumns = Sheet.Columns.Any(x => x.IsGroup || x.IsAddRemoveAllowed); ;
-            if (isChevronPlusAreaColumns)
-                sb.Append($"{SheetConsts.TopSideCellHeight}px");
-            else
-                sb.Append(0);
+            sb.Append(0);
             sb.Append(";");
 
-            CellStyleBuilder.AddFreezedStyle(sb, Sheet, Column, IsHiddenCellsVisible, true);
+            CellStyleBuilder.AddFreezedStyle(sb, Sheet, Column, IsHiddenCellsVisible, false);
 
+            sb.Append("background:");
             if (Column.IsHidden && IsHiddenCellsVisible)
-            {
-                sb.Append("background:");
                 sb.Append(SheetConsts.CellHiddenBackground);
-                sb.Append(";");
-            }
+            else
+                sb.Append(SheetConsts.WhiteBackground);
+            sb.Append(";");
 
             return sb.ToString();
         }

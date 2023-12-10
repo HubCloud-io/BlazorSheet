@@ -2,29 +2,6 @@
     @onclick="(async () => await Click.InvokeAsync())"
     @oncontextmenu="(async (e) => await ColumnContextMenu.InvokeAsync(e))"
     @oncontextmenu:preventDefault
-    style="@TopSideCellStyle()">
+    style="@GetCellStyle()">
     <span>@(Sheet.ColumnNumber(Column))</span>
-
-    @if (Column.IsGroup)
-    {
-        @if (Column.IsOpen)
-        {
-            <span class="fa fa-solid fa-chevron-right text-primary"
-                  style="cursor:pointer;margin-left:5px;"
-                  @onclick="(() => ColumnGroupOpenCloseClick())">
-            </span>
-        }
-        else
-        {
-            <span class="fa fa-solid fa-chevron-down text-primary"
-                  style="cursor:pointer;margin-left:5px;"
-                  @onclick="(() => ColumnGroupOpenCloseClick())">
-            </span>
-        }
-    }
-    @if (Column.IsAddRemoveAllowed)
-    {
-        <span>&nbsp;</span>
-        <span class="fa fa-plus text-success"></span>
-    }
 </td>

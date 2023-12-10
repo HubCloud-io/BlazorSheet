@@ -2,30 +2,25 @@
 using HubCloud.BlazorSheet.Core.Models;
 using HubCloud.BlazorSheet.Infrastructure;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
 using System.Text;
 
 namespace HubCloud.BlazorSheet.Components
 {
-    public partial class SheetRowHeaderCellComponent
+    public partial class SheetRowChevronPlusCellComponent
     {
         [Parameter] public bool IsHiddenCellsVisible { get; set; }
         [Parameter] public Sheet Sheet { get; set; }
         [Parameter] public SheetRow Row { get; set; }
         [Parameter] public CellStyleBuilder CellStyleBuilder { get; set; }
-        [Parameter] public EventCallback Click { get; set; }
-        [Parameter] public EventCallback<MouseEventArgs> RowContextMenu { get; set; }
+        [Parameter] public EventCallback AddRowAfter { get; set; }
+        [Parameter] public EventCallback GroupOpenCloseClick { get; set; }
 
         private string GetCellStyle()
         {
             var sb = new StringBuilder();
 
             sb.Append("left:");
-            var isChevronPlusAreaRows = Sheet.Rows.Any(x => x.IsGroup || x.IsAddRemoveAllowed);
-            if (isChevronPlusAreaRows)
-                sb.Append($"{SheetConsts.ChevronPlusCellWidth}px");
-            else
-                sb.Append(0);
+            sb.Append(0);
             sb.Append(";");
 
             sb.Append("position:");
@@ -33,15 +28,15 @@ namespace HubCloud.BlazorSheet.Components
             sb.Append(";");
 
             sb.Append("width:");
-            sb.Append($"{SheetConsts.LeftSideCellWidth}px");
+            sb.Append($"{SheetConsts.ChevronPlusCellWidth}px");
             sb.Append(";");
 
             sb.Append("max-width:");
-            sb.Append($"{SheetConsts.LeftSideCellWidth}px");
+            sb.Append($"{SheetConsts.ChevronPlusCellWidth}px");
             sb.Append(";");
 
             sb.Append("min-width:");
-            sb.Append($"{SheetConsts.LeftSideCellWidth}px");
+            sb.Append($"{SheetConsts.ChevronPlusCellWidth}px");
             sb.Append(";");
 
             sb.Append("height:");
@@ -56,14 +51,14 @@ namespace HubCloud.BlazorSheet.Components
             sb.Append(Row.Height);
             sb.Append(";");
 
-            CellStyleBuilder.AddFreezedStyle(sb, Sheet, Row, IsHiddenCellsVisible, true);
+            CellStyleBuilder.AddFreezedStyle(sb, Sheet, Row, IsHiddenCellsVisible, false);
 
+            sb.Append("background:");
             if (Row.IsHidden && IsHiddenCellsVisible)
-            {
-                sb.Append("background:");
                 sb.Append(SheetConsts.CellHiddenBackground);
-                sb.Append(";");
-            }
+            else
+                sb.Append(SheetConsts.WhiteBackground);
+            sb.Append(";");
 
             return sb.ToString();
         }
