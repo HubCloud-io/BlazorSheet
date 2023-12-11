@@ -319,6 +319,8 @@ public partial class SheetComponent : ComponentBase
                 newColumnBefore.ParentUid = _currentColumn.ParentUid;
                 newColumnBefore.WidthValue = _currentColumn.WidthValue;
 
+                Sheet.Rows.All(x => x.ShouldRender = true);
+
                 await ColumnAdded.InvokeAsync(new ColumnAddedEventArgs()
                 {
                     SourceUid = _currentColumn.Uid,
@@ -336,6 +338,8 @@ public partial class SheetComponent : ComponentBase
                 var newColumnAfter = Sheet.AddColumn(_currentColumn, 1, true);
                 newColumnAfter.ParentUid = _currentColumn.ParentUid;
                 newColumnAfter.WidthValue = _currentColumn.WidthValue;
+
+                Sheet.Rows.All(x => x.ShouldRender = true);
 
                 await ColumnAdded.InvokeAsync(new ColumnAddedEventArgs()
                 {
@@ -364,8 +368,8 @@ public partial class SheetComponent : ComponentBase
                 break;
 
             case ContextMenuBuilder.AllowAddRemoveItemName:
-
                 _currentColumn.IsAddRemoveAllowed = !_currentColumn.IsAddRemoveAllowed;
+                Sheet.Rows.All(x => x.ShouldRender = true);
                 break;
 
             case ContextMenuBuilder.WidthItemName:
@@ -381,10 +385,13 @@ public partial class SheetComponent : ComponentBase
 
             case ContextMenuBuilder.ShowHideItemName:
                 _currentColumn.IsHidden = !_currentColumn.IsHidden;
+                var cells = Sheet.GetColumnCells(_currentColumn);
+                cells.All(x => x.ShouldRender = true);
                 break;
 
             case ContextMenuBuilder.ShowHiddenHideHiddenItemName:
                 _isHiddenCellsVisible = !_isHiddenCellsVisible;
+                Sheet.Rows.All(x => x.ShouldRender = true);
                 break;
         }
     }
@@ -401,6 +408,8 @@ public partial class SheetComponent : ComponentBase
                 var newRowBefore = Sheet.AddRow(_currentRow, -1, true);
                 newRowBefore.ParentUid = _currentRow.ParentUid;
                 newRowBefore.HeightValue = _currentRow.HeightValue;
+                
+                Sheet.Rows.All(x => x.ShouldRender = true);
 
                 await RowAdded.InvokeAsync(new RowAddedEventArgs()
                 {
@@ -432,8 +441,8 @@ public partial class SheetComponent : ComponentBase
                 break;
 
             case ContextMenuBuilder.AllowAddRemoveItemName:
-
                 _currentRow.IsAddRemoveAllowed = !_currentRow.IsAddRemoveAllowed;
+                Sheet.Rows.All(x => x.ShouldRender = true);
                 break;
 
             case ContextMenuBuilder.HeightItemName:
@@ -449,10 +458,13 @@ public partial class SheetComponent : ComponentBase
 
             case ContextMenuBuilder.ShowHideItemName:
                 _currentRow.IsHidden = !_currentRow.IsHidden;
+                var cells = Sheet.GetRowCells(_currentRow);
+                cells.All(x => x.ShouldRender = true);
                 break;
 
             case ContextMenuBuilder.ShowHiddenHideHiddenItemName:
                 _isHiddenCellsVisible = !_isHiddenCellsVisible;
+                Sheet.Rows.All(x => x.ShouldRender = true);
                 break;
         }
     }
@@ -485,6 +497,7 @@ public partial class SheetComponent : ComponentBase
         if (args is double heightValue)
         {
             _currentRow.HeightValue = heightValue;
+            _currentRow.ShouldRender = true;
             await Changed.InvokeAsync(null);
         }
     }
@@ -510,6 +523,7 @@ public partial class SheetComponent : ComponentBase
 
         _currentCell.Link = cellLink.Link;
         _currentCell.Value = cellLink.Text;
+        _currentCell.ShouldRender = true;
 
         await Changed.InvokeAsync(null);
     }
@@ -721,12 +735,14 @@ public partial class SheetComponent : ComponentBase
     {
         row.IsOpen = !row.IsOpen;
         Sheet.ChangeChildrenVisibility(row, row.IsOpen);
+        Sheet.Rows.All(x => x.ShouldRender = true);
     }
 
     private void OnColumnGroupOpenCloseClick(SheetColumn column)
     {
         column.IsOpen = !column.IsOpen;
         Sheet.ChangeChildrenVisibility(column, column.IsOpen);
+        Sheet.Rows.All(x => x.ShouldRender = true);
     }
 
     public string CellClass(SheetCell cell)
@@ -823,9 +839,7 @@ public partial class SheetComponent : ComponentBase
             }
         }
         else
-        {
             Sheet.SplitCells(_currentCell);
-        }
     }
 
     private string GetHtmlSpacing(int indent)
@@ -851,6 +865,8 @@ public partial class SheetComponent : ComponentBase
             newRowAfter.ParentUid = row.ParentUid;
 
         newRowAfter.HeightValue = row.HeightValue;
+
+        Sheet.Rows.All(x => x.ShouldRender = true);
 
         await RowAdded.InvokeAsync(new RowAddedEventArgs()
         {
