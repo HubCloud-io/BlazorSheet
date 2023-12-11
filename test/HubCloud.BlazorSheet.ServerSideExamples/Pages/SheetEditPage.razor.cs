@@ -152,6 +152,7 @@ public partial class SheetEditPage: ComponentBase
             cell.EditSettingsUid = _cellCopiedSettings.EditSettingsUid;
             cell.Format = _cellCopiedSettings.Format;
             cell.StyleUid = _cellCopiedSettings.StyleUid;
+            cell.ShouldRender = true;
         }
     }
 

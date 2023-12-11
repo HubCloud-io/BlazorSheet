@@ -202,9 +202,12 @@ namespace HubCloud.BlazorSheet.Core.Models
 
         public List<SheetCell> GetRowCells(SheetRow row)
         {
-            var cells = Cells.Where(x => x.RowUid == row.Uid).ToList();
+            return Cells.Where(x => x.RowUid == row.Uid).ToList();
+        }
 
-            return cells;
+        public List<SheetCell> GetColumnCells(SheetColumn column)
+        {
+            return Cells.Where(x => x.ColumnUid == column.Uid).ToList();
         }
 
         public SheetCell GetCell(Guid rowUid, Guid columnUid)
@@ -477,9 +480,7 @@ namespace HubCloud.BlazorSheet.Core.Models
         public void RemoveRow(SheetRow row)
         {
             if (row == null)
-            {
                 return;
-            }
 
             var cellsToDelete = Cells.Where(x => x.RowUid == row.Uid).ToList();
 
@@ -492,17 +493,15 @@ namespace HubCloud.BlazorSheet.Core.Models
             if (_rowsDict.ContainsKey(row.Uid))
                 _rowsDict.Remove(row.Uid);
             if (_rows.Remove(row))
-            {
                 RowsCount -= 1;
-            }
+
+            Rows.All(x => x.ShouldRender = true);
         }
 
         public void RemoveColumn(SheetColumn column)
         {
             if (column == null)
-            {
                 return;
-            }
 
             var cellsToDelete = Cells.Where(x => x.ColumnUid == column.Uid).ToList();
             for (var i = cellsToDelete.Count() - 1; i >= 0; i--)
@@ -514,9 +513,9 @@ namespace HubCloud.BlazorSheet.Core.Models
             if (_columnsDict.ContainsKey(column.Uid))
                 _columnsDict.Remove(column.Uid);
             if (_columns.Remove(column))
-            {
                 ColumnsCount -= 1;
-            }
+
+            Rows.All(x => x.ShouldRender = true);
         }
 
         public void SetSettingsFromCommandPanel(List<SheetCell> cells, SheetCell cell,
@@ -773,10 +772,16 @@ namespace HubCloud.BlazorSheet.Core.Models
             var rowsAddRemoveCount = Rows.Count - newRowsCount;
 
             if (columnsAddRemoveCount != 0)
+            {
+                Rows.All(x => x.ShouldRender = true);
                 ChangeSize<SheetColumn>(columnsAddRemoveCount, Columns, RemoveColumn, AddColumn);
+            }
 
             if (rowsAddRemoveCount != 0)
+            {
+                Rows.All(x => x.ShouldRender = true);
                 ChangeSize<SheetRow>(rowsAddRemoveCount, Rows, RemoveRow, AddRow);
+            }
         }
 
         private void ChangeSize<T>(int addRemoveCount, IReadOnlyCollection<T> collection, Action<T> removeAction,
@@ -787,7 +792,6 @@ namespace HubCloud.BlazorSheet.Core.Models
                 for (int i = 0; i < addRemoveCount; i++)
                 {
                     var lastItem = collection.LastOrDefault();
-
                     if (lastItem != null)
                         removeAction(lastItem);
                 }
@@ -797,7 +801,6 @@ namespace HubCloud.BlazorSheet.Core.Models
                 for (int i = 0; i < addRemoveCount * -1; i++)
                 {
                     var lastItem = collection.LastOrDefault();
-
                     if (lastItem != null)
                         addAction(lastItem, 1, false, null);
                 }
@@ -890,6 +893,9 @@ namespace HubCloud.BlazorSheet.Core.Models
                 }
             }
 
+            Rows.All(x => x.ShouldRender = true);
+            Cells.All(x => x.ShouldRender = true);
+
             return topLeftCell;
         }
 
@@ -912,6 +918,7 @@ namespace HubCloud.BlazorSheet.Core.Models
                     cell.Colspan = 1;
                     cell.Rowspan = 1;
                     cell.HiddenByJoin = false;
+                    cell.ShouldRender = true;
                 }
             }
         }
@@ -1000,6 +1007,8 @@ namespace HubCloud.BlazorSheet.Core.Models
                 ChangeChildrenParent(row, headRow.Uid);
                 ChangeChildrenVisibility(row, row.IsOpen);
             }
+
+            Rows.All(x => x.ShouldRender = true);
         }
 
         public void GroupColumns(List<SheetColumn> columns)
@@ -1044,6 +1053,8 @@ namespace HubCloud.BlazorSheet.Core.Models
                 ChangeChildrenParent(column, headColumn.Uid);
                 ChangeChildrenVisibility(column, column.IsOpen);
             }
+
+            Rows.All(x => x.ShouldRender = true);
         }
 
         private void ChangeChildrenParent(SheetRow parentRow, Guid newParentUid)
@@ -1162,6 +1173,8 @@ namespace HubCloud.BlazorSheet.Core.Models
                 if (parentChildren.Except(rows).Count() == 0)
                     parentRow.IsGroup = false;
             }
+
+            Rows.All(x => x.ShouldRender = true);
         }
 
         public void UngroupAllRows()
@@ -1172,6 +1185,7 @@ namespace HubCloud.BlazorSheet.Core.Models
                 row.IsOpen = false;
                 row.IsGroup = false;
                 row.IsCollapsed = false;
+                row.ShouldRender = true;
             }
         }
 
@@ -1221,6 +1235,8 @@ namespace HubCloud.BlazorSheet.Core.Models
                 if (parentChildren.Except(columns).Count() == 0)
                     parentColumn.IsGroup = false;
             }
+
+            Rows.All(x => x.ShouldRender = true);
         }
 
         public void UngroupAllColumns()
@@ -1232,6 +1248,8 @@ namespace HubCloud.BlazorSheet.Core.Models
                 column.IsGroup = false;
                 column.IsCollapsed = false;
             }
+
+            Rows.All(x => x.ShouldRender = true);
         }
 
         public bool CanRowsBeGrouped(List<SheetRow> rows)
@@ -1315,7 +1333,13 @@ namespace HubCloud.BlazorSheet.Core.Models
             if (!result)
                 return false;
 
+            if (freezedRows > RowsCount)
+                return false;
+
             FreezedRows = freezedRows;
+
+            Rows.All(x => x.ShouldRender = true);
+            Cells.All(x => x.ShouldRender = true);
 
             return true;
         }
@@ -1351,7 +1375,13 @@ namespace HubCloud.BlazorSheet.Core.Models
             if (!result)
                 return false;
 
+            if (freezedColumns > ColumnsCount)
+                return false;
+
             FreezedColumns = freezedColumns;
+
+            Rows.All(x => x.ShouldRender = true);
+            Cells.All(x => x.ShouldRender = true);
 
             return true;
         }
@@ -1511,6 +1541,8 @@ namespace HubCloud.BlazorSheet.Core.Models
                 headRow.IsOpen = isExpand;
                 ChangeChildrenVisibility(headRow, headRow.IsOpen);
             }
+
+            Rows.All(x => x.ShouldRender = true);
         }
 
         public void CollapseExpandColumns(bool isExpand)
@@ -1522,6 +1554,8 @@ namespace HubCloud.BlazorSheet.Core.Models
                 headColumn.IsOpen = isExpand;
                 ChangeChildrenVisibility(headColumn, headColumn.IsOpen);
             }
+
+            Rows.All(x => x.ShouldRender = true);
         }
 
         public IEnumerable<SheetColumn> GetVisibleColumns(bool isHiddenCellsVisible)
