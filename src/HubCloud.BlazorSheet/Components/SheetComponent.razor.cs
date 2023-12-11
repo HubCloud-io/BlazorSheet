@@ -156,7 +156,7 @@ public partial class SheetComponent : ComponentBase
             _selectedIdentifiers.Remove(_currentCell);
 
         if (_isShiftKeyPressed)
-            SelectSpecificAreaByShift(cell);
+            SelectSpecificAreaByShift();
 
         await CellSelected.InvokeAsync(cell);
         await CellsSelected.InvokeAsync(_selectedCells);
@@ -164,7 +164,7 @@ public partial class SheetComponent : ComponentBase
         //await ColumnSelected.InvokeAsync(column);
     }
 
-    private void SelectSpecificAreaByShift(SheetCell lastSelectedCell)
+    private void SelectSpecificAreaByShift()
     {
         if (_selectedCells.Count == 1)
             return;
@@ -172,6 +172,9 @@ public partial class SheetComponent : ComponentBase
         var valueAddresses = _selectedCells
             .Select(cell => Sheet.CellAddressSlim(cell))
             .ToList();
+
+        if (!valueAddresses.Any())
+            return;
 
         var fromRow = valueAddresses.Min(m => m.Row);
         var fromColumn = valueAddresses.Min(m => m.Column);
@@ -195,11 +198,6 @@ public partial class SheetComponent : ComponentBase
 
     private async Task OnTableKeyDown(KeyboardEventArgs e)
     {
-        if (e.Key == "Control" || e.Key == "Shift")
-        {
-            _multipleSelection = true;
-        }
-
         SheetCell nextCell = null;
 
         switch (e.Key.ToUpper())
@@ -234,8 +232,12 @@ public partial class SheetComponent : ComponentBase
                 break;
 
             case KeyboardKeys.Shift:
-
                 _isShiftKeyPressed = true;
+                _multipleSelection = true;
+                break;
+
+            case KeyboardKeys.Control:
+                _multipleSelection = true;
                 break;
 
             default:
@@ -243,9 +245,7 @@ public partial class SheetComponent : ComponentBase
                 if (IsLetterOrNumberOrEnter(e.Key))
                 {
                     if (_currentCell != null)
-                    {
                         await StartCellEditAsync(_currentCell);
-                    }
                 }
 
                 break;
@@ -575,6 +575,12 @@ public partial class SheetComponent : ComponentBase
 
     private async Task StartCellEditAsync(SheetCell cell)
     {
+        if (_isShiftKeyPressed)
+        {
+            _isShiftKeyPressed = false;
+            _multipleSelection = false;
+        }
+
         if (Regime == SheetRegimes.Design)
         {
             if (cell.EditSettingsUid.HasValue)
