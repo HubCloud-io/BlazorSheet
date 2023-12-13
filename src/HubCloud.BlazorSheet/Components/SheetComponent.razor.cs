@@ -391,6 +391,7 @@ public partial class SheetComponent : ComponentBase
 
             case ContextMenuBuilder.ShowHiddenHideHiddenItemName:
                 _isHiddenCellsVisible = !_isHiddenCellsVisible;
+                Sheet.Cells.All(x => x.ShouldRender = true);
                 Sheet.Rows.All(x => x.ShouldRender = true);
                 break;
         }
@@ -464,6 +465,7 @@ public partial class SheetComponent : ComponentBase
 
             case ContextMenuBuilder.ShowHiddenHideHiddenItemName:
                 _isHiddenCellsVisible = !_isHiddenCellsVisible;
+                Sheet.Cells.All(x => x.ShouldRender = true);
                 Sheet.Rows.All(x => x.ShouldRender = true);
                 break;
         }
