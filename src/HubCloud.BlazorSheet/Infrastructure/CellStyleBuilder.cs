@@ -134,7 +134,7 @@ namespace HubCloud.BlazorSheet.Infrastructure
                 sb.Append(";");
             }
 
-            AddFreezedStyle(sb, sheet, row, column, isHiddenCellsVisible);
+            AddFreezedStyle(sb, sheet, row, column, isHiddenCellsVisible, cell.Colspan, cell.Rowspan);
 
             return sb.ToString();
         }
@@ -191,7 +191,7 @@ namespace HubCloud.BlazorSheet.Infrastructure
                     sb.Append("border-right: 2px solid navy;");
         }
 
-        private void AddFreezedStyle(StringBuilder sb, Sheet sheet, SheetRow row, SheetColumn column, bool isHiddenCellsVisible)
+        private void AddFreezedStyle(StringBuilder sb, Sheet sheet, SheetRow row, SheetColumn column, bool isHiddenCellsVisible, int colspan, int rowspan)
         {
             if (sheet.FreezedColumns == 0 && sheet.FreezedRows == 0)
                 return;
@@ -236,12 +236,16 @@ namespace HubCloud.BlazorSheet.Infrastructure
                 }
             }
 
-            if (rowNumber == sheet.FreezedRows || NeedSetBorderBottom(sheet, rowNumber, isHiddenCellsVisible))
+            if (rowNumber == sheet.FreezedRows ||
+                NeedSetBorderBottom(sheet, rowNumber, rowspan) ||
+                NeedSetBorderBottom(sheet, rowNumber, isHiddenCellsVisible))
             {
                 sb.Append("border-bottom: 2px solid navy;");
             }
 
-            if (columnNumber == sheet.FreezedColumns || NeedSetBorderRight(sheet, columnNumber, isHiddenCellsVisible))
+            if (columnNumber == sheet.FreezedColumns ||
+                NeedSetBorderRight(sheet, columnNumber, colspan) ||
+                NeedSetBorderRight(sheet, columnNumber, isHiddenCellsVisible))
             {
                 sb.Append("border-right: 2px solid navy;");
             }
@@ -328,6 +332,17 @@ namespace HubCloud.BlazorSheet.Infrastructure
             return false;
         }
 
+        private bool NeedSetBorderBottom(Sheet sheet, int rowNumber, int rowspan)
+        {
+            if (rowNumber > sheet.FreezedRows)
+                return false;
+
+            if (rowspan == sheet.FreezedRows)
+                return true;
+
+            return false;
+        }
+
         private bool NeedSetBorderRight(Sheet sheet, int columnNumber, bool isHiddenCellsVisible)
         {
             if (sheet.Columns.Any(x => x.IsHidden) && !isHiddenCellsVisible)
@@ -351,6 +366,17 @@ namespace HubCloud.BlazorSheet.Infrastructure
                     }
                 }
             }
+
+            return false;
+        }
+
+        private bool NeedSetBorderRight(Sheet sheet, int columnNumber, int colspan)
+        {
+            if (columnNumber > sheet.FreezedColumns)
+                return false;
+
+            if (colspan == sheet.FreezedColumns)
+                return true;
 
             return false;
         }
