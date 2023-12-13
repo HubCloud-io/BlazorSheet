@@ -337,7 +337,8 @@ namespace HubCloud.BlazorSheet.Infrastructure
             if (rowNumber > sheet.FreezedRows)
                 return false;
 
-            if (rowspan == sheet.FreezedRows)
+            var endRowNumberWithRowspan = rowspan + rowNumber - 1;
+            if (endRowNumberWithRowspan == sheet.FreezedRows)
                 return true;
 
             return false;
@@ -375,7 +376,8 @@ namespace HubCloud.BlazorSheet.Infrastructure
             if (columnNumber > sheet.FreezedColumns)
                 return false;
 
-            if (colspan == sheet.FreezedColumns)
+            var endColNumberWithRowspan = colspan + columnNumber - 1;
+            if (endColNumberWithRowspan == sheet.FreezedColumns)
                 return true;
 
             return false;
