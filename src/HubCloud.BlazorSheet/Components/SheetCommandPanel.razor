@@ -1,202 +1,305 @@
 ﻿@using BBComponents.Components
+@using HubCloud.BlazorSheet.Core.Consts;
 @using HubCloud.BlazorSheet.Core.Enums
 
 <div class="hc-sheet-command-panel">
-    <div class="row" style="line-height: 15px; font-size: 12px;">
-
+    <div class="row">
         <div class="col-sm-12">
-
-            <span class="fa fa-light fa-snowflake text-primary"></span>
-            <span class="text-primary">R</span>
-            <BbNumberInput TValue="int"
-                           @bind-Value="@Model.FreezedRows"
-                           Changed="OnFreezedRowsChanged"
-                           HtmlStyle="width:30px;margin-left:5px; text-align:right;">
-            </BbNumberInput>
-            <span class="text-primary">С</span>
-            <BbNumberInput TValue="int"
-                           @bind-Value="@Model.FreezedColumns"
-                           Changed="OnFreezedColumnsChanged"
-                           HtmlStyle="width:30px;margin-left:5px; text-align:right;">
-            </BbNumberInput>
-
-            <span class="fa fa-font text-primary" style="margin-left: 3px;"></span>
-            <BbNumberInput TValue="int"
-                           @bind-Value="@Model.FontSize"
-                           Changed="OnSettingsChanged"
-                           HtmlStyle="width:30px;margin-left:5px; text-align:right;">
-            </BbNumberInput>
-
-            <span class="fa fa-align-left text-primary" style="margin-left: 3px;"></span>
-            <BbSelect TValue="string"
-                      ItemsSource="@_textAlignSource"
-                      TextName="Item1"
-                      ValueName="Item2"
-                      @bind-Value="@Model.TextAlign"
-                      HtmlStyle="width:70px;margin-left:5px;height:25px;"
-                      Changed="OnSettingsChanged">
-            </BbSelect>
-
-            <button class="@ToggleButtonStyle(Model.IsBold)"
-                    @onclick="OnBoldClick"
-                    style="padding-top:2px; padding-bottom: 2px; margin-top: -5px;">
-                <span>B</span>
-            </button>
-
-            <button class="@ToggleButtonStyle(Model.IsItalic)"
-                    @onclick="OnItalicClick"
-                    style="padding-top: 2px; padding-bottom: 2px; margin-top: -5px;">
-                <span style="font-style: italic;">I</span>
-            </button>
-
-            <span class="fa fa-font text-primary" style="margin-left: 3px;"></span>
-            @* <BbTextInput @bind-Value="@StyleModel.Color" Changed="OnSettingsChanged" HtmlStyle="width:70px;"></BbTextInput> *@
-            <input type="color"
-                   @onchange="(e => OnColorChange(e))"
-                   value="@Model.Color"
-                   style="width:30px; height: 25px;" />
-
-            <span class="fa fa-tint text-primary" style="margin-left: 3px;"></span>
-            @* <BbTextInput @bind-Value="@StyleModel.BackgroundColor" Changed="OnSettingsChanged" HtmlStyle="width:70px;"></BbTextInput> *@
-            <input type="color"
-                   @onchange="(e => OnBackgroundColorChange(e))"
-                   value="@Model.BackgroundColor"
-                   style="width:30px; height: 25px;" />
-
-            <span class="fa fa-border text-primary" style="margin-left: 3px;"></span>
-            <BbSelect TValue="CellBorderTypes"
-                      ItemsSource="@_borderTypesSource"
-                      ValueName="Item1"
-                      TextName="Item2"
-                      HtmlStyle="height:25px;"
-                      @bind-Value="@Model.BorderType"
-                      Changed="OnSettingsChanged">
-            </BbSelect>
-
-            <BbNumberInput TValue="int"
-                           @bind-Value="@Model.BorderWidth"
-                           Changed="OnSettingsChanged"
-                           HtmlStyle="width:30px;margin-left:5px; text-align:right;">
-            </BbNumberInput>
-
-            <input type="color"
-                   @onchange="(e => OnBorderColorChange(e))"
-                   value="@Model.BorderColor"
-                   style="width:30px; height: 25px;" />
-
-            <BbSelect TValue="CellFormatTypes"
-                      ItemsSource="@_cellFormatSource"
-                      TextName="Item1"
-                      ValueName="Item2"
-                      HtmlStyle="width:150px;margin-left:5px;margin-right:5px;height:25px;"
-                      @bind-Value="@Model.FormatType"
-                      Changed="OnFormatChanged">
-            </BbSelect>
-
-            @if (Model.FormatType == CellFormatTypes.Custom)
-            {
-                <BbTextInput @bind-Value="@Model.CustomFormat" Changed="OnCustomFormatInputChanged" HtmlStyle="width:150px;margin-right:5px;height:25px;" />
-            }
-
-            <button class="btn btn-outline-primary btn-sm" @onclick="(e => OnEditSettingsClick(e))">
-                <span class="fa fa-edit"></span>
-                <span>Edit settings</span>
-            </button>
-
-            <button title="Excel export" class="btn btn-outline-success btn-sm" @onclick="OnExport">
-                <span class="fa fa-file-export"></span>
-            </button>
-            <button title="Excel import" class="btn btn-outline-success btn-sm" @onclick="OnImport">
-                <span class="fa fa-file-import"></span>
-            </button>
-
-            <button class="btn btn-outline-primary btn-sm" @onclick="OnOpenCellLinkModal">
-                <span class="fa fa-solid fa-link"></span>
-            </button>
-
-            <div class="btn-group btn-group-sm float-left">
-                <button type="button" class="btn btn-sm btn-outline-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Actions
-                </button>
-                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <button class="dropdown-item"
-                            type="button"
-                            disabled="@IsButtonSplitJoinDisabled()"
-                            @onclick="OnSplitJoinCells">
-                        @if (SelectedCellsCount > 1)
+            <nav class="navbar navbar-expand-lg navbar-primary bg-light">
+                <div class="container-fluid">
+                    <ul class="nav navbar-nav">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" @onclick:preventDefault role="button" data-toggle="dropdown" aria-expanded="false">
+                                Закрепить
+                            </a>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" href="#" @onclick:preventDefault @onclick="() => OnSetFreezedRows(0)">Не закреплять строки</a>
+                                <a class="dropdown-item" href="#" @onclick:preventDefault @onclick="() => OnSetFreezedRows(1)">1 строку</a>
+                                <a class="dropdown-item @(SelectedCellRowNumber == 0 ? "disabled" : "")"
+                                   href="#" @onclick:preventDefault @onclick="() => OnSetFreezedRows(SelectedCellRowNumber)">
+                                    До строки @(SelectedCellRowNumber == 0 ? "..." : SelectedCellRowNumber)
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="#" @onclick:preventDefault @onclick="() => OnSetFreezedColumns(0)">Не закреплять столбцы</a>
+                                <a class="dropdown-item" href="#" @onclick:preventDefault @onclick="() => OnSetFreezedColumns(1)">1 столбец</a>
+                                <a class="dropdown-item @(SelectedCellColumnNumber == 0 ? "disabled" : "")"
+                                   href="#" @onclick:preventDefault @onclick="() => OnSetFreezedColumns(SelectedCellColumnNumber)">
+                                    До столбца @(SelectedCellColumnNumber == 0 ? "..." : SelectedCellColumnNumber)
+                                </a>
+                            </div>
+                        </li>
+                        <li class="nav-item" title="Размер шрифта">
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        A
+                                    </span>
+                                </div>
+                                <BbNumberInput TValue="int"
+                                @bind-Value="@Model.FontSize"
+                                               Changed="OnSettingsChanged"
+                                               HtmlClass="form-control"
+                                               HtmlStyle="width:50px;text-align:right;">
+                                </BbNumberInput>
+                            </div>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" @onclick:preventDefault role="button" data-toggle="dropdown" aria-expanded="false" title="Выравнивание по горизонтали">
+                                <span class="fa fa-align-@_currentTextAlign text-primary"></span>
+                            </a>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item @GetActiveTextAlign(TextAlignLeft)"
+                                   href="#" @onclick:preventDefault @onclick="() => OnTextAlignChanged(TextAlignLeft)" title="По левому краю">
+                                    <span class="fa fa-align-left"></span>
+                                </a>
+                                <a class="dropdown-item @GetActiveTextAlign(TextAlignJustify)"
+                                   href="#" @onclick:preventDefault @onclick="() => OnTextAlignChanged(TextAlignJustify)" title="По центру">
+                                    <span class="fa fa-align-justify"></span>
+                                </a>
+                                <a class="dropdown-item @GetActiveTextAlign(TextAlignRight)"
+                                   href="#" @onclick:preventDefault @onclick="() => OnTextAlignChanged(TextAlignRight)" title="По правому краю">
+                                    <span class="fa fa-align-right"></span>
+                                </a>
+                            </div>
+                        </li>
+                        <li class="nav-item">
+                            <button class="@ToggleButtonStyle(Model.IsBold) navbar-btn" title="Полужирный" @onclick="OnBoldClick">
+                                <span>B</span>
+                            </button>
+                            <button class="@ToggleButtonStyle(Model.IsItalic) navbar-btn" title="Курсив" @onclick="OnItalicClick">
+                                <span style="font-style: italic;">I</span>
+                            </button>
+                        </li>
+                        <li class="nav-item" title="Цвет текста">
+                            <div class="input-group" style="padding-left:0.5rem;">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        A
+                                    </span>
+                                </div>
+                                <input type="color" @onchange="(e => OnColorChange(e))"
+                                       value="@Model.Color"
+                                       class="form-control p-1"
+                                       style="width:50px;height:auto;" />
+                            </div>
+                        </li>
+                        <li class="nav-item" title="Цвет заливки">
+                            <div class="input-group" style="padding-left:0.5rem;">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        С
+                                    </span>
+                                </div>
+                                <input type="color" @onchange="(e => OnBackgroundColorChange(e))"
+                                       value="@Model.BackgroundColor"
+                                       class="form-control p-1"
+                                       style="width:50px;height:auto;" />
+                            </div>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" @onclick:preventDefault role="button" data-toggle="dropdown" aria-expanded="false">
+                                Границы
+                            </a>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item @GetActiveBorderType(CellBorderTypes.None)"
+                                   href="#" @onclick:preventDefault @onclick="() => OnSetBorder(CellBorderTypes.None)">
+                                    Убрать границы
+                                </a>
+                                <a class="dropdown-item @GetActiveBorderType(CellBorderTypes.Top)"
+                                   href="#" @onclick:preventDefault @onclick="() => OnSetBorder(CellBorderTypes.Top)">
+                                    Верхняя граница
+                                </a>
+                                <a class="dropdown-item @GetActiveBorderType(CellBorderTypes.Left)"
+                                   href="#" @onclick:preventDefault @onclick="() => OnSetBorder(CellBorderTypes.Left)">
+                                    Левая граница
+                                </a>
+                                <a class="dropdown-item @GetActiveBorderType(CellBorderTypes.Bottom)"
+                                   href="#" @onclick:preventDefault @onclick="() => OnSetBorder(CellBorderTypes.Bottom)">
+                                    Нижняя граница
+                                </a>
+                                <a class="dropdown-item @GetActiveBorderType(CellBorderTypes.Right)"
+                                   href="#" @onclick:preventDefault @onclick="() => OnSetBorder(CellBorderTypes.Right)">
+                                    Правая граница
+                                </a>
+                                <a class="dropdown-item @GetActiveBorderType(CellBorderTypes.All)"
+                                   href="#" @onclick:preventDefault @onclick="() => OnSetBorder(CellBorderTypes.All)">
+                                    Все границы
+                                </a>
+                            </div>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" @onclick:preventDefault role="button" data-toggle="dropdown" aria-expanded="false">
+                                Толщина границ
+                            </a>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item @GetActiveBorderWidth(1)" href="#" @onclick:preventDefault @onclick="() => OnSetBorderWidth(1)">1px</a>
+                                <a class="dropdown-item @GetActiveBorderWidth(3)" href="#" @onclick:preventDefault @onclick="() => OnSetBorderWidth(3)">3px</a>
+                                <a class="dropdown-item @GetActiveBorderWidth(5)" href="#" @onclick:preventDefault @onclick="() => OnSetBorderWidth(5)">5px</a>
+                            </div>
+                        </li>
+                        <li class="nav-item" title="Цвет границ">
+                            <div class="input-group" style="padding-left:0.5rem;">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        BС
+                                    </span>
+                                </div>
+                                <input type="color" @onchange="(e => OnBorderColorChange(e))"
+                                       value="@Model.BorderColor"
+                                       class="form-control p-1"
+                                       style="width:50px;height:auto;" />
+                            </div>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" @onclick:preventDefault role="button" data-toggle="dropdown" aria-expanded="false">
+                                Формат
+                            </a>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item @GetActiveFormat(CellFormatTypes.None)"
+                                   href="#" @onclick:preventDefault @onclick="() => OnSetFormat(CellFormatTypes.None)">
+                                    No format
+                                </a>
+                                <a class="dropdown-item @GetActiveFormat(CellFormatTypes.Integer)"
+                                   href="#" @onclick:preventDefault @onclick="() => OnSetFormat(CellFormatTypes.Integer)">
+                                    Number: @CellDisplayFormatConsts.Integer
+                                </a>
+                                <a class="dropdown-item @GetActiveFormat(CellFormatTypes.IntegerTwoDecimalPlaces)"
+                                   href="#" @onclick:preventDefault @onclick="() => OnSetFormat(CellFormatTypes.IntegerTwoDecimalPlaces)">
+                                    Number: @CellDisplayFormatConsts.IntegerTwoDecimalPlaces
+                                </a>
+                                <a class="dropdown-item @GetActiveFormat(CellFormatTypes.IntegerThreeDecimalPlaces)"
+                                   href="#" @onclick:preventDefault @onclick="() => OnSetFormat(CellFormatTypes.IntegerThreeDecimalPlaces)">
+                                    Number: @CellDisplayFormatConsts.IntegerThreeDecimalPlaces
+                                </a>
+                                <a class="dropdown-item @GetActiveFormat(CellFormatTypes.IntegerWithSpaces)"
+                                   href="#" @onclick:preventDefault @onclick="() => OnSetFormat(CellFormatTypes.IntegerWithSpaces)">
+                                    Number: @CellDisplayFormatConsts.IntegerWithSpaces
+                                </a>
+                                <a class="dropdown-item @GetActiveFormat(CellFormatTypes.IntegerWithSpacesTwoDecimalPlaces)"
+                                   href="#" @onclick:preventDefault @onclick="() => OnSetFormat(CellFormatTypes.IntegerWithSpacesTwoDecimalPlaces)">
+                                    Number: @CellDisplayFormatConsts.IntegerWithSpacesTwoDecimalPlaces
+                                </a>
+                                <a class="dropdown-item @GetActiveFormat(CellFormatTypes.IntegerWithSpacesThreeDecimalPlaces)"
+                                   href="#" @onclick:preventDefault @onclick="() => OnSetFormat(CellFormatTypes.IntegerWithSpacesThreeDecimalPlaces)">
+                                    Number: @CellDisplayFormatConsts.IntegerWithSpacesThreeDecimalPlaces
+                                </a>
+                                <a class="dropdown-item @GetActiveFormat(CellFormatTypes.IntegerNegativeWithSpaces)"
+                                   href="#" @onclick:preventDefault @onclick="() => OnSetFormat(CellFormatTypes.IntegerNegativeWithSpaces)">
+                                    Number: @CellDisplayFormatConsts.IntegerNegativeWithSpaces
+                                </a>
+                                <a class="dropdown-item @GetActiveFormat(CellFormatTypes.IntegerNegativeWithSpacesTwoDecimalPlaces)"
+                                   href="#" @onclick:preventDefault @onclick="() => OnSetFormat(CellFormatTypes.IntegerNegativeWithSpacesTwoDecimalPlaces)">
+                                    Number: @CellDisplayFormatConsts.IntegerNegativeWithSpacesTwoDecimalPlaces
+                                </a>
+                                <a class="dropdown-item @GetActiveFormat(CellFormatTypes.IntegerNegativeWithSpacesThreeDecimalPlaces)"
+                                   href="#" @onclick:preventDefault @onclick="() => OnSetFormat(CellFormatTypes.IntegerNegativeWithSpacesThreeDecimalPlaces)">
+                                    Number: @CellDisplayFormatConsts.IntegerNegativeWithSpacesThreeDecimalPlaces
+                                </a>
+                                <a class="dropdown-item @GetActiveFormat(CellFormatTypes.Date)"
+                                   href="#" @onclick:preventDefault @onclick="() => OnSetFormat(CellFormatTypes.Date)">
+                                    Date: @CellDisplayFormatConsts.Date
+                                </a>
+                                <a class="dropdown-item @GetActiveFormat(CellFormatTypes.DateTime)"
+                                   href="#" @onclick:preventDefault @onclick="() => OnSetFormat(CellFormatTypes.DateTime)">
+                                    Date&Time: @CellDisplayFormatConsts.DateTime
+                                </a>
+                                <a class="dropdown-item @GetActiveFormat(CellFormatTypes.Custom)"
+                                   href="#" @onclick:preventDefault @onclick="() => OnSetFormat(CellFormatTypes.Custom)">
+                                    Custom
+                                </a>
+                            </div>
+                        </li>
+                        @if (Model.FormatType == CellFormatTypes.Custom)
                         {
-                            <span>Join</span>
+                            <li class="nav-item" title="Произвольный формат">
+                                <div style="padding-right:0.5rem;">
+                                    <BbTextInput @bind-Value="@Model.CustomFormat" Changed="OnCustomFormatInputChanged" HtmlClass="form-control" HtmlStyle="width:150px;" />
+                                </div>
+                            </li>
                         }
-                        else
-                        {
-                            <span>Split</span>
-                        }
-                    </button>
-                    <button class="dropdown-item"
-                            type="button"
-                            disabled="@(!CanRowsBeGrouped)"
-                            @onclick="OnGroupRows">
-                        Group rows
-                    </button>
-                    <button class="dropdown-item"
-                            type="button"
-                            disabled="@(!CanRowsBeUngrouped)"
-                            @onclick="OnUngroupRows">
-                        Ungroup rows
-                    </button>
-                    <button class="dropdown-item"
-                            type="button"
-                            @onclick="OnUngroupAllRows">
-                        Ungroup all rows
-                    </button>
-                    <button class="dropdown-item"
-                            type="button"
-                            @onclick="OnCollapseExpandAllRows">
-                        Collapse/Expand all rows
-                    </button>
-
-                    <button class="dropdown-item"
-                            type="button"
-                            disabled="@(!CanColumnsBeGrouped)"
-                            @onclick="OnGroupColumns">
-                        Group columns
-                    </button>
-                    <button class="dropdown-item"
-                            type="button"
-                            disabled="@(!CanColumnsBeUngrouped)"
-                            @onclick="OnUngroupColumns">
-                        Ungroup columns
-                    </button>
-                    <button class="dropdown-item"
-                            type="button"
-                            @onclick="OnUngroupAllColumns">
-                        Ungroup all columns
-                    </button>
-                    <button class="dropdown-item"
-                            type="button"
-                            @onclick="OnCollapseExpandAllColumns">
-                        Collapse/Expand all columns
-                    </button>
-
-                    <button class="dropdown-item"
-                            type="button"
-                            disabled="@(SelectedCellsCount != 1)"
-                            @onclick="async () => await RememberCellSettings.InvokeAsync()">
-                        Remember cell settings
-                    </button>
-                    <button class="dropdown-item"
-                            type="button"
-                            disabled="@(SelectedCellsCount == 0)"
-                            @onclick="async () => await ApplyRememberedCellSettings.InvokeAsync()">
-                        Apply remembered cell settings
-                    </button>
+                        <li class="nav-item">
+                            <button class="btn btn-outline-primary navbar-btn" @onclick="(e => OnEditSettingsClick(e))">
+                                <span class="fa fa-edit"></span>
+                                <span>Edit settings</span>
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <div style="padding-left:0.5rem;">
+                                <button title="Excel export" class="btn btn-outline-success navbar-btn" @onclick="OnExport">
+                                    <span class="fa fa-file-export"></span>
+                                </button>
+                                <button title="Excel import" class="btn btn-outline-success navbar-btn" @onclick="OnImport">
+                                    <span class="fa fa-file-import"></span>
+                                </button>
+                            </div>
+                        </li>
+                        <li class="nav-item">
+                            <div style="padding-left:0.5rem;">
+                                <button class="btn btn-outline-primary navbar-btn" @onclick="OnOpenCellLinkModal">
+                                    <span class="fa fa-solid fa-link"></span>
+                                </button>
+                            </div>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" @onclick:preventDefault role="button" data-toggle="dropdown" aria-expanded="false">
+                                Actions
+                            </a>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item @(IsButtonSplitJoinDisabled() ? "disabled" : "")"
+                                   href="#" @onclick:preventDefault @onclick="OnSplitJoinCells">
+                                    @GetSplitJoinItemLabel()
+                                </a>
+                                <a class="dropdown-item @(!CanRowsBeGrouped ? "disabled" : "")"
+                                   href="#" @onclick:preventDefault @onclick="OnGroupRows">
+                                    Group rows
+                                </a>
+                                <a class="dropdown-item @(!CanRowsBeUngrouped ? "disabled" : "")"
+                                   href="#" @onclick:preventDefault @onclick="OnUngroupRows">
+                                    Ungroup rows
+                                </a>
+                                <a class="dropdown-item"
+                                   href="#" @onclick:preventDefault @onclick="OnUngroupAllRows">
+                                    Ungroup all rows
+                                </a>
+                                <a class="dropdown-item"
+                                   href="#" @onclick:preventDefault @onclick="OnCollapseExpandAllRows">
+                                    Collapse/Expand all rows
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item @(!CanColumnsBeGrouped ? "disabled" : "")"
+                                   href="#" @onclick:preventDefault @onclick="OnGroupColumns">
+                                    Group columns
+                                </a>
+                                <a class="dropdown-item @(!CanColumnsBeUngrouped ? "disabled" : "")"
+                                   href="#" @onclick:preventDefault @onclick="OnUngroupColumns">
+                                    Ungroup columns
+                                </a>
+                                <a class="dropdown-item"
+                                   href="#" @onclick:preventDefault @onclick="OnUngroupAllColumns">
+                                    Ungroup all columns
+                                </a>
+                                <a class="dropdown-item"
+                                   href="#" @onclick:preventDefault @onclick="OnCollapseExpandAllColumns">
+                                    Collapse/Expand all columns
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item @(SelectedCellsCount != 1 ? "disabled" : "")"
+                                   href="#" @onclick:preventDefault @onclick="async () => await RememberCellSettings.InvokeAsync()">
+                                    Remember cell settings
+                                </a>
+                                <a class="dropdown-item @(SelectedCellsCount == 0 ? "disabled" : "")"
+                                   href="#" @onclick:preventDefault @onclick="async () => await ApplyRememberedCellSettings.InvokeAsync()">
+                                    Apply remembered cell settings
+                                </a>
+                            </div>
+                        </li>
+                    </ul>
                 </div>
-            </div>
+            </nav>
         </div>
     </div>
 
     <div class="row" style="margin-top:5px;">
-
         <div class="col-sm-1">
             <span class="text-primary" style="line-height: 30px;">
                 @(string.IsNullOrWhiteSpace(Model.SelectedCellAddress) ? "RC" : @Model.SelectedCellAddress)
@@ -204,12 +307,12 @@
         </div>
         <div class="col-sm-11">
             <BbTextInput HtmlStyle="width:100%"
-                         @bind-Value="@Model.InputText"
+                         HtmlClass="form-control"
+            @bind-Value="@Model.InputText"
                          Placeholder="Formula"
                          Changed="OnFormulaChanged">
             </BbTextInput>
         </div>
-
     </div>
 </div>
 
@@ -219,5 +322,5 @@
                          ClientY="@_clientY"
                          EditSettings="@Model.EditSettings"
                          DataTypeDataProvider="@DataTypeDataProvider"
-                         Closed="OnEditParametersClosed"></EditParametersModal>
+                         Closed="OnEditParametersClosed" />
 }

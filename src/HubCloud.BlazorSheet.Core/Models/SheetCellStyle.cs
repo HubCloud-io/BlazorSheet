@@ -10,7 +10,7 @@ namespace HubCloud.BlazorSheet.Core.Models
         
         public Guid Uid { get; set; } = Guid.NewGuid();
         public string BackgroundColor { get; set; } = SheetConsts.WhiteBackground;
-        public string Color { get; set; } = "#000000";
+        public string Color { get; set; } = SheetConsts.BlackColor;
 
         public string FontWeight { get; set; } = "normal";
         public string FontStyle { get; set; } = "normal";
@@ -44,7 +44,7 @@ namespace HubCloud.BlazorSheet.Core.Models
             this.FontFamily = style.FontFamily;
             this.FontSize = $"{style.FontSize}px";
             this.TextAlign = style.TextAlign;
-
+            
             switch (style.BorderType)
             {
                 case CellBorderTypes.Top:
