@@ -1,8 +1,11 @@
-﻿using System.Linq;
+﻿using System;
+using System.Data;
+using System.Linq;
 using System.Text.RegularExpressions;
 using HubCloud.BlazorSheet.Core.Enums;
 using HubCloud.BlazorSheet.Core.Models;
 using HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer;
+using Newtonsoft.Json;
 using NUnit.Framework;
 
 namespace HubCloud.BlazorSheet.UnitTests;
@@ -52,6 +55,98 @@ public class SheetDependencyAnalyzerTests
         Assert.AreEqual(orderedCells[2].Uid, cell15.Uid);
         Assert.AreEqual(orderedCells[3].Uid, cell13.Uid);
     }
+
+    [Test]
+    public void GetOrderCells2_CircularDependency_Test()
+    {
+        // Arrange
+        var sheetSettings = new SheetSettings
+        {
+            RowsCount = 5,
+            ColumnsCount = 5
+        };
+        
+        var sheet = new Sheet(sheetSettings)
+        {
+            Name = "main"
+        };
+
+        sheet.GetCell(1, 1).Value = 100;
+        
+        var cell12 = sheet.GetCell(1, 2);
+        cell12.Formula = @"VAL(""R1C1"") + VAL(""R1C2"")";
+       
+        var workbook = new Workbook();
+        workbook.AddSheet(sheet);
+        
+        // Act
+        var analyzer = new SheetDependencyAnalyzer(workbook.FirstSheet);
+        try
+        {
+            var orderedCells = analyzer.OrderCellsForCalc2();
+        }
+        catch (Exception e)
+        {
+            // Assert
+            Assert.That(e is EvaluateException);
+            Assert.That(e.Message.Trim() == "Formula circular dependency problem in cells: R1C2;");
+            return;
+        }
+        
+        Assert.Fail();
+    }
+
+    // [Test]
+    // public void GetOrderCells2_JsonExample_Test()
+    // {
+    //     // Arrange
+    //     var str = System.IO.File.ReadAllText(@"d:\test\sheetSettings.json");
+    //     var sheetSettings = JsonConvert.DeserializeObject<SheetSettings>(str);
+    //     var workbook = new Workbook();
+    //     workbook.AddSheet(new Sheet(sheetSettings));
+    //     
+    //     var str2 = System.IO.File.ReadAllText(@"d:\test\sheetSettings2.json");
+    //     var sheetSettings2 = JsonConvert.DeserializeObject<SheetSettings>(str2);
+    //     var workbook2 = new Workbook();
+    //     workbook2.AddSheet(new Sheet(sheetSettings2));
+    //
+    //     // var badCells = new[]
+    //     // {
+    //     //     new ValueAddress("R56C16"),
+    //     //     new ValueAddress("R62C16"),
+    //     //     new ValueAddress("R64C4"),
+    //     //     new ValueAddress("R65C4"),
+    //     //     new ValueAddress("R66C4"),
+    //     //     new ValueAddress("R67C4"),
+    //     //     new ValueAddress("R68C4"),
+    //     //     new ValueAddress("R118C16"),
+    //     //     new ValueAddress("R124C16")
+    //     // };
+    //     //
+    //     // foreach (var badCell in badCells)
+    //     // {
+    //     //     var cell = workbook2.FirstSheet.Cells.FirstOrDefault(x => workbook2.FirstSheet.CellAddressSlim(x).Equals(badCell));
+    //     //     if (cell != null)
+    //     //     {
+    //     //         cell.Formula = null;
+    //     //         cell.Value = 0;
+    //     //     }
+    //     // }
+    //     
+    //     // Act
+    //     var analyzer = new SheetDependencyAnalyzer(workbook2.FirstSheet);
+    //     try
+    //     {
+    //         var orderedCells = analyzer.OrderCellsForCalc2();
+    //     }
+    //     catch (Exception e)
+    //     {
+    //         Console.WriteLine(e);
+    //         Assert.Fail();
+    //     }
+    //     
+    //     Assert.Pass();
+    // }
     
     [Test]
     public void DependencyCells_Order_Test()

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Data;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime;
@@ -22,7 +23,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
         // key - cell to change
         // value - cells with formula, that will be changed after the key cell is changed (with recursion depth 1)
         private Dictionary<ValueAddress, List<SheetCell>> _dependencyFormulaDict;
-        // key - formula
+        // key - formula address
         // value - addresses in formula list
         private Dictionary<ValueAddress, List<ValueAddress>> _formulaAddressesDict;
         
@@ -117,9 +118,18 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
             var dependHashSet = new HashSet<ValueAddress>(_dependencyFormulaDict.Select(x => x.Key));
 
             var resultList = new List<SheetCell>();
+            var iterationCount = 0;
+            var dependHashSetCount = dependHashSet.Count;
             while (dependHashSet.Any())
             {
-                var toRemoveFromHasSet = new List<ValueAddress>(); 
+                iterationCount++;
+                if (iterationCount > dependHashSetCount)
+                {
+                    var circularCells = GetCircularCellsStr(allFormulaCells);
+                    throw new EvaluateException($"Formula circular dependency problem in cells: {circularCells}");
+                }
+
+                var toRemoveFromHasSet = new List<ValueAddress>();
                 foreach (var formulaCell in allFormulaCells.ToArray())
                 {
                     var formulaCellAddress = _sheet.CellAddressSlim(formulaCell);
@@ -142,6 +152,22 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
             resultList.Reverse();
 
             return resultList;
+        }
+
+        private string GetCircularCellsStr(List<SheetCell> badCells)
+        {
+            var resultStr = string.Empty;
+            foreach (var badCell in badCells)
+            {
+                var badCellAddress = _sheet.CellAddressSlim(badCell);
+                if (!_formulaAddressesDict.TryGetValue(badCellAddress, out var addressesInFormula))
+                    continue;
+
+                if (addressesInFormula?.Contains(badCellAddress) == true)
+                    resultStr += $"R{badCellAddress.Row}C{badCellAddress.Column}; ";
+            }
+            
+            return resultStr;
         }
 
 
