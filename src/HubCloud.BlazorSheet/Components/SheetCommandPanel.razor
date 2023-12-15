@@ -31,9 +31,11 @@
                         <li class="nav-item" title="Размер шрифта">
                             <div class="input-group">
                                 <div class="input-group-prepend">
-                                    <span class="input-group-text">
-                                        A
-                                    </span>
+                                    <div style="height:100%;display:table;">
+                                        <span class="fa fa-solid fa-text-height text-primary input-group-text"
+                                              style="display:table-cell;vertical-align:middle">
+                                        </span>
+                                    </div>
                                 </div>
                                 <BbNumberInput TValue="int"
                                 @bind-Value="@Model.FontSize"
@@ -64,18 +66,20 @@
                         </li>
                         <li class="nav-item">
                             <button class="@ToggleButtonStyle(Model.IsBold) navbar-btn" title="Полужирный" @onclick="OnBoldClick">
-                                <span>B</span>
+                                <span class="fa fa-solid fa-bold"></span>
                             </button>
                             <button class="@ToggleButtonStyle(Model.IsItalic) navbar-btn" title="Курсив" @onclick="OnItalicClick">
-                                <span style="font-style: italic;">I</span>
+                                <span class="fa fa-solid fa-italic"></span>
                             </button>
                         </li>
                         <li class="nav-item" title="Цвет текста">
-                            <div class="input-group" style="padding-left:0.5rem;">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text">
-                                        A
-                                    </span>
+                            <div class="input-group" style="padding-left:0.5rem;height:100%;">
+                                <div class="input-group-prepend" style="height:100%;">
+                                    <div style="height:inherit;display:table;">
+                                        <span class="fa fa-tint text-primary input-group-text"
+                                              style="display:table-cell;vertical-align:middle">
+                                        </span>
+                                    </div>
                                 </div>
                                 <input type="color" @onchange="(e => OnColorChange(e))"
                                        value="@Model.Color"
@@ -84,11 +88,13 @@
                             </div>
                         </li>
                         <li class="nav-item" title="Цвет заливки">
-                            <div class="input-group" style="padding-left:0.5rem;">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text">
-                                        С
-                                    </span>
+                            <div class="input-group" style="padding-left:0.5rem;height:100%;">
+                                <div class="input-group-prepend" style="height:100%;">
+                                    <div style="height:inherit;display:table;">
+                                        <span class="fa fa-solid fa-fill text-primary input-group-text"
+                                              style="display:table-cell;vertical-align:middle">
+                                        </span>
+                                    </div>
                                 </div>
                                 <input type="color" @onchange="(e => OnBackgroundColorChange(e))"
                                        value="@Model.BackgroundColor"
@@ -138,11 +144,13 @@
                             </div>
                         </li>
                         <li class="nav-item" title="Цвет границ">
-                            <div class="input-group" style="padding-left:0.5rem;">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text">
-                                        BС
-                                    </span>
+                            <div class="input-group" style="padding-left:0.5rem;height:100%;">
+                                <div class="input-group-prepend" style="height:100%;">
+                                    <div style="height:inherit;display:table;">
+                                        <span class="fa fa-solid fa-border-all text-primary input-group-text"
+                                              style="display:table-cell;vertical-align:middle">
+                                        </span>
+                                    </div>
                                 </div>
                                 <input type="color" @onchange="(e => OnBorderColorChange(e))"
                                        value="@Model.BorderColor"
