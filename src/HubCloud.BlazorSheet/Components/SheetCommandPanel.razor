@@ -29,19 +29,17 @@
                             </div>
                         </li>
                         <li class="nav-item" title="Font size">
-                            <div class="input-group">
+                            <div class="input-group input-group-sm">
                                 <div class="input-group-prepend">
-                                    <div style="display:table;">
-                                        <span class="fa fa-text-height text-primary input-group-text"
-                                              style="display:table-cell;vertical-align:middle">
-                                        </span>
-                                    </div>
+                                    <span class="text-primary input-group-text">
+                                        <i class="fa fa-text-height"></i>
+                                    </span>
                                 </div>
                                 <BbNumberInput TValue="int"
                                 @bind-Value="@Model.FontSize"
                                                Changed="OnSettingsChanged"
                                                HtmlClass="form-control"
-                                               HtmlStyle="width:50px;text-align:right;height:30px;">
+                                               HtmlStyle="width:50px;text-align:right;">
                                 </BbNumberInput>
                             </div>
                         </li>
@@ -73,33 +71,29 @@
                             </button>
                         </li>
                         <li class="nav-item" title="Font color">
-                            <div class="input-group" style="padding-left:0.5rem;">
+                            <div class="input-group input-group-sm" style="padding-left:0.5rem;">
                                 <div class="input-group-prepend">
-                                    <div style="display:table;">
-                                        <span class="fa fa-tint text-primary input-group-text"
-                                              style="display:table-cell;vertical-align:middle">
-                                        </span>
-                                    </div>
+                                    <span class="text-primary input-group-text">
+                                        <i class="fa fa-tint"></i>
+                                    </span>
                                 </div>
                                 <input type="color" @onchange="(e => OnColorChange(e))"
                                        value="@Model.Color"
                                        class="form-control p-1"
-                                       style="width:50px;height:auto;" />
+                                       style="width:50px;" />
                             </div>
                         </li>
                         <li class="nav-item" title="Fill color">
-                            <div class="input-group" style="padding-left:0.5rem;">
+                            <div class="input-group input-group-sm" style="padding-left:0.5rem;">
                                 <div class="input-group-prepend">
-                                    <div style="display:table;">
-                                        <span class="fa fa-fill text-primary input-group-text"
-                                              style="display:table-cell;vertical-align:middle">
-                                        </span>
-                                    </div>
+                                    <span class="text-primary input-group-text">
+                                        <i class="fa fa-fill"></i>
+                                    </span>
                                 </div>
                                 <input type="color" @onchange="(e => OnBackgroundColorChange(e))"
                                        value="@Model.BackgroundColor"
                                        class="form-control p-1"
-                                       style="width:50px;height:auto;" />
+                                       style="width:50px;" />
                             </div>
                         </li>
                         <li class="nav-item dropdown">
@@ -144,18 +138,16 @@
                             </div>
                         </li>
                         <li class="nav-item" title="Borders color">
-                            <div class="input-group" style="padding-left:0.5rem;">
+                            <div class="input-group input-group-sm" style="padding-left:0.5rem;">
                                 <div class="input-group-prepend">
-                                    <div style="display:table;">
-                                        <span class="fa fa-border-all text-primary input-group-text"
-                                              style="display:table-cell;vertical-align:middle">
-                                        </span>
-                                    </div>
+                                    <span class="text-primary input-group-text">
+                                        <i class="fa fa-border-all"></i>
+                                    </span>
                                 </div>
                                 <input type="color" @onchange="(e => OnBorderColorChange(e))"
                                        value="@Model.BorderColor"
                                        class="form-control p-1"
-                                       style="width:50px;height:auto;" />
+                                       style="width:50px;" />
                             </div>
                         </li>
                         <li class="nav-item dropdown">
@@ -314,8 +306,8 @@
             </span>
         </div>
         <div class="col-sm-11">
-            <BbTextInput HtmlStyle="width:100%;height:30px;"
-                         HtmlClass="form-control"
+            <BbTextInput HtmlStyle="width:100%;"
+                         HtmlClass="form-control form-control-sm"
             @bind-Value="@Model.InputText"
                          Placeholder="Formula"
                          Changed="OnFormulaChanged">
