@@ -3,7 +3,6 @@ using HubCloud.BlazorSheet.Core.Consts;
 using HubCloud.BlazorSheet.Core.Enums;
 using HubCloud.BlazorSheet.Core.Interfaces;
 using HubCloud.BlazorSheet.Core.Models;
-using HubCloud.BlazorSheet.Infrastructure;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 
@@ -11,6 +10,10 @@ namespace HubCloud.BlazorSheet.Components;
 
 public partial class SheetCommandPanel:ComponentBase
 {
+    private const string TextAlignLeft = "left";
+    private const string TextAlignJustify = "justify";
+    private const string TextAlignRight = "right";
+
     private bool _isCollapseExpandAllRows;
     private bool _isCollapseExpandAllColumns;
     
@@ -18,9 +21,11 @@ public partial class SheetCommandPanel:ComponentBase
     private double _clientX;
     private double _clientY;
 
-    private List<Tuple<string, string>> _textAlignSource;
-    private List<Tuple<string, CellFormatTypes>> _cellFormatSource;
-    private List<Tuple<CellBorderTypes, string>> _borderTypesSource;
+    private string _currentTextAlign;
+    private CellBorderTypes _currentBorderType;
+    private CellFormatTypes _currentFormatType;
+    private int _currentBorderWidth;
+
     private List<Tuple<CellControlKinds, string>> _controlKindSource;
     private List<Tuple<int, string>> _dataTypeSource;
 
@@ -105,54 +110,61 @@ public partial class SheetCommandPanel:ComponentBase
     
     [Parameter]
     public IDataTypeDataProvider DataTypeDataProvider { get; set; }
-    
-    
+
+    [Parameter]
+    public int SelectedCellRowNumber { get; set; }
+
+    [Parameter]
+    public int SelectedCellColumnNumber { get; set; }
+
     protected override void OnInitialized()
     {
-        _textAlignSource = new List<Tuple<string, string>>();
-        _textAlignSource.Add(new Tuple<string, string>("Left", "left"));
-        _textAlignSource.Add(new Tuple<string, string>("Center", "center"));
-        _textAlignSource.Add(new Tuple<string, string>("Right", "right"));
-
-        _borderTypesSource = new List<Tuple<CellBorderTypes, string>>();
-        _borderTypesSource.Add(new Tuple<CellBorderTypes, string>(CellBorderTypes.None, "None"));
-        _borderTypesSource.Add(new Tuple<CellBorderTypes, string>(CellBorderTypes.Top, "Top"));
-        _borderTypesSource.Add(new Tuple<CellBorderTypes, string>(CellBorderTypes.Left, "Left"));
-        _borderTypesSource.Add(new Tuple<CellBorderTypes, string>(CellBorderTypes.Bottom, "Bottom"));
-        _borderTypesSource.Add(new Tuple<CellBorderTypes, string>(CellBorderTypes.Right, "Right"));
-        _borderTypesSource.Add(new Tuple<CellBorderTypes, string>(CellBorderTypes.All, "All"));
-
-        _cellFormatSource = new List<Tuple<string, CellFormatTypes>>();
-        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>("No format", CellFormatTypes.None));
-        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>($"Number: {CellDisplayFormatConsts.Integer}", CellFormatTypes.Integer));
-        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>($"Number: {CellDisplayFormatConsts.IntegerTwoDecimalPlaces}", CellFormatTypes.IntegerTwoDecimalPlaces));
-        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>($"Number: {CellDisplayFormatConsts.IntegerThreeDecimalPlaces}", CellFormatTypes.IntegerThreeDecimalPlaces));
-        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>($"Number: {CellDisplayFormatConsts.IntegerWithSpaces}", CellFormatTypes.IntegerWithSpaces));
-        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>($"Number: {CellDisplayFormatConsts.IntegerWithSpacesTwoDecimalPlaces}", CellFormatTypes.IntegerWithSpacesTwoDecimalPlaces));
-        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>($"Number: {CellDisplayFormatConsts.IntegerWithSpacesThreeDecimalPlaces}", CellFormatTypes.IntegerWithSpacesThreeDecimalPlaces));
-        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>($"Number: {CellDisplayFormatConsts.IntegerNegativeWithSpaces}", CellFormatTypes.IntegerNegativeWithSpaces));
-        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>($"Number: {CellDisplayFormatConsts.IntegerNegativeWithSpacesTwoDecimalPlaces}", CellFormatTypes.IntegerNegativeWithSpacesTwoDecimalPlaces));
-        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>($"Number: {CellDisplayFormatConsts.IntegerNegativeWithSpacesThreeDecimalPlaces}", CellFormatTypes.IntegerNegativeWithSpacesThreeDecimalPlaces));
-        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>($"Date: {CellDisplayFormatConsts.Date}", CellFormatTypes.Date));
-        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>($"Date&Time: {CellDisplayFormatConsts.DateTime}", CellFormatTypes.DateTime));
-        _cellFormatSource.Add(new Tuple<string, CellFormatTypes>("Custom", CellFormatTypes.Custom));
-
         if (DataTypeDataProvider != null)
-        {
             _dataTypeSource = DataTypeDataProvider.GetItems().ToList();
-        }
-        
-        _controlKindSource = new List<Tuple<CellControlKinds, string>>();
-        _controlKindSource.Add(new Tuple<CellControlKinds, string>(CellControlKinds.Undefined, "No control"));
-        _controlKindSource.Add(new Tuple<CellControlKinds, string>(CellControlKinds.TextInput, "Text input"));
-        _controlKindSource.Add(new Tuple<CellControlKinds, string>(CellControlKinds.NumberInput, "Number input"));
-        _controlKindSource.Add(new Tuple<CellControlKinds, string>(CellControlKinds.DateInput, "Date input"));
-        _controlKindSource.Add(new Tuple<CellControlKinds, string>(CellControlKinds.CheckBox, "Check box"));
-        _controlKindSource.Add(new Tuple<CellControlKinds, string>(CellControlKinds.Select, "Select"));
+
+        _controlKindSource = new List<Tuple<CellControlKinds, string>>
+        {
+            new Tuple<CellControlKinds, string>(CellControlKinds.Undefined, "No control"),
+            new Tuple<CellControlKinds, string>(CellControlKinds.TextInput, "Text input"),
+            new Tuple<CellControlKinds, string>(CellControlKinds.NumberInput, "Number input"),
+            new Tuple<CellControlKinds, string>(CellControlKinds.DateInput, "Date input"),
+            new Tuple<CellControlKinds, string>(CellControlKinds.CheckBox, "Check box"),
+            new Tuple<CellControlKinds, string>(CellControlKinds.Select, "Select")
+        };
     }
 
     protected override void OnParametersSet()
     {
+        if (Model == null)
+            return;
+
+        switch (Model.TextAlign)
+        {
+            case SheetConsts.TextAlignLeft:
+                _currentTextAlign = TextAlignLeft;
+                break;
+            case SheetConsts.TextAlignCenter:
+                _currentTextAlign = TextAlignJustify;
+                break;
+            case SheetConsts.TextAlignRight:
+                _currentTextAlign = TextAlignRight;
+                break;
+            default:
+                _currentTextAlign = TextAlignLeft;
+                break;
+        }
+
+        _currentBorderType = Model.BorderType;
+        _currentFormatType = Model.FormatType;
+
+        if (Model.BorderWidth <= 1)
+            _currentBorderWidth = 1;
+        else if (Model.BorderWidth <= 3)
+            _currentBorderWidth = 3;
+        else if (Model.BorderWidth <= 5 || Model.BorderWidth > 5)
+            _currentBorderWidth = 5;
+        else
+            _currentBorderWidth = 1;
     }
 
     private async Task OnBoldClick()
@@ -190,24 +202,87 @@ public partial class SheetCommandPanel:ComponentBase
         await Changed.InvokeAsync(null);
     }
 
-    private async Task OnFreezedRowsChanged()
+    private async Task OnTextAlignChanged(string textAlign)
     {
-        await FreezedRowsChanged.InvokeAsync(Model.FreezedRows);
+        _currentTextAlign = textAlign;
+
+        switch (textAlign)
+        {
+            case TextAlignLeft:
+                Model.TextAlign = SheetConsts.TextAlignLeft;
+                break;
+            case TextAlignJustify:
+                Model.TextAlign = SheetConsts.TextAlignCenter;
+                break;
+            case TextAlignRight:
+                Model.TextAlign = SheetConsts.TextAlignRight;
+                break;
+            default:
+                Model.TextAlign = SheetConsts.TextAlignLeft;
+                break;
+        }
+
+        await Changed.InvokeAsync();
     }
 
-    private async Task OnFreezedColumnsChanged()
+    private async Task OnSetFreezedRows(int freezedRowsCount)
     {
-        await FreezedColumnsChanged.InvokeAsync(Model.FreezedColumns);
+        await FreezedRowsChanged.InvokeAsync(freezedRowsCount);
     }
 
-    private static string ToggleButtonStyle(bool flag)
+    private async Task OnSetFreezedColumns(int freezedColumnsCount)
+    {
+        await FreezedColumnsChanged.InvokeAsync(freezedColumnsCount);
+    }
+
+    private string ToggleButtonStyle(bool flag)
     {
         var sb = new StringBuilder();
 
-        sb.Append("btn btn-sm ");
+        sb.Append("btn ");
         sb.Append(flag ? "btn-primary" : "btn-outline-primary");
 
         return sb.ToString();
+    }
+
+    private string GetActiveTextAlign(string textAlign)
+    {
+        var active = string.Empty;
+
+        if (_currentTextAlign == textAlign)
+            active = "active";
+
+        return active;
+    }
+
+    private string GetActiveBorderType(CellBorderTypes borderType)
+    {
+        var active = string.Empty;
+
+        if (_currentBorderType == borderType)
+            active = "active";
+
+        return active;
+    }
+
+    private string GetActiveBorderWidth(int borderWidth)
+    {
+        var active = string.Empty;
+
+        if (_currentBorderWidth == borderWidth)
+            active = "active";
+
+        return active;
+    }
+
+    private string GetActiveFormat(CellFormatTypes formatType)
+    {
+        var active = string.Empty;
+
+        if (_currentFormatType == formatType)
+            active = "active";
+
+        return active;
     }
 
     private async Task OnExport()
@@ -224,15 +299,7 @@ public partial class SheetCommandPanel:ComponentBase
     {
         Model.CustomFormat = Model.CustomFormat.Trim();
 
-        await Changed.InvokeAsync(null);
-    }
-
-    private async Task OnFormatChanged(CellFormatTypes formatType)
-    {
-        if (formatType == CellFormatTypes.Custom)
-            return;
-
-        Model.CustomFormat = string.Empty;
+        await Changed.InvokeAsync();
         await FormatChanged.InvokeAsync();
     }
 
@@ -324,5 +391,39 @@ public partial class SheetCommandPanel:ComponentBase
             Model.EditSettings = editSettings;
             await EditSettingsChanged.InvokeAsync(Model.EditSettings);
         }
+    }
+
+    private async Task OnSetBorder(CellBorderTypes borderType)
+    {
+        _currentBorderType = borderType;
+        Model.BorderType = borderType;
+
+        await Changed.InvokeAsync();
+    }
+
+    private async Task OnSetBorderWidth(int borderWidth)
+    {
+        Model.BorderWidth = borderWidth;
+        await Changed.InvokeAsync();
+    }
+
+    private async Task OnSetFormat(CellFormatTypes formatType)
+    {
+        _currentFormatType = formatType;
+        Model.FormatType = formatType;
+
+        if (formatType == CellFormatTypes.Custom)
+            return;
+
+        Model.CustomFormat = string.Empty;
+        await FormatChanged.InvokeAsync();
+    }
+
+    private string GetSplitJoinItemLabel()
+    {
+        if (SelectedCellsCount > 1)
+            return "Join";
+        else
+            return "Split";
     }
 }

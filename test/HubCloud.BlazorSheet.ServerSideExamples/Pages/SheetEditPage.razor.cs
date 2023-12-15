@@ -28,6 +28,9 @@ public partial class SheetEditPage: ComponentBase
     private bool _canRowsBeUngrouped;
     private bool _canColumnsBeUngrouped;
 
+    public int _selectedCellRowNumber;
+    public int _selectedCellColumnNumber;
+
     public int SelectedCellsCount => _selectedCells == null ? 0 : _selectedCells.Count;
 
     [Inject]
@@ -86,6 +89,18 @@ public partial class SheetEditPage: ComponentBase
         _sheet.SetSettingsToCommandPanel(cell, _commandPanelModel);
         _canRowsBeGrouped = false;
         _canRowsBeUngrouped = false;
+
+        SetRowColumnNumber();
+    }
+
+    private void SetRowColumnNumber()
+    {
+        if (_selectedCell == null)
+            return;
+
+        var address = _sheet.CellAddressSlim(_selectedCell);
+        _selectedCellRowNumber = address.Row;
+        _selectedCellColumnNumber = address.Column;
     }
 
     private void OnCellsSelected(List<SheetCell> cells)
