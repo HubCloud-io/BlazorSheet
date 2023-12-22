@@ -13,6 +13,17 @@ namespace HubCloud.BlazorSheet.ServerSideExamples.Pages
             _sheetSettings = BuildSheetSettingsWithCellNames(3, 20);
             _sheet = new Sheet(_sheetSettings);
 
+            var row = _sheet.GetRow(1);
+            row.IsGroup = true;
+            row.IsOpen = true;
+            var uid = row.Uid;
+
+            row = _sheet.GetRow(2);
+            row.ParentUid = uid;
+
+            row = _sheet.GetRow(3);
+            row.ParentUid = uid;
+
             var cell = _sheet.GetCell(1, 1);
             cell.Value = "1111111111111111111111";
 
