@@ -108,19 +108,19 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
         private void EvalSheet(Sheet sheet, SheetData cells, SheetCellAddress cellAddress)
         {
             // var analyzer = new SheetDependencyAnalyzer(sheet);
-
-            // var sw = new Stopwatch();
-            // sw.Start();
             // var dependencyCells = analyzer.GetDependencyCells(cellAddress);
-            // sw.Stop();
-            // var dist1 = dependencyCells.Select(x => x.Uid);
-            // var str1 = JsonConvert.SerializeObject(dist1);
-            // var el = sw.Elapsed;
-            
-            var dependencyCells2 = _analyzer.GetDependencyCells2(cellAddress);
-            foreach (var cell in dependencyCells2)
+
+            try
             {
-                EvalCell(cell, sheet, cells);
+                var dependencyCells2 = _analyzer.GetDependencyCells2(cellAddress);
+                foreach (var cell in dependencyCells2)
+                {
+                    EvalCell(cell, sheet, cells);
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message);
             }
         }
 
@@ -142,11 +142,17 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
             //    .ToDictionary(k => SheetDependencyAnalyzer.GetCellAddress(sheet.CellAddress(k)), v => v);
 
             //var dependencyCells = _analyzer.OrderCellsForCalc(valueCells, dict);
-            var dependencyCells = _analyzer.OrderCellsForCalc2();
-
-            foreach (var cell in dependencyCells)
+            try
             {
-                EvalCell(cell, sheet, cells);
+                var dependencyCells = _analyzer.OrderCellsForCalc2();
+                foreach (var cell in dependencyCells)
+                {
+                    EvalCell(cell, sheet, cells);
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message);
             }
         }
 
