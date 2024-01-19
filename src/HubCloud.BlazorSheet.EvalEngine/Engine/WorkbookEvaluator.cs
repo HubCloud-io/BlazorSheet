@@ -145,6 +145,11 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
             try
             {
                 var dependencyCells = _analyzer.OrderCellsForCalc2();
+                // var dependencyCells = _analyzerSlim.OrderCellsForCalc2();
+                foreach (var cell in dependencyCells)
+                {
+                    EvalCell(cell, sheet, cells);
+                }
                 foreach (var cell in dependencyCells)
                 {
                     EvalCell(cell, sheet, cells);
