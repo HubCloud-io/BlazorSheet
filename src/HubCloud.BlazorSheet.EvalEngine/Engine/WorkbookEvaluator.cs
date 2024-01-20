@@ -54,6 +54,139 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
             _interpreter.SetVariable(name, data);
         }
 
+        #region eval full workbook methods
+        public void EvalWorkbook()
+        {
+            foreach (var sheet in _workbook.Sheets)
+            {
+                var cells = _data.GetSheetByName(sheet.Name);
+                // EvalSheet(sheet, cells);
+                EvalSheet2(sheet, cells);
+            }
+        }
+        
+        private void EvalSheet2(Sheet sheet, SheetData cells)
+        {
+            var formulaCells = sheet.Cells
+                .Where(x => IsFormula(x.Formula))
+                .ToList();
+
+            // formulas without depend
+            var endingFormulas = new List<ValueAddress>();
+            foreach (var formulaCell in formulaCells)
+            {
+                var valueAddress = sheet.CellAddressSlim(formulaCell);
+                if (!_analyzer.GetDependencyFormulaDict().TryGetValue(valueAddress, out _))
+                    endingFormulas.Add(valueAddress);
+            }
+
+            var evaluatedCells = new HashSet<ValueAddress>();
+
+            EvalSheet2Inner(endingFormulas);
+
+            // inner method for recursion
+            void EvalSheet2Inner(IEnumerable<ValueAddress> addresses)
+            {
+                foreach (var address in addresses)
+                {
+                    if (!evaluatedCells.Contains(address))
+                    {
+                        _analyzer.GetFormulaAddressesDict().TryGetValue(address, out var addrList);
+                        if (addrList?.Any() == true)
+                            EvalSheet2Inner(addrList);
+                    }
+
+                    var currentCell = sheet.GetCell(address.Row, address.Column);
+                    if (IsFormula(currentCell.Formula) && !evaluatedCells.Contains(address))
+                        EvalCell(currentCell, sheet, cells);
+
+                    evaluatedCells.Add(address);
+                }
+            }
+        }
+        
+        private void EvalSheet(Sheet sheet, SheetData cells)
+        {
+            // var formulaCells = sheet.Cells
+            //     .Where(x => !string.IsNullOrWhiteSpace(x.Formula))
+            //     .ToList();
+            //
+            // var valueCells = SheetDependencyAnalyzer.GetNoFormulaCells(sheet);
+            // var nonNullValueCells = sheet.Cells
+            //     .Where(x => x.Value != null)
+            //     .Select(x => SheetDependencyAnalyzer.GetCellAddress(sheet.CellAddress(x)));
+            //
+            // valueCells.AddRange(nonNullValueCells);
+            //
+            // var dict = formulaCells
+            //     .ToDictionary(k => SheetDependencyAnalyzer.GetCellAddress(sheet.CellAddress(k)), v => v);
+            //
+            // var dependencyCells = _analyzer.OrderCellsForCalc(valueCells, dict);
+            // foreach (var cell in dependencyCells)
+            // {
+            //     EvalCell(cell, sheet, cells);
+            // }
+
+            try
+            {
+                var dependencyCells = _analyzer.OrderCellsForCalc2();
+                foreach (var cell in dependencyCells)
+                {
+                    EvalCell(cell, sheet, cells);
+                }
+                // foreach (var cell in dependencyCells)
+                // {
+                //     EvalCell(cell, sheet, cells);
+                // }
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message);
+            }
+        }
+        #endregion
+
+        #region eval workbook on cell change
+        public void EvalWorkbook(SheetCellAddress cellAddress)
+        {
+            var sheet = _workbook.FirstSheet;
+            var cells = _data.GetSheetByName(sheet.Name);
+            EvalSheet(sheet, cells, cellAddress);
+        }
+        
+        private void EvalSheet(Sheet sheet, SheetData cells, SheetCellAddress cellAddress)
+        {
+            try
+            {
+                var dependencyCells2 = _analyzer.GetDependencyCells2(cellAddress);
+                foreach (var cell in dependencyCells2)
+                {
+                    EvalCell(cell, sheet, cells);
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message);
+            }
+        }
+        #endregion
+
+        private void EvalCell(SheetCell cell, Sheet sheet, SheetData cells)
+        {
+            var cellAddress = sheet.CellAddressSlim(cell);
+            var evalResult = Eval(cell.Formula, cellAddress.Row, cellAddress.Column);
+
+            if (evalResult is UniversalValue uValue)
+                cell.Value = uValue.Value;
+            else
+                cell.Value = evalResult;
+
+            var editSettings = sheet.GetEditSettings(cell);
+            cell.ApplyFormat(editSettings.CellDataType);
+
+            cells[cellAddress.Row, cellAddress.Column] = cell.Value;
+        }
+        
         public object Eval(string expression, int row, int column)
         {
             object result = null;
@@ -88,102 +221,12 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
             return result;
         }
 
-        public void EvalWorkbook()
-        {
-            foreach (var sheet in _workbook.Sheets)
-            {
-                var cells = _data.GetSheetByName(sheet.Name);
-                EvalSheet(sheet, cells);
-            }
-        }
-
-        public void EvalWorkbook(SheetCellAddress cellAddress)
-        {
-            var sheet = _workbook.FirstSheet;
-            var cells = _data.GetSheetByName(sheet.Name);
-            EvalSheet(sheet, cells, cellAddress);
-        }
-
-        // for recalc only dependent formula by cell 
-        private void EvalSheet(Sheet sheet, SheetData cells, SheetCellAddress cellAddress)
-        {
-            // var analyzer = new SheetDependencyAnalyzer(sheet);
-            // var dependencyCells = analyzer.GetDependencyCells(cellAddress);
-
-            try
-            {
-                var dependencyCells2 = _analyzer.GetDependencyCells2(cellAddress);
-                foreach (var cell in dependencyCells2)
-                {
-                    EvalCell(cell, sheet, cells);
-                }
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e.Message);
-            }
-        }
-
-        // for recalc full sheet
-        private void EvalSheet(Sheet sheet, SheetData cells)
-        {
-            //var formulaCells = sheet.Cells
-            //    .Where(x => !string.IsNullOrWhiteSpace(x.Formula))
-            //    .ToList();
-
-            //var valueCells = SheetDependencyAnalyzer.GetNoFormulaCells(sheet);
-            //var nonNullValueCells = sheet.Cells
-            //    .Where(x => x.Value != null)
-            //    .Select(x => SheetDependencyAnalyzer.GetCellAddress(sheet.CellAddress(x)));
-
-            //valueCells.AddRange(nonNullValueCells);
-
-            //var dict = formulaCells
-            //    .ToDictionary(k => SheetDependencyAnalyzer.GetCellAddress(sheet.CellAddress(k)), v => v);
-
-            //var dependencyCells = _analyzer.OrderCellsForCalc(valueCells, dict);
-            try
-            {
-                var dependencyCells = _analyzer.OrderCellsForCalc2();
-                // var dependencyCells = _analyzerSlim.OrderCellsForCalc2();
-                foreach (var cell in dependencyCells)
-                {
-                    EvalCell(cell, sheet, cells);
-                }
-                foreach (var cell in dependencyCells)
-                {
-                    EvalCell(cell, sheet, cells);
-                }
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e.Message);
-            }
-        }
-
-        private void EvalCell(SheetCell cell, Sheet sheet, SheetData cells)
-        {
-            var cellAddress = sheet.CellAddressSlim(cell);
-            var evalResult = Eval(cell.Formula, cellAddress.Row, cellAddress.Column);
-
-            if (evalResult is UniversalValue uValue)
-                cell.Value = uValue.Value;
-            else
-                cell.Value = evalResult;
-
-            var editSettings = sheet.GetEditSettings(cell);
-            cell.ApplyFormat(editSettings.CellDataType);
-
-            cells[cellAddress.Row, cellAddress.Column] = cell.Value;
-        }
-
         public void SetValue(int row, int column, object value)
         {
             var cells = _data.FirstSheet;
 
             cells[row, column] = value;
         }
-
 
         public void SetLogLevel(LogLevel level)
         {
@@ -193,6 +236,13 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
         public void ClearLog()
         {
             _logger.Clear();
+        }
+        
+        private bool IsFormula(string formula)
+        {
+            return !string.IsNullOrEmpty(formula) &&
+                   formula.ToUpper().Contains("R") &&
+                   formula.ToUpper().Contains("C");
         }
     }
 }
