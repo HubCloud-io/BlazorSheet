@@ -89,7 +89,7 @@ public class SheetDependencyAnalyzerTests
         {
             // Assert
             Assert.That(e is EvaluateException);
-            Assert.That(e.Message.Trim() == "Formula circular dependency problem in cells: R1C2;");
+            Assert.That(e.Message.Trim() == "Formula circular dependency problem in cells: R1C2");
             return;
         }
         

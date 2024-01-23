@@ -37,81 +37,11 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
                 .Where(x => !string.IsNullOrEmpty(x.Formula))
                 .ToList();
 
-            // var sw = new Stopwatch();
-            // sw.Start();
             InitDependencyDicts(_formulaCells);
-            // sw.Stop();
-            // var el = sw.Elapsed;
         }
 
-
-        [Obsolete]
-        public List<SheetCell> GetDependencyCells(SheetCellAddress cellAddress)
-        {
-            var processedCells = new List<string>(GetNoFormulaCells(_sheet));
-
-            var dependCellsDict = GetDependencyCellsInner(cellAddress);
-
-            var notDependedFormulas = GetNotDependedFormulaCells(_sheet, dependCellsDict);
-            processedCells.AddRange(notDependedFormulas);
-
-            var orderedCells = OrderCellsForCalc(processedCells, dependCellsDict);
-            return orderedCells;
-        }
-
-        [Obsolete]
-        public List<SheetCell> OrderCellsForCalc(List<string> processedCells,
-            Dictionary<string, SheetCell> dependCellsDict)
-        {
-            var list = new List<SheetCell>();
-            while (dependCellsDict.Count != 0)
-            {
-                var canCalc = false;
-                foreach (var dependCell in dependCellsDict.ToArray())
-                {
-                    if (CanCalc(dependCell.Value, processedCells))
-                    {
-                        var normalizedAddress = NormalizeAddress(dependCell.Key, _sheet.CellAddress(dependCell.Value));
-                        if (!processedCells.Contains(normalizedAddress))
-                            processedCells.Add(normalizedAddress);
-
-                        canCalc = true;
-
-                        list.Add(dependCell.Value);
-                        dependCellsDict.Remove(dependCell.Key);
-                    }
-                }
-
-                if (!canCalc)
-                    break;
-            }
-
-            return list;
-        }
-
-        private void CheckCircularCells(List<SheetCell> sheetCells)
-        {
-            var circularCells = new List<ValueAddress>();
-            foreach (var cell in sheetCells)
-            {
-                var cellAddress = _sheet.CellAddressSlim(cell);
-                _formulaAddressesDict.TryGetValue(cellAddress, out var addressesInFormula);
-
-                if (addressesInFormula?.Any() == true && addressesInFormula.Contains(cellAddress))
-                    circularCells.Add(cellAddress);
-            }
-
-            if (circularCells.Any())
-            {
-                var cellsStr = new StringBuilder();
-                foreach (var circularCell in circularCells)
-                {
-                    cellsStr.Append($"R{circularCell.Row}C{circularCell.Column},");
-                }
-                
-                throw new EvaluateException($"Formula circular dependency problem in cells: {cellsStr.ToString().TrimEnd(',')}");
-            }
-        }
+        public Dictionary<ValueAddress, List<SheetCell>> GetDependencyFormulaDict() => _dependencyFormulaDict;
+        public Dictionary<ValueAddress, List<ValueAddress>> GetFormulaAddressesDict() => _formulaAddressesDict;
 
         public List<SheetCell> GetDependencyCells2(SheetCellAddress cellAddress)
         {
@@ -137,14 +67,13 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
 
             return distList;
         }
-
-
+        
         public List<SheetCell> OrderCellsForCalc2()
         {
             var allFormulaCells = _formulaCells.ToList();
-            
+
             CheckCircularCells(allFormulaCells);
-            
+
             var dependHashSet = new HashSet<ValueAddress>(_dependencyFormulaDict.Select(x => x.Key));
 
             var resultList = new List<SheetCell>();
@@ -184,6 +113,33 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
             return resultList;
         }
 
+        
+        #region private methods
+        private void CheckCircularCells(List<SheetCell> sheetCells)
+        {
+            var circularCells = new List<ValueAddress>();
+            foreach (var cell in sheetCells)
+            {
+                var cellAddress = _sheet.CellAddressSlim(cell);
+                _formulaAddressesDict.TryGetValue(cellAddress, out var addressesInFormula);
+
+                if (addressesInFormula?.Any() == true && addressesInFormula.Contains(cellAddress))
+                    circularCells.Add(cellAddress);
+            }
+
+            if (circularCells.Any())
+            {
+                var cellsStr = new StringBuilder();
+                foreach (var circularCell in circularCells)
+                {
+                    cellsStr.Append($"R{circularCell.Row}C{circularCell.Column},");
+                }
+
+                throw new EvaluateException(
+                    $"Formula circular dependency problem in cells: {cellsStr.ToString().TrimEnd(',')}");
+            }
+        }
+        
         private string GetCircularCellsStr(List<SheetCell> badCells)
         {
             var resultStr = string.Empty;
@@ -199,10 +155,6 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
 
             return resultStr;
         }
-
-
-        #region private methods
-
         private List<SheetCell> GetDependencyCells2Inner(List<SheetCell> cells)
         {
             var resultList = new List<SheetCell>();
@@ -615,6 +567,54 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
 
         public static string GetCellAddress(SheetCellAddress cellAddress)
             => $"R{cellAddress.Row}C{cellAddress.Column}";
+
+        #endregion
+        
+        #region obsolete methods
+
+        [Obsolete]
+        public List<SheetCell> GetDependencyCells(SheetCellAddress cellAddress)
+        {
+            var processedCells = new List<string>(GetNoFormulaCells(_sheet));
+
+            var dependCellsDict = GetDependencyCellsInner(cellAddress);
+
+            var notDependedFormulas = GetNotDependedFormulaCells(_sheet, dependCellsDict);
+            processedCells.AddRange(notDependedFormulas);
+
+            var orderedCells = OrderCellsForCalc(processedCells, dependCellsDict);
+            return orderedCells;
+        }
+
+        [Obsolete]
+        public List<SheetCell> OrderCellsForCalc(List<string> processedCells,
+            Dictionary<string, SheetCell> dependCellsDict)
+        {
+            var list = new List<SheetCell>();
+            while (dependCellsDict.Count != 0)
+            {
+                var canCalc = false;
+                foreach (var dependCell in dependCellsDict.ToArray())
+                {
+                    if (CanCalc(dependCell.Value, processedCells))
+                    {
+                        var normalizedAddress = NormalizeAddress(dependCell.Key, _sheet.CellAddress(dependCell.Value));
+                        if (!processedCells.Contains(normalizedAddress))
+                            processedCells.Add(normalizedAddress);
+
+                        canCalc = true;
+
+                        list.Add(dependCell.Value);
+                        dependCellsDict.Remove(dependCell.Key);
+                    }
+                }
+
+                if (!canCalc)
+                    break;
+            }
+
+            return list;
+        }
 
         #endregion
     }
