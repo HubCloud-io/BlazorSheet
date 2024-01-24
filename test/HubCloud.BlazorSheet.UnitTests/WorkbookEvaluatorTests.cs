@@ -90,11 +90,6 @@ public class WorkbookEvaluatorTests
     }
 
     
-    // R1C1
-    //     R1C2
-    //         R1C3
-    //         R2C3
-    //     R3C2
     [Test]
     public void CalcFromOnceCell_Test()
     {
