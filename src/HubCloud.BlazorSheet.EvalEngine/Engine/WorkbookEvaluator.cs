@@ -177,7 +177,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
                 }
 
                 var currentCell = sheet.GetCell(address.Row, address.Column);
-                if (IsFormula(currentCell.Formula) && !evaluatedCells.Contains(address))
+                if (!string.IsNullOrEmpty(currentCell.Formula) && !evaluatedCells.Contains(address))
                     EvalCell(currentCell, sheet, cells);
 
                 evaluatedCells.Add(address);
