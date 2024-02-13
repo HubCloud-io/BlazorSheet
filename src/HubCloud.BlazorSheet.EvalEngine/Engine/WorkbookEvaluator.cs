@@ -104,6 +104,8 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine
             var formulaCells = sheet.Cells
                 .Where(x => IsFormula(x.Formula))
                 .ToList();
+            
+            _analyzer.CheckCircularCells(formulaCells);
 
             // formulas without depend
             var endingFormulas = new List<ValueAddress>();

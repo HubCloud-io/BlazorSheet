@@ -113,9 +113,7 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
             return resultList;
         }
 
-        
-        #region private methods
-        private void CheckCircularCells(List<SheetCell> sheetCells)
+        public void CheckCircularCells(List<SheetCell> sheetCells)
         {
             var circularCells = new List<ValueAddress>();
             foreach (var cell in sheetCells)
@@ -139,6 +137,8 @@ namespace HubCloud.BlazorSheet.EvalEngine.Engine.DependencyAnalyzer
                     $"Formula circular dependency problem in cells: {cellsStr.ToString().TrimEnd(',')}");
             }
         }
+        
+        #region private methods
         
         private string GetCircularCellsStr(List<SheetCell> badCells)
         {
